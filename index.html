@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Responsive on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Official Eterna JS/style (should be updated if not latest - Might need to be handled differently, if this code is included in the minified source?) -->
+    <script type="text/javascript" src="http://www.eternagame.org/workbranch_medicine/frontend/eterna.min.js?ver=23121222542363"></script>
+    <link rel="stylesheet" type="text/css" href="http://www.eternagame.org/workbranch_medicine/frontend/eterna.min.css?ver=23121222542363">
+    <!-- Custom Scrollbar -->
+    <script type="text/javascript" src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/jquery.mCustomScrollbar.min.css">
+    <!-- WebSocket Communication -->
+    <script type="text/javascript" src="js/sockjs.min.js"></script>
+    <!-- Polyfills -->
+    <script type="text/javascript" src="js/polyfill.js"></script>
+    <!-- Temp. script to define current user & channel for testing (this should probably be replaced) -->
+    <script type="text/javascript" src="js/testDef.js"></script>
+    <!-- Actual Chat Script -->
+    <script type="text/javascript" src="js/chat.js"></script>
+</head>
+
+<body style="min-width: auto;">
+    <div id="chat-frame" style="height: calc(100% - 20px); width: calc(100% - 20px) padding: 10px;">
+        <div id="chat" style="height: 100%;">
+            <ul>
+                <li><a href="#chat-tab-global">Chat</a></li>
+                <li><a href="#chat-tab-users">Users (<span id="chat-users-online">0</span>)</a></li>
+            </ul>
+            <div id="chat-content" style="border: rgba(255, 255, 255, 0.2) solid 3px; height: Calc(100% - 34px); position: relative;">
+                <div id="chat-tabs" style="display: none">
+                    <div id="chat-tab-global" style="word-wrap: break-word; white-space: normal;">
+                        <ul id="global-chat-historical"></ul>
+                        <ul id="global-chat-messages"></ul>
+                    </div>
+                    <div id="chat-tab-users">
+                        <ul id="chat-users-list"></ul>
+                    </div>
+                </div>
+                <div id="chat-loading" style="position: relative; top: Calc(50% - 55px); color: #FFF; text-align: center;">
+                    <div class="small-loading centered" style="margin-bottom: 5px"></div>
+                    Connecting...
+                </div>
+                <textarea id="chat-input" disabled></textarea>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
