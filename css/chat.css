@@ -1,0 +1,104 @@
+/* Scrollbar customization */
+.mCSB_inside>.mCSB_container {
+    margin-right: 10px;
+}
+
+.mCSB_inside>.mCSB_scrollTools_vertical>.mCSB_draggerContainer>.mCSB_dragger {
+    width: 2px;
+    right: 2px;
+}
+
+.mCSB_inside>.mCSB_scrollTools_vertical>.mCSB_draggerContainer>.mCSB_draggerRail {
+    margin-right: 1px;
+}
+#chat-tabs > .ui-tabs-panel > .ps-scrollbar-y-rail {
+    opacity: 1;
+    background-color: #0C1A31;
+    margin-top: 5px;
+}
+#chat-tabs > .ui-tabs-panel > .ps-scrollbar-y-rail > .ps-scrollbar-y {
+    background-color: #3E566A;
+}
+/* Chat Tabs Nav */
+#chat.ui-tabs, #chat > .ui-tabs-nav {
+    background: none;
+    border: none;
+    padding: 0;
+}
+#chat > .ui-tabs-nav > li {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.07);
+    border-radius: 0;
+    margin: 0;
+}
+#chat > .ui-tabs-nav > li:hover:not(.ui-state-active) {
+    background-color: rgba(255, 255, 255, 0.13);
+}
+#chat > .ui-tabs-nav > li > a {
+    padding: .25em 1em;
+}
+#chat > .ui-tabs-nav > li:hover > a {
+    color: #FFF;
+}
+#chat > .ui-tabs-nav > .ui-state-active {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0;
+}
+/* Chat Windows */
+#chat-tabs > .ui-tabs-panel {
+    color: #FFF;
+    border-radius: 0;
+    padding: .4em .5em;
+    position: relative;
+    height: Calc(100% - 55px);
+}
+/* Chat Messages */
+.chat-message {
+    color: #C0DCE7;
+    font-size: 0.9em;
+}
+.chat-message-system {
+    font-style: italic;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.chat-message-action {
+    font-style: italic;
+}
+.chat-message-user {
+    font-weight: bold;
+}
+.chat-message-user-link {
+    text-decoration: none;
+}
+.chat-message-time {
+    color: #627587;
+    white-space: nowrap;
+    font-size: 0.8em;
+}
+/* Chat User List */
+.chat-userlist-user > a {
+    color: #fff;
+    text-decoration: none;
+}
+/* Chat input */
+#chat-input {
+    position: absolute;
+    bottom: 0px;
+    width: Calc(100% - 28px);
+    height: 26px;
+    margin: 10px;
+    border-radius: 2px;
+    resize: none;
+}
+/* To determine input size */
+#chat-input-hidden {
+    display: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    width: Calc(100% - 26px);
+    min-height: 20px;
+    padding: 3px;
+    border: 1px;
+}
