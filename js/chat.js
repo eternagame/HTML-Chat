@@ -259,8 +259,8 @@ $( document ).ready(function() {
     $(function() {
         // Set up input and duplicated div
         var input = $('#chat-input'),
-        var hiddenDiv = '<div id="chat-input-hidden"></div>',
-        var content = null;
+        hiddenDiv = '<div id="chat-input-hidden"></div>',
+        content = null;
         $(hiddenDiv).insertAfter("#chat-input");
         hiddenDiv = $("#chat-input-hidden");
         input.css("overflow", "hidden");
