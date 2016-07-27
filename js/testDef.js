@@ -1,7 +1,8 @@
-if (!Application) {
-    var Application = {
-        CURRENT_USER:{}
-    };
+if (!Application.CURRENT_USER) {
+    
+    if (!Application) {var Application = {};}
+    Application.CURRENT_USER = {};
+    
     var CHANNEL = "global";
     location.search.slice(1).split("&").forEach(function(item){
         var param = item.split("=")[0];
