@@ -280,7 +280,7 @@ $( document ).ready(function() {
     sock.onopen = function() {
        sock.send("NICK " + myNick + "\r\n");
        sock.send("USER " + "anon" + " 0 * :" + myUserName + "\r\n");
-    }
+    };
     // Key bindings
     $('#chat-input').keypress(function (e) {
         var isAction = false;
@@ -337,8 +337,7 @@ $( document ).ready(function() {
 });
 
 sock.onmessage = function (e) {
-    data = e.data;
-    var commands = parseCommands(data);
+    var commands = parseCommands(e.data);
     for (var i=0; i<commands.length; i++) {
         var cmd = commands[i];
         switch(cmd.command) {
