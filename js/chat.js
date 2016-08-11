@@ -271,8 +271,7 @@ $( document ).ready(function() {
             content = content.replace(/\n/g, '<br>');
             hiddenDiv.html(content + '');
             // Determine height from duplicate div
-            $(this).css('height', hiddenDiv.height() + 6);
-            $(this).css('bottom', -1*hiddenDiv.height() + 20);
+            $(this).css('height', hiddenDiv.height());
       });
     });
     
