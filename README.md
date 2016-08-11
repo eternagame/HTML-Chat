@@ -6,6 +6,8 @@ NOTE: This project is just entering into the testing phase, and there are some d
 ## Setup
 For testing, in a browser navigate to index.html?username=[username]&uid=[user ID]&channel=[channel name], where the name and ID are your Eterna name and id, and optionally the channel on the server to connect to. In production, the div with the id "chat" will be placed in a framing div which will define the width and height.
 
+NOTE: Currently, due to limitations with the current version of sockjs-twisted, the chat needs to be served from a webserver (you can do this with the included run_server.py, derived from the version used in the [data browser](https://github.com/EteRNAgame/data-browser/blob/master/run_server.py)).
+
 ## Requirements
 While all needed files are included, this project uses:
 * [jQuery](http://jquery.com/)

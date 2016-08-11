@@ -259,8 +259,8 @@ $( document ).ready(function() {
     $(function() {
         // Set up input and duplicated div
         var input = $('#chat-input'),
-        var hiddenDiv = '<div id="chat-input-hidden"></div>',
-        var content = null;
+        hiddenDiv = '<div id="chat-input-hidden"></div>',
+        content = null;
         $(hiddenDiv).insertAfter("#chat-input");
         hiddenDiv = $("#chat-input-hidden");
         input.css("overflow", "hidden");
@@ -271,8 +271,7 @@ $( document ).ready(function() {
             content = content.replace(/\n/g, '<br>');
             hiddenDiv.html(content + '');
             // Determine height from duplicate div
-            $(this).css('height', hiddenDiv.height() + 6);
-            $(this).css('bottom', -1*hiddenDiv.height() + 20);
+            $(this).css('height', hiddenDiv.height());
       });
     });
     
@@ -280,7 +279,7 @@ $( document ).ready(function() {
     sock.onopen = function() {
        sock.send("NICK " + myNick + "\r\n");
        sock.send("USER " + "anon" + " 0 * :" + myUserName + "\r\n");
-    }
+    };
     // Key bindings
     $('#chat-input').keypress(function (e) {
         var isAction = false;
@@ -337,8 +336,7 @@ $( document ).ready(function() {
 });
 
 sock.onmessage = function (e) {
-    data = e.data;
-    var commands = parseCommands(data);
+    var commands = parseCommands(e.data);
     for (var i=0; i<commands.length; i++) {
         var cmd = commands[i];
         switch(cmd.command) {
