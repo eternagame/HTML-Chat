@@ -2,7 +2,7 @@ var Application = {
     CURRENT_USER: {}
 };
 
-var CHANNEL = "global";
+var CHAT_CHANNEL = "global";
 location.search.slice(1).split("&").forEach(function(item){
     var param = item.split("=")[0];
     if (param == "name" || param == "uid") {

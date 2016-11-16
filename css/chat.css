@@ -69,6 +69,9 @@
 .chat-message-user {
     font-weight: bold;
 }
+.chat-message-action > a > .chat-message-user {
+    color: #C0DCE7;
+}
 .chat-message-user-link {
     text-decoration: none;
 }
@@ -81,6 +84,7 @@
 .chat-userlist-user > a {
     color: #fff;
     text-decoration: none;
+    font-weight: bold;
 }
 /* Chat input */
 #chat-input {
