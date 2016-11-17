@@ -120,7 +120,7 @@
         
         if (onlineUsers[onlineUserWithName(username).index]["connections"] == 1) {
             onlineUsers.splice(onlineUserWithName(username).index, 1);
-            $("li#chat-userlist-user-" + username).remove();
+            $("li#chat-userlist-user-" + username.toUpperCase()).remove();
             $("#chat-users-online").html(parseInt($("#chat-users-online").html()) - 1);
         } else {
             onlineUsers[onlineUserWithName(username).index]["connections"]--;
