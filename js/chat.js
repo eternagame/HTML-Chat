@@ -38,13 +38,25 @@
         }
         return msgs;
     }
+    
+    /**
+        Returns object of onlineUsers which has the given username
+        @param username: Nick of user to search for
+    */
+    function onlineUserWithName( username ) {
+        var res = $.grep(onlineUsers, function(o){ return o.name==username.toUpperCase(); })[0];
+        if(!res) return false;
+        res.index = onlineUsers.indexOf(res);
+        return res;
+    }
 
     /**
         When a user joins, make sure they're on the online list
         @param username: Nick of joining user
      */
     function addUser( username ) {
-        var portions, uid, userli, currClients,
+        
+        var portions, uid, userli,
         usernamesToIgnore = ["Anonymous", "history", "ChatBot"],
         ircIds = {
             hoglahoo: 36921,
@@ -60,7 +72,7 @@
         // Parse automatic suffix
         portions = username.match(/(?:^(.+)(?:__(\d+)\^[1-5]))|(.+)/);
         // If userid is included, get it, if it's an IRC regular, get their userID from the list
-        uid = portions[2]|| ircIds[username];
+        uid = portions[2]|| ircIds[username] || 0;
         // Get actual username
         username = portions[1] || portions[3];
         // Remove @ from Op's username
@@ -69,23 +81,27 @@
         }
 
         // If the user isn't online and isn't to be ignored, add it to the page in the right place and keep track of it
-        if (!onlineUsers.includes(username.toUpperCase()) && !usernamesToIgnore.includes(username)) {
-            onlineUsers.push(username.toUpperCase());
-            onlineUsers.sort();
-            userli = "<li id=chat-userlist-user-" + username.toUpperCase() + " class=chat-userlist-user><a target=\"_blank\" href=\"http://www.eternagame.org/web/player/" + uid + "/\">" + username + "</a></li>";
-            // If there's a user ahead of this one in the array, insert it before that one in the list, else add to the end
-            if (onlineUsers[onlineUsers.indexOf(username.toUpperCase())+1]) {
-                $( userli ).insertBefore( "li#chat-userlist-user-" + onlineUsers[onlineUsers.indexOf(username.toUpperCase())+1] );
+        if (!usernamesToIgnore.includes(username)) {
+            if (!onlineUserWithName(username)) {
+                onlineUsers.push({name: username.toUpperCase(), connections: 1});
+                onlineUsers.sort(function (userA, userB){
+                    if (userA.name < userB.name) return -1;
+                    if (userA.name > userB.name) return 1;
+                    return 0;
+                });
+                
+                userli = "<li id=chat-userlist-user-" + username.toUpperCase() + " class=chat-userlist-user><a target=\"_blank\" href=\"http://www.eternagame.org/web/player/" + uid + "/\">" + username + "</a></li>";
+                
+                // If there's a user ahead of this one in the array, insert it before that one in the list, else add to the end
+                if (onlineUsers[onlineUserWithName(username).index+1]) {
+                    $( userli ).insertBefore( "li#chat-userlist-user-" + onlineUsers[onlineUserWithName(username).index+1]["name"] );
+                } else {
+                    $("#chat-users-list").append(userli);
+                }
+                $("#chat-users-online").html(parseInt($("#chat-users-online").html()) + 1);
             } else {
-                $("#chat-users-list").append(userli);
+                onlineUsers[onlineUserWithName(username).index]["connections"]++;
             }
-            // TODO: This should really just be dealt with by making onlineUsers an array of objects (ie [{name: "username", numClients: n}])
-            $("li#chat-userlist-user-" + username).prop("data-numclients", 1);
-            $("#chat-users-online").html(parseInt($("#chat-users-online").html()) + 1);
-        } else {
-            // TODO: See above
-            currClients = $("li#chat-userlist-user-" + username).prop("data-numclients");
-            $("li#chat-userlist-user-" + username).prop("data-numclients", currClients + 1);
         }
     }
 
@@ -94,7 +110,6 @@
         @param username: Nick of parting/quitting user
      */
     function removeUser( username ) {
-        var currClients;
         username = username.match(/(?:^(.+)(?:__(\d+)\^[1-5]))|(.+)/);
         // Get actual username
         username = username[1] || username[3];
@@ -102,14 +117,13 @@
         if (username[0] == "@") {
             username = username.slice(1);
         }
-        // TODO: See addUser, should be dealt with in onlineUsers not a data property
-        currClients = $("li#chat-userlist-user-" + username).prop("data-numclients");
-        if (currClients == 1) {
-            onlineUsers.splice(onlineUsers.indexOf(username), 1);
+        
+        if (onlineUsers[onlineUserWithName(username).index]["connections"] == 1) {
+            onlineUsers.splice(onlineUserWithName(username).index, 1);
             $("li#chat-userlist-user-" + username).remove();
             $("#chat-users-online").html(parseInt($("#chat-users-online").html()) - 1);
         } else {
-            $("li#chat-userlist-user-" + username).prop("data-numclients", currClients - 1);
+            onlineUsers[onlineUserWithName(username).index]["connections"]--;
         }
     }
 
