@@ -13,7 +13,7 @@
 
     /**
         Parse messages sent by server
-        @param data: Raw data sen by server
+        @param data: Raw data sent by server
      */
     function parseCommands(data) {
         var msgs, portions;
