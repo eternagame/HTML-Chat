@@ -12,8 +12,9 @@
     sock = new SockJS("http://45.55.234.16");
 
     /**
-        Parse messages sent by server
-        @param data: Raw data sent by server
+     *  Parse messages sent by server
+     *  @param data: Raw data sent by server
+     *  @return: Array of parsed messages
      */
     function parseCommands(data) {
         var msgs, portions;
@@ -40,9 +41,10 @@
     }
     
     /**
-        Returns object of onlineUsers which has the given username
-        @param username: Nick of user to search for
-    */
+     *  Returns object of onlineUsers which has the given username
+     *  @param username: Nick of user to search for
+     *  @return: Found element of onlineUsers
+     */
     function onlineUserWithName( username ) {
         var res = $.grep(onlineUsers, function(o){ return o.name==username.toUpperCase(); })[0];
         if(!res) return false;
@@ -51,8 +53,8 @@
     }
 
     /**
-        When a user joins, make sure they're on the online list
-        @param username: Nick of joining user
+     *  When a user joins, make sure they're on the online list
+     *  @param username: Nick of joining user
      */
     function addUser( username ) {
         
@@ -106,8 +108,8 @@
     }
 
     /**
-        When a user leaves, remove them from the list
-        @param username: Nick of parting/quitting user
+     *  When a user leaves, remove them from the list
+     *  @param username: Nick of parting/quitting user
      */
     function removeUser( username ) {
         username = username.match(/(?:^(.+)(?:__(\d+)\^[1-5]))|(.+)/);
@@ -128,8 +130,9 @@
     }
 
     /**
-        Unencode data entity encoded by entityEncode so that it can be re-encoded by some other method
-        @param data: String to be unencoded
+     *  Unencode data entity encoded by entityEncode so that it can be re-encoded by some other method
+     *  @param data: String to be unencoded
+     *  @return: Unencoded string
      */
     function unEntityEncode( data ) {
         return data.replace(/&amp;/g, "&")
@@ -141,10 +144,11 @@
     }
 
     /**
-        HTML escape regular expression
-        @param search: Regex search stirng
-        @param mod: Regex modifier string
-    */
+     *  HTML escape regular expression
+     *  @param search: Regex search stirng
+     *  @param mod: Regex modifier string
+     *  @return: Encoded regex
+     */
     function encodedRegex( search, mod ) {
         return new RegExp(search.replace(/&/g, "&amp;")
                                 .replace(/</g, "&lt;")
@@ -156,8 +160,9 @@
     }
     
     /**
-        Escape HTML, render links/underline/italics (carefully)
-        @param data: String to entity encode
+     *  Escape HTML, render links/underline/italics (carefully)
+     *  @param data: String to entity encode
+     *  @return: Encoded string
      */
     function entityEncode( data ) {
         // TODO: In the future, remove the &lt;/&gt; reverting thing, it's due to Flash chat's pre-escaping before sending.
@@ -190,10 +195,11 @@
     }
     
     /**
-        Add color to a username based on the UID in the message or font tags
-        @param data: Username to be colored
-        @param uid: UID to use for determining default color
-        @param isAction: boolean indicating if the message is an action. May need to be reworked once Flash chat is dropped to better coincide with IRC specs
+     *  Add color to a username based on the UID in the message or font tags
+     *  @param data: Username to be colored
+     *  @param uid: UID to use for determining default color
+     *  @param isAction: boolean indicating if the message is an action. May need to be reworked once Flash chat is dropped to better coincide with IRC specs
+     *  @return: Formatted username HTML
      */
     function colorizeUser ( data, uid, isAction ) {
         var colors = ["#f39191", "#f39691", "#f39b91", "#f39f91", "#f3a491", "#f3a891", "#f3ad91", "#f3b191", "#f3b691", "#f3ba91", "#f3bf91", "#f3c491", "#f3c891", "#f3cd91", "#f3d191", "#f3d691", "#f3da91", "#f3df91", "#f3e491", "#f3e891", "#f3ed91", "#f3f191", "#f0f391", "#ebf391", "#e7f391", "#e2f391", "#ddf391", "#d9f391", "#d4f391", "#d0f391", "#cbf391", "#c7f391", "#c2f391", "#bef391", "#b9f391", "#b4f391", "#b0f391", "#abf391", "#a7f391", "#a2f391", "#9ef391", "#99f391", "#94f391", "#91f393", "#91f398", "#91f39c", "#91f3a1", "#91f3a5", "#91f3aa", "#91f3ae", "#91f3b3", "#91f3b7", "#91f3bc", "#f391ba", "#f391b6", "#f391b1", "#f391ad", "#f391a8", "#f391a4", "#f3919f", "#f3919b", "#f39196"];
@@ -206,8 +212,9 @@
     }
 
     /**
-        Format the current time to a timestamp
-        @param time: Timestamp at beginning of message
+     *  Format the current time to a Flash-chat compatible timestamp
+     *  @param time: Timestamp at beginning of message
+     *  @return: Formatted timestamp
      */
     function formatTime( string ) {
         // Construct date from string, get the time
@@ -218,9 +225,9 @@
     }
 
     /**
-        Display a message in the chat window
-        @param raw_msg: The contents of the privmsg to be posted
-        @param isHistory: If true, it should be pushed at the top, as it is an older message (and may be coming in late)
+     *  Display a message in the chat window
+     *  @param raw_msg: The contents of the privmsg to be posted
+     *  @param isHistory: If true, it should be pushed at the top, as it is an older message (and may be coming in late)
      */
     function postMessage( raw_msg, isHistory ) {
         var parts, prefix, uid, name, time, isAction, message, classes='';
