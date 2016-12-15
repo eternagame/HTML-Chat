@@ -1,13 +1,11 @@
-/* Scrollbar customization */
+/************ Scrollbar customization ************/
 .mCSB_inside>.mCSB_container {
     margin-right: 10px;
 }
-
 .mCSB_inside>.mCSB_scrollTools_vertical>.mCSB_draggerContainer>.mCSB_dragger {
     width: 2px;
     right: 2px;
 }
-
 .mCSB_inside>.mCSB_scrollTools_vertical>.mCSB_draggerContainer>.mCSB_draggerRail {
     margin-right: 1px;
 }
@@ -19,7 +17,8 @@
 #chat-tabs > .ui-tabs-panel > .ps-scrollbar-y-rail > .ps-scrollbar-y {
     background-color: #3E566A;
 }
-/* Chat Tabs Nav */
+
+/************ Chat Tabs Nav ************/
 #chat.ui-tabs, #chat > .ui-tabs-nav {
     background: none;
     border: none;
@@ -31,31 +30,40 @@
     border-radius: 0;
     margin: 0;
 }
+#chat > .ui-tabs-nav > li > a:focus {
+    outline: none;
+}
 #chat > .ui-tabs-nav > li:hover:not(.ui-state-active) {
     background-color: rgba(255, 255, 255, 0.13);
 }
 #chat > .ui-tabs-nav > li > a {
-    padding: .25em 1em;
-}
-#chat > .ui-tabs-nav > li:hover > a {
+    position: relative;
+    top: 1px;
+    padding: .4em 1.25em;
+    font-size: 12px;
     color: #FFF;
 }
 #chat > .ui-tabs-nav > .ui-state-active {
     background-color: rgba(255, 255, 255, 0.2);
     padding: 0;
 }
-/* Chat Windows */
+
+/************* Chat Tabs *************/
 #chat-tabs > .ui-tabs-panel {
-    color: #FFF;
-    border-radius: 0;
     padding: .4em .5em;
     position: relative;
     height: Calc(100% - 55px);
 }
-/* Chat Messages */
+#chat-tabs > .ui-tabs-panel ul {
+    margin: 0px;
+    padding: 0px;
+}
+
+
+/************ Chat Messages ************/
 .chat-message {
     color: #C0DCE7;
-    font-size: 0.9em;
+    display: block;
 }
 .chat-message-system {
     font-style: italic;
@@ -80,29 +88,34 @@
     white-space: nowrap;
     font-size: 0.8em;
 }
-/* Chat User List */
+
+/************ Chat User List ************/
+.chat-userlist-user {
+    display: block;
+}
 .chat-userlist-user > a {
-    color: #fff;
+    color: #FFF;
     text-decoration: none;
     font-weight: bold;
 }
-/* Chat input */
+
+/************* Chat input *************/
 #chat-input {
     position: absolute;
     bottom: 0px;
     width: Calc(100% - 28px);
-    height: 20px;
+    height: 16px;
+    resize: none;
     margin: 10px;
     border-radius: 2px;
-    resize: none;
+    font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim;
 }
 /* To determine input size */
 #chat-input-hidden {
-    display: none;
+    visibility: hidden;
     white-space: pre-wrap;
     word-wrap: break-word;
-    width: Calc(100% - 26px);
-    min-height: 20px;
-    padding: 3px;
+    width: Calc(100% - 28px);
+    min-height: 16px;
     border: 1px;
 }

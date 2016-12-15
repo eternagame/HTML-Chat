@@ -4,59 +4,14 @@
 <head>
     <!-- Responsive on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- jQuery, jQuery UI, and jQuery tabs versions used on Eterna -->
-    <script type="text/javascript" src="js/lib/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="js/lib/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="js/lib/jquery.ui.tabs.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/lib/jquery-ui.css">
-    
     <!-- Base Eterna CSS, limited to CSS required for rendering the page properly and classes directly used -->
     <link rel="stylesheet" type="text/css" href="css/lib/eterna.css">
-    
-    <!-- Custom Scrollbar -->
-    <script type="text/javascript" src="js/lib/jquery.mCustomScrollbar.concat.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/lib/jquery.mCustomScrollbar.min.css">
-    
-    <!-- WebSocket Communication -->
-    <script type="text/javascript" src="js/lib/sockjs.min.js"></script>
-    
-    <!-- Polyfills -->
-    <script type="text/javascript" src="js/polyfill.js"></script>
-    
     <!-- Temporary script to define current user & channel for testing (this should probably be replaced with a better solution) -->
     <script type="text/javascript" src="js/development-user.js"></script>
-    
-    <!-- Actual Chat Script & Style -->
-    <script type="text/javascript" src="js/chat.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/chat.css">
 </head>
 
 <body style="min-width: auto;">
-    <div id="chat-frame" style="height: calc(100% - 20px); width: calc(100% - 20px); padding: 10px;">
-        <div id="chat" style="height: 100%;">
-            <ul>
-                <li><a href="#chat-tab-global">Chat</a></li>
-                <li><a href="#chat-tab-users">Users (<span id="chat-users-online">0</span>)</a></li>
-            </ul>
-            <div id="chat-content" style="border: rgba(255, 255, 255, 0.2) solid 3px; height: Calc(100% - 34px); position: relative;">
-                <div id="chat-tabs" style="height: 100%; display: none;">
-                    <div id="chat-tab-global" style="word-wrap: break-word; white-space: normal;">
-                        <ul id="global-chat-historical"></ul>
-                        <ul id="global-chat-messages"></ul>
-                    </div>
-                    <div id="chat-tab-users">
-                        <ul id="chat-users-list"></ul>
-                    </div>
-                </div>
-                <div id="chat-loading" style="position: relative; top: Calc(50% - 55px); color: #FFF; text-align: center;">
-                    <div class="small-loading centered" style="margin-bottom: 5px"></div>
-                    Connecting...
-                </div>
-                <textarea id="chat-input" disabled></textarea>
-            </div>
-        </div>
-    </div>
+    <iframe id="chat" src="chat.html" style="height: calc(100% - 23px); width: calc(100% - 20px); padding: 10px; border:none;"></iframe>
 </body>
 
 </html>
