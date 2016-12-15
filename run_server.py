@@ -7,13 +7,12 @@ class Root:
         pass
 
     @cherrypy.expose()
-    def old(self):
+    def index(self, **params):
         return load_html('index.html')
 
-    @cherrypy.expose(['index'])
-    def new(self, **params):
-        html = load_html('index.html')
-        #html = html.replace('js/demo_old.js', 'js/demo_new.js')
+    @cherrypy.expose(['chat.html'])
+    def chat(self):
+        html = load_html('chat.html')
         return html
 
 

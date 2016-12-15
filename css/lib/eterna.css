@@ -1,4 +1,4 @@
-/* Eterna base CSS, limited to CSS required for rendering the page properly and classes directly used */
+/* Eterna base CSS, limited to CSS required for rendering the page properly */
 * {
     margin: 0px;
     padding: 0px;
@@ -13,20 +13,4 @@ body {
     width: auto !important;
     height: 100%;
     background-color: #011e46;
-    color: white;
-    font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim;
-    font-size: 14px;
-    font-weight: 300;
-}
-
-.small-loading {
-  background-image: url("https://s3.amazonaws.com/eterna/icon_img/loading.gif");
-  background-repeat: no-repeat;
-  width: 20px;
-  height: 20px;
-}
-
-.centered {
-  margin-left: auto;
-  margin-right: auto;
 }
