@@ -432,7 +432,7 @@ sock.onmessage = function (e) {
                 if (nick == NICK) {
                     console.log("Joined " + cmd.params[0]);
                     console.log("Loading history...");
-                    $.get( "http://irc.eternagame.org/history.html", function( data ) {
+                    $.get( "http://irc.eternagame.org:8002/history.html", function( data ) {
                         messages = data.split("\n");
                         for (var j=0; j<messages.length; j++) {
                             postMessage(messages[j], true);
