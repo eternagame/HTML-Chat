@@ -171,8 +171,8 @@ function unEntityEncode( data ) {
  */
 function encodedRegex( search ) {
     var mod= '';
-    if (search.global) {mod += "m";}
-    if (search.multiline) {mod += "g";}
+    if (search.global) {mod += "g";}
+    if (search.multiline) {mod += "m";}
     if (search.ignoreCase) {mod += "i";}
     
     return new RegExp(search.source.replace(/&/g, "&amp;")
