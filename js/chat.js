@@ -433,7 +433,7 @@ sock.onmessage = function (e) {
                     console.log("Joined " + cmd.params[0]);
                     console.log("Loading history...");
                     $.get( "http://irc.eternagame.org:8082/history.html", function( data ) {
-                        messages = data.split("\n");
+                        messages = data.trim().split("\n");
                         for (var j=0; j<messages.length; j++) {
                             postMessage(messages[j], true);
                         }
