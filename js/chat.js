@@ -315,8 +315,8 @@ $( document ).ready(function() {
         }
     });
     // Fill out max length of message
-    // TODO: This may change with the new IRC server, check into it
-    $("#chat-input").prop("maxLength", 460 - UID.length - USERNAME.length);
+    // Breakdown - IRC server max: 324, timestamp: 28, underscored: 3, max length of username formatting (for /me, discounting the 3 characters for the command): 33, username: dynamic, UID: dynamic
+    $("#chat-input").prop("maxLength", 260 - UID.length - USERNAME.length);
 
     // Auto-resize chat input (adapted from https://www.impressivewebs.com/textarea-auto-resize/)
     // Set up input and duplicated div
