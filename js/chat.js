@@ -352,7 +352,8 @@ $( document ).ready(function() {
                 
                 // Chat commands
                 if (message.startsWith("/")) {
-                    var command = message.match(/^\/(\w+)/)[1];
+                    var post = false;
+                    var command = message.match(/^\/([^ ]+)/)[1];
                     try {
                         var params = message.match(/^\/\w+ (.+)/)[1];
                     } catch(e){}
@@ -360,44 +361,51 @@ $( document ).ready(function() {
                         case "help":
                             switch(params) {
                                 case "me":
-                                    postMessage("Posts message formatted as an action")
+                                    postMessage("/me: Posts message formatted as an action")
                                     postMessage("Usage: /me <message>");
                                     postMessage("Example: /me laughs");
+                                    break;
                                 case "ignore":
-                                    postMessage("Don't show messages from a particular user. Show currently ignored users with /ignore-list. Unignore user with /unignore.")
+                                    postMessage("/ignore: Don't show messages from a particular user. Show currently ignored users with /ignore-list. Unignore user with /unignore.")
                                     postMessage("Usage: /ignore <username>");
                                     postMessage("Example: /ignore player1");
+                                    break;
                                 case "ignore-list":
-                                    postMessage("Shows currently ignored users. Ignore a user with /ignore. Unignore user with /unignore.")
+                                    postMessage("/ignore-list: Shows currently ignored users. Ignore a user with /ignore. Unignore user with /unignore.")
                                     postMessage("Usage: /ignore-list");
                                     postMessage("Example: /ignore-list");
+                                    break;
                                 case "unignore":
-                                    postMessage("Shows messages from a user after being igored. Unignores all users when username is *. Ignore a user with /ignore. Show currently ignored users with /ignore-list.")
+                                    postMessage("/unignore: Shows messages from a user after being igored. Unignores all users when username is *. Ignore a user with /ignore. Show currently ignored users with /ignore-list.")
                                     postMessage("Usage: /unignore <username>");
                                     postMessage("Example: /unignore player1");
                                     postMessage("Example: /unignore *");
+                                    break;
                                 default:
-                                    postMessage("Available commands: me, ignore, unignore");
+                                    postMessage("Available commands: help, me, ignore, unignore");
                                     postMessage("Type /help <command> for information on individual commands");
                                     postMessage("Example: /help me");
                                     postMessage("Additional commands available via LinkBot (see the <a href='http://eternawiki.org/wiki/index.php5/HELP'>wiki</a> for more information)");
+                                    break;
                             }
+                            break;
                         case "me":
+                            if (!params){ postMessage("Please include command parameters. Type /help me for usage instructions"); break; }
                             isAction = true;
+                            post = true;
                             message = params;
-                            if (message == params){ postMessage("Please include command parameters. Type /help me for usage instructions"); return false; }
                             break;
                         case "ignore":
-                            if (message == params){ postMessage("Please include command parameters. Type /help me for more usage instructions"); return false; }
+                            if (!params){ postMessage("Please include command parameters. Type /help ignore for more usage instructions"); break; }
                             ignoredUsers.push(params);
                             localStorage.chatIgnored = ignoredUsers;
                             postMessage("Ignored " + params);
-                            post = false;
                             break;
                         case "ignore-list":
                             postMessage("Currently ignored users: " + ignoredUsers.join(", "));
+                            break;
                         case "unignore":
-                            if (message == params){ postMessage("Please include command parameters. Type /help me for more usage instructions"); return false; }
+                            if (!params){ postMessage("Please include command parameters. Type /help unignore for more usage instructions"); break; }
                             if (params == "*") {
                                 ignoredUsers = [];
                                 postMessage("Unignored all");
@@ -406,11 +414,9 @@ $( document ).ready(function() {
                                 postMessage("Unignored " + params);
                             }
                             localStorage.chatIgnored = ignoredUsers;
-                            post = false;
                             break;
                         default:
                             postMessage("Invalid command. Type /help for more available commands");
-                            post = false;
                             break;
                     }
                 }
