@@ -355,17 +355,47 @@ $( document ).ready(function() {
                     var command = message.match(/^\/(\w+)/)[1];
                     var params = message.match(/^\/\w+ (.+)/)[1];
                     switch (command) {
+                        case "help":
+                            switch(params) {
+                                case "me":
+                                    postMessage("Posts message formatted as an action")
+                                    postMessage("Usage: /me <message>");
+                                    postMessage("Example: /me laughs");
+                                case "ignore":
+                                    postMessage("Don't show messages from a particular user. Show currently ignored users with /ignore-list. Unignore user with /unignore.")
+                                    postMessage("Usage: /ignore <username>");
+                                    postMessage("Example: /ignore player1");
+                                case "ignore-list":
+                                    postMessage("Shows currently ignored users. Ignore a user with /ignore. Unignore user with /unignore.")
+                                    postMessage("Usage: /ignore-list");
+                                    postMessage("Example: /ignore-list");
+                                case "unignore":
+                                    postMessage("Shows messages from a user after being igored. Unignores all users when username is *. Ignore a user with /ignore. Show currently ignored users with /ignore-list.")
+                                    postMessage("Usage: /unignore <username>");
+                                    postMessage("Example: /unignore player1");
+                                    postMessage("Example: /unignore *");
+                                default:
+                                    postMessage("Available commands: me, ignore, unignore");
+                                    postMessage("Type /help <command> for information on individual commands");
+                                    postMessage("Example: /help me");
+                                    postMessage("Additional commands available via LinkBot (see the <a href='http://eternawiki.org/wiki/index.php5/HELP'>wiki</a> for more information)");
+                            }
                         case "me":
                             isAction = true;
                             message = params;
+                            if (message == params){ postMessage("Please include command parameters. Type /help me for usage instructions"); return false; }
                             break;
                         case "ignore":
+                            if (message == params){ postMessage("Please include command parameters. Type /help me for more usage instructions"); return false; }
                             ignoredUsers.push(params);
                             localStorage.chatIgnored = ignoredUsers;
                             postMessage("Ignored " + params);
                             post = false;
                             break;
+                        case "ignore-list:
+                            postMessage("Currently ignored users: " + ignoredUsers.join(", ");
                         case "unignore":
+                            if (message == params){ postMessage("Please include command parameters. Type /help me for more usage instructions"); return false; }
                             if (params == "*") {
                                 ignoredUsers = [];
                                 postMessage("Unignored all");
@@ -377,7 +407,7 @@ $( document ).ready(function() {
                             post = false;
                             break;
                         default:
-                            postMessage("Invalid Command");
+                            postMessage("Invalid command. Type /help for more available commands");
                             post = false;
                             break;
                     }
@@ -464,13 +494,6 @@ sock.onmessage = function (e) {
                 // Signifies end of names, don't think this is needed?
                 break;
             case "NOTICE":
-                // Check if the user has hit the rate limit, then go through and post
-                if (cmd.origin=="irc.eternagame.org" && cmd.params[1].startsWith("You are sending too many messages) {
-                    $("#chat-input").prop('disabled', true);
-                    window.setTimeout(function(){
-                        $("#chat-input").prop('disabled', false);
-                    }, cmd.params[1].match(/You cannot send any more messages for (\d+\.\d+) seconds/)[1]*1000);
-                }
             case "PRIVMSG":
                 postMessage(cmd.params[1], false);
                 break;
@@ -498,7 +521,7 @@ sock.onmessage = function (e) {
             case "KICK":
                 if (cmd.params[1] == NICK) {
                     $("#chat-input").prop('disabled', true);
-                    postMessage("You have been kicked from chat");
+                    postMessage("You have been kicked from chat" + (params[2] ? " - " + params[2] : ''));
                 } else {
                     removeUser(cmd.params[1]);
                 }
