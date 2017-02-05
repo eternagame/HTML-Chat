@@ -25,8 +25,7 @@ ignoredUsers = localStorage.chatIgnored || [];
 // Chat should start automaticcally scrolling as new messages come in
 var autoScroll = true;
 
-// Connect to server NOTE: Using test server, update when live
-var sock = new SockJS("http://45.55.234.16");
+var sock = new SockJS("http://irc.eternagame.org:8081");
 
 /**
  *  Parse messages sent by server
@@ -172,8 +171,8 @@ function unEntityEncode( data ) {
  */
 function encodedRegex( search ) {
     var mod= '';
-    if (search.global) {mod += "m";}
-    if (search.multiline) {mod += "g";}
+    if (search.global) {mod += "g";}
+    if (search.multiline) {mod += "m";}
     if (search.ignoreCase) {mod += "i";}
     
     return new RegExp(search.source.replace(/&/g, "&amp;")
@@ -316,8 +315,8 @@ $( document ).ready(function() {
         }
     });
     // Fill out max length of message
-    // TODO: This may change with the new IRC server, check into it
-    $("#chat-input").prop("maxLength", 460 - UID.length - USERNAME.length);
+    // Breakdown - IRC server max: 324, timestamp: 28, underscored: 3, max length of username formatting (for /me, discounting the 3 characters for the command): 33, username: dynamic, UID: dynamic
+    $("#chat-input").prop("maxLength", 260 - UID.length - USERNAME.length);
 
     // Auto-resize chat input (adapted from https://www.impressivewebs.com/textarea-auto-resize/)
     // Set up input and duplicated div
@@ -386,6 +385,8 @@ $( document ).ready(function() {
                 }
                 
                 if (post) {
+                    // So Flash chat doesn't break
+                    message = message.replace("<", "&lt;").replace(">", "&gt;");
                     // Format time to work with Flash chat
                     // TODO: Could use a refactor, might be able to remove this necessity after Flash is removed)
                     if (isAction) {
@@ -430,12 +431,19 @@ sock.onmessage = function (e) {
                 var nick = cmd.origin.split("!")[0];
                 if (nick == NICK) {
                     console.log("Joined " + cmd.params[0]);
-                    $("#chat-loading").hide();
-                    $("#chat-tabs").show();
-                    $("#chat-tabs").children().mCustomScrollbar("scrollTo","bottom");
-                    if (USERNAME !== "Anonymous") {
-                        $("#chat-input").prop('disabled', false);
-                    }
+                    console.log("Loading history...");
+                    $.get( "http://irc.eternagame.org:8082/history.html", function( data ) {
+                        messages = data.trim().split("\n");
+                        for (var j=0; j<messages.length; j++) {
+                            postMessage(messages[j], true);
+                        }
+                        $("#chat-loading").hide();
+                        $("#chat-tabs").show();
+                        $("#chat-tabs").children().mCustomScrollbar("scrollTo","bottom");
+                        if (USERNAME !== "Anonymous") {
+                            $("#chat-input").prop('disabled', false);
+                        }
+                    });
                 } else {
                     addUser(cmd.origin.split("!")[0]);
                 }
@@ -459,7 +467,7 @@ sock.onmessage = function (e) {
                 // Signifies end of names, don't think this is needed?
                 break;
             case "PRIVMSG":
-                postMessage(cmd.params[1], cmd.origin == "history!history@0.0.0.0");
+                postMessage(cmd.params[1], false);
                 break;
             case "MODE":
                 // Check if user has been banned, if so disable input and notify in chat
