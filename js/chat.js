@@ -393,7 +393,7 @@ $( document ).ready(function() {
                             post = false;
                             break;
                         case "ignore-list":
-                            postMessage("Currently ignored users: " + ignoredUsers.join(", ");
+                            postMessage("Currently ignored users: " + ignoredUsers.join(", "));
                         case "unignore":
                             if (message == params){ postMessage("Please include command parameters. Type /help me for more usage instructions"); return false; }
                             if (params == "*") {
