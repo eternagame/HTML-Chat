@@ -255,7 +255,6 @@ function formatTime( string ) {
  *  @param isHistory: If true, it should be pushed at the top, as it is an older message (and may be coming in late)
  */
 function postMessage( raw_msg, isHistory ) {
-    console.log(raw_msg);
     var parts, prefix, uid, name, time, isAction, message, classes='';
     // In a readable format, the regex looks like: ((UID)_(Display Name)_(Date/Time)_)?(Message)
     // Time format: ShortDay ShortMonth Date HH:MM:SS Year UTC
@@ -409,9 +408,6 @@ sock.onmessage = function (e) {
     for (var i=0; i<commands.length; i++) {
         var cmd = commands[i];
         switch(cmd.command) {
-            case "NOTICE":
-                console.log("Connection established");
-                break;
             case "PING":
                 sock.send("PONG :0.0.0.0\r\n");
                 break;
@@ -433,6 +429,7 @@ sock.onmessage = function (e) {
                     console.log("Joined " + cmd.params[0]);
                     console.log("Loading history...");
                     $.get( "http://irc.eternagame.org:8082/history.html", function( data ) {
+                        console.log("History recieved");
                         messages = data.trim().split("\n");
                         for (var j=0; j<messages.length; j++) {
                             postMessage(messages[j], true);
@@ -466,6 +463,14 @@ sock.onmessage = function (e) {
             case "366":
                 // Signifies end of names, don't think this is needed?
                 break;
+            case "NOTICE":
+                // Check if the user has hit the rate limit, then go through and post
+                if (cmd.origin=="irc.eternagame.org" && cmd.params[1].startsWith("You are sending too many messages) {
+                    $("#chat-input").prop('disabled', true);
+                    window.setTimeout(function(){
+                        $("#chat-input").prop('disabled', false);
+                    }, cmd.params[1].match(/You cannot send any more messages for (\d+\.\d+) seconds/)[1]*1000);
+                }
             case "PRIVMSG":
                 postMessage(cmd.params[1], false);
                 break;
