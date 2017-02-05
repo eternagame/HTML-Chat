@@ -392,7 +392,7 @@ $( document ).ready(function() {
                             postMessage("Ignored " + params);
                             post = false;
                             break;
-                        case "ignore-list:
+                        case "ignore-list":
                             postMessage("Currently ignored users: " + ignoredUsers.join(", ");
                         case "unignore":
                             if (message == params){ postMessage("Please include command parameters. Type /help me for more usage instructions"); return false; }
