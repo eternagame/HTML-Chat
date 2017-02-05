@@ -353,7 +353,9 @@ $( document ).ready(function() {
                 // Chat commands
                 if (message.startsWith("/")) {
                     var command = message.match(/^\/(\w+)/)[1];
-                    var params = message.match(/^\/\w+ (.+)/)[1];
+                    try {
+                        var params = message.match(/^\/\w+ (.+)/)[1];
+                    }
                     switch (command) {
                         case "help":
                             switch(params) {
