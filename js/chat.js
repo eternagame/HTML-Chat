@@ -355,7 +355,7 @@ $( document ).ready(function() {
                     var command = message.match(/^\/(\w+)/)[1];
                     try {
                         var params = message.match(/^\/\w+ (.+)/)[1];
-                    }
+                    } catch(e){}
                     switch (command) {
                         case "help":
                             switch(params) {
