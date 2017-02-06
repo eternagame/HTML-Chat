@@ -530,7 +530,7 @@ sock.onmessage = function (e) {
             case "KICK":
                 if (cmd.params[1] == NICK) {
                     $("#chat-input").prop('disabled', true);
-                    postMessage("You have been kicked from chat" + (params[2] ? " - " + params[2] : ''));
+                    postMessage("You have been kicked from chat" + (cmd.params[2] ? " - " + cmd.params[2] : ''));
                 } else {
                     removeUser(cmd.params[1]);
                 }
