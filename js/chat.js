@@ -207,7 +207,7 @@ function entityEncode( data ) {
                     }) + '">' +  contents + '</a>';
                })
                // Render a link from anything starting with http/https/www.
-               .replace(encodedRegex(/(?:(https?:\/\/www.)|(https?:\/\/)|(www.))([^ ]+)/g), function(match, h1, h2, h3, url) {
+               .replace(encodedRegex(/(?:(https?:\/\/www\.)|(https?:\/\/)|(www\.))([^ ]+)/g), function(match, h1, h2, h3, url) {
                     // Unencode url, reencode it properly, and put it in an anchor
                     return '<a target="_blank" style="color:#FFF;" href="' + unEntityEncode( (h1||h2||"http://"+h3) + url ).replace(/[\W-]/g, function(match) {
                         return "&#x" + match.charCodeAt(0).toString(16) + ";";
@@ -294,10 +294,11 @@ $( document ).ready(function() {
     // Initialize tabs
     $( "#chat" ).tabs({
         // If we're automatically scrolling, scroll to the bottom. NOTE: This is because Eterna uses an old version of jQuery UI, it's now "activate" (needs to be updated of jQuery UI is updated)
-        show: function( event, ui ) {
+        activate: function( event, ui ) {
+            console.log(ui);
             if (ui) {
-                if (ui.panel.id == "chat-tab-global" && autoScroll) {
-                    $(ui.panel).mCustomScrollbar("scrollTo","bottom");
+                if (ui.newPanel[0].id == "chat-tab-global" && autoScroll) {
+                    $(ui.newPanel).mCustomScrollbar("scrollTo","bottom");
                 }
             }
         }
@@ -314,8 +315,8 @@ $( document ).ready(function() {
         }
     });
     // Fill out max length of message
-    // Breakdown - IRC server max: 324, timestamp: 28, underscored: 3, max length of username formatting (for /me, discounting the 3 characters for the command): 33, username: dynamic, UID: dynamic
-    $("#chat-input").prop("maxLength", 260 - UID.length - USERNAME.length);
+    // Breakdown - IRC server max: 324, timestamp: 28, underscores: 3, max length of username formatting (for /me, discounting the 3 characters for the command): 40, username: dynamic, UID: dynamic
+    $("#chat-input").prop("maxLength", 253 - UID.toString().length - USERNAME.length);
 
     // Auto-resize chat input (adapted from https://www.impressivewebs.com/textarea-auto-resize/)
     // Set up input and duplicated div
