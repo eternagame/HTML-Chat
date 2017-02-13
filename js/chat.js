@@ -424,7 +424,7 @@ $( document ).ready(function() {
                 
                 if (post) {
                     // So Flash chat doesn't break
-                    message = message.replace("<", "&lt;").replace(">", "&gt;");
+                    message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     // Format time to work with Flash chat
                     // TODO: Could use a refactor, might be able to remove this necessity after Flash is removed)
                     if (isAction) {
