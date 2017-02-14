@@ -88,7 +88,7 @@ function addUser( username ) {
     };
     
     // Parse automatic suffix
-    portions = username.match(/(?:^(.+)(?:__(\d+)\^[1-5]))|(.+)/);
+    portions = username.match(/(?:^(.+)(?:__(\d+)\^\d+))|(.+)/);
     // If userid is included, get it, if it's an IRC regular, get their userID from the list
     uid = portions[2]|| ircIds[username] || 0;
     // Get actual username
@@ -130,7 +130,7 @@ function addUser( username ) {
 function removeUser( username ) {
     var usernamesToIgnore = ["Anonymous", "history", "ChatBot"];
 
-    username = username.match(/(?:^(.+)(?:__(\d+)\^[1-5]))|(.+)/);
+    username = username.match(/(?:^(.+)(?:__(\d+)\^\d+))|(.+)/);
     // Get actual username
     username = username[1] || username[3];
     // Remove @ from Op's username
