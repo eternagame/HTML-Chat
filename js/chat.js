@@ -20,7 +20,7 @@ try {
     console.warn("Local storage not available (either unsupported or permission denied) - user preferences will not be saved");
     window.localStorage = {}
 }
-ignoredUsers = localStorage.chatIgnored || [];
+var ignoredUsers = localStorage.chatIgnored || [];
 
 // Chat should start automaticcally scrolling as new messages come in
 var autoScroll = true;
