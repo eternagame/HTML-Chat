@@ -27,7 +27,8 @@ QUICKSTART_CONFIG = {
         "tools.staticdir.root": MEDIA_DIR,
         "tools.etags.on": True,
         "tools.etags.autotags": True,
-        "tools.gzip.on": True
+        "tools.gzip.on": True,
+        "tools.gzip.mime_types": ['text/*', 'application/*']
     },
     "/css": {
         "tools.staticdir.on": True,
@@ -36,10 +37,6 @@ QUICKSTART_CONFIG = {
     "/js": {
         "tools.staticdir.on": True,
         "tools.staticdir.dir": "js"
-    },
-    "/data": {
-        "tools.staticdir.on": True,
-        "tools.staticdir.dir": "data"
     },
 }
 

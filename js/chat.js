@@ -5,8 +5,8 @@ var CHAT_CHANNEL = window.parent.CHAT_CHANNEL;
 var USERNAME = Application.CURRENT_USER ? Application.CURRENT_USER.name : "Anonymous";
 // User ID, if not logged in "0"
 var UID = Application.CURRENT_USER ? Application.CURRENT_USER.uid : 0;
-// Replace invalid IRC nick characters with "-" (or _ if first char), add UID and initial connection number
-var NICK = USERNAME.replace(/^[^a-zA-Z\x5B-\x60\x7B-\x7D]/, "_").replace(/[^a-zA-Z\x5B-\x60\x7B-\x7D\d-]/g, "-") + "__" + UID + "^1";
+// Replace invalid IRC nick characters with "-" (or _ if first char), limit its length (max is 32, minux 2 for __ and minus a max of 3 for ^##, then subtract the UID length), and add UID and initial connection number
+var NICK = USERNAME.replace(/^[^a-zA-Z\x5B-\x60\x7B-\x7D]/, "_").replace(/[^a-zA-Z\x5B-\x60\x7B-\x7D\d-]/g, "-").substr(0, 27-String(UID).length) + "__" + UID + "^1";
 // If no channel has been specified via development-user, connect to #global
 var CHANNEL = CHAT_CHANNEL || "global";
 
