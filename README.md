@@ -10,7 +10,7 @@ This code makes use of the [webpack](https://webpack.js.org/) module bundler. In
 * Install [NodeJS and npm](https://nodejs.org/en/download/)
 * Open a command prompt/terminal, cd into HTML-Chat, and run `npm install`
 * To start a development server, run `npm start`
-* Open a browser and navigate to localhost:9000, then enter your username and password, then optionally a channel if you don't want to post in the main chat (ie if your testing could eb considered disruptive or cause other clients to break)
+* Open a browser and navigate to localhost:9000, then enter your username and password (or leave blank to use without logging in), then optionally a channel if you don't want to post in the main chat (ie if your testing could eb considered disruptive or cause other clients to break)
 
 To create a one-off set of files with webpack, run `npm run build:dev` for the development build or `npm run build:prod` for the production configuration
 
