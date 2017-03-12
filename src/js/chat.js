@@ -1,14 +1,31 @@
-var Application = window.parent.Application;
-var CHAT_CHANNEL = window.parent.CHAT_CHANNEL;
+// jQuery and jQuery-ui
+import $ from 'jquery';
+import 'jquery-ui/ui/widgets/tabs';
+import 'jquery-ui/themes/base/core.css'
+import 'jquery-ui/themes/base/tabs.css'
+
+// mCustomScrollbar
+import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js';
+import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css';
+
+// SockJS
+import SockJS from 'sockjs-client';
+
+// Our assets
+import './polyfills';
+import {CHAT_CHANNEL, CURRENT_USER} from './define-user';
+import '../css/chat.css';
+
+console.log(5);
 
 // Username, if not logged in "Annonymous"
-var USERNAME = Application.CURRENT_USER ? Application.CURRENT_USER.name : "Anonymous";
+var USERNAME = CURRENT_USER ? CURRENT_USER.name : "Anonymous";
 // User ID, if not logged in "0"
-var UID = Application.CURRENT_USER ? Application.CURRENT_USER.uid : 0;
+var UID = CURRENT_USER ? CURRENT_USER.uid : 0;
 // Replace invalid IRC nick characters with "-" (or _ if first char), limit its length (max is 32, minux 2 for __ and minus a max of 3 for ^##, then subtract the UID length), and add UID and initial connection number
 var NICK = USERNAME.replace(/^[^a-zA-Z\x5B-\x60\x7B-\x7D]/, "_").replace(/[^a-zA-Z\x5B-\x60\x7B-\x7D\d-]/g, "-").substr(0, 27-String(UID).length) + "__" + UID + "^1";
 // If no channel has been specified via development-user, connect to #global
-var CHANNEL = CHAT_CHANNEL || "global";
+var CHANNEL = CHAT_CHANNEL;
 
 // Online users
 var onlineUsers = [];
@@ -347,7 +364,7 @@ $( document ).ready(function() {
         // Hit enter in chat
         if (e.which == 13) {
             // No posting as annon or if nothing has been actually posted
-            if (USERNAME !== "Anonymous" && $('#chat-input').val() !== '') {
+            if (USERNAME !== "Anonymous" && $('#chat-input').val().trim() !== '') {
                 var message = $('#chat-input').val();
                 var post = true;
                 
@@ -469,7 +486,7 @@ sock.onmessage = function (e) {
                     console.log("Loading history...");
                     $.get( "http://irc.eternagame.org:8082/history.html", function( data ) {
                         console.log("History recieved");
-                        messages = data.trim().split("\n");
+                        var messages = data.trim().split("\n");
                         for (var j=0; j<messages.length; j++) {
                             postMessage(messages[j], true);
                         }

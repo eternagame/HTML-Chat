@@ -1,0 +1,42 @@
+/************ jQuery UI Tabs Customizations ************/
+
+/************ Chat Tabs Nav ************/
+#chat.ui-tabs, #chat > .ui-tabs-nav {
+    background: none;
+    border: none;
+    padding: 0;
+}
+#chat > .ui-tabs-nav > li {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.07);
+    border-radius: 0;
+    margin: 0;
+}
+#chat > .ui-tabs-nav > li > a:focus {
+    outline: none;
+}
+#chat > .ui-tabs-nav > li:hover:not(.ui-state-active) {
+    background-color: rgba(255, 255, 255, 0.13);
+}
+#chat > .ui-tabs-nav > li > a {
+    position: relative;
+    top: 1px;
+    padding: .4em 1.25em;
+    font-size: 12px;
+    color: #FFF;
+}
+#chat > .ui-tabs-nav > .ui-state-active {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0;
+}
+
+/************* Chat Tabs *************/
+#chat-tabs > .ui-tabs-panel {
+    padding: .4em .5em;
+    position: relative;
+    height: Calc(100% - 55px);
+}
+#chat-tabs > .ui-tabs-panel ul {
+    margin: 0px;
+    padding: 0px;
+}

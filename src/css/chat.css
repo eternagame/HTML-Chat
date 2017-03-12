@@ -1,0 +1,64 @@
+/************ Other files ************/
+
+@import 'scrollbar.css';
+@import 'tabs.css';
+
+/************ Chat Messages ************/
+.chat-message {
+    color: #C0DCE7;
+    display: block;
+}
+.chat-message-system {
+    font-style: italic;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.chat-message-action {
+    font-style: italic;
+}
+.chat-message-user {
+    font-weight: bold;
+}
+.chat-message-action > a > .chat-message-user {
+    color: #C0DCE7;
+}
+.chat-message-user-link {
+    text-decoration: none;
+}
+.chat-message-time {
+    color: #627587;
+    white-space: nowrap;
+    font-size: 0.8em;
+}
+
+/************ Chat User List ************/
+.chat-userlist-user {
+    display: block;
+}
+.chat-userlist-user > a {
+    color: #FFF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/************* Chat input *************/
+#chat-input {
+    position: absolute;
+    bottom: 0px;
+    width: Calc(100% - 28px);
+    height: 16px;
+    resize: none;
+    margin: 10px;
+    border-radius: 2px;
+    font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim;
+}
+/* To determine input size */
+#chat-input-hidden {
+    visibility: hidden;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    width: Calc(100% - 28px);
+    min-height: 16px;
+    border: 1px;
+}

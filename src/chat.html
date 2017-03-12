@@ -2,24 +2,8 @@
 <html style="height: 100%; overflow-y: hidden;">
 
 <head>
-    <!-- jQuery and jQuery UI -->
-    <script type="text/javascript" src="js/lib/jquery/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="js/lib/jquery/jquery-ui.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/lib/jquery-ui.min.css">
-    
-    <!-- Custom Scrollbar -->
-    <script type="text/javascript" src="js/lib/jquery.mCustomScrollbar.concat.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/lib/jquery.mCustomScrollbar.min.css">
-    
-    <!-- WebSocket Communication -->
-    <script type="text/javascript" src="js/lib/sockjs.min.js"></script>
-    
-    <!-- Polyfills -->
-    <script type="text/javascript" src="js/polyfill.js"></script>
-    
-    <!-- Actual Chat Script & Style -->
-    <script type="text/javascript" src="js/chat.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/chat.css">
+    <meta charset="utf-8" /> 
+    <%=htmlWebpackPlugin.files.webpackManifest%>
 </head>
 
 <body style="height: 100%; margin: 0px; padding: 0px; font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim; font-size: 14px; font-weight: 300;">
