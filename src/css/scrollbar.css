@@ -1,0 +1,19 @@
+/************ mCustomScrollbar customization ************/
+.mCSB_inside>.mCSB_container {
+    margin-right: 10px;
+}
+.mCSB_inside>.mCSB_scrollTools_vertical>.mCSB_draggerContainer>.mCSB_dragger {
+    width: 2px;
+    right: 2px;
+}
+.mCSB_inside>.mCSB_scrollTools_vertical>.mCSB_draggerContainer>.mCSB_draggerRail {
+    margin-right: 1px;
+}
+#chat-tabs > .ui-tabs-panel > .ps-scrollbar-y-rail {
+    opacity: 1;
+    background-color: #0C1A31;
+    margin-top: 5px;
+}
+#chat-tabs > .ui-tabs-panel > .ps-scrollbar-y-rail > .ps-scrollbar-y {
+    background-color: #3E566A;
+}

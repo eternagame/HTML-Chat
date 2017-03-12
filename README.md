@@ -1,14 +1,18 @@
 # HTML-Chat
 HTML5 implementation of Eterna's web-based IRC chat client to replace the legacy Flash-based implementation
 
-Please note that a rewritten version sing backbone.js is under way to improve the readability and extensibility of the codebase. See the backbone-rewrite branch for its current status. It is very work in progress, and is not functional yet. New pull requests will be accepted for both versions at the present time.
+Please note that a rewritten version using backbone.js is under way to improve the readability and extensibility of the codebase. See the backbone-rewrite branch for its current status. It is very work in progress, and is not functional yet. New pull requests will be accepted for both versions at the present time.
 
 As a reference, the chat server currently uses [txircd](https://github.com/ElementalAlchemist/txircd) as the IRCd daemon and a custom python-based IRC bot to record recent history.
 
 ## Setup
-For testing, in a browser navigate to index.html?username=[username]&uid=[user ID]&channel=[channel name], where the name and ID are your Eterna name and id, and optionally channel is the channel on the server to connect to. In production, the div with the id "chat" will be placed in a framing div which will define the width and height.
+This code makes use of the [webpack](https://webpack.js.org/) module bundler. In order to run the app, do the following:
+* Install [NodeJS and npm](https://nodejs.org/en/download/)
+* Open a command prompt/terminal, cd into HTML-Chat, and run `npm install`
+* To start a development server, run `npm start`
+* Open a browser and navigate to localhost:9000, then enter your username and password, then optionally a channel if you don't want to post in the main chat (ie if your testing could eb considered disruptive or cause other clients to break)
 
-The chat page needs to be served from a webserver. You can do this with the included run_server.py, derived from the version used in the [data browser](https://github.com/EteRNAgame/data-browser/blob/master/run_server.py)).
+To create a one-off set of files with webpack, run `npm run build:dev` for the development build or `npm run build:prod` for the production configuration
 
 ## Contributing
 Feel free to fork this repository, make some changes, and create a pull request. Your changes will then be revewed, merged, and deployed once accepted. It is encouraged to use a channel other than #global (the default) for testing purposes if it could be disruptive.
