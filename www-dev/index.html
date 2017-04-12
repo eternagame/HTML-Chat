@@ -12,30 +12,35 @@
     <!-- Get user -->
     <script type="text/javascript">
         var frame = '<iframe id="chat" src="chat.html{{params}}" style="height: calc(100% - 23px); width: calc(100% - 20px); padding: 10px; border:none;"></iframe>';
-        
+
         function auth() {
             var user = prompt("Please enter your username, or leave blank to use without logging in");
-            if (!user) {
-                document.body.innerHTML += frame.replace('{{params}}', '');
-                return;
-            }
-            var pass = prompt("Please enter your password");
+            var pass;
+            if (user) pass = prompt("Please enter your password");
             var chan = prompt("If you want to go into a channel other than global (ie, if you're going to be doing testing that could potentially disturb chat), please type it here (you might want to use \"test\" for such a case). Otherwise, just click ok.");
+            if (!user) {
+                if (!chan || chan.toLowerCase() == "global") {
+                    document.body.innerHTML += frame.replace('{{params}}', '');
+                    return;
+                }
+                else {
+                    user = "Guest" + ((Math.random() * 10000) | 0);
+                    document.body.innerHTML += frame.replace("{{params}}", "?name=" + encodeURIComponent(user) + "&uid=" + "000000" + (chan ? "&channel=" + chan : ''));
+                    return;
+                }
+            }
 
             var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
+            xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     res = JSON.parse(this.responseText);
-                    if (res.success) {
-                        document.body.innerHTML += frame.replace("{{params}}", "?name=" + encodeURIComponent(user) + "&uid=" + res.uid + (chan ? "&channel=" + chan :''));
-                    } else {
-                        alert("Couldn't log in - wrong username or password?")
-                    }
+                    if (res.success) document.body.innerHTML += frame.replace("{{params}}", "?name=" + encodeURIComponent(user) + "&uid=" + res.uid + (chan ? "&channel=" + chan : ''));
+                    else alert("Couldn't log in - wrong username or password?");
                 }
             };
             xhttp.open("POST", "/auth", true);
             xhttp.setRequestHeader("Content-Type", "application/json");
-            xhttp.send(JSON.stringify({user:user, pass:pass}));
+            xhttp.send(JSON.stringify({ user: user, pass: pass }));
         }
         auth();
     </script>
