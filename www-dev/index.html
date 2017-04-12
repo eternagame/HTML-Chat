@@ -14,14 +14,24 @@
         var frame = '<iframe id="chat" src="chat.html{{params}}" style="height: calc(100% - 23px); width: calc(100% - 20px); padding: 10px; border:none;"></iframe>';
         
         function auth() {
+            var pass;
+            var chan;
             var user = prompt("Please enter your username, or leave blank to use without logging in");
             if (!user) {
-                document.body.innerHTML += frame.replace('{{params}}', '');
-                return;
+                chan = prompt("If you want to go into a channel other than global (ie, if you're going to be doing testing that could potentially disturb chat), please type it here (you might want to use \"test\" for such a case). Otherwise, just click ok. (In global you can only look at chat, but in other channels (such as \"test\") you will be able to write)");
+                if(chan && chan != "global"){
+                    user = "GuestForTest";
+                    pass = "12345";
+                }
+                else{
+                    document.body.innerHTML += frame.replace('{{params}}', '');
+                    return;
+                }
             }
-            var pass = prompt("Please enter your password");
-            var chan = prompt("If you want to go into a channel other than global (ie, if you're going to be doing testing that could potentially disturb chat), please type it here (you might want to use \"test\" for such a case). Otherwise, just click ok.");
-
+            else{
+                pass = prompt("Please enter your password");
+                chan = prompt("If you want to go into a channel other than global (ie, if you're going to be doing testing that could potentially disturb chat), please type it here (you might want to use \"test\" for such a case). Otherwise, just click ok.");
+            }
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
