@@ -15,13 +15,22 @@
         
         function auth() {
             var user = prompt("Please enter your username, or leave blank to use without logging in");
-            if (!user) {
-                document.body.innerHTML += frame.replace('{{params}}', '');
-                return;
-            }
-            var pass = prompt("Please enter your password");
+            var pass;
+            if(user)
+                pass = prompt("Please enter your password");
             var chan = prompt("If you want to go into a channel other than global (ie, if you're going to be doing testing that could potentially disturb chat), please type it here (you might want to use \"test\" for such a case). Otherwise, just click ok.");
-
+            if (!user) {
+                if(!chan || chan.toLowerCase() == "global"){
+                    document.body.innerHTML += frame.replace('{{params}}', '');
+                    return;
+                }
+                else{
+                    user="Guest" + ((Math.random() * 10000)|0);
+                    document.body.innerHTML += frame.replace("{{params}}", "?name=" + encodeURIComponent(user) + "&uid=" + "000000" + (chan ? "&channel=" + chan :''));
+                    return;
+                }
+            }
+     
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
