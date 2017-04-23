@@ -224,7 +224,7 @@ function entityEncode( data ) {
                     }) + '">' +  contents + '</a>';
                })
                // Render a link from anything starting with http/https/www.
-               .replace(encodedRegex(/(?:(https?:\/\/www\.)|(https?:\/\/)|(www\.))([^ ]+)/g), function(match, h1, h2, h3, url) {
+               .replace(encodedRegex(/(?:(https?:\/\/www\.)|(https?:\/\/)|(www\.))([^ "<>\\\^`{|}]+)/g), function(match, h1, h2, h3, url) {
                     // Unencode url, reencode it properly, and put it in an anchor
                     return '<a target="_blank" style="color:#FFF;" href="' + unEntityEncode( (h1||h2||"http://"+h3) + url ).replace(/[\W-]/g, function(match) {
                         return "&#x" + match.charCodeAt(0).toString(16) + ";";
