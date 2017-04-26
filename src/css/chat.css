@@ -1,7 +1,12 @@
-/************ Other files ************/
+﻿/************ Other files ************/
 
 @import 'scrollbar.css';
 @import 'tabs.css';
+
+/************* General *************/
+a {
+    color: #fff;
+}
 
 /************ Chat Messages ************/
 .chat-message {
@@ -37,7 +42,6 @@
     display: block;
 }
 .chat-userlist-user > a {
-    color: #FFF;
     text-decoration: none;
     font-weight: bold;
 }
