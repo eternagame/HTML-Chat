@@ -234,6 +234,7 @@ function entityEncode( data ) {
     return anchorme(data, { attributes: [{ name: 'target', value: '_blank' }, { name: 'style', value: 'color:#FFF' }] });
 }
 
+
 /**
  *  Add color to a username based on the UID in the message or font tags
  *  @param data: Username to be colored
@@ -503,7 +504,7 @@ sock.onmessage = function (e) {
             case "332":
             // Topic, display?
                 break;
-            // Part and quit both need to be handled the same way in our case - a user left the room
+                // Part and quit both need to be handled the same way in our case - a user left the room
             case "PART":
             case "QUIT":
                 removeUser(cmd.origin.split("!")[0]);
@@ -541,7 +542,7 @@ sock.onmessage = function (e) {
                     }
                 }
                 break;
-            // Check if user has been kicked, if so disable input and notify in chat, if other user remove them from online list
+                // Check if user has been kicked, if so disable input and notify in chat, if other user remove them from online list
             case "KICK":
                 if (cmd.params[1] == NICK) {
                     $("#chat-input").prop('disabled', true);
