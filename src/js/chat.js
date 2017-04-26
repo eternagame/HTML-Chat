@@ -1,4 +1,4 @@
-// jQuery and jQuery-ui
+﻿// jQuery and jQuery-ui
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/tabs';
 import 'jquery-ui/themes/base/core.css'
@@ -211,7 +211,7 @@ function encodedRegex( search ) {
  */
 function entityEncode( data ) {
     // TODO: In the future, remove the &lt;/&gt; reverting thing, it's due to Flash chat's pre-escaping before sending.
-    return anchorme(data.replace(/&lt;/g, "<")
+    data = data.replace(/&lt;/g, "<")
                .replace(/&gt;/g, ">")
                .replace(/&/g, "&amp;")
                .replace(/</g, "&lt;")
@@ -222,15 +222,18 @@ function entityEncode( data ) {
                // Render a link from anchor tags
                .replace(encodedRegex(/<a .*href=('|\")?(https?:\/\/[^ ]+)\1(?: .*|(?=>))>(.+)<\/a>/gi), function(match, p1, url, contents) {
                    // Unencode url, reencode it properly, and put it in an anchor
-                   return '<a target="_blank" style="color:#FFF;" href="' + unEntityEncode( url ).replace(/[\W-]/g, function(match) {
+                   return '<a target="_blank" href="' + unEntityEncode( url ).replace(/[\W-]/g, function(match) {
                        return "&#x" + match.charCodeAt(0).toString(16) + ";";
                    }) + '">' +  contents + '</a>';
-               }), {attributes:[{name:'target', value:'blank'}, {name:'style', value:'color:#FFF'}]})
+               })
                // TODO: Probably remove eventually, only needed for ChatBot to underline links with Flash chat, which is handled automatically in this chat
                .replace(encodedRegex(/<U>(.+)<\/U>/g), '<span style="text-decoration: underline;">$1</span>')
                // TODO: Probably remove eventually, only needed for existing /me (once the Flash app is removed ACTION should be used)
                .replace(encodedRegex(/<I>(.+)<\/I>/g), '<span style="font-style: italic;">$1</span>');
-}               // Render a link from anything starting with http/https/www.
+    //Processes links via anchorme
+    return anchorme(data, { attributes: [{ name: 'target', value: '_blank' }, { name: 'style', value: 'color:#FFF' }] });
+}
+
 
 /**
  *  Add color to a username based on the UID in the message or font tags
@@ -464,14 +467,14 @@ sock.onmessage = function (e) {
                 sock.send("PONG :0.0.0.0\r\n");
                 break;
             case "433":
-                // Nick already used, try with fallback
+            // Nick already used, try with fallback
                 var nickNum = parseInt(NICK.match(/\^(\d+)/)[1]) + 1;
                 NICK = NICK.replace(/\^(\d+)/, "^" + nickNum);
                 sock.send("NICK " + NICK + "\r\n");
                 sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
                 break;
             case "001":
-                // Initial info
+            // Initial info
                 console.log("Authenticated");
                 sock.send("JOIN #" + CHANNEL + "\r\n");
                 break;
@@ -499,7 +502,7 @@ sock.onmessage = function (e) {
                 break;
             case "331":
             case "332":
-                // Topic, display?
+            // Topic, display?
                 break;
                 // Part and quit both need to be handled the same way in our case - a user left the room
             case "PART":
@@ -513,14 +516,14 @@ sock.onmessage = function (e) {
                 }
                 break;
             case "366":
-                // Signifies end of names, don't think this is needed?
+            // Signifies end of names, don't think this is needed?
                 break;
             case "NOTICE":
             case "PRIVMSG":
                 postMessage(cmd.params[1], false);
                 break;
             case "MODE":
-                // Check if user has been banned, if so disable input and notify in chat
+            // Check if user has been banned, if so disable input and notify in chat
                 if (cmd.params[1] == "+b") {
                     var maskParts = cmd.params[2].match(/(~q:)?(.+)!.+/);
                     if (NICK.match(new RegExp(maskParts[2].replace("*", ".+").replace("^", "\\^")))) {
@@ -549,20 +552,20 @@ sock.onmessage = function (e) {
                 }
                 break;
             case "404":
-                // Can't post message
+            // Can't post message
                 if (cmd.params[2].startsWith("You are banned")) {
                     $("#chat-input").prop('disabled', true);
                     postMessage("You are not allowed to post in chat");
                 }
                 break;
             case "474":
-                // Can't join channel
+            // Can't join channel
                 if (cmd.params[1] == "Cannot join channel (+b)") {
                     $("#chat-input").prop('disabled', true);
                     postMessage("You have been banned from chat");
                 }
                 break;
-                // Ignore information stuff
+            // Ignore information stuff
             case "002":
             case "003":
             case "004":
@@ -575,7 +578,7 @@ sock.onmessage = function (e) {
             case "265":
             case "266":
             case "333":
-                // Topic set by _ at _
+            // Topic set by _ at _
             case "422":
                 break;
 
