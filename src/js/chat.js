@@ -231,7 +231,7 @@ function entityEncode( data ) {
                // TODO: Probably remove eventually, only needed for existing /me (once the Flash app is removed ACTION should be used)
                .replace(encodedRegex(/<I>(.+)<\/I>/g), '<span style="font-style: italic;">$1</span>');
     //Processes links via anchorme
-    return anchorme(data, { attributes: [{ name: 'target', value: '_blank' }, { name: 'style', value: 'color:#FFF' }] });
+    return anchorme(data, { attributes: [{ name: 'target', value: '_blank' }]});
 }
 
 
