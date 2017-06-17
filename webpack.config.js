@@ -62,13 +62,17 @@ const developmentConfig = {
                     form: {name:req.body.user, pass:req.body.pass, type:'login'}
                 }, function(err,response,body){
                     data = JSON.parse(body).data;
-                    request.get({
-                        url: 'https://www.eternagame.org/get/',
-                        qs: {uid: data.uid}
-                    }, function(err, response, body) {
-                        data.name = JSON.parse(body).data.user.name;
+                    if (data.success) {
+                        request.get({
+                            url: 'https://www.eternagame.org/get/',
+                            qs: {uid: data.uid, type: 'user'}
+                        }, function(err, response, body) {
+                            data.name = JSON.parse(body).data.user.name;
+                            res.json(data);
+                        });
+                    } else {
                         res.json(data);
-                    });
+                    }
                 });
             });
         }
