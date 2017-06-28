@@ -33,6 +33,11 @@ var CHANNEL = CHAT_CHANNEL;
 // Online users
 var onlineUsers = [];
 
+var failedAttempts = 1;
+var disconnectionTimers = [5, 10, 15, 30];
+var currentTimer = 0;
+var timerInterval;
+
 // Initialize saved preferences 
 try {
     localStorage;
@@ -45,7 +50,7 @@ var ignoredUsers = localStorage.chatIgnored || [];
 // Chat should start automaticcally scrolling as new messages come in
 var autoScroll = true;
 
-var sock = new SockJS("http://irc.eternagame.org:8081");
+var sock;
 
 /**
  *  Parse messages sent by server
@@ -306,6 +311,7 @@ function postMessage( raw_msg, isHistory ) {
 }
 
 $( document ).ready(function() {
+    initSock();
     // Initialize UI
     // Initialize tabs
     $( "#chat" ).tabs({
@@ -352,11 +358,6 @@ $( document ).ready(function() {
         $(this).css('height', hiddenDiv.height());
     });
 
-    // Initial Chat Connection
-    sock.onopen = function() {
-        sock.send("NICK " + NICK + "\r\n");
-        sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
-    };
     // Key bindings
     $('#chat-input').keypress(function (e) {
         var isAction = false;
@@ -456,135 +457,187 @@ $( document ).ready(function() {
             return false;
         }
     });
+    $("#chat-loading > #reconnect").click(function () {
+        clearInterval(timerInterval);
+        $("#chat-loading > #connecting").show();
+        $("#chat-loading > #failed").hide();
+        $("#chat-loading > #reconnect").hide();
+        initSock();
+    });
 });
+function initSock() {
+    $("#chat-content").css("background-color", "rgba(0,0,0,0.5)");
 
-sock.onmessage = function (e) {
-    var commands = parseCommands(e.data);
-    for (var i=0; i<commands.length; i++) {
-        var cmd = commands[i];
-        switch(cmd.command) {
-            case "PING":
-                sock.send("PONG :0.0.0.0\r\n");
-                break;
-            case "433":
-            // Nick already used, try with fallback
-                var nickNum = parseInt(NICK.match(/\^(\d+)/)[1]) + 1;
-                NICK = NICK.replace(/\^(\d+)/, "^" + nickNum);
-                sock.send("NICK " + NICK + "\r\n");
-                sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
-                break;
-            case "001":
-            // Initial info
-                console.log("Authenticated");
-                sock.send("JOIN #" + CHANNEL + "\r\n");
-                break;
-            case "JOIN":
-                var nick = cmd.origin.split("!")[0];
-                if (nick == NICK) {
-                    console.log("Joined " + cmd.params[0]);
-                    console.log("Loading history...");
-                    $.get( "http://irc.eternagame.org:8082/history.html", function( data ) {
-                        console.log("History recieved");
-                        var messages = data.trim().split("\n");
-                        for (var j=0; j<messages.length; j++) {
-                            postMessage(messages[j], true);
-                        }
-                        $("#chat-loading").hide();
-                        $("#chat-tabs").show();
-                        $("#chat-tabs").children().mCustomScrollbar("scrollTo","bottom");
-                        if (USERNAME !== "Anonymous") {
-                            $("#chat-input").prop('disabled', false);
-                        }
-                    });
-                } else {
-                    addUser(cmd.origin.split("!")[0]);
-                }
-                break;
-            case "331":
-            case "332":
-            // Topic, display?
-                break;
-                // Part and quit both need to be handled the same way in our case - a user left the room
-            case "PART":
-            case "QUIT":
-                removeUser(cmd.origin.split("!")[0]);
-                break;
-            case "353":
-                var users = cmd.params[3].trim().split(" ");
-                for (var j=0; j<users.length; j++) {
-                    addUser(users[j]);
-                }
-                break;
-            case "366":
-            // Signifies end of names, don't think this is needed?
-                break;
-            case "NOTICE":
-            case "PRIVMSG":
-                postMessage(cmd.params[1], false);
-                break;
-            case "MODE":
-            // Check if user has been banned, if so disable input and notify in chat
-                if (cmd.params[1] == "+b") {
-                    var maskParts = cmd.params[2].match(/(~q:)?(.+)!.+/);
-                    if (NICK.match(new RegExp(maskParts[2].replace("*", ".+").replace("^", "\\^")))) {
-                        $("#chat-input").prop('disabled', true);
-                        if (maskParts[1]) {
-                            postMessage("You are no longer allowed to post in chat");
-                        } else {
-                            postMessage("You have been banned from chat");
-                        }
-                    }
-                } else if (cmd.params[1] == "-b") {
-                    var maskUser = cmd.params[2].match(/(?:~q:)?(.+)!.+/)[1];
-                    if (NICK.match(new RegExp(maskUser.replace("*", ".+").replace("^", "\\^")))) {
-                        $("#chat-input").prop('disabled', false);
-                        postMessage("You are now allowed to post in chat");
-                    }
-                }
-                break;
-                // Check if user has been kicked, if so disable input and notify in chat, if other user remove them from online list
-            case "KICK":
-                if (cmd.params[1] == NICK) {
-                    $("#chat-input").prop('disabled', true);
-                    postMessage("You have been kicked from chat" + (cmd.params[2] ? " - " + cmd.params[2] : ''));
-                } else {
-                    removeUser(cmd.params[1]);
-                }
-                break;
-            case "404":
-            // Can't post message
-                if (cmd.params[2].startsWith("You are banned")) {
-                    $("#chat-input").prop('disabled', true);
-                    postMessage("You are not allowed to post in chat");
-                }
-                break;
-            case "474":
-            // Can't join channel
-                if (cmd.params[1] == "Cannot join channel (+b)") {
-                    $("#chat-input").prop('disabled', true);
-                    postMessage("You have been banned from chat");
-                }
-                break;
-            // Ignore information stuff
-            case "002":
-            case "003":
-            case "004":
-            case "005":
-            case "251":
-            case "252":
-            case "253":
-            case "254":
-            case "255":
-            case "265":
-            case "266":
-            case "333":
-            // Topic set by _ at _
-            case "422":
-                break;
+    sock = new SockJS("http://irc.eternagame.org:8081");
+    // Initial Chat Connection
+    sock.onopen = function () {
+        sock.send("NICK " + NICK + "\r\n");
+        sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
+    };
 
-            default:
-                console.log("[Chat] Unhandled command recieved. Command: " + cmd.command + " Origin: " + cmd.origin + " Params: " + cmd.params);
+    // Attempt to reconnect
+    sock.onclose = sock.onerror = function () {
+        console.log("disconnected");
+        if (failedAttempts == 0) {
+            $("#chat-loading > #connecting").show();
+            console.log(0);
+            failedAttempts++;
+            initSock();
+        }
+        else {
+            currentTimer = disconnectionTimers[Math.min(failedAttempts - 1, 3)];
+            $("#chat-loading > #connecting").hide();
+            $("#chat-loading > #failed").show();
+            $("#chat-loading > #reconnect").show();
+            $("#chat-loading > #failed > #timer").text(currentTimer);
+            console.log("timer");
+            failedAttempts++;
+
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+    };
+    function updateTimer() {
+        currentTimer--;
+        $("#chat-loading > #failed > #timer").text(currentTimer);
+        if (currentTimer <= 0) {
+            clearInterval(timerInterval);
+            $("#chat-loading > #connecting").show();
+            $("#chat-loading > #failed").hide();
+            $("#chat-loading > #reconnect").hide();
+            initSock();
         }
     }
 
-};
+
+    sock.onmessage = function (e) {
+        var commands = parseCommands(e.data);
+        for (var i = 0; i < commands.length; i++) {
+            var cmd = commands[i];
+            switch (cmd.command) {
+                case "PING":
+                    sock.send("PONG :0.0.0.0\r\n");
+                    break;
+                case "433":
+                    // Nick already used, try with fallback
+                    var nickNum = parseInt(NICK.match(/\^(\d+)/)[1]) + 1;
+                    NICK = NICK.replace(/\^(\d+)/, "^" + nickNum);
+                    sock.send("NICK " + NICK + "\r\n");
+                    sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
+                    break;
+                case "001":
+                    // Initial info
+                    console.log("Authenticated");
+                    sock.send("JOIN #" + CHANNEL + "\r\n");
+                    break;
+                case "JOIN":
+                    $("#chat-content").css("background-color", "rgba(0,0,0,0)");
+                    var nick = cmd.origin.split("!")[0];
+                    if (nick == NICK) {
+                        console.log("Joined " + cmd.params[0]);
+                        console.log("Loading history...");
+                        $.get("http://irc.eternagame.org:8082/history.html", function (data) {
+                            console.log("History recieved");
+                            var messages = data.trim().split("\n");
+                            for (var j = 0; j < messages.length; j++) {
+                                postMessage(messages[j], true);
+                            }
+                            $("#chat-loading").hide();
+                            $("#chat-tabs").show();
+                            $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom");
+                            if (USERNAME !== "Anonymous") {
+                                $("#chat-input").prop('disabled', false);
+                            }
+                        });
+                    } else {
+                        addUser(cmd.origin.split("!")[0]);
+                    }
+                    break;
+                case "331":
+                case "332":
+                    // Topic, display?
+                    break;
+                // Part and quit both need to be handled the same way in our case - a user left the room
+                case "PART":
+                case "QUIT":
+                    removeUser(cmd.origin.split("!")[0]);
+                    break;
+                case "353":
+                    var users = cmd.params[3].trim().split(" ");
+                    for (var j = 0; j < users.length; j++) {
+                        addUser(users[j]);
+                    }
+                    break;
+                case "366":
+                    // Signifies end of names, don't think this is needed?
+                    break;
+                case "NOTICE":
+                case "PRIVMSG":
+                    postMessage(cmd.params[1], false);
+                    break;
+                case "MODE":
+                    // Check if user has been banned, if so disable input and notify in chat
+                    if (cmd.params[1] == "+b") {
+                        var maskParts = cmd.params[2].match(/(~q:)?(.+)!.+/);
+                        if (NICK.match(new RegExp(maskParts[2].replace("*", ".+").replace("^", "\\^")))) {
+                            $("#chat-input").prop('disabled', true);
+                            if (maskParts[1]) {
+                                postMessage("You are no longer allowed to post in chat");
+                            } else {
+                                postMessage("You have been banned from chat");
+                            }
+                        }
+                    } else if (cmd.params[1] == "-b") {
+                        var maskUser = cmd.params[2].match(/(?:~q:)?(.+)!.+/)[1];
+                        if (NICK.match(new RegExp(maskUser.replace("*", ".+").replace("^", "\\^")))) {
+                            $("#chat-input").prop('disabled', false);
+                            postMessage("You are now allowed to post in chat");
+                        }
+                    }
+                    break;
+                // Check if user has been kicked, if so disable input and notify in chat, if other user remove them from online list
+                case "KICK":
+                    if (cmd.params[1] == NICK) {
+                        $("#chat-input").prop('disabled', true);
+                        postMessage("You have been kicked from chat" + (cmd.params[2] ? " - " + cmd.params[2] : ''));
+                    } else {
+                        removeUser(cmd.params[1]);
+                    }
+                    break;
+                case "404":
+                    // Can't post message
+                    if (cmd.params[2].startsWith("You are banned")) {
+                        $("#chat-input").prop('disabled', true);
+                        postMessage("You are not allowed to post in chat");
+                    }
+                    break;
+                case "474":
+                    // Can't join channel
+                    if (cmd.params[1] == "Cannot join channel (+b)") {
+                        $("#chat-input").prop('disabled', true);
+                        postMessage("You have been banned from chat");
+                    }
+                    break;
+                // Ignore information stuff
+                case "002":
+                case "003":
+                case "004":
+                case "005":
+                case "251":
+                case "252":
+                case "253":
+                case "254":
+                case "255":
+                case "265":
+                case "266":
+                case "333":
+                // Topic set by _ at _
+                case "422":
+                    break;
+
+                default:
+                    console.log("[Chat] Unhandled command recieved. Command: " + cmd.command + " Origin: " + cmd.origin + " Params: " + cmd.params);
+            }
+        }
+
+    };
+}
