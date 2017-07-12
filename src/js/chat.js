@@ -52,6 +52,11 @@ var autoScroll = true;
 
 var sock;
 
+//DEBUG ONLY
+function getSock() {
+    return sock;
+}
+
 /**
  *  Parse messages sent by server
  *  @param data: Raw data sent by server
@@ -457,16 +462,14 @@ $( document ).ready(function() {
             return false;
         }
     });
-    $("#chat-loading > #reconnect").click(function () {
-        clearInterval(timerInterval);
-        $("#chat-loading > #connecting").show();
-        $("#chat-loading > #failed").hide();
-        $("#chat-loading > #reconnect").hide();
-        initSock();
-    });
+    $("#reconnect").click(initSock);
 });
 function initSock() {
-    $("#chat-content").css("background-color", "rgba(0,0,0,0.5)");
+    //$("#chat-content").css("background-color", "rgba(0,0,0,0.5)");
+    clearInterval(timerInterval);
+    $("#chat-loading > #connecting").show();
+    $("#chat-loading > #failed").hide();
+    //$("#reconnect").addClass("hover");
 
     sock = new SockJS("http://irc.eternagame.org:8081");
     // Initial Chat Connection
@@ -478,6 +481,8 @@ function initSock() {
     // Attempt to reconnect
     sock.onclose = sock.onerror = function () {
         console.log("disconnected");
+        $("#global-chat-messages").append($("chat-loading").detach());
+        $("#chat-loading").show();
         if (failedAttempts == 0) {
             $("#chat-loading > #connecting").show();
             console.log(0);
@@ -488,8 +493,9 @@ function initSock() {
             currentTimer = disconnectionTimers[Math.min(failedAttempts - 1, 3)];
             $("#chat-loading > #connecting").hide();
             $("#chat-loading > #failed").show();
-            $("#chat-loading > #reconnect").show();
             $("#chat-loading > #failed > #timer").text(currentTimer);
+            $("#reconnect").show();
+            $('#chat-input').hide();
             console.log("timer");
             failedAttempts++;
 
@@ -503,7 +509,8 @@ function initSock() {
             clearInterval(timerInterval);
             $("#chat-loading > #connecting").show();
             $("#chat-loading > #failed").hide();
-            $("#chat-loading > #reconnect").hide();
+            $("#reconnect").hide();
+            $('#chat-input').show();
             initSock();
         }
     }
@@ -530,7 +537,7 @@ function initSock() {
                     sock.send("JOIN #" + CHANNEL + "\r\n");
                     break;
                 case "JOIN":
-                    $("#chat-content").css("background-color", "rgba(0,0,0,0)");
+                    //$("#chat-content").css("background-color", "rgba(0,0,0,0)");
                     var nick = cmd.origin.split("!")[0];
                     if (nick == NICK) {
                         console.log("Joined " + cmd.params[0]);
@@ -542,6 +549,7 @@ function initSock() {
                                 postMessage(messages[j], true);
                             }
                             $("#chat-loading").hide();
+                            $("div#chat-loading").detach();
                             $("#chat-tabs").show();
                             $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom");
                             if (USERNAME !== "Anonymous") {
