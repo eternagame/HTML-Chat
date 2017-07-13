@@ -467,6 +467,8 @@ $( document ).ready(function() {
 function initSock() {
     //$("#chat-content").css("background-color", "rgba(0,0,0,0.5)");
     clearInterval(timerInterval);
+    $("#reconnect").addClass("active");
+    $("#reconnect").prop('onclick', null); 
     $("#chat-loading > #connecting").show();
     $("#chat-loading > #failed").hide();
     //$("#reconnect").addClass("hover");
@@ -480,6 +482,7 @@ function initSock() {
 
     // Attempt to reconnect
     sock.onclose = sock.onerror = function () {
+        $("#reconnect").removeClass("active");
         console.log("disconnected");
         $("#global-chat-messages").append($("chat-loading").detach());
         $("#chat-loading").show();
@@ -498,7 +501,7 @@ function initSock() {
             $('#chat-input').hide();
             console.log("timer");
             failedAttempts++;
-
+            clearInterval(timerInterval);
             timerInterval = setInterval(updateTimer, 1000);
         }
     };
@@ -506,11 +509,6 @@ function initSock() {
         currentTimer--;
         $("#chat-loading > #failed > #timer").text(currentTimer);
         if (currentTimer <= 0) {
-            clearInterval(timerInterval);
-            $("#chat-loading > #connecting").show();
-            $("#chat-loading > #failed").hide();
-            $("#reconnect").hide();
-            $('#chat-input').show();
             initSock();
         }
     }
@@ -548,6 +546,7 @@ function initSock() {
                             for (var j = 0; j < messages.length; j++) {
                                 postMessage(messages[j], true);
                             }
+                            $("#reconnect").hide();
                             $("#chat-loading").hide();
                             $("div#chat-loading").detach();
                             $("#chat-tabs").show();
