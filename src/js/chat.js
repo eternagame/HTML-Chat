@@ -10,6 +10,16 @@ import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css';
 
 // anchorme.js
 import anchorme from "anchorme";
+=======
+// Markdown-it
+import MarkdownIt from "markdown-it";
+var md = new MarkdownIt({
+    linkify: true,
+    typographer: true
+}).disable('image');
+// Create an instance of markdown-it with no rules enabled, using it just to strip/sanitize HTML
+var mdSanitizer = new MarkdownIt('zero');
+>>>>>>> EteRNAgame/dev
 
 // SockJS
 import SockJS from 'sockjs-client';
@@ -258,6 +268,7 @@ function colorizeUser ( data, uid, isAction ) {
     var customColored = data.replace(encodedRegex(/<font color=(?:'|\")?(#[a-fA-F\d]{6})(?:'|\")?>(.+)<\/font>/i), isAction ? '$2':'<span style="color:$1;">$2</span>')
                             // TODO: Probably remove eventually, only needed for existing /me (once the Flash app is removed ACTION should be used)
                             .replace(encodedRegex(/<I>(.+)<\/I>/), '<span style="font-style: italic;">$1</span>');
+    var customColored = data.replace(/&lt;font color=(?:&#x27;|\&quot;)?(#[a-fA-F\d]{6})(?:&#x27;|\&quot;)?&gt;(.+)&lt;\/font&gt;/i, isAction ? '$2':'<span style="color:$1;">$2</span>')
     // Construct span, if it's an action omit the coloring
     return '<a target="_blank" class="chat-message-user-link" href="http://www.eternagame.org/web/player/' + uid + '/"><span class="chat-message-user" ' + (isAction ? '' : 'style="color:' + colors[uid % colors.length] + ';"') + '>' + customColored + '</span></a>' + (!isAction ? ': ' : ' ');
 }
@@ -291,6 +302,18 @@ function postMessage( raw_msg, isHistory ) {
     time = parts[4];
     raw_msg = entityEncode(parts[5]);
 
+    raw_msg = parts[5];
+    // TODO: In the future, remove this, it's due to Flash chat's pre-escaping before sending.
+    raw_msg = raw_msg.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    // TODO: Eventually remove, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
+    raw_msg = raw_msg.replace(/<I>(.+)<\/I>/g, '*$1*');
+    // TODO: Because of how chat works right now, we can only handle the inline styles,
+    // but some of the block-level pieces could be nice too once we have multiline messages (lists, blockquotes, and fences mostly).
+    // Also, the `code` should be styled (ie have a background color and maybe a different text color), and it currently isn't.
+    // Images are also disabled, as we currently don't have a way to format them properly.
+    raw_msg = md.renderInline(raw_msg);
+    
+    
     // Don't show messages from user on ignore list
     if ( ignoredUsers.includes(name) ){return;}
 
@@ -307,6 +330,8 @@ function postMessage( raw_msg, isHistory ) {
     message = '<li class="chat-message{MSG_CLASS}">{USER}{MESSAGE}<span class="chat-message-time"> {TIME}</span></li>';
     message = message.replace("{MSG_CLASS}", classes)
                      .replace("{USER}", prefix ? colorizeUser(entityEncode(name), uid, isAction):'')
+                     // TODO: Eventually remove the italicise replacement, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
+                     .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '*$1*')), uid, isAction):'')
                      .replace("{MESSAGE}", raw_msg)
                      .replace("{TIME}", prefix ? formatTime(time):'');
     $(isHistory ? "#global-chat-historical" : "#global-chat-messages").append(message);
@@ -409,6 +434,7 @@ $( document ).ready(function() {
                                     postMessage("Type /help <command> for information on individual commands");
                                     postMessage("Example: /help me");
                                     postMessage("Additional commands available via LinkBot (see the <a href='http://eternawiki.org/wiki/index.php5/HELP'>wiki</a> for more information)");
+                                    postMessage("Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)");
                                     break;
                             }
                             break;
@@ -592,6 +618,36 @@ function initSock() {
                             } else {
                                 postMessage("You have been banned from chat");
                             }
+sock.onmessage = function (e) {
+    var commands = parseCommands(e.data);
+    for (var i=0; i<commands.length; i++) {
+        var cmd = commands[i];
+        switch(cmd.command) {
+            case "PING":
+                sock.send("PONG :0.0.0.0\r\n");
+                break;
+            case "433":
+            // Nick already used, try with fallback
+                var nickNum = parseInt(NICK.match(/\^(\d+)/)[1]) + 1;
+                NICK = NICK.replace(/\^(\d+)/, "^" + nickNum);
+                sock.send("NICK " + NICK + "\r\n");
+                sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
+                break;
+            case "001":
+            // Initial info
+                console.log("Authenticated");
+                sock.send("JOIN #" + CHANNEL + "\r\n");
+                break;
+            case "JOIN":
+                var nick = cmd.origin.split("!")[0];
+                if (nick == NICK) {
+                    console.log("Joined " + cmd.params[0]);
+                    console.log("Loading history...");
+                    $.get( "http://irc.eternagame.org:8082/history.html", function( data ) {
+                        console.log("History recieved");
+                        var messages = data.trim().split("\n");
+                        for (var j=0; j<messages.length; j++) {
+                            postMessage(messages[j], true);
                         }
                     } else if (cmd.params[1] == "-b") {
                         var maskUser = cmd.params[2].match(/(?:~q:)?(.+)!.+/)[1];
@@ -604,6 +660,38 @@ function initSock() {
                 // Check if user has been kicked, if so disable input and notify in chat, if other user remove them from online list
                 case "KICK":
                     if (cmd.params[1] == NICK) {
+                    });
+                } else {
+                    addUser(cmd.origin.split("!")[0]);
+                }
+                break;
+            case "331":
+            case "332":
+            // Topic, display?
+                break;
+                // Part and quit both need to be handled the same way in our case - a user left the room
+            case "PART":
+            case "QUIT":
+                removeUser(cmd.origin.split("!")[0]);
+                break;
+            case "353":
+                var users = cmd.params[3].trim().split(" ");
+                for (var j=0; j<users.length; j++) {
+                    addUser(users[j]);
+                }
+                break;
+            case "366":
+            // Signifies end of names, don't think this is needed?
+                break;
+            case "NOTICE":
+            case "PRIVMSG":
+                postMessage(cmd.params[1], false);
+                break;
+            case "MODE":
+            // Check if user has been banned, if so disable input and notify in chat
+                if (cmd.params[1] == "+b") {
+                    var maskParts = cmd.params[2].match(/(~q:)?(.+)!.+/);
+                    if (NICK.match(new RegExp(maskParts[2].replace("*", ".+").replace("^", "\\^")))) {
                         $("#chat-input").prop('disabled', true);
                         postMessage("You have been kicked from chat" + (cmd.params[2] ? " - " + cmd.params[2] : ''));
                     } else {
@@ -640,6 +728,47 @@ function initSock() {
                 // Topic set by _ at _
                 case "422":
                     break;
+                }
+                break;
+                // Check if user has been kicked, if so disable input and notify in chat, if other user remove them from online list
+            case "KICK":
+                if (cmd.params[1] == NICK) {
+                    $("#chat-input").prop('disabled', true);
+                    postMessage("You have been kicked from chat" + (cmd.params[2] ? " - " + cmd.params[2] : ''));
+                } else {
+                    removeUser(cmd.params[1]);
+                }
+                break;
+            case "404":
+            // Can't post message
+                if (cmd.params[2].startsWith("You are banned")) {
+                    $("#chat-input").prop('disabled', true);
+                    postMessage("You are not allowed to post in chat");
+                }
+                break;
+            case "474":
+            // Can't join channel
+                if (cmd.params[1] == "Cannot join channel (+b)") {
+                    $("#chat-input").prop('disabled', true);
+                    postMessage("You have been banned from chat");
+                }
+                break;
+            // Ignore information stuff
+            case "002":
+            case "003":
+            case "004":
+            case "005":
+            case "251":
+            case "252":
+            case "253":
+            case "254":
+            case "255":
+            case "265":
+            case "266":
+            case "333":
+            // Topic set by _ at _
+            case "422":
+                break;
 
                 default:
                     console.log("[Chat] Unhandled command recieved. Command: " + cmd.command + " Origin: " + cmd.origin + " Params: " + cmd.params);

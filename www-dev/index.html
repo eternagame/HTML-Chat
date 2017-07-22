@@ -35,6 +35,7 @@
                 if (this.readyState == 4 && this.status == 200) {
                     res = JSON.parse(this.responseText);
                     if (res.success) document.body.innerHTML += frame.replace("{{params}}", "?name=" + encodeURIComponent(user) + "&uid=" + res.uid + (chan ? "&channel=" + chan : ''));
+                    if (res.success) document.body.innerHTML += frame.replace("{{params}}", "?name=" + encodeURIComponent(res.name) + "&uid=" + res.uid + (chan ? "&channel=" + chan : ''));
                     else alert("Couldn't log in - wrong username or password?");
                 }
             };
