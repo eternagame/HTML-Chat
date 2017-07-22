@@ -2,7 +2,6 @@
   "name": "html-chat",
   "description": "HTML IRC chat client for Eterna (eternagame.org)",
   "dependencies": {
-    "anchorme": "^1.1.2",
     "jquery": "^3.1.1",
     "jquery-ui": "^1.12.1",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
