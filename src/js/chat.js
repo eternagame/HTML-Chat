@@ -25,8 +25,6 @@ import './polyfills';
 import {CHAT_CHANNEL, CURRENT_USER} from './define-user';
 import '../css/chat.css';
 
-console.log(5);
-
 // Username, if not logged in "Annonymous"
 var USERNAME = CURRENT_USER ? CURRENT_USER.name : "Anonymous";
 // User ID, if not logged in "0"
@@ -451,14 +449,20 @@ function initSock() {
     };
 
     // Attempt to reconnect
-    sock.onclose = sock.onerror = function () {
+    sock.onclose = function () {
+        console.log("sock closed normally");
+        onDisconnect();
+    }
+    sock.onerror = function () {
+        console.log("sock closed by an error");
+        onDisconnect();
+    }
+    function onDisconnect() {
         $("#reconnect").removeClass("active");
-        console.log("disconnected");
         $("#global-chat-messages").append($("chat-loading").detach());
         $("#chat-loading").show();
         if (failedAttempts == 0) {
             $("#chat-loading > #connecting").show();
-            console.log(0);
             failedAttempts++;
             initSock();
         }
@@ -469,7 +473,6 @@ function initSock() {
             $("#chat-loading > #failed > #timer").text(currentTimer);
             $("#reconnect").show();
             $('#chat-input').hide();
-            console.log("timer");
             failedAttempts++;
             clearInterval(timerInterval);
             timerInterval = setInterval(updateTimer, 1000);
