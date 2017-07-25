@@ -8,9 +8,6 @@ import 'jquery-ui/themes/base/tabs.css'
 import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js';
 import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css';
 
-// anchorme.js
-import anchorme from "anchorme";
-=======
 // Markdown-it
 import MarkdownIt from "markdown-it";
 var md = new MarkdownIt({
@@ -19,7 +16,6 @@ var md = new MarkdownIt({
 }).disable('image');
 // Create an instance of markdown-it with no rules enabled, using it just to strip/sanitize HTML
 var mdSanitizer = new MarkdownIt('zero');
->>>>>>> EteRNAgame/dev
 
 // SockJS
 import SockJS from 'sockjs-client';
@@ -209,37 +205,6 @@ function encodedRegex( search ) {
                                    .replace(/\//g, "&#x2F;"),
                       mod);
 }
-
-/**
- *  Escape HTML, render links/underline/italics (carefully)
- *  @param data: String to entity encode
- *  @return: Encoded string
- */
-function entityEncode( data ) {
-    // TODO: In the future, remove the &lt;/&gt; reverting thing, it's due to Flash chat's pre-escaping before sending.
-    data = data.replace(/&lt;/g, "<")
-               .replace(/&gt;/g, ">")
-               .replace(/&/g, "&amp;")
-               .replace(/</g, "&lt;")
-               .replace(/>/g, "&gt;")
-               .replace(/"/g, "&quot;")
-               .replace(/'/g, "&#x27;")
-               .replace(/\//g, "&#x2F;")
-               // Render a link from anchor tags
-               .replace(encodedRegex(/<a .*href=('|\")?(https?:\/\/[^ ]+)\1(?: .*|(?=>))>(.+)<\/a>/gi), function(match, p1, url, contents) {
-                   // Unencode url, reencode it properly, and put it in an anchor
-                   return '<a target="_blank" href="' + unEntityEncode( url ).replace(/[\W-]/g, function(match) {
-                       return "&#x" + match.charCodeAt(0).toString(16) + ";";
-                   }) + '">' +  contents + '</a>';
-               })
-               // TODO: Probably remove eventually, only needed for ChatBot to underline links with Flash chat, which is handled automatically in this chat
-               .replace(encodedRegex(/<U>(.+)<\/U>/g), '<span style="text-decoration: underline;">$1</span>')
-               // TODO: Probably remove eventually, only needed for existing /me (once the Flash app is removed ACTION should be used)
-               .replace(encodedRegex(/<I>(.+)<\/I>/g), '<span style="font-style: italic;">$1</span>');
-    //Processes links via anchorme
-    return anchorme(data, { attributes: [{ name: 'target', value: '_blank' }, { name: 'style', value: 'color:#FFF' }] });
-}
-
 
 /**
  *  Add color to a username based on the UID in the message or font tags
@@ -597,36 +562,6 @@ function initSock() {
                             } else {
                                 postMessage("You have been banned from chat");
                             }
-sock.onmessage = function (e) {
-    var commands = parseCommands(e.data);
-    for (var i=0; i<commands.length; i++) {
-        var cmd = commands[i];
-        switch(cmd.command) {
-            case "PING":
-                sock.send("PONG :0.0.0.0\r\n");
-                break;
-            case "433":
-            // Nick already used, try with fallback
-                var nickNum = parseInt(NICK.match(/\^(\d+)/)[1]) + 1;
-                NICK = NICK.replace(/\^(\d+)/, "^" + nickNum);
-                sock.send("NICK " + NICK + "\r\n");
-                sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
-                break;
-            case "001":
-            // Initial info
-                console.log("Authenticated");
-                sock.send("JOIN #" + CHANNEL + "\r\n");
-                break;
-            case "JOIN":
-                var nick = cmd.origin.split("!")[0];
-                if (nick == NICK) {
-                    console.log("Joined " + cmd.params[0]);
-                    console.log("Loading history...");
-                    $.get( "http://irc.eternagame.org:8082/history.html", function( data ) {
-                        console.log("History recieved");
-                        var messages = data.trim().split("\n");
-                        for (var j=0; j<messages.length; j++) {
-                            postMessage(messages[j], true);
                         }
                     } else if (cmd.params[1] == "-b") {
                         var maskUser = cmd.params[2].match(/(?:~q:)?(.+)!.+/)[1];
@@ -639,38 +574,6 @@ sock.onmessage = function (e) {
                 // Check if user has been kicked, if so disable input and notify in chat, if other user remove them from online list
                 case "KICK":
                     if (cmd.params[1] == NICK) {
-                    });
-                } else {
-                    addUser(cmd.origin.split("!")[0]);
-                }
-                break;
-            case "331":
-            case "332":
-            // Topic, display?
-                break;
-                // Part and quit both need to be handled the same way in our case - a user left the room
-            case "PART":
-            case "QUIT":
-                removeUser(cmd.origin.split("!")[0]);
-                break;
-            case "353":
-                var users = cmd.params[3].trim().split(" ");
-                for (var j=0; j<users.length; j++) {
-                    addUser(users[j]);
-                }
-                break;
-            case "366":
-            // Signifies end of names, don't think this is needed?
-                break;
-            case "NOTICE":
-            case "PRIVMSG":
-                postMessage(cmd.params[1], false);
-                break;
-            case "MODE":
-            // Check if user has been banned, if so disable input and notify in chat
-                if (cmd.params[1] == "+b") {
-                    var maskParts = cmd.params[2].match(/(~q:)?(.+)!.+/);
-                    if (NICK.match(new RegExp(maskParts[2].replace("*", ".+").replace("^", "\\^")))) {
                         $("#chat-input").prop('disabled', true);
                         postMessage("You have been kicked from chat" + (cmd.params[2] ? " - " + cmd.params[2] : ''));
                     } else {
@@ -707,47 +610,6 @@ sock.onmessage = function (e) {
                 // Topic set by _ at _
                 case "422":
                     break;
-                }
-                break;
-                // Check if user has been kicked, if so disable input and notify in chat, if other user remove them from online list
-            case "KICK":
-                if (cmd.params[1] == NICK) {
-                    $("#chat-input").prop('disabled', true);
-                    postMessage("You have been kicked from chat" + (cmd.params[2] ? " - " + cmd.params[2] : ''));
-                } else {
-                    removeUser(cmd.params[1]);
-                }
-                break;
-            case "404":
-            // Can't post message
-                if (cmd.params[2].startsWith("You are banned")) {
-                    $("#chat-input").prop('disabled', true);
-                    postMessage("You are not allowed to post in chat");
-                }
-                break;
-            case "474":
-            // Can't join channel
-                if (cmd.params[1] == "Cannot join channel (+b)") {
-                    $("#chat-input").prop('disabled', true);
-                    postMessage("You have been banned from chat");
-                }
-                break;
-            // Ignore information stuff
-            case "002":
-            case "003":
-            case "004":
-            case "005":
-            case "251":
-            case "252":
-            case "253":
-            case "254":
-            case "255":
-            case "265":
-            case "266":
-            case "333":
-            // Topic set by _ at _
-            case "422":
-                break;
 
                 default:
                     console.log("[Chat] Unhandled command recieved. Command: " + cmd.command + " Origin: " + cmd.origin + " Params: " + cmd.params);
