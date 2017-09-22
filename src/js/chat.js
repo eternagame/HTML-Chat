@@ -42,7 +42,11 @@ var disconnectionTimers = [5, 10, 15, 30];
 var currentTimer = 0;
 var timerInterval;
 
-// Initialize saved preferences 
+var postedMessages = [];
+var connected = false;
+var firstConnection = true;
+
+// Initialize saved preferences
 try {
     localStorage;
 } catch(e) {
@@ -60,7 +64,6 @@ var sock;
 function getSock() {
     return sock;
 }
-
 /**
  *  Parse messages sent by server
  *  @param data: Raw data sent by server
@@ -136,7 +139,7 @@ function addUser( username ) {
     if (usernamesToIgnore.includes(username)) return;
 
     if (!onlineUserWithName(username)) {
-        onlineUsers.push({name: username.toUpperCase(), connections: 1});
+        onlineUsers.push({ name: username.toUpperCase(), connections: 1, id: uid });
         onlineUsers.sort(function (userA, userB){
             if (userA.name < userB.name) return -1;
             if (userA.name > userB.name) return 1;
@@ -236,8 +239,13 @@ function formatTime( string ) {
  *  Display a message in the chat window
  *  @param raw_msg: The contents of the privmsg to be posted
  *  @param isHistory: If true, it should be pushed at the top, as it is an older message (and may be coming in late)
+ *  
  */
-function postMessage( raw_msg, isHistory ) {
+function postMessage(raw_msg, isHistory ) {
+    while (!isHistory && !connected) //console.log('stuck');
+    ;
+    postedMessages.push(raw_msg.trim());
+    //console.log("after while");
     var parts, prefix, uid, name, time, isAction, message, classes='';
     // In a readable format, the regex looks like: ((UID)_(Display Name)_(Date/Time)_)?(Message)
     // Time format: ShortDay ShortMonth Date HH:MM:SS Year UTC
@@ -274,10 +282,10 @@ function postMessage( raw_msg, isHistory ) {
     message = '<li class="chat-message{MSG_CLASS}">{USER}{MESSAGE}<span class="chat-message-time"> {TIME}</span></li>';
     message = message.replace("{MSG_CLASS}", classes)
                      // TODO: Eventually remove the italicise replacement, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
-                     .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '*$1*')), uid, isAction):'')
+                     .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '*$1*')), uid, isAction) : '')
                      .replace("{MESSAGE}", raw_msg)
                      .replace("{TIME}", prefix ? formatTime(time):'');
-    $(isHistory ? "#global-chat-historical" : "#global-chat-messages").append(message);
+    $("#global-chat-messages").append(message);
     if (autoScroll) {
         $("#chat-tab-global").mCustomScrollbar("scrollTo","bottom");
     }
@@ -334,13 +342,13 @@ $( document ).ready(function() {
     // Key bindings
     $('#chat-input').keypress(function (e) {
         var isAction = false;
+        var channel = "#" + CHANNEL;
         // Hit enter in chat
         if (e.which == 13) {
             // No posting as annon or if nothing has been actually posted
             if (USERNAME !== "Anonymous" && $('#chat-input').val().trim() !== '') {
                 var message = $('#chat-input').val();
                 var post = true;
-                
                 // Chat commands
                 if (message.startsWith("/")) {
                     var post = false;
@@ -371,9 +379,9 @@ $( document ).ready(function() {
                                     postMessage("Usage: /unignore <username>");
                                     postMessage("Example: /unignore player1");
                                     postMessage("Example: /unignore *");
-                                    break;
+                                    break;  
                                 default:
-                                    postMessage("Available commands: help, me, ignore, unignore");
+                                    postMessage("Available commands: help, me, ignore, ignore-list, unignore");
                                     postMessage("Type /help <command> for information on individual commands");
                                     postMessage("Example: /help me");
                                     postMessage("Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)");
@@ -422,8 +430,8 @@ $( document ).ready(function() {
                     } else {
                         message = UID + "_" + USERNAME + "_" + new Date().toUTCString().replace(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun), ([0-3]\d) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) ([0-2]\d(?::[0-6]\d){2}) GMT/, "$1 $3 $2 $5 $4 UTC") + "_" + message;
                     }
-                    sock.send("PRIVMSG #" + CHANNEL + " :" + message + "\r\n");
-                    postMessage(message);
+                    sock.send("PRIVMSG " + channel + " :" + message + "\r\n");
+                    postMessage(message, false);
                 }
             }
             $('#chat-input').val('');
@@ -441,7 +449,7 @@ function initSock() {
     $("#chat-loading > #failed").hide();
     //$("#reconnect").addClass("hover");
 
-    sock = new SockJS("http://irc.eternagame.org:8081");
+    sock = new SockJS("http://irc.eternagame.org:8081", [], { transports: ['websocket', 'xhr-streaming', 'xdr-streaming', 'eventsource', 'iframe-eventsource', 'htmlfile', 'iframe-htmlfile', 'xhr-polling', 'xdr-polling', 'iframe-xhr-polling'] });
     // Initial Chat Connection
     sock.onopen = function () {
         sock.send("NICK " + NICK + "\r\n");
@@ -458,6 +466,7 @@ function initSock() {
         onDisconnect();
     }
     function onDisconnect() {
+        connected = false;
         $("#reconnect").removeClass("active");
         $("#global-chat-messages").append($("chat-loading").detach());
         $("#chat-loading").show();
@@ -508,6 +517,8 @@ function initSock() {
                     sock.send("JOIN #" + CHANNEL + "\r\n");
                     break;
                 case "JOIN":
+                    failedAttempts = 0;
+
                     //$("#chat-content").css("background-color", "rgba(0,0,0,0)");
                     var nick = cmd.origin.split("!")[0];
                     if (nick == NICK) {
@@ -516,11 +527,23 @@ function initSock() {
                         $.get("http://irc.eternagame.org:8082/history.html", function (data) {
                             console.log("History recieved");
                             var messages = data.trim().split("\n");
-                            for (var j = 0; j < messages.length; j++) {
+                            var firstNewMessage = 0;
+                            var j;
+                            for (j = 0; j < messages.length; j++)
+                                if (postedMessages.indexOf(messages[j].trim()) == -1) {
+                                    break;
+                                }
+
+                            if (!firstConnection)
+                                postMessage("Reconnected to chat - Some messages might be missing if you were away for a long time", true);
+                            for (; j < messages.length; j++) {
                                 postMessage(messages[j], true);
                             }
+                            firstConnection = false;
+                            connected = true;
                             $("#reconnect").hide();
                             $("#chat-loading").hide();
+                            $("#chat-input").show();
                             $("div#chat-loading").detach();
                             $("#chat-tabs").show();
                             $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom");
