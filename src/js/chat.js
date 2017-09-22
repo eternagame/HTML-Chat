@@ -25,6 +25,10 @@ import './polyfills';
 import {CHAT_CHANNEL, CURRENT_USER} from './define-user';
 import '../css/chat.css';
 
+$("#disconnect").click(function () {
+    sock.close();
+});
+
 // Username, if not logged in "Annonymous"
 var USERNAME = CURRENT_USER ? CURRENT_USER.name : "Anonymous";
 // User ID, if not logged in "0"
@@ -43,6 +47,7 @@ var currentTimer = 0;
 var timerInterval;
 
 var postedMessages = [];
+var toBePosted = [];
 var connected = false;
 var firstConnection = true;
 
@@ -242,8 +247,10 @@ function formatTime( string ) {
  *  
  */
 function postMessage(raw_msg, isHistory ) {
-    while (!isHistory && !connected) //console.log('stuck');
-    ;
+    if (!isHistory && !connected) {
+        toBePosted.push(raw_msg);
+        return;
+    }
     postedMessages.push(raw_msg.trim());
     //console.log("after while");
     var parts, prefix, uid, name, time, isAction, message, classes='';
@@ -539,6 +546,8 @@ function initSock() {
                             for (; j < messages.length; j++) {
                                 postMessage(messages[j], true);
                             }
+                            while (toBePosted.length)
+                                postedMessages(toBePosted.shift(), true);
                             firstConnection = false;
                             connected = true;
                             $("#reconnect").hide();
