@@ -25,10 +25,6 @@ import './polyfills';
 import {CHAT_CHANNEL, CURRENT_USER} from './define-user';
 import '../css/chat.css';
 
-$("#disconnect").click(function () {
-    sock.close();
-});
-
 // Username, if not logged in "Annonymous"
 var USERNAME = CURRENT_USER ? CURRENT_USER.name : "Anonymous";
 // User ID, if not logged in "0"
@@ -252,8 +248,8 @@ function postMessage(raw_msg, isHistory ) {
         return;
     }
     postedMessages.push(raw_msg.trim());
-    //console.log("after while");
-    var parts, prefix, uid, name, time, isAction, message, classes='';
+
+    var parts, prefix, uid, name, time, isAction, message, classes = '';
     // In a readable format, the regex looks like: ((UID)_(Display Name)_(Date/Time)_)?(Message)
     // Time format: ShortDay ShortMonth Date HH:MM:SS Year UTC
     parts = raw_msg.match(/((\d+)_(.+)_((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-3]?\d [0-2]\d(?::[0-6]\d){2} \d{4} UTC)_)?(.+)/);
@@ -298,7 +294,11 @@ function postMessage(raw_msg, isHistory ) {
     }
 }
 
-$( document ).ready(function() {
+$(document).ready(function () {
+    $("#disconnect").click(function () {
+        sock.close();
+    });
+
     initSock();
     // Initialize UI
     // Initialize tabs
@@ -448,13 +448,11 @@ $( document ).ready(function() {
     $("#reconnect").click(initSock);
 });
 function initSock() {
-    //$("#chat-content").css("background-color", "rgba(0,0,0,0.5)");
     clearInterval(timerInterval);
     $("#reconnect").addClass("active");
     $("#reconnect").prop('onclick', null); 
     $("#chat-loading > #connecting").show();
     $("#chat-loading > #failed").hide();
-    //$("#reconnect").addClass("hover");
 
     sock = new SockJS("http://irc.eternagame.org:8081", [], { transports: ['websocket', 'xhr-streaming', 'xdr-streaming', 'eventsource', 'iframe-eventsource', 'htmlfile', 'iframe-htmlfile', 'xhr-polling', 'xdr-polling', 'iframe-xhr-polling'] });
     // Initial Chat Connection
@@ -537,17 +535,17 @@ function initSock() {
                             var firstNewMessage = 0;
                             var j;
                             for (j = 0; j < messages.length; j++)
-                                if (postedMessages.indexOf(messages[j].trim()) == -1) {
+                                if (postedMessages.indexOf(messages[j].trim()) == -1)
                                     break;
-                                }
-
                             if (!firstConnection)
                                 postMessage("Reconnected to chat - Some messages might be missing if you were away for a long time", true);
                             for (; j < messages.length; j++) {
                                 postMessage(messages[j], true);
                             }
-                            while (toBePosted.length)
-                                postedMessages(toBePosted.shift(), true);
+                            while (toBePosted.length) {
+                                console.log(toBePosted);
+                                postMessage(toBePosted.shift(), true);
+                            }
                             firstConnection = false;
                             connected = true;
                             $("#reconnect").hide();
@@ -584,7 +582,10 @@ function initSock() {
                     break;
                 case "NOTICE":
                 case "PRIVMSG":
-                    postMessage(cmd.params[1], false);
+                    if (cmd.params[0].indexOf('#') == -1 && cmd.params[0].indexOf('&') == -1)
+                        postMessage(cmd.params[1], false, true);
+                    else
+                        postMessage(cmd.params[1], false);
                     break;
                 case "MODE":
                     // Check if user has been banned, if so disable input and notify in chat

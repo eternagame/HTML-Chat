@@ -21,7 +21,7 @@
                         <li class="chat-message" id="chat-loading" style="color:white">
                             <img src="https://s3.amazonaws.com/eterna/icon_img/loading.gif" style="margin-bottom: 5px; background-repeat: no-repeat; width: 20px; height: 20px; margin-left: auto; margin-right: auto;"></img>
                             <span id="connecting">Connecting...</span>
-                            <span id="failed" hidden="hidden">Connection failed. retrying in <span id="timer">0</span> seconds.   </span>
+                            <span id="failed" style="display:none;">Connection failed. retrying in <span id="timer">0</span> seconds.   </span>
                         </li>
                     </ul>
                 </div>
@@ -33,11 +33,11 @@
             <div id="chat-loading" style="position: relative; top: Calc(50% - 55px); color: #FFF; text-align: center;">
                 <div style="margin-bottom: 5px; background-image: url('https://s3.amazonaws.com/eterna/icon_img/loading.gif'); background-repeat: no-repeat; width: 20px; height: 20px; margin-left: auto; margin-right: auto;"></div>
                 <span id="connecting">Connecting...</span>
-                <span id="failed" hidden="hidden">Connection failed. retrying in <span id="timer">0</span> seconds.   </span>
+                <span id="failed" style="display:none;">Connection failed. retrying in <span id="timer">0</span> seconds.   </span>
             </div>
             <textarea id="chat-input" disabled></textarea>
 
-            <div id="reconnect" hidden="hidden" class="unselectable clickable green-button-interactive rounded-5 centered" style="color:white; font-weight:bolder; font-size:13px;"><div class="green-button-bg rounded-5"></div>Reconnect</div>
+            <div id="reconnect" class="unselectable clickable green-button-interactive rounded-5 centered" style="display:none; color:white; font-weight:bolder; font-size:13px;"><div class="green-button-bg rounded-5"></div>Reconnect</div>
 
         </div>
     </div>
