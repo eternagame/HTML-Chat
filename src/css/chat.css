@@ -16,6 +16,7 @@ a {
 .chat-message-system {
     font-style: italic;
     text-align: center;
+    align-items: center;
     margin-top: 5px;
     margin-bottom: 5px;
 }
@@ -47,7 +48,7 @@ a {
 }
 
 /************* Chat input *************/
-#chat-input {
+#chat-input, #reconnect {
     position: absolute;
     bottom: 0px;
     width: Calc(100% - 28px);
@@ -57,6 +58,82 @@ a {
     border-radius: 2px;
     font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim;
 }
+
+/************** Buttons ***************/
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.green-button, .green-button-interactive, .green-button-interactive2D { /*border-color:#2f4a68;border-width:2px;border-style:solid;*/
+    background-color: #4FB748;
+    font-weight: normal;
+    position: relative;
+    text-align: center;
+    font-size: 12px;
+    padding: 0px;
+    text-transform: capitalized;
+    font-family: 'Century Gothic', 'Didact Gothic', Arial, sans-serif;
+}
+
+.green-button-bg { /*opacity:0.8;filter:alpha(opacity=80); */
+    position: absolute;
+}
+
+.green-button-interactive {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-decoration: none;
+    box-shadow: 5px 5px #2C6628;
+}
+
+    .green-button-interactive:hover, .green-button-interactive.hover {
+        background-color: #48A641;
+        box-shadow: 4px 4px #2C6628;
+        -webkit-transform: translate(1px, 1px);
+        -moz-transform: translate(1px, 1px);
+        transform: translate(1px, 1px);
+    }
+
+    .green-button-interactive:active, .green-button-interactive.active {
+        background-color: #48A641;
+        box-shadow: 2px 2px #2C6628;
+        -webkit-transform: translate(3px, 3px);
+        -moz-transform: translate(3px, 3px);
+        transform: translate(3px, 3px);
+    }
+
+.green-button, .green-button-interactive2D {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-decoration: none;
+    box-shadow: 0px 5px #2C6628;
+    margin: 0px 2.5px;
+}
+
+    .green-button:hover, .green-button.hover, .green-button-interactive2D:hover, .green-button-interactive2D.hover {
+        background-color: #48A641;
+        box-shadow: 0px 4px #2C6628;
+        -webkit-transform: translate(0px, 1px);
+        -moz-transform: translate(0px, 1px);
+        transform: translate(0px, 1px);
+    }
+
+    .green-button:active, .green-button.active, .green-button-interactive2D:active, .green-button-interactive2D.active {
+        background-color: #48A641;
+        box-shadow: 0px 2px #2C6628;
+        -webkit-transform: translate(0px, 3px);
+        -moz-transform: translate(0px, 3px);
+        transform: translate(0px, 3px);
+    }
+
 /* To determine input size */
 #chat-input-hidden {
     visibility: hidden;

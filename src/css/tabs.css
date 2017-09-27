@@ -6,19 +6,19 @@
     border: none;
     padding: 0;
 }
-#chat > .ui-tabs-nav > li {
+#chat > .ui-tabs-nav > li.tab {
     border: none;
     background-color: rgba(255, 255, 255, 0.07);
     border-radius: 0;
     margin: 0;
 }
-#chat > .ui-tabs-nav > li > a:focus {
+#chat > .ui-tabs-nav > li.tab > a:focus {
     outline: none;
 }
-#chat > .ui-tabs-nav > li:hover:not(.ui-state-active) {
+#chat > .ui-tabs-nav > li.tab:hover:not(.ui-state-active) {
     background-color: rgba(255, 255, 255, 0.13);
 }
-#chat > .ui-tabs-nav > li > a {
+#chat > .ui-tabs-nav > li.tab > a {
     position: relative;
     top: 1px;
     padding: .4em 1.25em;
@@ -28,6 +28,12 @@
 #chat > .ui-tabs-nav > .ui-state-active {
     background-color: rgba(255, 255, 255, 0.2);
     padding: 0;
+}
+
+/************ Chat Loading ************/
+#chat-loading > img {
+    float: left;
+    display: inline-block;
 }
 
 /************* Chat Tabs *************/
