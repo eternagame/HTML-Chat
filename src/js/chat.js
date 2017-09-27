@@ -242,7 +242,7 @@ function formatTime( string ) {
  *  @param isHistory: If true, it should be pushed at the top, as it is an older message (and may be coming in late)
  *  
  */
-function postMessage(raw_msg, isHistory ) {
+function postMessage( raw_msg, isHistory ) {
     if (!isHistory && !connected) {
         toBePosted.push(raw_msg);
         return;
@@ -535,8 +535,7 @@ function initSock() {
                             var firstNewMessage = 0;
                             var j;
                             for (j = 0; j < messages.length; j++)
-                                if (postedMessages.indexOf(messages[j].trim()) == -1)
-                                    break;
+                                if (postedMessages.indexOf(messages[j].trim()) == -1) break;
                             if (!firstConnection)
                                 postMessage("Reconnected to chat - Some messages might be missing if you were away for a long time", true);
                             for (; j < messages.length; j++) {
@@ -582,10 +581,7 @@ function initSock() {
                     break;
                 case "NOTICE":
                 case "PRIVMSG":
-                    if (cmd.params[0].indexOf('#') == -1 && cmd.params[0].indexOf('&') == -1)
-                        postMessage(cmd.params[1], false, true);
-                    else
-                        postMessage(cmd.params[1], false);
+                    postMessage(cmd.params[1], false);
                     break;
                 case "MODE":
                     // Check if user has been banned, if so disable input and notify in chat
