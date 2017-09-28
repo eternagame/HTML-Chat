@@ -1,7 +1,7 @@
 # HTML-Chat
 HTML5 implementation of Eterna's web-based IRC chat client to replace the legacy Flash-based implementation
 
-Please note that a rewritten version using backbone.js is under way to improve the readability and extensibility of the codebase. See the backbone-rewrite branch for its current status. It is very work in progress, and is not functional yet. New pull requests will be accepted for both versions at the present time.
+Please note that a rewritten version using Vue.js is planned to improve the readability and extensibility of the codebase. More info will be forthcoming.
 
 As a reference, the chat server currently uses [txircd](https://github.com/ElementalAlchemist/txircd) as the IRCd daemon and a custom python-based IRC bot to record recent history.
 
@@ -19,6 +19,7 @@ Feel free to fork this repository, make some changes, and create a pull request.
 
 Currently compatibility must be maintained between this chat and the legacy Flash chat, until it can be implemented into the game. At that point, more significant changes may be implemented to improve implementations based on IRCv3 functionality and and other functions that would otherwise "break" the Flash chat.
 
+Please develop with and make all pull requests to the `dev` branch unless otherwise requested, as this is the in-progress codebase for the next release.
 -----------------------------------------
 
 Design and implementation of initial release: [@LFP6](https://github.com/LFP6) ([Eterna](http://www.eternagame.org/web/player/48290/))
