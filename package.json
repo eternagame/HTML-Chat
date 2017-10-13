@@ -6,6 +6,7 @@
     "jquery-ui": "^1.12.1",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
     "markdown-it": "^8.3.1",
+    "perfect-scrollbar": "^1.0.3",
     "sockjs-client": "^1.1.2"
   },
   "devDependencies": {

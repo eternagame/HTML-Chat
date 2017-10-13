@@ -7,7 +7,7 @@
 </head>
 
 <body style="height: 100%; margin: 0px; padding: 0px; font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim; font-size: 14px; font-weight: 300;">
-    <button id="disconnect"> disconnect</button>
+    <button value="hi">h</button>
     <div id="chat" style="height: 100%; font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim; font-size: 14px; font-weight: 300;">
         <ul>
             <li class="tab"><a href="#chat-tab-global">CHAT</a></li>
@@ -15,7 +15,7 @@
         </ul>
         <div id="chat-content" style="border: rgba(255, 255, 255, 0.2) solid 2px; height: Calc(100% - 34px); position: relative;">
             <div id="chat-tabs" style="height: 100%; display:none; ">
-                <div id="chat-tab-global" style="word-wrap: break-word; white-space: normal;">
+                <div id="chat-tab-global" style="word-wrap: break-word; white-space: normal; position:relative; overflow: auto; height: 100%; width: 100%;">
                     <ul id="global-chat-messages"></ul>
                     <ul>
                         <li class="chat-message" id="chat-loading" style="color:white">
