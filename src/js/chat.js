@@ -306,7 +306,7 @@ $(document).ready(function () {
         activate: function( event, ui ) {
             console.log(ui);
             if (ui) {
-                if (ui.newPanel[0].id == "chat-tab-global" && autoScroll) {
+                if (ui.newPanel[0].id == "chat-tabs" && autoScroll) {
                     scrollbarContainer.scrollTop = scrollbarContainer.scrollHeight;
                 }
             }
@@ -314,15 +314,11 @@ $(document).ready(function () {
     });
     // Initialize scrollbar
     scrollbarContainer = $('#chat-tabs')[0];
-    scrollbar = new PerfectScrollbar('#chat-tab-global', {
+    scrollbar = new PerfectScrollbar('#chat-tabs', {
         wheelPropagation: true
     });
     scrollbarContainer.addEventListener('ps-scroll-y', function () {
         autoScroll = scrollbarContainer.scrollTop == scrollbarContainer.scrollHeight;
-    });
-
-    new PerfectScrollbar('#chat-tab-users', {
-        wheelPropagation: true
     });
 
     // Fill out max length of message
@@ -448,8 +444,12 @@ $(document).ready(function () {
     });
     $("#reconnect").click(initSock);
 });
-$('button').click(function () {
+$('#message').click(function () {
     postMessage("hi");
+    console.log(scrollbarContainer.scrollHeight);
+});
+$("#disable").click(function () {
+    scrollbar.destroy();
 });
 function initSock() {
     clearInterval(timerInterval);
