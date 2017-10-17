@@ -4,9 +4,8 @@ import 'jquery-ui/ui/widgets/tabs';
 import 'jquery-ui/themes/base/core.css'
 import 'jquery-ui/themes/base/tabs.css'
 
-// mCustomScrollbar
-import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js';
-import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css';
+// Perfect-Scrollbar
+import PerfectScrollbar from 'perfect-scrollbar';
 
 // Markdown-it
 import MarkdownIt from "markdown-it";
@@ -46,6 +45,9 @@ var postedMessages = [];
 var toBePosted = [];
 var connected = false;
 var firstConnection = true;
+
+var scrollbarContainer;
+var scrollbar;
 
 // Initialize saved preferences
 try {
@@ -289,16 +291,13 @@ function postMessage( raw_msg, isHistory ) {
                      .replace("{MESSAGE}", raw_msg)
                      .replace("{TIME}", prefix ? formatTime(time):'');
     $("#global-chat-messages").append(message);
+    scrollbar.update();
     if (autoScroll) {
-        $("#chat-tab-global").mCustomScrollbar("scrollTo","bottom");
+        scrollbarContainer.scrollTop = scrollbarContainer.scrollHeight;
     }
 }
 
 $(document).ready(function () {
-    $("#disconnect").click(function () {
-        sock.close();
-    });
-
     initSock();
     // Initialize UI
     // Initialize tabs
@@ -307,23 +306,21 @@ $(document).ready(function () {
         activate: function( event, ui ) {
             console.log(ui);
             if (ui) {
-                if (ui.newPanel[0].id == "chat-tab-global" && autoScroll) {
-                    $(ui.newPanel).mCustomScrollbar("scrollTo","bottom");
+                if (ui.newPanel[0].id == "chat-tabs" && autoScroll) {
+                    scrollbarContainer.scrollTop = scrollbarContainer.scrollHeight;
                 }
             }
         }
     });
     // Initialize scrollbar
-    $( "#chat-tabs" ).children().mCustomScrollbar({
-        // No fancy animation, it makes it feel awkward
-        scrollInertia: 0,
-        callbacks:{
-            // The user has scrolled, so don't automatically move to the bottom on a new message
-            onScrollStart: function() {autoScroll = false;},
-            // We've hit the bottom, resume scrolling
-            onTotalScroll: function() {autoScroll = true;}
-        }
+    scrollbarContainer = $('#chat-tabs')[0];
+    scrollbar = new PerfectScrollbar('#chat-tabs', {
+        wheelPropagation: true
     });
+    scrollbarContainer.addEventListener('ps-scroll-y', function () {
+        autoScroll = scrollbarContainer.scrollTop == scrollbarContainer.scrollHeight;
+    });
+
     // Fill out max length of message
     // Breakdown - IRC server max: 324, timestamp: 28, underscores: 3, max length of username formatting (for /me, discounting the 3 characters for the command): 40, username: dynamic, UID: dynamic
     $("#chat-input").prop("maxLength", 253 - UID.toString().length - USERNAME.length);
@@ -447,6 +444,13 @@ $(document).ready(function () {
     });
     $("#reconnect").click(initSock);
 });
+$('#message').click(function () {
+    postMessage("hi");
+    console.log(scrollbarContainer.scrollHeight);
+});
+$("#disable").click(function () {
+    scrollbar.destroy();
+});
 function initSock() {
     clearInterval(timerInterval);
     $("#reconnect").addClass("active");
@@ -552,7 +556,7 @@ function initSock() {
                             $("#chat-input").show();
                             $("div#chat-loading").detach();
                             $("#chat-tabs").show();
-                            $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom");
+                            scrollbarContainer.scrollTop = scrollbarContainer.scrollHeight;
                             if (USERNAME !== "Anonymous") {
                                 $("#chat-input").prop('disabled', false);
                             }
