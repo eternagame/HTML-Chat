@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
-const ChunkManifestPlugin = require('chunk-manifest-webpack-plugin');
 const webpackMerge = require('webpack-merge');
 
 const commonConfig = {
@@ -38,10 +37,6 @@ const commonConfig = {
         }),
         new InlineManifestWebpackPlugin({
             name: 'webpackManifest'
-        }),
-        new ChunkManifestPlugin({
-            filename: 'chunk-manifest.json',
-            manifestVariable: 'webpackManifest'
         }),
     ]
 }
