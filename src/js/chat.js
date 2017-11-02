@@ -47,6 +47,10 @@ var toBePosted = [];
 var connected = false;
 var firstConnection = true;
 
+var pendingResizes = 0;
+var scrolledOnce = false;
+var calledFromPostMessage = 0;
+
 // Initialize saved preferences
 try {
     localStorage;
@@ -65,6 +69,11 @@ var sock;
 function getSock() {
     return sock;
 }
+
+function sendHi() {
+    postMessage('hi');
+}
+$('#hi').click(sendHi);
 /**
  *  Parse messages sent by server
  *  @param data: Raw data sent by server
@@ -287,13 +296,10 @@ function postMessage( raw_msg, isHistory ) {
                      // TODO: Eventually remove the italicise replacement, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
                      .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '*$1*')), uid, isAction) : '')
                      .replace("{MESSAGE}", raw_msg)
-                     .replace("{TIME}", prefix ? formatTime(time):'');
+        .replace("{TIME}", prefix ? formatTime(time) : '');
+    calledFromPostMessage++;
     $("#global-chat-messages").append(message);
-    if (autoScroll) {
-        $("#chat-tab-global").mCustomScrollbar("scrollTo","bottom");
-    }
 }
-
 $(document).ready(function () {
     $("#disconnect").click(function () {
         sock.close();
@@ -317,11 +323,20 @@ $(document).ready(function () {
     $( "#chat-tabs" ).children().mCustomScrollbar({
         // No fancy animation, it makes it feel awkward
         scrollInertia: 0,
-        callbacks:{
+        callbacks: {
             // The user has scrolled, so don't automatically move to the bottom on a new message
-            onScrollStart: function() {autoScroll = false;},
+            onScrollStart: function () {
+                if (calledFromPostMessage) {
+                    calledFromPostMessage--;
+                    if (autoScroll)
+                        $(this).mCustomScrollbar("scrollTo", "bottom");
+                }
+                else {
+                    autoScroll = false;
+                }
+            },
             // We've hit the bottom, resume scrolling
-            onTotalScroll: function() {autoScroll = true;}
+            onTotalScroll: function() { autoScroll = true;}
         }
     });
     // Fill out max length of message
@@ -542,7 +557,6 @@ function initSock() {
                                 postMessage(messages[j], true);
                             }
                             while (toBePosted.length) {
-                                console.log(toBePosted);
                                 postMessage(toBePosted.shift(), true);
                             }
                             firstConnection = false;
