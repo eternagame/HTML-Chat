@@ -47,9 +47,7 @@ var toBePosted = [];
 var connected = false;
 var firstConnection = true;
 
-var pendingResizes = 0;
-var scrolledOnce = false;
-var calledFromPostMessage = 0;
+var postMessageScrollTriggers = 0;
 
 // Initialize saved preferences
 try {
@@ -70,10 +68,6 @@ function getSock() {
     return sock;
 }
 
-function sendHi() {
-    postMessage('hi');
-}
-$('#hi').click(sendHi);
 /**
  *  Parse messages sent by server
  *  @param data: Raw data sent by server
@@ -297,7 +291,7 @@ function postMessage( raw_msg, isHistory ) {
                      .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '*$1*')), uid, isAction) : '')
                      .replace("{MESSAGE}", raw_msg)
         .replace("{TIME}", prefix ? formatTime(time) : '');
-    calledFromPostMessage++;
+    postMessageScrollTriggers++;
     $("#global-chat-messages").append(message);
 }
 $(document).ready(function () {
@@ -326,8 +320,8 @@ $(document).ready(function () {
         callbacks: {
             // The user has scrolled, so don't automatically move to the bottom on a new message
             onScrollStart: function () {
-                if (calledFromPostMessage) {
-                    calledFromPostMessage--;
+                if (postMessageScrollTriggers) {
+                    postMessageScrollTriggers--;
                     if (autoScroll)
                         $(this).mCustomScrollbar("scrollTo", "bottom");
                 }
