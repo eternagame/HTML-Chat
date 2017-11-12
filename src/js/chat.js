@@ -231,6 +231,7 @@ function colorizeUser ( data, uid, isAction ) {
  *  @param time: Timestamp at beginning of message
  *  @return: Formatted timestamp
  */
+function formatTime( string ) {
     // Construct date from string, get the time
     return new Date(Date.parse(string)).toTimeString().replace(/(\d{2}):(\d{2}).+/, function(match, hour, minutes) {
         // Format to non-millitary, add brackets
@@ -293,9 +294,7 @@ function postMessage( raw_msg, isHistory ) {
     postMessageScrollTriggers++;
     $("#global-chat-messages").append(message);
     if (message.includes('@' + NICK.substr(0, NICK.lastIndexOf('_') - 1))) {
-        console.log('firstIf');
         Notification.requestPermission().then(function (result) {
-            console.log(result);
             var notification = new Notification(name ? name : 'Eterna Not', {
                 body: raw_msg,
                 tag: 'eterna-chat-ping-' + message,
@@ -303,7 +302,6 @@ function postMessage( raw_msg, isHistory ) {
             });
         });
     }
-    console.log('@' + NICK.substr(0, NICK.lastIndexOf('_') - 1));
 }
 $(document).ready(function () {
     $("#disconnect").click(function () {
