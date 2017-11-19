@@ -293,6 +293,15 @@ function postMessage( raw_msg, isHistory ) {
         .replace("{TIME}", prefix ? formatTime(time) : '');
     postMessageScrollTriggers++;
     $("#global-chat-messages").append(message);
+    if (message.includes('@' + NICK.substr(0, NICK.lastIndexOf('_') - 1))) {
+        Notification.requestPermission().then(function (result) {
+            var notification = new Notification(name ? name : 'Eterna Not', {
+                body: raw_msg,
+                tag: 'eterna-chat-ping-' + message,
+                icon: 'https://pbs.twimg.com/profile_images/902198585789366272/BRGnomZw.jpg'
+            });
+        });
+    }
 }
 $(document).ready(function () {
     $("#disconnect").click(function () {
