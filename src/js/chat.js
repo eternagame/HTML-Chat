@@ -560,6 +560,7 @@ function initSock() {
                             $("div#chat-loading").detach();
                             $("#chat-tabs").show();
                             $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom");
+                            postMessageScrollTriggers = 0;
                             if (USERNAME !== "Anonymous") {
                                 $("#chat-input").prop('disabled', false);
                             }
