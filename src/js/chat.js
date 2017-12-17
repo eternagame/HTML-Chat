@@ -523,7 +523,6 @@ function initSock() {
                     var nickNum = parseInt(NICK.match(/\^(\d+)/)[1]) + 1;
                     NICK = NICK.replace(/\^(\d+)/, "^" + nickNum);
                     sock.send("NICK " + NICK + "\r\n");
-                    sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
                     break;
                 case "001":
                     // Initial info
