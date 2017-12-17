@@ -25,7 +25,7 @@
     font-size: 12px;
     color: #FFF;
 }
-#chat > .ui-tabs-nav > .ui-state-active {
+#chat > .ui-tabs-nav > li.tab..ui-state-active {
     background-color: rgba(255, 255, 255, 0.2);
     padding: 0;
 }
