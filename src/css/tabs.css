@@ -22,7 +22,10 @@
     position: relative;
     top: 1px;
     padding: .4em 1.25em;
+    font-family: 'Century Gothic', 'Didact Gothic', Arial, sans-serif;
     font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
     color: #FFF;
 }
 #chat > .ui-tabs-nav > li.tab.ui-state-active {
