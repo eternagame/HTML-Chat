@@ -53,7 +53,7 @@ a {
     position: absolute;
     bottom: 0px;
     width: Calc(100% - 28px);
-    height: 16px;
+    height: 19px;
     resize: none;
     margin: 10px;
     border-radius: 2px;
@@ -94,21 +94,21 @@ a {
     box-shadow: 5px 5px #2C6628;
 }
 
-    .green-button-interactive:hover, .green-button-interactive.hover {
-        background-color: #48A641;
-        box-shadow: 4px 4px #2C6628;
-        -webkit-transform: translate(1px, 1px);
-        -moz-transform: translate(1px, 1px);
-        transform: translate(1px, 1px);
-    }
+.green-button-interactive:hover, .green-button-interactive.hover {
+    background-color: #48A641;
+    box-shadow: 4px 4px #2C6628;
+    -webkit-transform: translate(1px, 1px);
+    -moz-transform: translate(1px, 1px);
+    transform: translate(1px, 1px);
+}
 
-    .green-button-interactive:active, .green-button-interactive.active {
-        background-color: #48A641;
-        box-shadow: 2px 2px #2C6628;
-        -webkit-transform: translate(3px, 3px);
-        -moz-transform: translate(3px, 3px);
-        transform: translate(3px, 3px);
-    }
+.green-button-interactive:active, .green-button-interactive.active {
+    background-color: #48A641;
+    box-shadow: 2px 2px #2C6628;
+    -webkit-transform: translate(3px, 3px);
+    -moz-transform: translate(3px, 3px);
+    transform: translate(3px, 3px);
+}
 
 .green-button, .green-button-interactive2D {
     -webkit-border-radius: 5px;
@@ -119,21 +119,21 @@ a {
     margin: 0px 2.5px;
 }
 
-    .green-button:hover, .green-button.hover, .green-button-interactive2D:hover, .green-button-interactive2D.hover {
-        background-color: #48A641;
-        box-shadow: 0px 4px #2C6628;
-        -webkit-transform: translate(0px, 1px);
-        -moz-transform: translate(0px, 1px);
-        transform: translate(0px, 1px);
-    }
+.green-button:hover, .green-button.hover, .green-button-interactive2D:hover, .green-button-interactive2D.hover {
+    background-color: #48A641;
+    box-shadow: 0px 4px #2C6628;
+    -webkit-transform: translate(0px, 1px);
+    -moz-transform: translate(0px, 1px);
+    transform: translate(0px, 1px);
+}
 
-    .green-button:active, .green-button.active, .green-button-interactive2D:active, .green-button-interactive2D.active {
-        background-color: #48A641;
-        box-shadow: 0px 2px #2C6628;
-        -webkit-transform: translate(0px, 3px);
-        -moz-transform: translate(0px, 3px);
-        transform: translate(0px, 3px);
-    }
+.green-button:active, .green-button.active, .green-button-interactive2D:active, .green-button-interactive2D.active {
+    background-color: #48A641;
+    box-shadow: 0px 2px #2C6628;
+    -webkit-transform: translate(0px, 3px);
+    -moz-transform: translate(0px, 3px);
+    transform: translate(0px, 3px);
+}
 
 /* To determine input size */
 #chat-input-hidden {
@@ -141,6 +141,6 @@ a {
     white-space: pre-wrap;
     word-wrap: break-word;
     width: Calc(100% - 28px);
-    min-height: 16px;
+    min-height: 19px;
     border: 1px;
 }
