@@ -305,7 +305,6 @@ $(document).ready(function () {
     $( "#chat" ).tabs({
         // If we're automatically scrolling, scroll to the bottom. NOTE: This is because Eterna uses an old version of jQuery UI, it's now "activate" (needs to be updated of jQuery UI is updated)
         activate: function( event, ui ) {
-            console.log(ui);
             if (ui) {
                 if (ui.newPanel[0].id == "chat-tab-global" && autoScroll) {
                     $(ui.newPanel).mCustomScrollbar("scrollTo","bottom");
