@@ -572,7 +572,9 @@ function initSock() {
                             $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom");
                             postMessageScrollTriggers = 0;
                             if (USERNAME !== "Anonymous") {
-                                $("#chat-input").prop('disabled', false);
+                                $("#chat-input").prop("disabled", false);
+                            } else  {
+                                $("#chat-input").attr("placeholder", "Please log in to chat")
                             }
                         });
                     } else {
