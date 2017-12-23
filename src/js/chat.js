@@ -1,12 +1,12 @@
-﻿// jQuery and jQuery-ui
+// jQuery and jQuery-ui
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/tabs';
 import 'jquery-ui/themes/base/core.css'
 import 'jquery-ui/themes/base/tabs.css'
 
 // mCustomScrollbar
-import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js';
-import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css';
+import scrollbar from 'malihu-custom-scrollbar-plugin';
+scrollbar($);
 
 // Markdown-it
 import MarkdownIt from "markdown-it";
@@ -309,8 +309,10 @@ function postMessage( raw_msg, isHistory ) {
                      .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '*$1*')), uid, isAction) : '')
                      .replace("{MESSAGE}", raw_msg)
         .replace("{TIME}", prefix ? formatTime(time) : '');
-    postMessageScrollTriggers++;
     $("#global-chat-messages").append(message);
+    if (autoScroll) {
+        $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+    }
 }
 $(document).ready(function () {
     $("#disconnect").click(function () {
@@ -336,18 +338,9 @@ $(document).ready(function () {
         scrollInertia: 0,
         callbacks: {
             // The user has scrolled, so don't automatically move to the bottom on a new message
-            onScrollStart: function () {
-                if (postMessageScrollTriggers) {
-                    postMessageScrollTriggers--;
-                    if (autoScroll)
-                        $(this).mCustomScrollbar("scrollTo", "bottom");
-                }
-                else {
-                    autoScroll = false;
-                }
-            },
+            onScroll: function() { autoScroll = false; },
             // We've hit the bottom, resume scrolling
-            onTotalScroll: function() { autoScroll = true;}
+            onTotalScroll: function() { autoScroll = true; }
         }
     });
     // Fill out max length of message

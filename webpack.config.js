@@ -46,7 +46,7 @@ const developmentConfig = {
         contentBase: path.join(__dirname, 'www-dev'),
         compress: true,
         port: 9000,
-        setup(app){
+        before(app){
             const request = require('request');
             const bodyParser = require('body-parser');
 
