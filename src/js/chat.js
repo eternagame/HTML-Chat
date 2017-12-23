@@ -77,7 +77,7 @@ try {
 var ignoredUsers = localStorage.chatIgnored || [];
 
 // Chat should start automaticcally scrolling as new messages come in
-var autoScroll = "bottom";
+var chatAutoScroll = "bottom";
 
 var sock;
 
@@ -310,9 +310,7 @@ function postMessage( raw_msg, isHistory ) {
                      .replace("{MESSAGE}", raw_msg)
         .replace("{TIME}", prefix ? formatTime(time) : '');
     $("#global-chat-messages").append(message);
-    //if (autoScroll) {
-        $("#chat-tab-global").mCustomScrollbar("scrollTo", autoScroll, {callbacks: false});
-    //}
+    $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
 }
 $(document).ready(function () {
     $("#disconnect").click(function () {
@@ -327,7 +325,7 @@ $(document).ready(function () {
         activate: function( event, ui ) {
             if (ui) {
                 if (ui.newPanel[0].id == "chat-tab-global") {
-                    $(ui.newPanel).mCustomScrollbar("scrollTo", autoScroll, {callbacks: false});
+                    $(ui.newPanel).mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
                 }
             }
         }
@@ -338,9 +336,17 @@ $(document).ready(function () {
         scrollInertia: 0,
         callbacks: {
             // The user has scrolled, so don't automatically move to the bottom on a new message
-            onScroll: function() { autoScroll = this.mcs.top; },
+            onScroll: function() {
+                if ($("#chat-tab-global").css('display') !== 'none') {
+                    chatAutoScroll = this.mcs.top;
+                }
+            },
             // We've hit the bottom, resume scrolling
-            onTotalScroll: function() { autoScroll = "bottom"; }
+            onTotalScroll: function() {
+                if ($("#chat-tab-global").css('display') !== 'none') {
+                    chatAutoScroll = "bottom";
+                }
+            }
         }
     });
     // Fill out max length of message
