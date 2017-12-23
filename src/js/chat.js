@@ -284,7 +284,7 @@ function postMessage( raw_msg, isHistory ) {
     // TODO: In the future, remove this, it's due to Flash chat's pre-escaping before sending.
     raw_msg = raw_msg.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     // TODO: Eventually remove, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
-    raw_msg = raw_msg.replace(/<I>(.+)<\/I>/g, '*$1*');
+    raw_msg = raw_msg.replace(/<I>(.+)<\/I>/g, '$1');
     // TODO: Because of how chat works right now, we can only handle the inline styles,
     // but some of the block-level pieces could be nice too once we have multiline messages (lists, blockquotes, and fences mostly).
     // Also, the `code` should be styled (ie have a background color and maybe a different text color), and it currently isn't.
@@ -308,7 +308,7 @@ function postMessage( raw_msg, isHistory ) {
     message = '<li class="chat-message{MSG_CLASS}">{USER}{MESSAGE}<span class="chat-message-time"> {TIME}</span></li>';
     message = message.replace("{MSG_CLASS}", classes)
                      // TODO: Eventually remove the italicise replacement, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
-                     .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '*$1*')), uid, isAction) : '')
+                     .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '$1')), uid, isAction) : '')
                      .replace("{MESSAGE}", raw_msg)
         .replace("{TIME}", prefix ? formatTime(time) : '');
     $("#global-chat-messages").append(message);
