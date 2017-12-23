@@ -77,7 +77,7 @@ try {
 var ignoredUsers = localStorage.chatIgnored || [];
 
 // Chat should start automaticcally scrolling as new messages come in
-var autoScroll = true;
+var autoScroll = "bottom";
 
 var sock;
 
@@ -310,9 +310,9 @@ function postMessage( raw_msg, isHistory ) {
                      .replace("{MESSAGE}", raw_msg)
         .replace("{TIME}", prefix ? formatTime(time) : '');
     $("#global-chat-messages").append(message);
-    if (autoScroll) {
-        $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
-    }
+    //if (autoScroll) {
+        $("#chat-tab-global").mCustomScrollbar("scrollTo", autoScroll, {callbacks: false});
+    //}
 }
 $(document).ready(function () {
     $("#disconnect").click(function () {
@@ -326,8 +326,8 @@ $(document).ready(function () {
         // If we're automatically scrolling, scroll to the bottom. NOTE: This is because Eterna uses an old version of jQuery UI, it's now "activate" (needs to be updated of jQuery UI is updated)
         activate: function( event, ui ) {
             if (ui) {
-                if (ui.newPanel[0].id == "chat-tab-global" && autoScroll) {
-                    $(ui.newPanel).mCustomScrollbar("scrollTo","bottom");
+                if (ui.newPanel[0].id == "chat-tab-global") {
+                    $(ui.newPanel).mCustomScrollbar("scrollTo", autoScroll, {callbacks: false});
                 }
             }
         }
@@ -338,9 +338,9 @@ $(document).ready(function () {
         scrollInertia: 0,
         callbacks: {
             // The user has scrolled, so don't automatically move to the bottom on a new message
-            onScroll: function() { autoScroll = false; },
+            onScroll: function() { autoScroll = this.mcs.top; },
             // We've hit the bottom, resume scrolling
-            onTotalScroll: function() { autoScroll = true; }
+            onTotalScroll: function() { autoScroll = "bottom"; }
         }
     });
     // Fill out max length of message
