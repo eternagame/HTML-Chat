@@ -8,6 +8,8 @@ import 'jquery-ui/themes/base/tabs.css'
 import scrollbar from 'malihu-custom-scrollbar-plugin';
 scrollbar($);
 
+window.$ = $;
+
 // Markdown-it
 import MarkdownIt from "markdown-it";
 var md = new MarkdownIt({
@@ -321,11 +323,12 @@ $(document).ready(function () {
     // Initialize UI
     // Initialize tabs
     $( "#chat" ).tabs({
-        // If we're automatically scrolling, scroll to the bottom. NOTE: This is because Eterna uses an old version of jQuery UI, it's now "activate" (needs to be updated of jQuery UI is updated)
         activate: function( event, ui ) {
             if (ui) {
                 if (ui.newPanel[0].id == "chat-tab-global") {
-                    $(ui.newPanel).mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
+                    setTimeout(function(){
+                        $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
+                    }, 100);
                 }
             }
         }
