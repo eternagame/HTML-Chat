@@ -305,7 +305,7 @@ function postMessage( raw_msg, isHistory ) {
     if (!prefix) { classes += " chat-message-system"; }
 
     // Fill template and post
-    message = '<li class="chat-message{MSG_CLASS}">{USER}{MESSAGE}<span class="chat-message-time"> {TIME}</span></li>';
+    message = '<li class="chat-message{MSG_CLASS}">{USER}&lrm;{MESSAGE}<span class="chat-message-time"> &lrm;{TIME}</span></li>';
     message = message.replace("{MSG_CLASS}", classes)
                      // TODO: Eventually remove the italicise replacement, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
                      .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '$1')), uid, isAction) : '')
