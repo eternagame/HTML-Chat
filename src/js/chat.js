@@ -312,7 +312,9 @@ function postMessage( raw_msg, isHistory ) {
                      .replace("{MESSAGE}", raw_msg)
         .replace("{TIME}", prefix ? formatTime(time) : '');
     $("#global-chat-messages").append(message);
-    $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
+    setTimeout(function(){
+        $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
+    }, 100);
 }
 $(document).ready(function () {
     $("#disconnect").click(function () {
@@ -578,8 +580,9 @@ function initSock() {
                             $("#chat-input").show();
                             $("div#chat-loading").detach();
                             $("#chat-tabs").show();
-                            $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom");
-                            postMessageScrollTriggers = 0;
+                            setTimeout(function(){
+                                $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+                            }, 100);
                             if (USERNAME !== "Anonymous") {
                                 $("#chat-input").prop("disabled", false);
                             } else  {
