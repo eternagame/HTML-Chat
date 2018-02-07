@@ -484,7 +484,7 @@ function initSock() {
     $("#chat-loading > #connecting").show();
     $("#chat-loading > #failed").hide();
 
-    sock = new SockJS("http://irc.eternagame.org:8081", [], { transports: ['websocket', 'xhr-streaming', 'xdr-streaming', 'eventsource', 'iframe-eventsource', 'htmlfile', 'iframe-htmlfile', 'xhr-polling', 'xdr-polling', 'iframe-xhr-polling'] });
+    sock = new SockJS("https://irc.eternagame.org/chatws", [], { transports: ['websocket', 'xhr-streaming', 'xdr-streaming', 'eventsource', 'iframe-eventsource', 'htmlfile', 'iframe-htmlfile', 'xhr-polling', 'xdr-polling', 'iframe-xhr-polling'] });
     // Initial Chat Connection
     sock.onopen = function () {
         sock.send("NICK " + NICK + "\r\n");
@@ -558,7 +558,7 @@ function initSock() {
                     if (nick == NICK) {
                         console.log("Joined " + cmd.params[0]);
                         console.log("Loading history...");
-                        $.get("http://irc.eternagame.org:8082/history.html", function (data) {
+                        $.get("https://irc.eternagame.org/history", function (data) {
                             console.log("History recieved");
                             var messages = data.trim().split("\n");
                             var firstNewMessage = 0;
