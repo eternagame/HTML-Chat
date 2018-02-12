@@ -67,8 +67,6 @@ var toBePosted = [];
 var connected = false;
 var firstConnection = true;
 
-var postMessageScrollTriggers = 0;
-
 // Initialize saved preferences
 try {
     localStorage;
@@ -368,7 +366,7 @@ $(document).ready(function () {
     input.css("overflow", "hidden");
 
     input.on('keydown keypress keyup', function () {
-        content = $(this).val();
+        content = md.renderInline($(this).val());
         // Fill content apropriately
         content = content.replace(/\n/g, '<br>');
         hiddenDiv.html(content + '');
