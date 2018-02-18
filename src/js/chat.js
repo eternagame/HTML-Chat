@@ -69,12 +69,12 @@ var firstConnection = true;
 
 // Initialize saved preferences
 try {
-    localStorage;
+    var persistantSettings = localStorage;
 } catch(e) {
     console.warn("Local storage not available (either unsupported or permission denied) - user preferences will not be saved");
-    window.localStorage = {}
+    var persistantSettings = {}
 }
-var ignoredUsers = localStorage.chatIgnored || [];
+var ignoredUsers = persistantSettings.chatIgnored || [];
 
 // Chat should start automaticcally scrolling as new messages come in
 var chatAutoScroll = "bottom";
@@ -432,7 +432,7 @@ $(document).ready(function () {
                         case "ignore":
                             if (!params){ postMessage("Please include command parameters. Type /help ignore for more usage instructions"); break; }
                             ignoredUsers.push(params);
-                            localStorage.chatIgnored = ignoredUsers;
+                            persistantSettings.chatIgnored = ignoredUsers;
                             postMessage("Ignored " + params);
                             break;
                         case "ignore-list":
@@ -447,7 +447,7 @@ $(document).ready(function () {
                                 ignoredUsers.splice(ignoredUsers.indexOf(params), 1);
                                 postMessage("Unignored " + params);
                             }
-                            localStorage.chatIgnored = ignoredUsers;
+                            persistantSettings.chatIgnored = ignoredUsers;
                             break;
                         default:
                             postMessage("Invalid command. Type /help for more available commands");
