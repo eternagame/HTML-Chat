@@ -20,7 +20,7 @@
                         <li class="chat-message" id="chat-loading" style="color:white">
                             <img src="https://s3.amazonaws.com/eterna/icon_img/loading.gif" style="margin-bottom: 5px; background-repeat: no-repeat; width: 20px; height: 20px; margin-left: auto; margin-right: auto;"></img>
                             <span id="connecting">Connecting...</span>
-                            <span id="failed" style="display:none;">Connection failed. retrying in <span id="timer">0</span> seconds.   </span>
+                            <span id="failed" style="display:none;">Connection failed. retrying in <span id="timer">0</span> seconds.</span>
                         </li>
                     </ul>
                 </div>
@@ -38,6 +38,26 @@
 
             <div id="reconnect" class="unselectable clickable green-button-interactive rounded-5 centered" style="display:none; color:white; font-weight:bolder; font-size:13px;"><div class="green-button-bg rounded-5"></div>Reconnect</div>
 
+        </div>
+    </div>
+    <div id="report-dialog" style="display: none;">
+        <h3 style="text-align: center; margin: 0px;">Ignore/Report User</h3>
+        <p>Reports will be sent to our current chat moderators, <a target="_blank" href="http://www.eternagame.org/web/player/36921/">Hoglahoo</a> and <a target="_blank" href="http://www.eternagame.org/web/player/48290/">LFP6</a>.</p>
+        <p>User: <input id="report-username" style="background: none; border: none; color: inherit; font: inherit;" disabled></p>
+        <input style="display: none" id="report-uid">
+        <input style="display: none" id="report-time">
+        <input style="display: none" id="report-offending-message">
+        <div style="text-align: center; margin-top: 15px;">
+            <input type="checkbox" id="report-ignore"><label for="report-ignore">Ignore User</label>
+            <input type="checkbox" id="report-report" style="margin-left: 25px"><label for="report-report">Report User</label>
+        </div>
+        <div style="margin-top: 15px; display: none;">
+            <label for="report-message">Additional Comments</label>
+            <textarea id="report-message"></textarea>
+        </div>
+        <div style="margin-top: 15px;">
+            <div id="report-cancel"class="blue-button blue-button-interactive" style="width: 40%; display: inline-block;">Cancel</div>
+            <div id="report-submit" class="green-button green-button-interactive" style="width: 40%; display: inline-block; float: right;">Continue</div>
         </div>
     </div>
 </body>

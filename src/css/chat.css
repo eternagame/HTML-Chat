@@ -9,10 +9,19 @@ a {
     color: #fff;
 }
 
+textarea {
+    border-radius: 2px;
+    font-family: 'Open Sans', 'Helvetica Neue', Arial, Gulim;
+    font-size: 14px;
+    border: 1px solid rgb(169, 169, 169);
+    width: calc(100% - 10px);
+}
+
 /************ Chat Messages ************/
 .chat-message {
     color: #C0DCE7;
     display: block;
+    position: relative;
 }
 .chat-message-system {
     font-style: italic;
@@ -27,7 +36,7 @@ a {
 .chat-message-user {
     font-weight: bold;
 }
-.chat-message-action > a > .chat-message-user {
+.chat-message-action > .chat-message-content > a > .chat-message-user {
     color: #C0DCE7;
 }
 .chat-message-user-link {
@@ -37,6 +46,41 @@ a {
     color: #627587;
     white-space: nowrap;
     font-size: 0.8em;
+}
+.chat-message-options {
+    position: absolute;
+    display: none;
+    top: 0px;
+    right: 10px;
+    font-size: 20px;
+}
+.chat-message:hover > .chat-message-options {
+    display: block;
+    cursor: pointer;
+}
+
+/* Message options menu */
+.message-options-menu {
+    background-color: white;
+    border-radius: 2px;
+}
+.message-options-menu .ui-state-active {
+    background-color: #DDD;
+    border-radius: 2px;
+    margin: 0px !important;
+}
+
+/* Report dialog */
+.report-dialog {
+    background-color: #123768;
+    border-radius: 5px;
+    color: white;
+}
+
+.report-dialog .ui-dialog-titlebar-close,
+.report-dialog .ui-dialog-titlebar,
+.report-dialog .ui-resizable-handle {
+  display: none !important;
 }
 
 /************ Chat User List ************/
@@ -56,10 +100,6 @@ a {
     height: 19px;
     resize: none;
     margin: 10px;
-    border-radius: 2px;
-    font-family: 'Open Sans', 'Helvetica Neue', Arial, Gulim;
-    font-size: 14px;
-    border: 1px solid rgb(169, 169, 169);
 }
 
 /************** Buttons ***************/
@@ -73,7 +113,14 @@ a {
     user-select: none;
 }
 
-.green-button, .green-button-interactive, .green-button-interactive2D { /*border-color:#2f4a68;border-width:2px;border-style:solid;*/
+.green-button, .blue-button {
+  margin-bottom: 5px !important;
+  padding: 4px 7px !important;
+}
+
+.green-button,
+.green-button-interactive,
+.green-button-interactive2D {
     background-color: #4FB748;
     font-weight: normal;
     position: relative;
@@ -84,7 +131,7 @@ a {
     font-family: 'Century Gothic', 'Didact Gothic', Arial, sans-serif;
 }
 
-.green-button-bg { /*opacity:0.8;filter:alpha(opacity=80); */
+.green-button-bg {
     position: absolute;
 }
 
@@ -96,7 +143,8 @@ a {
     box-shadow: 5px 5px #2C6628;
 }
 
-.green-button-interactive:hover, .green-button-interactive.hover {
+.green-button-interactive:hover,
+.green-button-interactive.hover {
     background-color: #48A641;
     box-shadow: 4px 4px #2C6628;
     -webkit-transform: translate(1px, 1px);
@@ -104,7 +152,8 @@ a {
     transform: translate(1px, 1px);
 }
 
-.green-button-interactive:active, .green-button-interactive.active {
+.green-button-interactive:active,
+.green-button-interactive.active {
     background-color: #48A641;
     box-shadow: 2px 2px #2C6628;
     -webkit-transform: translate(3px, 3px);
@@ -112,7 +161,8 @@ a {
     transform: translate(3px, 3px);
 }
 
-.green-button, .green-button-interactive2D {
+.green-button,
+.green-button-interactive2D {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -121,7 +171,10 @@ a {
     margin: 0px 2.5px;
 }
 
-.green-button:hover, .green-button.hover, .green-button-interactive2D:hover, .green-button-interactive2D.hover {
+.green-button:hover,
+.green-button.hover,
+.green-button-interactive2D:hover,
+.green-button-interactive2D.hover {
     background-color: #48A641;
     box-shadow: 0px 4px #2C6628;
     -webkit-transform: translate(0px, 1px);
@@ -129,12 +182,86 @@ a {
     transform: translate(0px, 1px);
 }
 
-.green-button:active, .green-button.active, .green-button-interactive2D:active, .green-button-interactive2D.active {
+.green-button:active,
+.green-button.active,
+.green-button-interactive2D:active,
+.green-button-interactive2D.active {
     background-color: #48A641;
     box-shadow: 0px 2px #2C6628;
     -webkit-transform: translate(0px, 3px);
     -moz-transform: translate(0px, 3px);
     transform: translate(0px, 3px);
+}
+
+.blue-button,
+.blue-button-interactive,
+.blue-button-interactive2D {
+  background-color:#33B5E5;
+  font-weight:bolder;
+  position:relative;
+  text-align:center;
+  padding: 0px;
+  text-transform: capitalized;
+  font-family: 'Century Gothic', 'Didact Gothic', Arial, sans-serif;
+  text-decoration: none;
+  font-size: 12px;
+}
+.blue-button-bg {
+  opacity:0.8;
+  filter:alpha(opacity=80);
+  position:absolute;
+}
+.blue-button-interactive {
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  box-shadow: 5px 5px #19576E;
+}
+.blue-button-interactive:hover,
+.blue-button-interactive.hover {
+    background-color: #2A98C0;
+    box-shadow: 4px 4px #19576E;
+    -webkit-transform: translate(1px, 1px);
+    -moz-transform: translate(1px, 1px);
+    transform: translate(1px, 1px);
+}
+.blue-button-interactive:active,
+.blue-button-interactive.active {
+    background-color: #2A98C0;
+    box-shadow: 2px 2px #19576E;
+    -webkit-transform: translate(3px, 3px);
+    -moz-transform: translate(3px, 3px);
+    transform: translate(3px, 3px);
+
+}
+.blue-button,
+.blue-button-interactive2D {
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 5px #19576E;
+  margin:0px 2.5px;
+}
+.blue-button:hover,
+.blue-button.hover,
+.blue-button-interactive2D:hover,
+.blue-button-interactive2D.hover {
+    background-color: #2A98C0;
+    box-shadow: 0px 4px #19576E;
+    -webkit-transform: translate(0px, 1px);
+    -moz-transform: translate(0px, 1px);
+    transform: translate(0px, 1px);
+}
+.blue-button:active,
+.blue-button.active,
+.blue-button-interactive2D:active,
+.blue-button-interactive2D.active {
+    background-color: #2A98C0;
+    box-shadow: 0px 2px #19576E;
+    -webkit-transform: translate(0px, 3px);
+    -moz-transform: translate(0px, 3px);
+    transform: translate(0px, 3px);
+
 }
 
 /* To determine input size */
