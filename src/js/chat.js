@@ -446,8 +446,9 @@ $(document).ready(function() {
     });
     $("#report-dialog").dialog({
         dialogClass: "report-dialog",
-        minHeight: 0,
         autoOpen: false,
+        minHeight: 0,
+        width: "100%",
     });
     $("#report-report").click(function() {
         $("#report-message").parent().toggle();

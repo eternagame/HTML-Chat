@@ -75,6 +75,7 @@ textarea {
     background-color: #123768;
     border-radius: 5px;
     color: white;
+    max-width: 350px;
 }
 
 .report-dialog .ui-dialog-titlebar-close,
