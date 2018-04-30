@@ -344,7 +344,7 @@ function closeReportDialog() {
     $("#report-report, #report-ignore").prop("checked", false);
     $("#report-username").val("");
     $("#report-uid").val("");
-    $("#report-time").val("")
+    $("#report-time").val("");
     $("#report-offending-message").val("");
 }
 
@@ -625,7 +625,6 @@ function initSock() {
             initSock();
         }
     }
-
 
     sock.onmessage = function(e) {
         var commands = parseCommands(e.data);
