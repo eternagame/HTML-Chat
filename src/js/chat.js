@@ -458,8 +458,8 @@ $(document).ready(function() {
         position: {my: "right-10 center-15"},
         menu: [
             {title: "Report User/Message", cmd: "report"},
-            {title: "Ignore User", cmd: "ignore", disabled: (event, ui) => ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false},
-            {title: "Unignore User", cmd: "unignore", disabled: (event, ui) => !ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false},
+            {title: "Ignore User", cmd: "ignore", disabled: function(event, ui) { return ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false }},
+            {title: "Unignore User", cmd: "unignore", disabled: function(event, ui){ return !ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false}},
         ],
         select: function(event, ui) {
             switch (ui.cmd) {
