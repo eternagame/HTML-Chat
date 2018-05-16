@@ -337,7 +337,7 @@ function ignoreUser(user) {
     if (!ignoredUsers.includes(user)) {
         ignoredUsers.push(user);
         persistantSettings.chatIgnored = ignoredUsers;
-        postMessage("Ignored " + user + ". To unignore this user, please type /unignore " + user);
+        postMessage("Ignored " + user + ". To unignore this user, either use the options menu again (on a message or the user list) or type /unignore " + user);
     } else {
         postMessage(user + " has already been ignored");
     }
