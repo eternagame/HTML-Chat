@@ -129,7 +129,7 @@ function parseCommands(data) {
  *  @return: Found element of onlineUsers
  */
 function onlineUserWithName( username ) {
-    var res = $.grep(onlineUsers, function(o){ return o.name==username.toUpperCase(); })[0];
+    var res = $.grep(onlineUsers, function(o){ return o.name==username.toLowerCase(); })[0];
     if(!res) return false;
     res.index = onlineUsers.indexOf(res);
     return res;
@@ -214,7 +214,7 @@ function removeUser( username ) {
 
     if (onlineUsers[onlineUserWithName(username).index]["connections"] == 1) {
         onlineUsers.splice(onlineUserWithName(username).index, 1);
-        $("li#chat-userlist-user-" + username.toUpperCase()).remove();
+        $("li#chat-userlist-user-" + username.toLowerCase()).remove();
         $("#chat-users-online").html(parseInt($("#chat-users-online").html()) - 1);
     } else {
         onlineUsers[onlineUserWithName(username).index]["connections"]--;
