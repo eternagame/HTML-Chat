@@ -169,14 +169,19 @@ function addUser( username ) {
     if (usernamesToIgnore.includes(username)) return;
 
     if (!onlineUserWithName(username)) {
-        onlineUsers.push({ name: username.toUpperCase(), connections: 1, id: uid });
+        console.log(username);
+        onlineUsers.push({ name: username.toLowerCase(), connections: 1, id: uid });
         onlineUsers.sort(function(userA, userB){
             if (userA.name < userB.name) return -1;
             if (userA.name > userB.name) return 1;
             return 0;
         });
 
-        userli = "<li id=chat-userlist-user-" + username.toUpperCase() + " class=chat-userlist-user><a target=\"_blank\" href=\"http://www.eternagame.org/web/player/" + uid + "/\">" + username + "</a></li>";
+        userli = '<li id="chat-userlist-user-{USERNAME_LOW}" class="chat-userlist-user"><a target="_blank" href="http://www.eternagame.org/web/player/{UID}/">{USERNAME}</a>{OPTS}</li>';
+        userli = userli.replace('{USERNAME_LOW}', username.toLowerCase())
+                       .replace('{USERNAME}', username)
+                       .replace('{UID}', uid)
+                       .replace("{OPTS}", USERNAME !== "Anonymous" ? '<a class="chat-message-options">&vellip;</a>' : "");
 
         // If there's a user ahead of this one in the array, insert it before that one in the list, else add to the end
         if (onlineUsers[onlineUserWithName(username).index+1]) {
@@ -326,12 +331,31 @@ function postMessage( raw_msg, isHistory ) {
 
 /**
  * Adds the user to the current user's ignore list
- * @param user: Username to add to ignore list
+ * @param user: Username to add to the ignore list
  */
 function ignoreUser(user) {
-    ignoredUsers.push(user);
+    if (!ignoredUsers.includes(user)) {
+        ignoredUsers.push(user);
+        persistantSettings.chatIgnored = ignoredUsers;
+        postMessage("Ignored " + user + ". To unignore this user, please type /unignore " + user);
+    } else {
+        postMessage(user + " has already been ignored");
+    }
+}
+
+/**
+ * Remove the user to the current user's ignore list
+ * @param user: Username to remove from the ignore list, or `*` to clear the list entirely
+ */
+function unignoreUser(user) {
+    if (user == "*") {
+        ignoredUsers = [];
+        postMessage("Unignored all");
+    } else {
+        ignoredUsers.splice(ignoredUsers.indexOf(user), 1);
+        postMessage("Unignored " + user);
+    }
     persistantSettings.chatIgnored = ignoredUsers;
-    postMessage("Ignored " + user + ". To unignore this user, please type /unignore " + user);
 }
 
 /**
@@ -346,6 +370,22 @@ function closeReportDialog() {
     $("#report-uid").val("");
     $("#report-time").val("");
     $("#report-offending-message").val("");
+}
+
+/**
+ * Get username from the element a passed message options element is attached to,
+ * be it a message or a user list item
+ * @param target: Message options DOM element
+ */
+function usernameFromOptions(target) {
+    var container = $(target).parent();
+    if (container.hasClass('chat-message')) {
+        return container.children(".chat-message-content").children(".chat-message-user-link").text();
+    } else if (container.hasClass('chat-userlist-user')) {
+        return container.children().eq(0).text();
+    }
+
+    throw new Error('Unhandled options target');
 }
 
 $(document).ready(function() {
@@ -410,7 +450,7 @@ $(document).ready(function() {
         $(this).css('height', hiddenDiv.height());
     });
     // Message options menu
-    $("#chat-tab-global").contextmenu({
+    $("#chat-tabs").contextmenu({
         delegate: ".chat-message-options",
         preventSelect: true,
         autoTrigger: false,
@@ -418,7 +458,8 @@ $(document).ready(function() {
         position: {my: "right-10 center-15"},
         menu: [
             {title: "Report User/Message", cmd: "report"},
-            {title: "Ignore User", cmd: "ignore"},
+            {title: "Ignore User", cmd: "ignore", disabled: (event, ui) => ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false},
+            {title: "Unignore User", cmd: "unignore", disabled: (event, ui) => !ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false},
         ],
         select: function(event, ui) {
             switch (ui.cmd) {
@@ -428,21 +469,30 @@ $(document).ready(function() {
                 case "ignore":
                     $("#report-ignore").click();
                     break;
+                case "unignore":
+                    unignoreUser(usernameFromOptions(ui.target));
+                    return;
             }
-            var msg = $(ui.target).parent().children(".chat-message-content");
-            $("#report-username").val(msg.children(".chat-message-user-link").text());
-            $("#report-uid").val(msg.children(".chat-message-user-link").prop("href").match(/player\/(\d+)/)[1]);
-            var time = msg.children(".chat-message-time").text().match(/(\d+):(\d+) ((AM)|(PM))/);
-            $("#report-time").val(
-                new Date("Jan 1 " + time[1] + ":" + time[2] + " " + time[3])
-                .toUTCString().match(/(?:\d+:?)+ GMT$/)[0].replace("GMT", "UTC")
-            );
-            $("#report-offending-message").val(msg.children(".chat-message-message").text());
+            if ($(ui.target).parent().hasClass('chat-message')) {
+                var msg = $(ui.target).parent().children(".chat-message-content");
+                $("#report-username").val(usernameFromOptions(ui.target));
+                $("#report-uid").val(msg.children(".chat-message-user-link").prop("href").match(/player\/(\d+)/)[1]);
+                var time = msg.children(".chat-message-time").text().match(/(\d+):(\d+) ((AM)|(PM))/);
+                $("#report-time").val(
+                    new Date("Jan 1 " + time[1] + ":" + time[2] + " " + time[3])
+                    .toUTCString().match(/(?:\d+:?)+ GMT$/)[0].replace("GMT", "UTC")
+                );
+                $("#report-offending-message").val(msg.children(".chat-message-message").text());
+            } else if ($(ui.target).parent().hasClass('chat-userlist-user')) {
+                $("#report-username").val(usernameFromOptions(ui.target));
+                $("#report-uid").val($(ui.target).parent().children().eq(0).prop("href").match(/player\/(\d+)/)[1]);
+            }
+
             $("#report-dialog").dialog("open");
         }
     });
-    $("#chat-tab-global").on("click", ".chat-message-options", function() {
-        $("#chat-tab-global").contextmenu("open", $(this));
+    $("#chat-tabs").on("click", ".chat-message-options", function() {
+        $("#chat-tabs").contextmenu("open", $(this));
     });
     $("#report-dialog").dialog({
         dialogClass: "report-dialog",
@@ -461,14 +511,16 @@ $(document).ready(function() {
 
         if ($("#report-report").prop("checked") == true) {
             sock.send(
-                "PRIVMSG #ops-notifications :[REPORT] Reporting {username} ({uid}) by {curr_username} ({curr_uid}). Reported message sent at {time}\r\n"
+                "PRIVMSG #ops-notifications :[REPORT] Reporting {username} ({uid}) by {curr_username} ({curr_uid}).\r\n"
                 .replace("{username}", $("#report-username").val())
                 .replace("{uid}", $("#report-uid").val())
-                .replace("{time}", $("#report-time").val())
+                .replace("{time}", $("#report-time").val() != '' ? " Reported message sent at " + $("#report-time").val() : '')
                 .replace("{curr_username}", USERNAME)
                 .replace("{curr_uid}", UID)
             );
-            sock.send("PRIVMSG #ops-notifications :[REPORTED MESSAGE] " + $("#report-offending-message").val() + "\r\n");
+            if ($("#report-offending-message").val() != '') {
+                sock.send("PRIVMSG #ops-notifications :[REPORTED MESSAGE] " + $("#report-offending-message").val() + "\r\n");
+            }
             sock.send("PRIVMSG #ops-notifications :[REPORT REASON] " + $("#report-message").val() + "\r\n");
         }
 
@@ -538,14 +590,7 @@ $(document).ready(function() {
                             break;
                         case "unignore":
                             if (!params){ postMessage("Please include command parameters. Type /help unignore for more usage instructions"); break; }
-                            if (params == "*") {
-                                ignoredUsers = [];
-                                postMessage("Unignored all");
-                            } else {
-                                ignoredUsers.splice(ignoredUsers.indexOf(params), 1);
-                                postMessage("Unignored " + params);
-                            }
-                            persistantSettings.chatIgnored = ignoredUsers;
+                            unignoreUser(params)
                             break;
                         default:
                             postMessage("Invalid command. Type /help for more available commands");

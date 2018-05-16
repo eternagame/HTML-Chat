@@ -50,11 +50,12 @@ textarea {
 .chat-message-options {
     position: absolute;
     display: none;
-    top: 0px;
+    top: -2px;
     right: 10px;
     font-size: 20px;
 }
-.chat-message:hover > .chat-message-options {
+
+.chat-message:hover > .chat-message-options, .chat-userlist-user:hover > .chat-message-options {
     display: block;
     cursor: pointer;
 }
@@ -87,8 +88,9 @@ textarea {
 /************ Chat User List ************/
 .chat-userlist-user {
     display: block;
+    position: relative;
 }
-.chat-userlist-user > a {
+.chat-userlist-user > a:first-child {
     text-decoration: none;
     font-weight: bold;
 }
