@@ -503,6 +503,7 @@ $(document).ready(function() {
         autoOpen: false,
         minHeight: 0,
         width: "100%",
+        position: {at: 'center center-30px'}
     });
     $("#report-report").click(function() {
         $("#report-message").parent().toggle();
