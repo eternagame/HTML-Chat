@@ -71,6 +71,13 @@ textarea {
     margin: 0px !important;
 }
 
+.message-options-menu .ui-widget-header {
+    margin: 3px 3px 0px;
+    padding: 2px;
+    border-bottom: 1px solid #333;
+    font-weight: bolder;
+}
+
 /* Report dialog */
 .report-dialog {
     background-color: #123768;

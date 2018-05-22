@@ -457,10 +457,14 @@ $(document).ready(function() {
         addClass: "message-options-menu",
         position: {my: "right-10 center-15"},
         menu: [
+            {title: "User Options", cmd:"header", isHeader: true},
             {title: "Report User/Message", cmd: "report"},
             {title: "Ignore User", cmd: "ignore", disabled: function(event, ui) { return ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false }},
             {title: "Unignore User", cmd: "unignore", disabled: function(event, ui){ return !ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false}},
         ],
+        beforeOpen: function(event, ui) {
+          $("#chat-tabs").contextmenu("setTitle", "header", usernameFromOptions(ui.target));
+        },
         select: function(event, ui) {
             switch (ui.cmd) {
                 case "report":
@@ -499,6 +503,7 @@ $(document).ready(function() {
         autoOpen: false,
         minHeight: 0,
         width: "100%",
+        position: {at: 'center center-30px'}
     });
     $("#report-report").click(function() {
         $("#report-message").parent().toggle();
