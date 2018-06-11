@@ -169,7 +169,6 @@ function addUser( username ) {
     if (usernamesToIgnore.includes(username)) return;
 
     if (!onlineUserWithName(username)) {
-        console.log(username);
         onlineUsers.push({ name: username.toLowerCase(), connections: 1, id: uid });
         onlineUsers.sort(function(userA, userB){
             if (userA.name < userB.name) return -1;
