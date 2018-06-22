@@ -1,12 +1,23 @@
 ﻿// jQuery and jQuery-ui
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/tabs';
-import 'jquery-ui/themes/base/core.css'
-import 'jquery-ui/themes/base/tabs.css'
+import 'jquery-ui/ui/widgets/dialog';
+import 'jquery-ui/ui/widgets/button';
+import 'jquery-ui/ui/position';
+import 'jquery-ui/themes/base/core.css';
+import 'jquery-ui/themes/base/tabs.css';
+import 'jquery-ui/themes/base/menu.css';
+import 'jquery-ui/themes/base/dialog.css';
+import 'jquery-ui/themes/base/button.css';
 
 // mCustomScrollbar
-import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js';
-import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css';
+import scrollbar from 'malihu-custom-scrollbar-plugin';
+scrollbar($);
+
+// Context Menu
+import 'ui-contextmenu';
+
+window.$ = window.jQuery = $;
 
 // Markdown-it
 import MarkdownIt from "markdown-it";
@@ -14,6 +25,24 @@ var md = new MarkdownIt({
     linkify: true,
     typographer: true
 }).disable('image');
+// Via https://github.com/markdown-it/markdown-it/blob/e6f19eab4204122e85e4a342e0c1c8486ff40c2d/docs/architecture.md
+var defaultRender = md.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
+  // If you are sure other plugins can't add `target` - drop check below
+  var aIndex = tokens[idx].attrIndex('target');
+
+  if (aIndex < 0) {
+    tokens[idx].attrPush(['target', '_blank']); // add new attribute
+  } else {
+    tokens[idx].attrs[aIndex][1] = '_blank';    // replace value of existing attr
+  }
+
+  // pass token to default renderer.
+  return defaultRender(tokens, idx, options, env, self);
+};
+
 // Create an instance of markdown-it with no rules enabled, using it just to strip/sanitize HTML
 var mdSanitizer = new MarkdownIt('zero');
 
@@ -47,19 +76,16 @@ var toBePosted = [];
 var connected = false;
 var firstConnection = true;
 
-var postMessageScrollTriggers = 0;
-
 // Initialize saved preferences
 try {
-    localStorage;
+    var persistantSettings = localStorage;
 } catch(e) {
     console.warn("Local storage not available (either unsupported or permission denied) - user preferences will not be saved");
-    window.localStorage = {}
+    var persistantSettings = {}
 }
-var ignoredUsers = localStorage.chatIgnored || [];
-
+var ignoredUsers = persistantSettings.chatIgnored ? persistantSettings.chatIgnored.split(",") : [];
 // Chat should start automaticcally scrolling as new messages come in
-var autoScroll = true;
+var chatAutoScroll = "bottom";
 
 var sock;
 
@@ -103,7 +129,7 @@ function parseCommands(data) {
  *  @return: Found element of onlineUsers
  */
 function onlineUserWithName( username ) {
-    var res = $.grep(onlineUsers, function(o){ return o.name==username.toUpperCase(); })[0];
+    var res = $.grep(onlineUsers, function(o){ return o.name==username.toLowerCase(); })[0];
     if(!res) return false;
     res.index = onlineUsers.indexOf(res);
     return res;
@@ -127,7 +153,7 @@ function addUser( username ) {
         bro: 24263,
         brourd: 24263
     };
-    
+
     // Parse automatic suffix
     portions = username.match(/(?:^(.+)(?:__(\d+)\^\d+))|(.+)/);
     // If userid is included, get it, if it's an IRC regular, get their userID from the list
@@ -143,14 +169,18 @@ function addUser( username ) {
     if (usernamesToIgnore.includes(username)) return;
 
     if (!onlineUserWithName(username)) {
-        onlineUsers.push({ name: username.toUpperCase(), connections: 1, id: uid });
-        onlineUsers.sort(function (userA, userB){
+        onlineUsers.push({ name: username.toLowerCase(), connections: 1, id: uid });
+        onlineUsers.sort(function(userA, userB){
             if (userA.name < userB.name) return -1;
             if (userA.name > userB.name) return 1;
             return 0;
         });
 
-        userli = "<li id=chat-userlist-user-" + username.toUpperCase() + " class=chat-userlist-user><a target=\"_blank\" href=\"http://www.eternagame.org/web/player/" + uid + "/\">" + username + "</a></li>";
+        userli = '<li id="chat-userlist-user-{USERNAME_LOW}" class="chat-userlist-user"><a target="_blank" href="http://www.eternagame.org/web/player/{UID}/">{USERNAME}</a>{OPTS}</li>';
+        userli = userli.replace('{USERNAME_LOW}', username.toLowerCase())
+                       .replace('{USERNAME}', username)
+                       .replace('{UID}', uid)
+                       .replace("{OPTS}", USERNAME !== "Anonymous" ? '<a class="chat-message-options">&vellip;</a>' : "");
 
         // If there's a user ahead of this one in the array, insert it before that one in the list, else add to the end
         if (onlineUsers[onlineUserWithName(username).index+1]) {
@@ -183,7 +213,7 @@ function removeUser( username ) {
 
     if (onlineUsers[onlineUserWithName(username).index]["connections"] == 1) {
         onlineUsers.splice(onlineUserWithName(username).index, 1);
-        $("li#chat-userlist-user-" + username.toUpperCase()).remove();
+        $("li#chat-userlist-user-" + username.toLowerCase()).remove();
         $("#chat-users-online").html(parseInt($("#chat-users-online").html()) - 1);
     } else {
         onlineUsers[onlineUserWithName(username).index]["connections"]--;
@@ -201,7 +231,7 @@ function encodedRegex( search ) {
     if (search.global) {mod += "g";}
     if (search.multiline) {mod += "m";}
     if (search.ignoreCase) {mod += "i";}
-    
+
     return new RegExp(search.source.replace(/&/g, "&amp;")
                                    .replace(/</g, "&lt;")
                                    .replace(/>/g, "&gt;")
@@ -243,7 +273,7 @@ function formatTime( string ) {
  *  Display a message in the chat window
  *  @param raw_msg: The contents of the privmsg to be posted
  *  @param isHistory: If true, it should be pushed at the top, as it is an older message (and may be coming in late)
- *  
+ *
  */
 function postMessage( raw_msg, isHistory ) {
     if (!isHistory && !connected) {
@@ -264,14 +294,14 @@ function postMessage( raw_msg, isHistory ) {
     // TODO: In the future, remove this, it's due to Flash chat's pre-escaping before sending.
     raw_msg = raw_msg.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     // TODO: Eventually remove, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
-    raw_msg = raw_msg.replace(/<I>(.+)<\/I>/g, '*$1*');
+    raw_msg = raw_msg.replace(/<I>(.+)<\/I>/g, '$1');
     // TODO: Because of how chat works right now, we can only handle the inline styles,
     // but some of the block-level pieces could be nice too once we have multiline messages (lists, blockquotes, and fences mostly).
     // Also, the `code` should be styled (ie have a background color and maybe a different text color), and it currently isn't.
     // Images are also disabled, as we currently don't have a way to format them properly.
     raw_msg = md.renderInline(raw_msg);
-    
-    
+
+
     // Don't show messages from user on ignore list
     if ( ignoredUsers.includes(name) ){return;}
 
@@ -285,39 +315,94 @@ function postMessage( raw_msg, isHistory ) {
     if (!prefix) { classes += " chat-message-system"; }
 
     // Fill template and post
-    message = '<li class="chat-message{MSG_CLASS}">{USER}{MESSAGE}<span class="chat-message-time"> {TIME}</span></li>';
+    message = '<li class="chat-message{MSG_CLASS}"><div class="chat-message-content">{USER}&lrm;<span class="chat-message-message">{MESSAGE}</span><span class="chat-message-time"> &lrm;{TIME}</span></div>{OPTS}</li>';
     message = message.replace("{MSG_CLASS}", classes)
                      // TODO: Eventually remove the italicise replacement, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
-                     .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '*$1*')), uid, isAction) : '')
+                     .replace("{USER}", prefix ? colorizeUser(mdSanitizer.renderInline(name.replace(/<I>(.+)<\/I>/g, '$1')), uid, isAction) : '')
                      .replace("{MESSAGE}", raw_msg)
-        .replace("{TIME}", prefix ? formatTime(time) : '');
-    postMessageScrollTriggers++;
+                     .replace("{OPTS}", USERNAME !== "Anonymous" ? '<a class="chat-message-options">&vellip;</a>' : "")
+                     .replace("{TIME}", prefix ? formatTime(time) : '');
     $("#global-chat-messages").append(message);
-    if (message.includes('@' + NICK.substr(0, NICK.lastIndexOf('_') - 1))) {
-        Notification.requestPermission().then(function (result) {
-            var notification = new Notification(name ? name : 'Eterna Not', {
-                body: raw_msg,
-                tag: 'eterna-chat-ping-' + message,
-                icon: 'https://pbs.twimg.com/profile_images/902198585789366272/BRGnomZw.jpg'
-            });
-        });
+    setTimeout(function(){
+        $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
+    }, 100);
+}
+
+/**
+ * Adds the user to the current user's ignore list
+ * @param user: Username to add to the ignore list
+ */
+function ignoreUser(user) {
+    if (!ignoredUsers.includes(user)) {
+        ignoredUsers.push(user);
+        persistantSettings.chatIgnored = ignoredUsers;
+        postMessage("Ignored " + user + ". To unignore this user, either use the options menu again (on a message or the user list) or type /unignore " + user);
+    } else {
+        postMessage(user + " has already been ignored");
     }
 }
-$(document).ready(function () {
-    $("#disconnect").click(function () {
+
+/**
+ * Remove the user to the current user's ignore list
+ * @param user: Username to remove from the ignore list, or `*` to clear the list entirely
+ */
+function unignoreUser(user) {
+    if (user == "*") {
+        ignoredUsers = [];
+        postMessage("Unignored all");
+    } else {
+        ignoredUsers.splice(ignoredUsers.indexOf(user), 1);
+        postMessage("Unignored " + user);
+    }
+    persistantSettings.chatIgnored = ignoredUsers;
+}
+
+/**
+ * Close report dialog and reset its contents
+ */
+function closeReportDialog() {
+    $("#report-dialog").dialog("close");
+    $("#report-message").val("");
+    $("#report-message").parent().hide();
+    $("#report-report, #report-ignore").prop("checked", false);
+    $("#report-username").val("");
+    $("#report-uid").val("");
+    $("#report-time").val("");
+    $("#report-offending-message").val("");
+}
+
+/**
+ * Get username from the element a passed message options element is attached to,
+ * be it a message or a user list item
+ * @param target: Message options DOM element
+ */
+function usernameFromOptions(target) {
+    var container = $(target).parent();
+    if (container.hasClass('chat-message')) {
+        return container.children(".chat-message-content").children(".chat-message-user-link").text();
+    } else if (container.hasClass('chat-userlist-user')) {
+        return container.children().eq(0).text();
+    }
+
+    throw new Error('Unhandled options target');
+}
+
+$(document).ready(function() {
+    $("#disconnect").click(function() {
         sock.close();
     });
-
+    addImagePasteEventToJquery();
+    $("html").pasteImageReader(onImagePaste);
     initSock();
     // Initialize UI
     // Initialize tabs
     $( "#chat" ).tabs({
-        // If we're automatically scrolling, scroll to the bottom. NOTE: This is because Eterna uses an old version of jQuery UI, it's now "activate" (needs to be updated of jQuery UI is updated)
         activate: function( event, ui ) {
-            console.log(ui);
             if (ui) {
-                if (ui.newPanel[0].id == "chat-tab-global" && autoScroll) {
-                    $(ui.newPanel).mCustomScrollbar("scrollTo","bottom");
+                if (ui.newPanel[0].id == "chat-tab-global") {
+                    setTimeout(function(){
+                        $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
+                    }, 100);
                 }
             }
         }
@@ -328,23 +413,24 @@ $(document).ready(function () {
         scrollInertia: 0,
         callbacks: {
             // The user has scrolled, so don't automatically move to the bottom on a new message
-            onScrollStart: function () {
-                if (postMessageScrollTriggers) {
-                    postMessageScrollTriggers--;
-                    if (autoScroll)
-                        $(this).mCustomScrollbar("scrollTo", "bottom");
-                }
-                else {
-                    autoScroll = false;
+            onScroll: function() {
+                if ($("#chat-tab-global").css('display') !== 'none') {
+                    chatAutoScroll = this.mcs.top;
                 }
             },
             // We've hit the bottom, resume scrolling
-            onTotalScroll: function() { autoScroll = true;}
+            onTotalScroll: function() {
+                if ($("#chat-tab-global").css('display') !== 'none') {
+                    chatAutoScroll = "bottom";
+                }
+            }
         }
     });
     // Fill out max length of message
     // Breakdown - IRC server max: 324, timestamp: 28, underscores: 3, max length of username formatting (for /me, discounting the 3 characters for the command): 40, username: dynamic, UID: dynamic
     $("#chat-input").prop("maxLength", 253 - UID.toString().length - USERNAME.length);
+    // `[Report] ` is simply added at the beginning of messages
+    $("#report-message").prop("maxLength", 324 - 9);
 
     // Auto-resize chat input (adapted from https://www.impressivewebs.com/textarea-auto-resize/)
     // Set up input and duplicated div
@@ -355,17 +441,99 @@ $(document).ready(function () {
     hiddenDiv = $("#chat-input-hidden");
     input.css("overflow", "hidden");
 
-    input.on('keydown keypress keyup', function () {
-        content = $(this).val();
+    input.on('keydown keypress keyup', function() {
+        content = md.renderInline($(this).val());
         // Fill content apropriately
         content = content.replace(/\n/g, '<br>');
         hiddenDiv.html(content + '');
         // Determine height from duplicate div
         $(this).css('height', hiddenDiv.height());
     });
+    // Message options menu
+    $("#chat-tabs").contextmenu({
+        delegate: ".chat-message-options",
+        preventSelect: true,
+        autoTrigger: false,
+        addClass: "message-options-menu",
+        position: {my: "right-10 center-15"},
+        menu: [
+            {title: "User Options", cmd:"header", isHeader: true},
+            {title: "Report User/Message", cmd: "report"},
+            {title: "Ignore User", cmd: "ignore", disabled: function(event, ui) { return ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false }},
+            {title: "Unignore User", cmd: "unignore", disabled: function(event, ui){ return !ignoredUsers.includes(usernameFromOptions(ui.target)) ? 'hide' : false}},
+        ],
+        beforeOpen: function(event, ui) {
+          $("#chat-tabs").contextmenu("setTitle", "header", usernameFromOptions(ui.target));
+        },
+        select: function(event, ui) {
+            switch (ui.cmd) {
+                case "report":
+                    $("#report-report").click();
+                    break;
+                case "ignore":
+                    $("#report-ignore").click();
+                    break;
+                case "unignore":
+                    unignoreUser(usernameFromOptions(ui.target));
+                    return;
+            }
+            if ($(ui.target).parent().hasClass('chat-message')) {
+                var msg = $(ui.target).parent().children(".chat-message-content");
+                $("#report-username").val(usernameFromOptions(ui.target));
+                $("#report-uid").val(msg.children(".chat-message-user-link").prop("href").match(/player\/(\d+)/)[1]);
+                var time = msg.children(".chat-message-time").text().match(/(\d+):(\d+) ((AM)|(PM))/);
+                $("#report-time").val(
+                    // Using a random date, as we only need the time
+                    new Date("Jan 1 2000 " + time[1] + ":" + time[2] + " " + time[3])
+                    .toUTCString().match(/(?:\d+:?)+ GMT$/)[0].replace("GMT", "UTC")
+                );
+                $("#report-offending-message").val(msg.children(".chat-message-message").text());
+            } else if ($(ui.target).parent().hasClass('chat-userlist-user')) {
+                $("#report-username").val(usernameFromOptions(ui.target));
+                $("#report-uid").val($(ui.target).parent().children().eq(0).prop("href").match(/player\/(\d+)/)[1]);
+            }
 
+            $("#report-dialog").dialog("open");
+        }
+    });
+    $("#chat-tabs").on("click", ".chat-message-options", function() {
+        $("#chat-tabs").contextmenu("open", $(this));
+    });
+    $("#report-dialog").dialog({
+        dialogClass: "report-dialog",
+        autoOpen: false,
+        minHeight: 0,
+        width: "100%",
+        position: {at: 'center center-30px'}
+    });
+    $("#report-report").click(function() {
+        $("#report-message").parent().toggle();
+    });
+    $("#report-cancel").click(closeReportDialog);
+    $("#report-submit").click(function() {
+        if ($("#report-ignore").prop("checked") == true) {
+            ignoreUser($("#report-username").val());
+        }
+
+        if ($("#report-report").prop("checked") == true) {
+            sock.send(
+                "PRIVMSG #ops-notifications :[REPORT] Reporting {username} ({uid}) by {curr_username} ({curr_uid}).\r\n"
+                .replace("{username}", $("#report-username").val())
+                .replace("{uid}", $("#report-uid").val())
+                .replace("{time}", $("#report-time").val() != '' ? " Reported message sent at " + $("#report-time").val() : '')
+                .replace("{curr_username}", USERNAME)
+                .replace("{curr_uid}", UID)
+            );
+            if ($("#report-offending-message").val() != '') {
+                sock.send("PRIVMSG #ops-notifications :[REPORTED MESSAGE] " + $("#report-offending-message").val() + "\r\n");
+            }
+            sock.send("PRIVMSG #ops-notifications :[REPORT REASON] " + $("#report-message").val() + "\r\n");
+        }
+
+        closeReportDialog();
+    })
     // Key bindings
-    $('#chat-input').keypress(function (e) {
+    $('#chat-input').keypress(function(e) {
         var isAction = false;
         var channel = "#" + CHANNEL;
         // Hit enter in chat
@@ -404,7 +572,7 @@ $(document).ready(function () {
                                     postMessage("Usage: /unignore <username>");
                                     postMessage("Example: /unignore player1");
                                     postMessage("Example: /unignore *");
-                                    break;  
+                                    break;
                                 default:
                                     postMessage("Available commands: help, me, ignore, ignore-list, unignore");
                                     postMessage("Type /help <command> for information on individual commands");
@@ -421,30 +589,21 @@ $(document).ready(function () {
                             break;
                         case "ignore":
                             if (!params){ postMessage("Please include command parameters. Type /help ignore for more usage instructions"); break; }
-                            ignoredUsers.push(params);
-                            localStorage.chatIgnored = ignoredUsers;
-                            postMessage("Ignored " + params);
+                            ignoreUser(params);
                             break;
                         case "ignore-list":
                             postMessage("Currently ignored users: " + ignoredUsers.join(", "));
                             break;
                         case "unignore":
                             if (!params){ postMessage("Please include command parameters. Type /help unignore for more usage instructions"); break; }
-                            if (params == "*") {
-                                ignoredUsers = [];
-                                postMessage("Unignored all");
-                            } else {
-                                ignoredUsers.splice(ignoredUsers.indexOf(params), 1);
-                                postMessage("Unignored " + params);
-                            }
-                            localStorage.chatIgnored = ignoredUsers;
+                            unignoreUser(params)
                             break;
                         default:
                             postMessage("Invalid command. Type /help for more available commands");
                             break;
                     }
                 }
-                
+
                 if (post) {
                     // So Flash chat doesn't break
                     message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -468,23 +627,23 @@ $(document).ready(function () {
 function initSock() {
     clearInterval(timerInterval);
     $("#reconnect").addClass("active");
-    $("#reconnect").prop('onclick', null); 
+    $("#reconnect").prop('onclick', null);
     $("#chat-loading > #connecting").show();
     $("#chat-loading > #failed").hide();
 
-    sock = new SockJS("http://irc.eternagame.org:8081", [], { transports: ['websocket', 'xhr-streaming', 'xdr-streaming', 'eventsource', 'iframe-eventsource', 'htmlfile', 'iframe-htmlfile', 'xhr-polling', 'xdr-polling', 'iframe-xhr-polling'] });
+    sock = new SockJS("https://irc.eternagame.org/chatws", [], { transports: ['websocket', 'xhr-streaming', 'xdr-streaming', 'eventsource', 'iframe-eventsource', 'htmlfile', 'iframe-htmlfile', 'xhr-polling', 'xdr-polling', 'iframe-xhr-polling'] });
     // Initial Chat Connection
-    sock.onopen = function () {
+    sock.onopen = function() {
         sock.send("NICK " + NICK + "\r\n");
         sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
     };
 
     // Attempt to reconnect
-    sock.onclose = function () {
+    sock.onclose = function() {
         console.log("sock closed normally");
         onDisconnect();
     }
-    sock.onerror = function () {
+    sock.onerror = function() {
         console.log("sock closed by an error");
         onDisconnect();
     }
@@ -518,8 +677,7 @@ function initSock() {
         }
     }
 
-
-    sock.onmessage = function (e) {
+    sock.onmessage = function(e) {
         var commands = parseCommands(e.data);
         for (var i = 0; i < commands.length; i++) {
             var cmd = commands[i];
@@ -532,7 +690,6 @@ function initSock() {
                     var nickNum = parseInt(NICK.match(/\^(\d+)/)[1]) + 1;
                     NICK = NICK.replace(/\^(\d+)/, "^" + nickNum);
                     sock.send("NICK " + NICK + "\r\n");
-                    sock.send("USER " + "anon" + " 0 * :" + USERNAME + "\r\n");
                     break;
                 case "001":
                     // Initial info
@@ -547,7 +704,7 @@ function initSock() {
                     if (nick == NICK) {
                         console.log("Joined " + cmd.params[0]);
                         console.log("Loading history...");
-                        $.get("http://irc.eternagame.org:8082/history.html", function (data) {
+                        $.get("https://irc.eternagame.org/history", function(data) {
                             console.log("History recieved");
                             var messages = data.trim().split("\n");
                             var firstNewMessage = 0;
@@ -569,9 +726,13 @@ function initSock() {
                             $("#chat-input").show();
                             $("div#chat-loading").detach();
                             $("#chat-tabs").show();
-                            $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom");
+                            setTimeout(function(){
+                                $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+                            }, 100);
                             if (USERNAME !== "Anonymous") {
-                                $("#chat-input").prop('disabled', false);
+                                $("#chat-input").prop("disabled", false);
+                            } else  {
+                                $("#chat-input").attr("placeholder", "Please log in to chat")
                             }
                         });
                     } else {
@@ -666,4 +827,69 @@ function initSock() {
         }
 
     };
+}
+
+// Image pasting
+function screenshotCallback(body) {
+    let info = JSON.parse(body);
+    let text = $('#chat-input').val() + 'https://eternagame.org' + info.data.filename;
+    $('#chat-input').val(text);
+}
+function onImagePaste(results){
+    let toEncode = results.dataURL.substr('data:image/png;base64,'.length);
+    let data = 'data=' + encodeURIComponent(toEncode) + '&type=screenshot';
+    $.ajax({
+        type: "POST",
+        url: 'https://eternagame.org/post/',
+        data: data,
+    }).done(screenshotCallback);        
+}
+  
+    
+// Credit to https://codepen.io/netsi1964/pen/IoJbg
+function addImagePasteEventToJquery(){
+    $.fn.pasteImageReader = function(options) {
+        if (typeof options === "function") {
+          options = {
+            callback: options
+          };
+        }
+        let defaults = {
+            callback: $.noop,
+            matchType: /image.*/
+        };
+        
+        options = $.extend({}, defaults, options);
+        return this.each(function() {
+          var $this, element;
+          element = this;
+          $this = $(this);
+          return $this.bind('paste', function(event) {
+            var clipboardData, found;
+            found = false;
+            clipboardData = event.originalEvent.clipboardData;
+            console.log(event);
+            return Array.prototype.forEach.call(clipboardData.types, function(type, i) {
+              var file, reader;
+              if (found) {
+                return;
+              }
+              if (type.match(options.matchType) || clipboardData.items[i].type.match(options.matchType)) {
+                file = clipboardData.items[i].getAsFile();
+                reader = new FileReader();
+                reader.onload = function(evt) {
+                  return options.callback.call(element, {
+                    dataURL: evt.target.result,
+                    event: evt,
+                    file: file,
+                    name: file.name
+                  });
+                };
+                reader.readAsDataURL(file);
+                return found = true;
+              }
+            });
+          });
+        });
+    }
 }
