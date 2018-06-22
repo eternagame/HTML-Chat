@@ -482,7 +482,8 @@ $(document).ready(function() {
                 $("#report-uid").val(msg.children(".chat-message-user-link").prop("href").match(/player\/(\d+)/)[1]);
                 var time = msg.children(".chat-message-time").text().match(/(\d+):(\d+) ((AM)|(PM))/);
                 $("#report-time").val(
-                    new Date("Jan 1 " + time[1] + ":" + time[2] + " " + time[3])
+                    // Using a random date, as we only need the time
+                    new Date("Jan 1 2000 " + time[1] + ":" + time[2] + " " + time[3])
                     .toUTCString().match(/(?:\d+:?)+ GMT$/)[0].replace("GMT", "UTC")
                 );
                 $("#report-offending-message").val(msg.children(".chat-message-message").text());

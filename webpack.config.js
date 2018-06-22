@@ -6,7 +6,7 @@ const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 const webpackMerge = require('webpack-merge');
 
 const commonConfig = {
-    devtool: 'cheap-module-source-map',
+    devtool: 'cheap-eval-source-map',
     entry: {
         'chat-main': './src/js/chat.js',
     },
