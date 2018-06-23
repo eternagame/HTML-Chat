@@ -1,4 +1,4 @@
-﻿// jQuery and jQuery-ui
+// jQuery and jQuery-ui
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/tabs';
 import 'jquery-ui/ui/widgets/dialog';
@@ -340,7 +340,6 @@ function ignoreUser(user) {
     } else {
         postMessage(user + " has already been ignored");
     }
-}
 
 /**
  * Remove the user to the current user's ignore list
@@ -492,6 +491,7 @@ $(document).ready(function() {
                 $("#report-username").val(usernameFromOptions(ui.target));
                 $("#report-uid").val($(ui.target).parent().children().eq(0).prop("href").match(/player\/(\d+)/)[1]);
             }
+
 
             $("#report-dialog").dialog("open");
         }

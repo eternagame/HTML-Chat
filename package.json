@@ -4,9 +4,10 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
-    "malihu-custom-scrollbar-plugin": "github:LFP6/malihu-custom-scrollbar-plugin",
+    "malihu-custom-scrollbar-plugin": "github:LFP6/malihu-custom-scrollbar-plugin#bda645721d2ff82bc",
     "markdown-it": "^8.4.0",
-    "sockjs-client": "^1.1.4"
+    "sockjs-client": "^1.1.4",
+    "ui-contextmenu": "^1.18.1"
   },
   "devDependencies": {
     "body-parser": "^1.18.2",
@@ -15,10 +16,10 @@
     "file-loader": "^1.1.5",
     "html-webpack-plugin": "^2.30.1",
     "inline-manifest-webpack-plugin": "^3.0.1",
-    "request": "^2.83.0",
+    "request": "^2.86.0",
     "style-loader": "^0.19.0",
     "url-loader": "^0.6.2",
-    "webpack": "^3.8.1",
+    "webpack": "^3.12.0",
     "webpack-dev-server": "^2.9.3",
     "webpack-merge": "^4.1.0"
   },
