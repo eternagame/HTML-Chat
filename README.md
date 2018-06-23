@@ -19,7 +19,6 @@ Feel free to fork this repository, make some changes, and create a pull request.
 
 Currently compatibility must be maintained between this chat and the legacy Flash chat, until it can be implemented into the game. At that point, more significant changes may be implemented to improve implementations based on IRCv3 functionality and and other functions that would otherwise "break" the Flash chat.
 
-Please develop with and make all pull requests to the `dev` branch unless otherwise requested, as this is the in-progress codebase for the next release.
 -----------------------------------------
 
 Design and implementation of initial release: [@LFP6](https://github.com/LFP6) ([Eterna](http://www.eternagame.org/web/player/48290/))

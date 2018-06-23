@@ -3,11 +3,14 @@
     margin-right: 10px;
 }
 .mCSB_inside>.mCSB_scrollTools_vertical>.mCSB_draggerContainer>.mCSB_dragger {
-    width: 2px;
+    width: 6px;
     right: 2px;
 }
 .mCSB_inside>.mCSB_scrollTools_vertical>.mCSB_draggerContainer>.mCSB_draggerRail {
-    margin-right: 1px;
+    margin-right: 3px;
+}
+.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+    width: 8px; 
 }
 #chat-tabs > .ui-tabs-panel > .ps-scrollbar-y-rail {
     opacity: 1;
