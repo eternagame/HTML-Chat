@@ -295,6 +295,10 @@ function postMessage( raw_msg, isHistory ) {
     $("#global-chat-messages").append(message);
 }
 $(document).ready(function () {
+
+    addImagePasteEventToJquery();
+    $("#chat-input").pasteImageReader(onImagePaste);
+
     $("#disconnect").click(function () {
         sock.close();
     });
@@ -657,4 +661,69 @@ function initSock() {
         }
 
     };
+}
+
+// Image pasting
+function screenshotCallback(body) {
+    let info = JSON.parse(body);
+    let text = $('#chat-input').val() + 'https://eternagame.org' + info.data.filename;
+    $('#chat-input').val(text);
+}
+function onImagePaste(results){
+    let toEncode = results.dataURL.substr('data:image/png;base64,'.length);
+    let data = 'data=' + encodeURIComponent(toEncode) + '&type=screenshot';
+    $.ajax({
+        type: "POST",
+        url: 'https://eternagame.org/post/',
+        data: data,
+    }).done(screenshotCallback);        
+}
+  
+    
+// Credit to https://codepen.io/netsi1964/pen/IoJbg
+function addImagePasteEventToJquery(){
+    $.fn.pasteImageReader = function(options) {
+        if (typeof options === "function") {
+          options = {
+            callback: options
+          };
+        }
+        let defaults = {
+            callback: $.noop,
+            matchType: /image.*/
+        };
+        
+        options = $.extend({}, defaults, options);
+        return this.each(function() {
+          var $this, element;
+          element = this;
+          $this = $(this);
+          return $this.bind('paste', function(event) {
+            var clipboardData, found;
+            found = false;
+            clipboardData = event.originalEvent.clipboardData;
+            console.log(event);
+            return Array.prototype.forEach.call(clipboardData.types, function(type, i) {
+              var file, reader;
+              if (found) {
+                return;
+              }
+              if (type.match(options.matchType) || clipboardData.items[i].type.match(options.matchType)) {
+                file = clipboardData.items[i].getAsFile();
+                reader = new FileReader();
+                reader.onload = function(evt) {
+                  return options.callback.call(element, {
+                    dataURL: evt.target.result,
+                    event: evt,
+                    file: file,
+                    name: file.name
+                  });
+                };
+                reader.readAsDataURL(file);
+                return found = true;
+              }
+            });
+          });
+        });
+    }
 }
