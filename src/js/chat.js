@@ -870,7 +870,6 @@ function addImagePasteEventToJquery(){
             var clipboardData, found;
             found = false;
             clipboardData = event.originalEvent.clipboardData;
-            console.log(event);
             return Array.prototype.forEach.call(clipboardData.types, function(type, i) {
               var file, reader;
               if (found) {
