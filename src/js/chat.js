@@ -1,4 +1,4 @@
-// jQuery and jQuery-ui
+﻿// jQuery and jQuery-ui
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/tabs';
 import 'jquery-ui/ui/widgets/dialog';
@@ -533,96 +533,102 @@ $(document).ready(function() {
     })
     // Key bindings
     $('#chat-input').keypress(function(e) {
-        var isAction = false;
-        var channel = "#" + CHANNEL;
-        // Hit enter in chat
         if (e.which == 13) {
-            // No posting as annon or if nothing has been actually posted
-            if (USERNAME !== "Anonymous" && $('#chat-input').val().trim() !== '') {
-                var message = $('#chat-input').val();
-                var post = true;
-                // Chat commands
-                if (message.startsWith("/")) {
-                    var post = false;
-                    var command = message.match(/^\/([^ ]+)/)[1];
-                    try {
-                        var params = message.match(/^\/\w+ (.+)/)[1];
-                    } catch(e){}
-                    switch (command) {
-                        case "help":
-                            switch(params) {
-                                case "me":
-                                    postMessage("/me: Posts message formatted as an action")
-                                    postMessage("Usage: /me <message>");
-                                    postMessage("Example: /me laughs");
-                                    break;
-                                case "ignore":
-                                    postMessage("/ignore: Don't show messages from a particular user. Show currently ignored users with /ignore-list. Unignore user with /unignore.")
-                                    postMessage("Usage: /ignore <username>");
-                                    postMessage("Example: /ignore player1");
-                                    break;
-                                case "ignore-list":
-                                    postMessage("/ignore-list: Shows currently ignored users. Ignore a user with /ignore. Unignore user with /unignore.")
-                                    postMessage("Usage: /ignore-list");
-                                    postMessage("Example: /ignore-list");
-                                    break;
-                                case "unignore":
-                                    postMessage("/unignore: Shows messages from a user after being igored. Unignores all users when username is *. Ignore a user with /ignore. Show currently ignored users with /ignore-list.")
-                                    postMessage("Usage: /unignore <username>");
-                                    postMessage("Example: /unignore player1");
-                                    postMessage("Example: /unignore *");
-                                    break;
-                                default:
-                                    postMessage("Available commands: help, me, ignore, ignore-list, unignore");
-                                    postMessage("Type /help <command> for information on individual commands");
-                                    postMessage("Example: /help me");
-                                    postMessage("Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)");
-                                    break;
-                            }
-                            break;
-                        case "me":
-                            if (!params){ postMessage("Please include command parameters. Type /help me for usage instructions"); break; }
-                            isAction = true;
-                            post = true;
-                            message = params;
-                            break;
-                        case "ignore":
-                            if (!params){ postMessage("Please include command parameters. Type /help ignore for more usage instructions"); break; }
-                            ignoreUser(params);
-                            break;
-                        case "ignore-list":
-                            postMessage("Currently ignored users: " + ignoredUsers.join(", "));
-                            break;
-                        case "unignore":
-                            if (!params){ postMessage("Please include command parameters. Type /help unignore for more usage instructions"); break; }
-                            unignoreUser(params)
-                            break;
-                        default:
-                            postMessage("Invalid command. Type /help for more available commands");
-                            break;
-                    }
-                }
-
-                if (post) {
-                    // So Flash chat doesn't break
-                    message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    // Format time to work with Flash chat
-                    // TODO: Could use a refactor, might be able to remove this necessity after Flash is removed)
-                    if (isAction) {
-                        message = UID + '_<I><FONT COLOR="#C0DCE7">' + USERNAME + "</FONT></I>_" + new Date().toUTCString().replace(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun), ([0-3]\d) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) ([0-2]\d(?::[0-6]\d){2}) GMT/, "$1 $3 $2 $5 $4 UTC") + "_<I>" + message + "</I>";
-                    } else {
-                        message = UID + "_" + USERNAME + "_" + new Date().toUTCString().replace(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun), ([0-3]\d) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) ([0-2]\d(?::[0-6]\d){2}) GMT/, "$1 $3 $2 $5 $4 UTC") + "_" + message;
-                    }
-                    sock.send("PRIVMSG " + channel + " :" + message + "\r\n");
-                    postMessage(message, false);
-                }
-            }
+            // Hit enter in chat
+            sendMessage($('#chat-input').val());
             $('#chat-input').val('');
             return false;
         }
     });
     $("#reconnect").click(initSock);
+
 });
+
+function sendMessage(message){
+    var isAction = false;
+    var channel = "#" + CHANNEL;
+    // No posting as annon or if nothing has been actually posted
+    if (USERNAME !== "Anonymous" && message.trim() !== '') {
+        var message = message;
+        var post = true;
+        // Chat commands
+        if (message.startsWith("/")) {
+            var post = false;
+            var command = message.match(/^\/([^ ]+)/)[1];
+            try {
+                var params = message.match(/^\/\w+ (.+)/)[1];
+            } catch(e){}
+            switch (command) {
+                case "help":
+                    switch(params) {
+                        case "me":
+                            postMessage("/me: Posts message formatted as an action")
+                            postMessage("Usage: /me <message>");
+                            postMessage("Example: /me laughs");
+                            break;
+                        case "ignore":
+                            postMessage("/ignore: Don't show messages from a particular user. Show currently ignored users with /ignore-list. Unignore user with /unignore.")
+                            postMessage("Usage: /ignore <username>");
+                            postMessage("Example: /ignore player1");
+                            break;
+                        case "ignore-list":
+                            postMessage("/ignore-list: Shows currently ignored users. Ignore a user with /ignore. Unignore user with /unignore.")
+                            postMessage("Usage: /ignore-list");
+                            postMessage("Example: /ignore-list");
+                            break;
+                        case "unignore":
+                            postMessage("/unignore: Shows messages from a user after being igored. Unignores all users when username is *. Ignore a user with /ignore. Show currently ignored users with /ignore-list.")
+                            postMessage("Usage: /unignore <username>");
+                            postMessage("Example: /unignore player1");
+                            postMessage("Example: /unignore *");
+                            break;
+                        default:
+                            postMessage("Available commands: help, me, ignore, ignore-list, unignore");
+                            postMessage("Type /help <command> for information on individual commands");
+                            postMessage("Example: /help me");
+                            postMessage("Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)");
+                            break;
+                    }
+                    break;
+                case "me":
+                    if (!params){ postMessage("Please include command parameters. Type /help me for usage instructions"); break; }
+                    isAction = true;
+                    post = true;
+                    message = params;
+                    break;
+                case "ignore":
+                    if (!params){ postMessage("Please include command parameters. Type /help ignore for more usage instructions"); break; }
+                    ignoreUser(params);
+                    break;
+                case "ignore-list":
+                    postMessage("Currently ignored users: " + ignoredUsers.join(", "));
+                    break;
+                case "unignore":
+                    if (!params){ postMessage("Please include command parameters. Type /help unignore for more usage instructions"); break; }
+                    unignoreUser(params)
+                    break;
+                default:
+                    postMessage("Invalid command. Type /help for more available commands");
+                    break;
+            }
+        }
+
+        if (post) {
+            // So Flash chat doesn't break
+            message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            // Format time to work with Flash chat
+            // TODO: Could use a refactor, might be able to remove this necessity after Flash is removed)
+            if (isAction) {
+                message = UID + '_<I><FONT COLOR="#C0DCE7">' + USERNAME + "</FONT></I>_" + new Date().toUTCString().replace(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun), ([0-3]\d) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) ([0-2]\d(?::[0-6]\d){2}) GMT/, "$1 $3 $2 $5 $4 UTC") + "_<I>" + message + "</I>";
+            } else {
+                message = UID + "_" + USERNAME + "_" + new Date().toUTCString().replace(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun), ([0-3]\d) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) ([0-2]\d(?::[0-6]\d){2}) GMT/, "$1 $3 $2 $5 $4 UTC") + "_" + message;
+            }
+            sock.send("PRIVMSG " + channel + " :" + message + "\r\n");
+            postMessage(message, false);
+        }
+    }
+}
+
 function initSock() {
     clearInterval(timerInterval);
     $("#reconnect").addClass("active");
@@ -826,4 +832,12 @@ function initSock() {
         }
 
     };
+}
+
+window.addEventListener("message", screenshotHook, false);
+
+function screenshotHook(event) {
+    if (event.origin.match(/https?:\/\/((localhost)|(.*\.?eternagame\.org)|(.*\.?eternadev\.org))/).length !== 0)
+        if (event.data.type === 'chat-message')
+            sendMessage(event.data.content);
 }
