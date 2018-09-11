@@ -837,7 +837,7 @@ function initSock() {
 window.addEventListener("message", screenshotHook, false);
 
 function screenshotHook(event) {
-    if (event.origin.match(/https?:\/\/((localhost)|(.*\.?eternagame\.org)|(.*\.?eternadev\.org))/).length !== 0)
+    if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
         if (event.data.type === 'chat-message')
             sendMessage(event.data.content);
 }
