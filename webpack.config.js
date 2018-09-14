@@ -6,7 +6,7 @@ const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 const webpackMerge = require('webpack-merge');
 
 const commonConfig = {
-    devtool: 'cheap-module-source-map',
+    devtool: 'cheap-eval-source-map',
     entry: {
         'chat-main': './src/js/chat.js',
     },
@@ -46,7 +46,7 @@ const developmentConfig = {
         contentBase: path.join(__dirname, 'www-dev'),
         compress: true,
         port: 9000,
-        setup(app){
+        before(app){
             const request = require('request');
             const bodyParser = require('body-parser');
 
