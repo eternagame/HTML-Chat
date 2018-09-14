@@ -410,6 +410,7 @@ $(document).ready(function() {
     $( "#chat-tabs" ).children().mCustomScrollbar({
         // No fancy animation, it makes it feel awkward
         scrollInertia: 0,
+        mouseWheelPixels: 100,
         callbacks: {
             // The user has scrolled, so don't automatically move to the bottom on a new message
             onScroll: function() {
