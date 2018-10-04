@@ -388,6 +388,11 @@ function usernameFromOptions(target) {
 }
 
 $(document).ready(function() {
+    document.addEventListener("visibilitychange", function() {
+        if('visible' === document.visibilityState)
+            $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
+    });
+
     $("#disconnect").click(function() {
         sock.close();
     });
@@ -835,9 +840,16 @@ function initSock() {
 }
 
 window.addEventListener("message", screenshotHook, false);
+window.addEventListener("message", scrollHook, false);
 
 function screenshotHook(event) {
     if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
         if (event.data.type === 'chat-message')
             sendMessage(event.data.content);
+}
+
+function scrollHook(event){
+    if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
+        if (event.data.type === 'chat-scroll')
+            $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
 }
