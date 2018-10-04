@@ -71,8 +71,6 @@ var disconnectionTimers = [5, 10, 15, 30];
 var currentTimer = 0;
 var timerInterval;
 
-var pendingScroll = false;
-
 var postedMessages = [];
 var toBePosted = [];
 var connected = false;
@@ -327,7 +325,6 @@ function postMessage( raw_msg, isHistory ) {
     $("#global-chat-messages").append(message);
     setTimeout(function(){
         $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
-        pendingScroll = document.visibilityState === 'hidden';
     }, 100);
 }
 
@@ -392,9 +389,8 @@ function usernameFromOptions(target) {
 
 $(document).ready(function() {
     document.addEventListener("visibilitychange", function() {
-        if('visible' === document.visibilityState && pendingScroll){
+        if('visible' === document.visibilityState && chatAutoScroll === "bottom"){
             $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
-            pendingScroll = false;
         }
     });
 
@@ -855,8 +851,6 @@ function screenshotHook(event) {
 
 function scrollHook(event){
     if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
-        if (event.data.type === 'chat-scroll'){
+        if (event.data.type === 'chat-scroll')
             $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
-            pendingScroll = document.visibilityState === 'hidden';
-        }
 }
