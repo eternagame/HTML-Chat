@@ -46,6 +46,9 @@ md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
 // Create an instance of markdown-it with no rules enabled, using it just to strip/sanitize HTML
 var mdSanitizer = new MarkdownIt('zero');
 
+// Emoji Name Map
+import emojiDict from 'emoji-dictionary';
+
 // SockJS
 import SockJS from 'sockjs-client';
 
@@ -241,6 +244,33 @@ function encodedRegex( search ) {
                       mod);
 }
 
+/** 
+ * @param raw_msg {string}
+*/
+function parseEmoji ( raw_msg ){
+    console.log(emojiDict); 
+    var prevColon, currColon;
+    prevColon = raw_msg.indexOf(':');
+    while(prevColon != -1){
+        currColon = raw_msg.indexOf(':', prevColon + 1);
+        if(currColon == -1)
+            break;
+        console.log(currColon, prevColon)
+        var name = raw_msg.substring(prevColon + 1, currColon);
+        if(name in emojiDict.names){
+            raw_msg = raw_msg.substring(0, prevColon) + emojiDict.getUnicode(name) + raw_msg.substring(currColon + 1);
+            prevColon = raw_msg.indexOf(':', prevColon);
+            console.log(emojiDict.getUnicode('1234'));
+            console.log(name);
+        }
+        else{
+            console.log(name);
+
+            prevColon = currColon;
+        }
+    }
+    return raw_msg;
+}
 /**
  *  Add color to a username based on the UID in the message or font tags
  *  @param data: Username to be colored
@@ -309,6 +339,9 @@ function postMessage( raw_msg, isHistory ) {
     // NOTE: May need to be reworked once Flash chat is dropped to better coincide with IRC specs
     isAction = raw_msg.startsWith("ACTION ") || name ? name.match(/<I><FONT COLOR="#C0DCE7">(.*)<\/FONT><\/I>/) : false;
     raw_msg = raw_msg.replace(/ACTION /, '');
+
+    // Emoji
+    raw_msg = parseEmoji(raw_msg);
 
     // Determine possible message classes
     if (isAction) { classes += " chat-message-action"; }
