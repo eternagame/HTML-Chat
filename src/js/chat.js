@@ -389,9 +389,8 @@ function usernameFromOptions(target) {
 
 $(document).ready(function() {
     document.addEventListener("visibilitychange", function() {
-        if('visible' === document.visibilityState && chatAutoScroll === "bottom"){
-            $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
-        }
+        if('visible' === document.visibilityState)
+            $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
     });
 
     $("#disconnect").click(function() {
