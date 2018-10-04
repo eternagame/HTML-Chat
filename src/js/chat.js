@@ -46,9 +46,6 @@ md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
 // Create an instance of markdown-it with no rules enabled, using it just to strip/sanitize HTML
 var mdSanitizer = new MarkdownIt('zero');
 
-// Emoji Name Map
-import emojiDict from 'emoji-dictionary';
-
 // SockJS
 import SockJS from 'sockjs-client';
 
@@ -73,6 +70,8 @@ var failedAttempts = 1;
 var disconnectionTimers = [5, 10, 15, 30];
 var currentTimer = 0;
 var timerInterval;
+
+var pendingScroll = false;
 
 var postedMessages = [];
 var toBePosted = [];
@@ -244,33 +243,6 @@ function encodedRegex( search ) {
                       mod);
 }
 
-/** 
- * @param raw_msg {string}
-*/
-function parseEmoji ( raw_msg ){
-    console.log(emojiDict); 
-    var prevColon, currColon;
-    prevColon = raw_msg.indexOf(':');
-    while(prevColon != -1){
-        currColon = raw_msg.indexOf(':', prevColon + 1);
-        if(currColon == -1)
-            break;
-        console.log(currColon, prevColon)
-        var name = raw_msg.substring(prevColon + 1, currColon);
-        if(name in emojiDict.names){
-            raw_msg = raw_msg.substring(0, prevColon) + emojiDict.getUnicode(name) + raw_msg.substring(currColon + 1);
-            prevColon = raw_msg.indexOf(':', prevColon);
-            console.log(emojiDict.getUnicode('1234'));
-            console.log(name);
-        }
-        else{
-            console.log(name);
-
-            prevColon = currColon;
-        }
-    }
-    return raw_msg;
-}
 /**
  *  Add color to a username based on the UID in the message or font tags
  *  @param data: Username to be colored
@@ -340,9 +312,6 @@ function postMessage( raw_msg, isHistory ) {
     isAction = raw_msg.startsWith("ACTION ") || name ? name.match(/<I><FONT COLOR="#C0DCE7">(.*)<\/FONT><\/I>/) : false;
     raw_msg = raw_msg.replace(/ACTION /, '');
 
-    // Emoji
-    raw_msg = parseEmoji(raw_msg);
-
     // Determine possible message classes
     if (isAction) { classes += " chat-message-action"; }
     if (!prefix) { classes += " chat-message-system"; }
@@ -358,6 +327,7 @@ function postMessage( raw_msg, isHistory ) {
     $("#global-chat-messages").append(message);
     setTimeout(function(){
         $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
+        pendingScroll = document.visibilityState === 'hidden';
     }, 100);
 }
 
@@ -421,6 +391,13 @@ function usernameFromOptions(target) {
 }
 
 $(document).ready(function() {
+    document.addEventListener("visibilitychange", function() {
+        if('visible' === document.visibilityState && pendingScroll){
+            $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+            pendingScroll = false;
+        }
+    });
+
     $("#disconnect").click(function() {
         sock.close();
     });
@@ -868,9 +845,18 @@ function initSock() {
 }
 
 window.addEventListener("message", screenshotHook, false);
+window.addEventListener("message", scrollHook, false);
 
 function screenshotHook(event) {
     if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
         if (event.data.type === 'chat-message')
             sendMessage(event.data.content);
+}
+
+function scrollHook(event){
+    if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
+        if (event.data.type === 'chat-scroll'){
+            $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+            pendingScroll = document.visibilityState === 'hidden';
+        }
 }
