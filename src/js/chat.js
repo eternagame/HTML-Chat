@@ -418,6 +418,7 @@ $(document).ready(function() {
                 }
             },
             // We've hit the bottom, resume scrolling
+            onTotalScrollOffset: 30,
             onTotalScroll: function() {
                 if ($("#chat-tab-global").css('display') !== 'none') {
                     chatAutoScroll = "bottom";
