@@ -51,7 +51,7 @@ import SockJS from 'sockjs-client';
 
 // Our assets
 import './polyfills';
-import {CHAT_CHANNEL, CURRENT_USER} from './define-user';
+import {CHAT_CHANNEL, CURRENT_USER, WORKBRANCH} from './define-user';
 import '../css/chat.css';
 
 // Username, if not logged in "Annonymous"
@@ -176,11 +176,12 @@ function addUser( username ) {
             return 0;
         });
 
-        userli = '<li id="chat-userlist-user-{USERNAME_LOW}" class="chat-userlist-user"><a target="_blank" href="http://www.eternagame.org/web/player/{UID}/">{USERNAME}</a>{OPTS}</li>';
+        userli = '<li id="chat-userlist-user-{USERNAME_LOW}" class="chat-userlist-user"><a target="_blank" href="http://{WORKBRANCH}/web/player/{UID}/">{USERNAME}</a>{OPTS}</li>';
         userli = userli.replace('{USERNAME_LOW}', username.toLowerCase())
                        .replace('{USERNAME}', username)
                        .replace('{UID}', uid)
-                       .replace("{OPTS}", USERNAME !== "Anonymous" ? '<a class="chat-message-options">&vellip;</a>' : "");
+                       .replace("{OPTS}", USERNAME !== "Anonymous" ? '<a class="chat-message-options">&vellip;</a>' : "")
+                       .replace("{WORKBRANCH}", WORKBRANCH);
 
         // If there's a user ahead of this one in the array, insert it before that one in the list, else add to the end
         if (onlineUsers[onlineUserWithName(username).index+1]) {
@@ -253,7 +254,7 @@ function colorizeUser ( data, uid, isAction ) {
     // Find escaped font tags, and replace them with a span and the hex color signified, if it's an action remove the tag
     var customColored = data.replace(/&lt;font color=(?:&#x27;|\&quot;)?(#[a-fA-F\d]{6})(?:&#x27;|\&quot;)?&gt;(.+)&lt;\/font&gt;/i, isAction ? '$2':'<span style="color:$1;">$2</span>')
     // Construct span, if it's an action omit the coloring
-    return '<a target="_blank" class="chat-message-user-link" href="http://www.eternagame.org/web/player/' + uid + '/"><span class="chat-message-user" ' + (isAction ? '' : 'style="color:' + colors[uid % colors.length] + ';"') + '>' + customColored + '</span></a>' + (!isAction ? ': ' : ' ');
+    return '<a target="_blank" class="chat-message-user-link" href="http://' + WORKBRANCH + '/web/player/' + uid + '/"><span class="chat-message-user" ' + (isAction ? '' : 'style="color:' + colors[uid % colors.length] + ';"') + '>' + customColored + '</span></a>' + (!isAction ? ': ' : ' ');
 }
 
 /**
