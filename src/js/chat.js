@@ -851,9 +851,12 @@ function screenshotHook(event) {
 }
 
 function scrollHook(event){
-    if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
-        if (event.data.type === 'chat-scroll')
+    if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0) {
+        if (event.data.type === 'chat-scroll') {
            setTimeout(function(){
                $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
            }, 100);
+           chatAutoScroll = "bottom";
+        }
+    }
 }
