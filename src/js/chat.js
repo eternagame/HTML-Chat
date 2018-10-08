@@ -853,5 +853,7 @@ function screenshotHook(event) {
 function scrollHook(event){
     if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
         if (event.data.type === 'chat-scroll')
-            $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+           setTimeout(function(){
+               $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+           }, 100);
 }
