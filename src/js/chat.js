@@ -845,13 +845,13 @@ window.addEventListener("message", screenshotHook, false);
 window.addEventListener("message", scrollHook, false);
 
 function screenshotHook(event) {
-    if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
+    if (event.origin.match(/https?:\/\/((127.0.0.1)|(localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0)
         if (event.data.type === 'chat-message')
             sendMessage(event.data.content);
 }
 
 function scrollHook(event){
-    if (event.origin.match(/https?:\/\/((localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0) {
+    if (event.origin.match(/https?:\/\/((127.0.0.1)|(localhost)|((.*\.)?eternagame\.org)|((.*\.?)eternadev\.org))/).length !== 0) {
         if (event.data.type === 'chat-scroll') {
            setTimeout(function(){
                $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
