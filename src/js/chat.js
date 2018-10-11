@@ -864,13 +864,13 @@ function scrollHook(event){
 }
 
 function toggleVisibility(){
-    if($('#chat-content').is(':visible')){
-        $('#chat-content').hide();
+    if($('#chat-content').css('visibility') === 'visible'){
+        $('#chat-content').css('visibility','hidden');
         $('.tab').css('visibility','hidden');
         $('#minimization-triangle').addClass('flipped');
     }
     else {
-        $('#chat-content').show();
+        $('#chat-content').css('visibility','visible');
         $('.tab').css('visibility','visible');
         $('#minimization-triangle').removeClass('flipped');
     }
