@@ -394,6 +394,8 @@ $(document).ready(function() {
             $("#chat-tab-global").mCustomScrollbar("scrollTo", chatAutoScroll, {callbacks: false});
     });
 
+    $('#minimization-triangle').click(toggleVisibility);
+
     $("#disconnect").click(function() {
         sock.close();
     });
@@ -858,5 +860,18 @@ function scrollHook(event){
            }, 100);
            chatAutoScroll = "bottom";
         }
+    }
+}
+
+function toggleVisibility(){
+    if($('#chat-content').is(':visible')){
+        $('#chat-content').hide();
+        $('.tab').css('visibility','hidden');
+        $('#minimization-triangle').addClass('flipped');
+    }
+    else {
+        $('#chat-content').show();
+        $('.tab').css('visibility','visible');
+        $('#minimization-triangle').removeClass('flipped');
     }
 }
