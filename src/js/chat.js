@@ -864,14 +864,10 @@ function scrollHook(event){
 }
 
 function toggleVisibility(){
-    if($('#chat-content').css('visibility') === 'visible'){
-        $('#chat-content').css('visibility','hidden');
-        $('.tab').css('visibility','hidden');
-        $('#minimization-triangle').addClass('flipped');
-    }
-    else {
-        $('#chat-content').css('visibility','visible');
-        $('.tab').css('visibility','visible');
-        $('#minimization-triangle').removeClass('flipped');
-    }
+    $('#minimization-triangle').toggleClass('flipped');
+    $('#chat-content').fadeToggle('fast');
+    $('.tab').fadeToggle('fast');
+    if($('#chat-content').css('display') !== 'none')
+        $("#chat-tab-global").mCustomScrollbar("scrollTo", 'bottom');
+
 }
