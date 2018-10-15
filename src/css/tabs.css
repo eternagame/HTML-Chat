@@ -49,3 +49,9 @@
     margin: 0px;
     padding: 0px;
 }
+
+/************* Minimization Triangle *************/
+.flipped {
+    -webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
+}
