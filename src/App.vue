@@ -1,29 +1,48 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div id="app1" style="height:100%; overflow-y:hidden;">
+    <div id="chat" style="height: 100%; font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim; font-size: 14px; font-weight: 300;">
+        <tabs-panel></tabs-panel>
+        <chat-content></chat-content>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
-
+import { Component } from 'vue-property-decorator'
+import Vue from '@/types/vue'
+import TabsPanel from './components/TabsPanel/TabsPanel.vue';
+import ChatContent from './components/ChatContent/ChatContent.vue';
 @Component({
   components: {
-  HelloWorld,
-  },
+  TabsPanel,
+  ChatContent,
+  }
   })
-export default class App extends Vue {}
+export default class App extends Vue {
+  mounted() {
+    this.$store.dispatch('initClient');
+  }
+}
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+@import url(https://fonts.googleapis.com/css?family=Didact+Gothic|Open+Sans:400,300,600,700);
+@import url(https://irc.eternagame.org/eterna.css);
+textarea {
+  border-radius: 2px;
+  font-family: "Open Sans", "Helvetica Neue", Arial, Gulim;
+  font-size: 0.85rem;
+  border: 1px solid rgb(169, 169, 169);
+  width: calc(100% - 10px);
 }
+
+// #chat-input,
+// #reconnect {
+//   position: absolute;
+//   bottom: 0px;
+//   width: calc(100% - 28px);
+//   height: 19px;
+//   resize: none;
+//   margin: 10px;
+// }
 </style>

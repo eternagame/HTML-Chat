@@ -1,0 +1,104 @@
+<template>
+  <message
+    @mouseleave="hover = false"
+    @mouseover="hover = true"
+    v-show="$store.state.ignoredUsers.indexOf(message.user.username) === -1"
+    style="overflow: hidden">
+    <div :class="{'chat-message-action': isAction}">
+      <username
+      :msg="message.message"
+        :user="message.user"
+        :action="false"
+        :color="message.tags ? message.tags['username-color'] || '' : ''"
+        :isAction="isAction"
+      >{{isAction || !message.user.username ? '': ':'}}</username>
+      &lrm;<span v-html="formattedMessage"></span>
+      &lrm;<message-time :time="message.time"></message-time>
+    </div>
+    <block-button v-if="hover && message.user.username" :message="message"></block-button>
+  </message>
+</template>
+
+<script lang="ts">
+import { Component, Prop } from "vue-property-decorator";
+import Vue from "@/types/vue";
+import Username from "./Username.vue";
+import MessageComp from "./Message.vue";
+import DictionaryWord from "@/components/ChatContent/Messages/Dictionary/DictionaryWord.vue";
+import BlockButton from "@/components/ChatContent/Messages/BlockMenu/MenuButton.vue";
+import { parseUsername } from "../../../tools/ParseUsername";
+import md from "@/tools/Markdown";
+import { Message } from '../../../types/message';
+import Time from './Time.vue';
+console.log({Time});
+@Component({
+  components: {
+    DictionaryWord,
+    Username,
+    Message: MessageComp,
+    BlockButton,
+    MessageTime: Time
+  }
+})
+export default class IrcMessage extends Vue {
+  show!: boolean;
+  hover = false;
+
+  @Prop({ default: false })
+  private isHistory!: boolean;
+
+  @Prop()
+  private message!: Message;
+
+  get isAction() {
+    return this.message.isAction;
+  }
+
+  get formattedMessage(): string {
+    console.log({msg: this.message});
+    return md.renderInline(this.message.message);
+  }
+}
+</script>
+
+<style lang="scss">
+a {
+  color: #fff;
+}
+
+.chat-message {
+  color: #c0dce7;
+  display: block;
+  position: relative;
+}
+
+.chat-message-system {
+  font-style: italic;
+  text-align: center;
+  align-items: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.chat-message-action {
+  font-style: italic;
+}
+
+.chat-message-user {
+  font-weight: bold;
+}
+
+.chat-message-action > .chat-message-content > a > .chat-message-user {
+  color: #c0dce7;
+}
+
+.chat-message-user-link {
+  text-decoration: none;
+}
+
+.chat-message-time {
+  color: #627587;
+  white-space: nowrap;
+  font-size: 0.8em;
+}
+</style>
