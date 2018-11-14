@@ -1,22 +1,22 @@
-interface State {
-  postedMessages: Array<string>;
-  firstConnection: boolean;
-  toBePosted: Array<string>;
-  connected: boolean;
-  userData: {
-      uid: number;
-      username: string;
-  }
-}
-let state: State = {
-  postedMessages: [],
-  firstConnection: true,
-  toBePosted: [],
-  connected: false,
-  userData: {
-      uid: 0,
-      username: ''
-  }
-};
+import {CHAT_CHANNEL, CURRENT_USER, WORKBRANCH} from '../define-user';
+import SockJS from 'sockjs-client'
 
-export {State, state}
+class State {
+  postedMessages: Array<string> = [];
+  toBePosted: Array<string> = [];
+  userData = new UserData();
+  connectionData = new ConnectionData();
+  sock: any;
+}
+class UserData{
+  uid: string = CURRENT_USER.uid;
+  username: string = CURRENT_USER.name;
+  nick: string = CURRENT_USER.nick;
+}
+class ConnectionData{
+  firstConnection : boolean = false;
+  connected: boolean = false;
+}
+const state = new State();
+
+export { State, state };

@@ -1,6 +1,6 @@
 <template>
     <ul>
-        <message v-for="(i, message) in $store.state.postedMessages" :key="i" :msg="message"></message>
+        <message v-for="(message, i) in $store.state.postedMessages" :key="i" :msg="message"></message>
     </ul>
 </template>
 
@@ -16,7 +16,7 @@ export default class MessagesPanel extends Vue {
   private channel!: string;
 }
 </script>
-<style scoped lang="scss">
+<style lang="scss">
 textarea {
   border-radius: 2px;
   font-family: "Open Sans", "Helvetica Neue", Arial, Gulim;
