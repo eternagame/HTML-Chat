@@ -14,6 +14,10 @@ const mutations: MutationTree<State> = {
     }
     Vue.set(state.postedMessages, state.postedMessages.length, payload.message);
   },
+  addUser(){
+
+  },
+  removeUser(){},
 };
 
 export { mutations, PostMessagePayload };

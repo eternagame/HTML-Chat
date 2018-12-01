@@ -1,19 +1,29 @@
 <template>
-    <ul>
-        <message v-for="(message, i) in $store.state.postedMessages" :key="i" :msg="message"></message>
-    </ul>
+  <ul>
+    <message v-for="(message, i) in $store.state.postedMessages" :key="i" :msg="message"></message>
+  </ul>
 </template>
+<template>
+</template>
+ 
+
+ 
+
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import Message from './Message.vue';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import Message from "./Message.vue";
 
 @Component({
   components: { Message }
-  })
+})
 export default class MessagesPanel extends Vue {
+  maxScrollbarLength = 60;
   @Prop()
   private channel!: string;
+  scrollHanle(evt: Event) {
+    console.log(evt);
+  }
 }
 </script>
 <style lang="scss">
