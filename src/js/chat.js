@@ -794,7 +794,7 @@ function initSock() {
                         }
                     } else if (cmd.params[1] == "-b") {
                         var maskUser = cmd.params[2].match(/(?:~q:)?(.+)!.+/)[1];
-                        if (NICK.match(new RegExp(maskUser.replace("*", ".+").replace("^", "\\^")))) {
+                        if ((NICK + '!' + HOSTNAME).match(new RegExp(maskUser.replace("*", ".+").replace("^", "\\^")))) {
                             $("#chat-input").prop('disabled', false);
                             postMessage("You are now allowed to post in chat");
                         }
