@@ -62,6 +62,8 @@ var UID = CURRENT_USER ? CURRENT_USER.uid : 0;
 var NICK = USERNAME.replace(/^[^a-zA-Z\x5B-\x60\x7B-\x7D]/, "_").replace(/[^a-zA-Z\x5B-\x60\x7B-\x7D\d-]/g, "-").substr(0, 27-String(UID).length) + "__" + UID + "^1";
 // If no channel has been specified via development-user, connect to #global
 var CHANNEL = CHAT_CHANNEL;
+// Set via the USERHOST call (response 302/RPL_USERHOST) send after the numeric 001/RPL_WELCOME is received
+var HOSTNAME = undefined;
 
 // Online users
 var onlineUsers = [];
@@ -706,14 +708,17 @@ function initSock() {
                     sock.send("NICK " + NICK + "\r\n");
                     break;
                 case "001":
-                    // Initial info
+                    // RPL_WELCOME
                     console.log("Authenticated");
+                    sock.send("USERHOST " + NICK + "\r\n");
                     sock.send("JOIN #" + CHANNEL + "\r\n");
+                    break;
+                case "302":
+                    // RPL_USERHOST
+                    HOSTNAME = cmd.params[1].replace(NICK, '').match(/^\*?=(?:\+|-)(.*)$/)[1];
                     break;
                 case "JOIN":
                     failedAttempts = 0;
-
-                    //$("#chat-content").css("background-color", "rgba(0,0,0,0)");
                     var nick = cmd.origin.split("!")[0];
                     if (nick == NICK) {
                         console.log("Joined " + cmd.params[0]);
@@ -779,7 +784,7 @@ function initSock() {
                     // Check if user has been banned, if so disable input and notify in chat
                     if (cmd.params[1] == "+b") {
                         var maskParts = cmd.params[2].match(/(~q:)?(.+)!.+/);
-                        if (NICK.match(new RegExp(maskParts[2].replace("*", ".+").replace("^", "\\^")))) {
+                        if ((NICK + '!' + HOSTNAME).match(new RegExp(maskParts[2].replace("*", ".+").replace("^", "\\^")))) {
                             $("#chat-input").prop('disabled', true);
                             if (maskParts[1]) {
                                 postMessage("You are no longer allowed to post in chat");
