@@ -782,19 +782,15 @@ function initSock() {
                     break;
                 case "MODE":
                     // Check if user has been banned, if so disable input and notify in chat
+                    // TODO: Handle extended bans
+                    // TODO: Handle multiple modes being set/unset at once
                     if (cmd.params[1] == "+b") {
-                        var maskParts = cmd.params[2].match(/(~q:)?(.+)!.+/);
-                        if ((NICK + '!' + HOSTNAME).match(new RegExp(maskParts[2].replace("*", ".+").replace("^", "\\^")))) {
+                        if ((NICK + '!' + HOSTNAME).match(new RegExp(cmd.params[2].replace(/\*/g, ".+").replace("^", "\\^")))) {
                             $("#chat-input").prop('disabled', true);
-                            if (maskParts[1]) {
-                                postMessage("You are no longer allowed to post in chat");
-                            } else {
-                                postMessage("You have been banned from chat");
-                            }
+                            postMessage("You have been banned from chat");
                         }
                     } else if (cmd.params[1] == "-b") {
-                        var maskUser = cmd.params[2].match(/(?:~q:)?(.+)!.+/)[1];
-                        if ((NICK + '!' + HOSTNAME).match(new RegExp(maskUser.replace("*", ".+").replace("^", "\\^")))) {
+                        if ((NICK + '!' + HOSTNAME).match(new RegExp(cmd.params[2].replace(/\*/g, ".+").replace("^", "\\^")))) {
                             $("#chat-input").prop('disabled', false);
                             postMessage("You are now allowed to post in chat");
                         }
