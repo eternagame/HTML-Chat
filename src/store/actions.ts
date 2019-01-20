@@ -1,39 +1,43 @@
 import Vue from "vue";
 import { ActionTree } from "vuex";
 import { HttpResponse } from "vue-resource/types/vue_resource";
-import { State } from "./state";
-import { parseCommands } from "../tools/ParseCommands"
+import { State, state } from "./state";
+import { parseCommands } from "../tools/ParseCommands";
+//import { discordActions } from './discordActions'
 import SockJS from "sockjs-client";
-
+import { Message } from "../types/message";
+import Irc, { IrcMessage } from "irc-framework/browser";
+import { Connection } from "./websocket";
 export const actions: ActionTree<State, any> = {
+  //...discordActions,
   loadHistory(context) {
     console.log("Loading History");
     new Vue().$http.get("https://irc.eternagame.org/history").then((e: HttpResponse) => {
-      const data = e.data;
+      const data = e.data as string;
       const messages = data.trim().split("\n");
       const firstNewMessage = 0;
       let j;
       for (j = 0; j < messages.length; j++)
-        if (context.state.postedMessages.indexOf(messages[j].trim()) == -1) break;
+        //if (context.state.postedMessages.indexOf(messages[j].trim()) == -1) break;
+        break;
       if (!context.state.connectionData.firstConnection) {
-        context.commit("postMessage", {
+        context.commit("postMessageFromText", {
           message:
             "Reconnected to chat - Some messages might be missing if you were away for a long time",
           isHistory: true
         });
       }
       for (; j < messages.length; j++) {
-        context.commit("postMessage", { message: messages[j], isHistory: true });
+        context.commit("postMessageFromText", { message: messages[j], isHistory: true });
       }
       while (context.state.toBePosted.length) {
-        context.commit("postMessage", {
+        context.commit("postMespostMessageFromTextsage", {
           message: context.state.toBePosted.shift(),
           isHistory: true
         });
       }
       context.state.connectionData.firstConnection = false;
       context.state.connectionData.connected = true;
-      console.log(context.state.postedMessages);
       // $("#reconnect").hide();
       // $("#chat-loading").hide();
       // $("#chat-input").show();
@@ -49,41 +53,64 @@ export const actions: ActionTree<State, any> = {
         } */
     });
   },
-  connect({ state, dispatch }) {
-    const sock = new SockJS("https://irc.eternagame.org/chatws", [], {
-      transports: [
-        "websocket",
-        "xhr-streaming",
-        "xdr-streaming",
-        "eventsource",
-        "iframe-eventsource",
-        "htmlfile",
-        "iframe-htmlfile",
-        "xhr-polling",
-        "xdr-polling",
-        "iframe-xhr-polling"
-      ]
+  initClient({state, commit, dispatch}){
+    const client = new Irc.Client({
+      host: "irc.eternagame.org/chatws/websocket",
+      nick: state.userData.nick,
+      username: state.userData.uid,
+      gecos: state.userData.username,
+      transport: Connection,
+      ssl: true
     });
-    // Initial Chat Connection
-    sock.onopen = function() {
-      sock.send("NICK " + state.userData.nick + "\r\n");
-      sock.send("USER " + "anon" + " 0 * :" + state.userData.username + "\r\n");
-    };
+    console.log("nick: " + state.userData.nick + "  " + client.user.nick);
+    console.log(client.user);
+    client.on("raw", function(e) {
+      //console.log(e);
+    });
+    client.on("registered", function(e) {
+      var channel = client.channel("#test");
+      console.log(e.nick);
+      channel.join();
+      console.log("connected");
+      channel.updateUsers(function() {
+        console.log("users:");
+        console.log(channel.users);
+        for (let user of channel.users) commit("addUser", { user: user });
+      });
+      client.on("join", function(e) {
+        console.log(e);
+        commit("addUser", { user: e });
+      });
+      commit("setConnected", { connected: true });
+      //dispatch('loadHistory');
+    });
+    client.on("message", function(event) {
+      dispatch("onMessageRecieved", { message: event });
+    });
+    client.on("sock close", function(event) {
+      console.log("sock closed normally"); //not necesserally normally
+      dispatch("onDisconnect");
+    });
+    state.client = client;
+    dispatch('connect');
 
-    // Attempt to reconnect
-    sock.onclose = function() {
-      console.log("sock closed normally");
-      dispatch("onDisconnect");
-    };
-    sock.onerror = function() {
-      console.log("sock closed by an error");
-      dispatch("onDisconnect");
-    };
-    sock.onmessage = (e: MessageEvent) => dispatch("onMessageRecieved", { data: e.data });
-    state.sock = sock;
+  },
+  connect({ state, commit, dispatch }) {
+    state.client!.connect();
+    for(let i = 0; i < 100; i++)
+    commit("postMessage", {
+      message: { nick: state.userData.nick, message: i, target: state.channels[state.activeTab] }
+    });
+  },
+  sendMessage({ state, commit }, { message }: { message: string }) {
+    commit("postMessage", {
+      message: { nick: state.userData.nick, message, target: state.channels[state.activeTab] }
+    });
+    state.client!.sendMessage("privmsg", "#test", message);
+    //state.client!.raw(`@+user-color PRIVMSG #test ${message}`);
   },
   sendMessageRaw({ state }) {},
-  sendMessage({ state, commit }, { channel, message }: { channel: string | undefined; message: string }) {
+  /* sendMessage({ state, commit }, { channel, message }: { channel: string | undefined; message: string }) {
     if(! channel)
         channel = state.currentChannel;
     // So Flash chat doesn't break
@@ -110,28 +137,30 @@ export const actions: ActionTree<State, any> = {
     state.sock.send("PRIVMSG " + channel + " :" + message + "\r\n");
     console.log("PRIVMSG " + channel + " :" + message + "\r\n");
     commit("postMessage", { message, isHistory: false });
-  },
-  onMessageRecieved({ state, commit, dispatch }, { data }: MessageEvent) {
-    console.log(data);
-    const sock = state.sock;
+  },*/
+  onMessageRecieved({ state, commit, dispatch }, { message }: { message: IrcMessage }) {
+    const client = state.client!;
     let NICK = state.userData.nick;
-    var commands = parseCommands(data);
+    console.log(message);
+    commit("postMessage", { message });
+    return;
+    var commands = parseCommands(message);
     for (var i = 0; i < commands.length; i++) {
       var cmd = commands[i];
       switch (cmd.command) {
         case "PING":
-          sock.send("PONG :0.0.0.0\r\n");
+          client.raw("PONG :0.0.0.0\r\n");
           break;
         case "433":
           // Nick already used, try with fallback
           var nickNum = parseInt(NICK.match(/\^(\d+)/)![1]) + 1;
           NICK = state.userData.nick = NICK.replace(/\^(\d+)/, "^" + nickNum);
-          sock.send("NICK " + NICK + "\r\n");
+          client.raw("NICK " + NICK + "\r\n");
           break;
         case "001":
           // Initial info
           console.log("Authenticated");
-          sock.send("JOIN " + state.currentChannel + "\r\n");
+          client.raw("JOIN " + state.currentChannel + "\r\n");
           break;
         case "JOIN":
           state.connectionData.failedAttempts = 0;
@@ -140,7 +169,8 @@ export const actions: ActionTree<State, any> = {
           var nick = cmd.origin.split("!")[0];
           if (nick == NICK) {
             console.log("Joined " + cmd.params[0]);
-            dispatch("loadHistory");
+            //dispatch("loadHistory");
+            state.connectionData.connected = true;
           } else {
             commit("addUser", { username: cmd.origin.split("!")[0] });
           }
@@ -165,7 +195,7 @@ export const actions: ActionTree<State, any> = {
           break;
         case "NOTICE":
         case "PRIVMSG":
-          commit("postMessage", { message: cmd.params[1], isHistory: false });
+          commit("postMessage", { message: new Message(cmd.params[1], undefined, false) });
           break;
         case "MODE":
           // Check if user has been banned, if so disable input and notify in chat
@@ -248,7 +278,7 @@ export const actions: ActionTree<State, any> = {
   },
   onDisconnect({ state, dispatch, commit }) {
     const data = state.connectionData;
-    data.connected = false;
+    commit("setConnected", { connected: false });
     if (data.failedAttempts == 0) {
       data.failedAttempts++;
       dispatch("connect");
@@ -259,8 +289,8 @@ export const actions: ActionTree<State, any> = {
       data.timerInterval = setInterval(() => dispatch("updateTimer"), 1000);
     }
   },
-  updateTimer({ state, dispatch }) {
-    state.connectionData.currentTimer--;
+  updateTimer({ state, commit, dispatch }) {
+    commit('connectionTimerTick');
     if (state.connectionData.currentTimer <= 0) {
       dispatch("connect");
     }

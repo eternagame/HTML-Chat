@@ -1,41 +1,42 @@
 <template>
-    <li class="tab">
-        <a :href="'#' + destination">
-            {{name}}
-            <slot></slot>
-        </a>
-    </li>
+  <button @click="changeTab" :class="{active: selected}">
+    {{name}}
+    <slot></slot>
+  </button>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import { Component, Prop } from 'vue-property-decorator';
+import Vue from "vue";
+import { Component, Prop } from "vue-property-decorator";
 @Component
 export default class TabButton extends Vue {
-  @Prop()
-  name!: string;
+  
+  get name() {
+    return this.$store.state.channels[this.index];
+  } 
 
   @Prop()
-  destination!: string;
+  index!: number;
+  
+  get selected() {
+    console.log(this.index + '    ' + this.$store.state.activeTab);
+    return this.$store.state.activeTab === this.index; //Index? what if there are multiple channels by the same name?
+  }
+  changeTab(e: Event) {
+    if (!this.selected) this.$store.commit("changeTab", { tabIndex: this.index });
+  }
 }
 </script>
 
 
 <style lang="scss" scoped>
-.tab {
+/* Style the buttons that are used to open the tab content */
+button {
+  float: left;
   border: none;
-  background-color: rgba(255, 255, 255, 0.07);
-  border-radius: 0;
-  margin: 0;
-}
-.tab > a:focus {
   outline: none;
-}
-.tab:hover:not(.ui-state-active) {
-  background-color: rgba(255, 255, 255, 0.13);
-}
-.tab > a {
-  position: relative;
+  cursor: pointer;
+  transition: 0.3s;
   top: 1px;
   padding: 0.4em 1.25em;
   font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
@@ -43,10 +44,20 @@ export default class TabButton extends Vue {
   font-weight: bold;
   text-transform: uppercase;
   color: #fff;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 0;
+  margin: 0;
+
 }
-.tab.ui-state-active {
-  //?
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 0;
+
+/* Change background color of buttons on hover */
+button:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.13);
+}
+
+/* Create an active/current tablink class */
+button.active {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 </style>

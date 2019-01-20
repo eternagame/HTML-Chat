@@ -1,13 +1,23 @@
 import {CHAT_CHANNEL, CURRENT_USER, WORKBRANCH} from '../define-user';
-import SockJS from 'sockjs-client'
-
+import {Client, IrcUser} from "irc-framework/browser";
+import {IrcMessage} from 'irc-framework/browser';
 class State {
-  postedMessages: Array<string> = [];
-  toBePosted: Array<string> = [];
+  activeTab = 0;
+  postedMessages: {
+    [channel: string] : IrcMessage[]
+  } = {
+    '#general': [],
+    '#test': [],
+  };
+  toBePosted: Array<IrcMessage> = [];
   userData = new UserData();
   connectionData = new ConnectionData();
-  sock: any;
-  currentChannel = CHAT_CHANNEL;
+  client?: Client;
+  workbranch = WORKBRANCH;
+  connectedUsers: {
+    [nick: string] : IrcUser 
+  } = {};
+  channels = ['#general', '#test',];
 }
 class UserData{
   uid: string = CURRENT_USER.uid;

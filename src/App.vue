@@ -1,35 +1,8 @@
 <template>
-  <div id="app1">
+  <div id="app1" style="height:100%;">
     <div id="chat" style="height: 100%; font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim; font-size: 14px; font-weight: 300;">
         <tabs-panel></tabs-panel>
-        <div id="chat-content" style="border: rgba(255, 255, 255, 0.2) solid 2px; height: Calc(100% - 34px); position: relative;">
-            <div id="chat-tabs" style="height: 100%; ">
-                <div id="chat-tab-global" style="word-wrap: break-word; white-space: normal;">
-                    <messages-panel id="global-chat-messages"></messages-panel>
-                    <ul>
-                        <li class="chat-message" id="chat-loading" style="color:white">
-                            <img src="https://s3.amazonaws.com/eterna/icon_img/loading.gif" style="margin-bottom: 5px; background-repeat: no-repeat; width: 20px; height: 20px; margin-left: auto; margin-right: auto;"/>
-                            <span id="connecting" v-if="!$store.state.connected && !$store.state.firstConnection">Connecting...</span>
-                            <span id="failed" style="display:none;">Connection failed. retrying in <span id="timer">0</span> seconds.</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div id="chat-tab-users">
-                    <ul id="chat-users-list"></ul>
-                </div>
-            </div>
-            <div id="chat-loading" style="position: relative; top: Calc(50% - 55px); color: #FFF; text-align: center;"
-                 v-if="!$store.state.connected && $store.state.firstConnection">
-                <div style="margin-bottom: 5px; background-image: url('https://s3.amazonaws.com/eterna/icon_img/loading.gif'); background-repeat: no-repeat; width: 20px; height: 20px; margin-left: auto; margin-right: auto;"></div>
-                <span id="connecting">Connecting...</span>
-                <span id="failed" style="display:none;">Connection failed. retrying in <span id="timer">0</span> seconds.   </span>
-            </div>
-            <chat-input :enabled="$store.state.connectionData.connected"></chat-input>
-
-            <div id="reconnect" class="unselectable clickable green-button-interactive rounded-5 centered" style="display:none; color:white; font-weight:bolder; font-size:13px;"><div class="green-button-bg rounded-5"></div>Reconnect</div>
-
-        </div>
+        <chat-content></chat-content>
     </div>
         <div id="report-dialog" style="display: none;">
         <h3 style="text-align: center; margin: 0px;">Ignore/Report User</h3>
@@ -64,19 +37,17 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import TabsPanel from "./components/tabs/TabsPanel.vue";
-import MessagesPanel from "./components/MessagesPanel.vue";
-import Message from "./components/Message.vue";
-import ChatInput from "./components/ChatInput.vue";
+import Message from "./components/Messages/IrcMessage.vue";
+import ChatContent from "./components/ChatContent/ChatContent.vue";
 @Component({
   components: {
     TabsPanel,
-    MessagesPanel,
-    ChatInput,
+    ChatContent,
   }
 })
 export default class App extends Vue {
   created() {
-    this.$store.dispatch("connect");
+    this.$store.dispatch("initClient");
   }
 }
 </script>

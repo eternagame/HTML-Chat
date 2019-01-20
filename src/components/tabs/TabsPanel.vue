@@ -1,10 +1,11 @@
 <template>
-    <ul>
-        <tab-button name="General"></tab-button>
-        <tab-button name="Online">(0)</tab-button>
-        <li style="float: right;"><div id="minimization-triangle"></div></li>
+    <div class="tabs">
+        <tab-button name="General" :index="0"></tab-button>
+        <tab-button name="Test" :index="1"></tab-button>
+        <tab-button name="Online" :index="2">(0)</tab-button>
+        <div style="float: right;" id="minimization-triangle"></div>
 
-    </ul>
+    </div>
 </template>
 
 <script lang="ts">
@@ -22,31 +23,12 @@ export default class Message extends Vue {}
 
 
 <style lang="scss" scoped>
-.tab {
-  border: none;
-  background-color: rgba(255, 255, 255, 0.07);
-  border-radius: 0;
-  margin: 0;
-}
-.tab > a:focus {
-  outline: none;
-}
-.tab:hover:not(.ui-state-active) {
-  background-color: rgba(255, 255, 255, 0.13);
-}
-.tab > a {
-  position: relative;
-  top: 1px;
-  padding: 0.4em 1.25em;
-  font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #fff;
-}
-.tab.ui-state-active {
-  //?
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 0;
+.tabs {
+    padding: .4em .5em;
+    position: relative;
+    height: 25px;
+    margin: 0px;
+    padding: 0px;
+
 }
 </style>
