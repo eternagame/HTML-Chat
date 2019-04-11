@@ -4,7 +4,7 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
-    "malihu-custom-scrollbar-plugin": "github:LFP6/malihu-custom-scrollbar-plugin#bda645721d2ff82bc",
+    "malihu-custom-scrollbar-plugin": "github:luxaritas/malihu-custom-scrollbar-plugin#bda645721d2ff82bc",
     "markdown-it": "^8.4.0",
     "sockjs-client": "^1.1.5",
     "ui-contextmenu": "^1.18.1"
