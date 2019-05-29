@@ -1,4 +1,4 @@
-/*import Vue from "vue";
+/* import Vue from "vue";
 import { ActionTree } from "vuex";
 import { HttpResponse } from "vue-resource/types/vue_resource";
 import { State } from "./state";
@@ -28,9 +28,9 @@ export const discordActions: ActionTree<State, any> = {
         commit('postMessage', {message: message});
   },
   async sendMessage({commit}, {message} :{message: string}){
-     console.log(message); 
-    const discordMessage = await (guild.channels.get('256131046012092416') as TextChannel).send(message); 
-    //(await (guild.channels.get('256131046012092416') as TextChannel).fetchWebhooks()). 
+     console.log(message);
+    const discordMessage = await (guild.channels.get('256131046012092416') as TextChannel).send(message);
+    //(await (guild.channels.get('256131046012092416') as TextChannel).fetchWebhooks()).
     console.log(discordMessage);
     //commit('postMessage', {message: discordMessage});
   }

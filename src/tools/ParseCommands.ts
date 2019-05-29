@@ -2,8 +2,7 @@ function parseCommands(data: any) {
   var msgs, portions;
   // Split into individual messages (commands)
   msgs = data.split("\r\n");
-  // The presence of \r\n at the end causes an extra element, remove it
-  msgs.pop();
+
   for (var i = 0; i < msgs.length; i++) {
     // Split into prefix, command, params, and trailer (does not represent RFC1459/2812 specs, only what's needed to parse)
     portions = msgs[i].match(/(?::([^ ]+) )?([^ ]+)((?: (?:[^ :])[^ ]*)*)?(?: :(.+))?/);

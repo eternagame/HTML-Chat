@@ -6,24 +6,24 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue from "@/types/vue";
 import { Component, Prop } from "vue-property-decorator";
 @Component
 export default class TabButton extends Vue {
-  
   get name() {
-    return this.$store.state.channels[this.index];
-  } 
+    return this.$store.state.tabs[this.index].name;
+  }
 
   @Prop()
   index!: number;
   
   get selected() {
-    console.log(this.index + '    ' + this.$store.state.activeTab);
-    return this.$store.state.activeTab === this.index; //Index? what if there are multiple channels by the same name?
+    return this.$store.state.activeTab === this.index; // Index? what if there are multiple channels by the same name?
   }
+
   changeTab(e: Event) {
-    if (!this.selected) this.$store.commit("changeTab", { tabIndex: this.index });
+    if (!this.selected)
+      this.$store.commit("changeTab", { tabIndex: this.index });
   }
 }
 </script>
@@ -42,22 +42,20 @@ button {
   font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
   font-size: 12px;
   font-weight: bold;
-  text-transform: uppercase;
   color: #fff;
   border: none;
   background-color: rgba(255, 255, 255, 0.07);
   border-radius: 0;
   margin: 0;
-
 }
 
 /* Change background color of buttons on hover */
 button:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.13);
+  background-color: rgba(255, 255, 255, 0.13);
 }
 
 /* Create an active/current tablink class */
 button.active {
-    background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 </style>

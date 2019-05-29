@@ -12,39 +12,39 @@ declare class EventEmitter<EventTypes extends string | symbol = string | symbol>
   eventNames(): Array<EventTypes>;
 
   /**
-   * Return the listeners registered for a given event.
+   * Return the listeners registered for a given params.
    */
   listeners(event: EventTypes): Array<EventEmitter.ListenerFn>;
 
   /**
-   * Return the number of listeners listening to a given event.
+   * Return the number of listeners listening to a given params.
    */
   listenerCount(event: EventTypes): number;
 
   /**
-   * Calls each of the listeners registered for a given event.
+   * Calls each of the listeners registered for a given params.
    */
   emit(event: EventTypes, ...args: Array<any>): boolean;
 
   /**
-   * Add a listener for a given event.
+   * Add a listener for a given params.
    */
   on(event: EventTypes, fn: EventEmitter.ListenerFn, context?: any): this;
   addListener(event: EventTypes, fn: EventEmitter.ListenerFn, context?: any): this;
 
   /**
-   * Add a one-time listener for a given event.
+   * Add a one-time listener for a given params.
    */
   once(event: EventTypes, fn: EventEmitter.ListenerFn, context?: any): this;
 
   /**
-   * Remove the listeners of a given event.
+   * Remove the listeners of a given params.
    */
   removeListener(event: EventTypes, fn?: EventEmitter.ListenerFn, context?: any, once?: boolean): this;
   off(event: EventTypes, fn?: EventEmitter.ListenerFn, context?: any, once?: boolean): this;
 
   /**
-   * Remove all listeners, or those of the specified event.
+   * Remove all listeners, or those of the specified params.
    */
   removeAllListeners(event?: EventTypes): this;
 }

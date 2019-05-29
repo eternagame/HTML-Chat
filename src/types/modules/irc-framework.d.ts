@@ -10,7 +10,7 @@ declare module "irc-framework/browser" {
     createStructure(): void;
     /**Is connected to the IRC network and successfully registered.*/
     connected: boolean; //TODO
-    /**The object for the connected user, as long as the client is connected.*/ user: User; //TODO
+    /**The object for the connected message, as long as the client is connected.*/ user: IrcUser; //TODO
     /**Request*/ requestCap(capability: string): void;
     use(a: any): any;
     connect(connect_options?: Object): void;
@@ -18,7 +18,7 @@ declare module "irc-framework/browser" {
      * Proxy the command handler events onto the client object, with some added sugar
      * Events are handled in order:
      * 1. Received from the command handler
-     * 2. Checked if any extra properties/methods are to be added to the event + re-emitted
+     * 2. Checked if any extra properties/methods are to be added to the params + re-emitted
      * 3. Routed through middleware
      * 4. Emitted from the client instance
      */
@@ -69,8 +69,23 @@ declare module "irc-framework/browser" {
     matchMessage(match_regex: string, cb: (event: Event) => any): void;
     matchAction(match_regex: string, cb: (event: Event) => any): void;
     stringToBlocks(str: string, block_size?: number): string[];
+    
+    on(eventType: "raw", cb: (event: IrcRawEventArgs) => void): this;
+    on(eventType: "join", cb: (event: IrcJoinEventArgs) => void): this;
+    on(eventType: "registered", cb: (event: IrcRegisteredEventArgs) => void): this;
+    on(eventType: "quit", cb: (event: IrcQuitEventArgs) => void): this;
+    on(eventType: "part", cb: (event: IrcQuitEventArgs) => void): this;
+    on(eventType: "kick", cb: (event: IrcQuitEventArgs) => void): this;
+    on(eventType: "message", cb: (event: IrcMessageEventArgs) => any): this;
+    on(eventType: "notice", cb: (event: IrcMessageEventArgs/*TODO*/) => any): this;
+    on(eventType: "mode", cb: (event: IrcModeEventArgs) => any): this;
+    on(eventType: "socket close", cb: () => any): this;
+    on(eventType: "socket connected", cb: () => any): this;
+    on(eventType: "raw socket connected", cb: () => any): this;
+    // on(eventType: string, cb: (event: any) => any): any;
   }
-  export class IrcMessage {
+  export class Message {
+    //TODO: What is actually in it and what was in the event?
     constructor(command?: string, ...args: string[]);
     account?: IrcUser;
     group?: any;
@@ -78,26 +93,89 @@ declare module "irc-framework/browser" {
     ident: string;
     message: string;
     nick: string;
-    reply(e: any) : any;
-    tags: Object;//any
-    target: string;
-    time?: any; 
+    reply(e: any): any;
+    tags: Object; //any
+    time?: any;
     type: string;
   }
-
-  interface IrcUser {
-    /**The current nick you are currently using.*/
+  export interface IrcMessageEventArgs {
+    account?: any;
+    group?: any;
+    hostname: string;
+    ident: string;
+    message: string;
     nick: string;
-    /**Your username (ident) that the network sees you as using.*/
-    username: string;
-    /**Your current gecos (realname).*/
+    reply: (message: string) => void;
+    tags: any; //object
+    target: string;
+    time?: any;
+    type: "privmsg" | "action"; //TODO
+  }
+  export interface IrcJoinEventArgs {//todo: is that wrong?
+    account: boolean;
+    channel: string;
     gecos: string;
-    /**On supported servers, the hostname that the networksees you are using.*/
-    host: string;
-    /**Your current away status. Empty for not away.*/
-    away: string;
-    /**A set() instance with your current user modes.*/
-    modes: Set<string>;
+    hostname: string;
+    ident: string;
+    nick: string;
+    time?: any;
+  }
+  export interface IrcKickEventArgs {
+    kicked: string;
+    nick: string;
+    ident: string;
+    hostname: string;
+    channel: string;
+    message: string;
+    time: number;
+  }
+  export interface IrcRawEventArgs{
+    from_server: boolean;
+    line: string;
+  }
+  export interface IrcRegisteredEventArgs{
+    nick: string;
+  }
+  export interface IrcQuitEventArgs{
+    hostname: string;
+    ident: string;
+    message: string;
+    nick: string;
+    time?: any;
+  }
+  export interface IrcModeEventArgs{
+    modes: Mode[];
+    nick: string;
+    raw_modes: string;
+    raw_params: string[];
+    target: string;
+    time?: any;
+  }
+
+  interface Mode{
+    mode: string;
+    param: string;
+  }
+  // interface IrcUser {
+  //   /**The current nick you are currently using.*/
+  //   nick: string;
+  //   /**Your username (ident) that the network sees you as using.*/
+  //   username: string;
+  //   /**Your current gecos (realname).*/
+  //   gecos: string;
+  //   /**On supported servers, the hostname that the networksees you are using.*/
+  //   host: string;
+  //   /**Your current away status. Empty for not away.*/
+  //   away: string;
+  //   /**A set() instance with your current message modes.*/
+  //   modes: Set<string>;
+  // }
+//TODO: what to call it? why is it channel.users empty after join?
+  interface IrcUser{
+    hostname: string;
+    ident: string;
+    modes: string[]; //any[]
+    nick: string;
   }
   class IrcChannel {
     constructor(irc_client: Client, channel_name: string, key: string);
@@ -123,9 +201,10 @@ declare module "irc-framework/browser" {
      */
     relay(target_chan: IrcChannel | String, opts: Object): void;
     stream(stream_ops: Object): DuplexStream;
-    updateUsers(cb: (a: any) => any): void;
+    updateUsers(cb: (channel: IrcChannel) => any): void;
   }
   interface ClientConstructorParameters {
+    host: string; //host?: (?)
     nick?: string;
     username?: string;
     gecos?: string;
@@ -133,11 +212,14 @@ declare module "irc-framework/browser" {
     version?: string;
     enable_chghost?: boolean;
     enable_echomessage?: boolean;
+    message_max_length?: number;
     auto_reconnect?: boolean;
     auto_reconnect_wait?: number;
     auto_reconnect_max_retries?: number;
     ping_interval?: number;
     ping_timeout?: number;
+    transport?: any;
+    ssl?: boolean;
     webirc?: {
       password?: string;
       username?: string;
