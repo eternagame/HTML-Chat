@@ -13,18 +13,19 @@
 </template>
 
 <script lang="ts">
-import Vue from "@/types/vue";
-import Component from "vue-class-component";
-import MessagesTab from "./Tabs/MessagesTab.vue";
-import OnlineTab from "./Tabs/OnlineTab.vue";
+  import Vue from '@/types/vue';
+  import Component from 'vue-class-component';
+  import MessagesTab from './Tabs/MessagesTab.vue';
+  import OnlineTab from './Tabs/OnlineTab.vue';
 
-@Component({
-  components: {
-    MessagesTab,
-    OnlineTab
+  @Component({
+    components: {
+      MessagesTab,
+      OnlineTab
+    }
+  })
+  export default class ChatTabs extends Vue {
   }
-})
-export default class ChatTabs extends Vue {}
 </script>
 
 <style lang="scss" scoped>

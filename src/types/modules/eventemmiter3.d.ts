@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /**
  * Minimal `EventEmitter` interface that is molded against the Node.js
  * `EventEmitter` interface.
@@ -30,6 +31,7 @@ declare class EventEmitter<EventTypes extends string | symbol = string | symbol>
    * Add a listener for a given params.
    */
   on(event: EventTypes, fn: EventEmitter.ListenerFn, context?: any): this;
+
   addListener(event: EventTypes, fn: EventEmitter.ListenerFn, context?: any): this;
 
   /**
@@ -40,7 +42,9 @@ declare class EventEmitter<EventTypes extends string | symbol = string | symbol>
   /**
    * Remove the listeners of a given params.
    */
-  removeListener(event: EventTypes, fn?: EventEmitter.ListenerFn, context?: any, once?: boolean): this;
+  removeListener(event: EventTypes, fn?: EventEmitter.ListenerFn,
+                 context?: any, once?: boolean): this;
+
   off(event: EventTypes, fn?: EventEmitter.ListenerFn, context?: any, once?: boolean): this;
 
   /**

@@ -4,17 +4,18 @@
     :class="{active: $store.state.connectionData.tryingToConnect}"
     class="unselectable clickable green-button-interactive rounded-5 centered"
     style="color:white; font-weight:bolder; font-size:13px;"
-  @click="$store.dispatch('connect');">
+    @click="$store.dispatch('connect');"
+  >
     <div class="green-button-bg rounded-5"></div>Reconnect
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop } from "vue-property-decorator"
-import Vue from '@/types/vue'
+  import { Component, Prop } from 'vue-property-decorator';
+  import Vue from '@/types/vue';
 
-@Component({})
-export default class ConnectButton extends Vue {}
+  @Component({})
+  export default class ConnectButton extends Vue {}
 </script>
 
 <style scoped lang="scss">
