@@ -6,56 +6,58 @@
 </template>
 
 <script lang="ts">
-import Vue from "@/types/vue";
-import { Component, Prop } from "vue-property-decorator";
-@Component
-export default class TabButton extends Vue {
-  get name() {
-    return this.$store.state.tabs[this.index].name;
-  }
+  import Vue from '@/types/vue';
+  import { Component, Prop } from 'vue-property-decorator';
 
-  @Prop()
-  index!: number;
-  
-  get selected() {
-    return this.$store.state.activeTab === this.index; // Index? what if there are multiple channels by the same name?
-  }
+  @Component
+  export default class TabButton extends Vue {
+    get name() {
+      return this.$store.state.tabs[this.index].name;
+    }
 
-  changeTab(e: Event) {
-    if (!this.selected)
-      this.$store.commit("changeTab", { tabIndex: this.index });
+    @Prop()
+    index!: number;
+
+    get selected() {
+      return this.$store.state.activeTab === this.index;
+    }
+
+    changeTab(e: Event) {
+      if (!this.selected) {
+        this.$store.commit('changeTab', { tabIndex: this.index });
+      }
+    }
   }
-}
 </script>
 
 
 <style lang="scss" scoped>
-/* Style the buttons that are used to open the tab content */
-button {
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  transition: 0.3s;
-  top: 1px;
-  padding: 0.4em 1.25em;
-  font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  color: #fff;
-  border: none;
-  background-color: rgba(255, 255, 255, 0.07);
-  border-radius: 0;
-  margin: 0;
-}
+  /* Style the buttons that are used to open the tab content */
+  button {
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: 0.3s;
+    top: 1px;
+    padding: 0.4em 1.25em;
+    font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.07);
+    border-radius: 0;
+    margin: 0;
+  }
 
-/* Change background color of buttons on hover */
-button:hover:not(.active) {
-  background-color: rgba(255, 255, 255, 0.13);
-}
+  /* Change background color of buttons on hover */
+  button:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.13);
+  }
 
-/* Create an active/current tablink class */
-button.active {
-  background-color: rgba(255, 255, 255, 0.2);
-}
+  /* Create an active/current tablink class */
+  button.active {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
 </style>

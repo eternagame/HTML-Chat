@@ -1,1 +1,1 @@
-declare module "vue-perfect-scrollbar";
+declare module 'vue-perfect-scrollbar';
