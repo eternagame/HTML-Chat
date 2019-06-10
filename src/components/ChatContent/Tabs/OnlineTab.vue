@@ -1,7 +1,7 @@
 <template>
   <tab ref="tab">
     <ul>
-      <message v-for="user in $store.state.connectedUsers" :key="user.nick">
+      <message v-for="user in $store.state.connectedUsers" :key="user.username">
         <username :user="user"></username>
       </message>
     </ul>
@@ -19,8 +19,8 @@
     components: {
       Username,
       Tab,
-      Message
-    }
+      Message,
+    },
   })
   export default class OnlineTab extends Vue {
     $refs!: {

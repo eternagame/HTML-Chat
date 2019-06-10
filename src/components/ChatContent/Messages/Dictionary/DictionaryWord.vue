@@ -17,14 +17,14 @@
     components: {
       DictionaryTooltip,
       GC,
-    }
+    },
   })
   export default class DictionaryWord extends Vue {
     hover = false;
 
     components = {
-      'GC': 'GC',
-      'CG': 'GC',
+      GC: 'GC',
+      CG: 'GC',
     };
 
     get keyword() {

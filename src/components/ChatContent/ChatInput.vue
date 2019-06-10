@@ -6,10 +6,11 @@
       @keyup="onKeyUp"
       @input="onInput"
       v-model="message"
-      v-show="$store.state.connectionData.connected"
+      v-show="$store.state.connectionData.connected || $store.state.connectionData.firstConnection"
       :disabled="!$store.state.connectionData.connected || !!$store.state.banned[channel]"
     ></textarea>
-    <connect-button v-if="!$store.state.connectionData.connected" class="connect-button">
+    <connect-button v-if="!$store.state.connectionData.firstConnection &&
+                          !$store.state.connectionData.connected" class="connect-button">
     </connect-button>
     <div class="chat-input-hidden" ref="hiddenDiv">{{message}}</div>
   </div>
@@ -23,11 +24,11 @@
 
   @Component({
     components: {
-      ConnectButton
-    }
+      ConnectButton,
+    },
   })
   export default class ChatInput extends Vue {
-    message = "";
+    message = '';
 
     height = 19;
 

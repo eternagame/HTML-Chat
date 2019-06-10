@@ -43,7 +43,7 @@
 <script lang="ts">
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
-  import { Client } from 'irc-framework/browser';
+  import { Client } from 'irc-framework';
   import parseUsername from '@/tools/parseUsername';
   import User from '../../../../types/user';
   import Message from '../../../../types/message';
@@ -64,7 +64,7 @@
     reportModal: HTMLFormElement;
   };
 
-  reportComments: string = "";
+  reportComments: string = '';
 
   submit() {
     if (this.ignore) {

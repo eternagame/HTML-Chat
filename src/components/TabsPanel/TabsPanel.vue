@@ -19,8 +19,8 @@
   @Component({
     components: {
       TabButton,
-      MinimizationTriangle
-    }
+      MinimizationTriangle,
+    },
   })
   export default class TabsPanel extends Vue {
   }

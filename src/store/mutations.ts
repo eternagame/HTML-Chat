@@ -37,7 +37,7 @@ const mutations: MutationTree<State> = {
     }
   },
   changeNick(state, { nick }: { nick: string }) {
-    const index =state.currentUser.nicks.indexOf(state.nick);
+    const index = state.currentUser.nicks.indexOf(state.nick);
     if (index !== -1) { state.currentUser.nicks.splice(index, 1); }
     state.currentUser.nicks.push(nick);
     state.nick = nick;

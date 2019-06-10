@@ -23,12 +23,12 @@
 
   @Component({
     components: {
-      VuePerfectScrollbar
-    }
+      VuePerfectScrollbar,
+    },
   })
   export default class Tab extends Vue {
     settings = {
-      maxScrollbarLength: 60
+      maxScrollbarLength: 60,
     };
 
     $refs!: {
