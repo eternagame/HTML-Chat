@@ -4,7 +4,8 @@ import Irc, {
   IrcMessageEventArgs,
   Client,
   IrcModeEventArgs,
-} from 'irc-framework/browser';
+  IrcNickInvalidEventArgs,
+} from 'irc-framework';
 import websocket from 'irc-framework/src/transports/websocket';
 import { State } from './state';
 import parseCommands from '@/tools/parseCommands';
@@ -13,6 +14,7 @@ import Connection from './websocket';
 import { consts } from '@/types/consts';
 import User from '@/types/user';
 import parseUsername from '@/tools/parseUsername';
+import generateNick from '../tools/generateNick';
 
 const actions: ActionTree<State, any> = {
   initClient({ state, commit, dispatch }) {
@@ -34,17 +36,10 @@ const actions: ActionTree<State, any> = {
           for (const user of channel.users) {
             commit('addUser', { nick: user.nick, uid: user.ident });
           }
-          // commit("postMessage", { message: new Message("connected") });
-          for (let i = 0; i < 100; i++) {
-            commit('postMessage', {
-              message: new Message(i.toString(), channel.name, state.currentUser),
-            });
-          }
         });
       }
       state.connectionData.failedAttempts = 0;
       commit('setConnected', { connected: true });
-      // dispatch('loadHistory');
     });
 
     client.on('join', (e) => {
@@ -78,6 +73,9 @@ const actions: ActionTree<State, any> = {
       clearInterval(state.connectionData.timerInterval);
       state.connectionData.currentTimer = 0;
     });
+    client.on('nick in use', (event) => {
+      dispatch('incrementNick', event);
+    });
     state.client = client;
     dispatch('connect');
   },
@@ -86,13 +84,14 @@ const actions: ActionTree<State, any> = {
     state.connectionData.currentTimer = 0;
     clearInterval(state.connectionData.timerInterval);
   },
-  // sendMessage({state, commit}, {message}: { message: string }) {
-  //   commit('postMessage', {
-  //     message: {nick: state.currentUser.nick, message, target: state.channels[state.activeTab]},
-  //   });
-  //   state.client!.sendMessage('privmsg', '#test', message);
-  //   // state.client!.raw(`@+message-color PRIVMSG #test ${message}`);
-  // },
+  incrementNick({ state, commit, dispatch }, { nick }: IrcNickInvalidEventArgs) {
+    state.connectionData.connectionNumber += 1;
+    state.currentUser.nicks.splice(state.currentUser.nicks.indexOf(nick));
+    const newNick = generateNick(state.currentUser.username, state.connectionData.connectionNumber);
+    state.currentUser.nicks.push(newNick);
+    state.nick = newNick;
+    dispatch('initClient');
+  },
   sendMessage(
     { state, commit, dispatch },
     { message, channel }: { message: string; channel: string },
@@ -355,7 +354,7 @@ const actions: ActionTree<State, any> = {
       dispatch('connect');
     } else {
       data.currentTimer = data.disconnectionTimers[Math.min(data.failedAttempts - 1, 3)];
-      data.failedAttempts+= 1;
+      data.failedAttempts += 1;
       clearInterval(data.timerInterval);
       data.timerInterval = setInterval(() => dispatch('updateTimer'), 1000);
     }

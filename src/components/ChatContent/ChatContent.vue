@@ -3,10 +3,6 @@
     <div id="chat-content" class="chat-content" v-show="!$store.state.minimized">
       <chat-tabs></chat-tabs>
       <ConnectingPopup></ConnectingPopup>
-      <connect-button
-        v-show="!$store.state.connectionData.connected &&
-              !$store.state.connectionData.firstConnection"
-      ></connect-button>
       <report-dialog></report-dialog>
     </div>
   </transition>
@@ -27,8 +23,8 @@
       ChatTabs,
       ChatInput,
       ConnectButton,
-      ConnectingPopup
-    }
+      ConnectingPopup,
+    },
   })
   export default class ChatContent extends Vue {}
 </script>

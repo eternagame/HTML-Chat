@@ -21,8 +21,8 @@
 
   @Component({
     components: {
-      VueContext
-    }
+      VueContext,
+    },
   })
   export default class MessageContextMenu extends Vue {
     $refs!: {

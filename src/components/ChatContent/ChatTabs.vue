@@ -21,8 +21,8 @@
   @Component({
     components: {
       MessagesTab,
-      OnlineTab
-    }
+      OnlineTab,
+    },
   })
   export default class ChatTabs extends Vue {
   }

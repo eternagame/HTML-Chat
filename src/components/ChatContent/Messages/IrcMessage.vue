@@ -4,16 +4,18 @@
     @mouseover="hover = true"
     v-show="$store.state.ignoredUsers.indexOf(message.user.username) === -1"
     style="overflow: hidden">
-    <div :class="{'chat-message-action': isAction}">
-      <username
-        :msg="message.message"
-        :user="message.user"
-        :action="false"
-        :color="message.tags ? message.tags['username-color'] || '' : ''"
-        :isAction="isAction"
-      >{{isAction || !message.user.username ? '': ':'}}
-      </username>
-      &lrm;<span v-html="formattedMessage"></span>
+    <div>
+      <span :class="{'chat-message-action': isAction}">
+        <username
+          :msg="message.message"
+          :user="message.user"
+          :action="false"
+          :color="message.tags ? message.tags['username-color'] || '' : ''"
+          :isAction="isAction"
+        >{{isAction || !message.user.username ? '': ':'}}
+        </username>
+        &lrm;<span v-html="formattedMessage"></span>
+      </span>
       &lrm;<message-time :time="message.time"></message-time>
     </div>
     <block-button v-if="hover && message.user.username" :message="message"></block-button>
@@ -37,15 +39,15 @@
       Username,
       Message: MessageComp,
       BlockButton,
-      MessageTime: Time
-    }
+      MessageTime: Time,
+    },
   })
   export default class IrcMessage extends Vue {
     show!: boolean;
 
     hover = false;
 
-    @Prop({default: false})
+    @Prop({ default: false })
     private isHistory!: boolean;
 
     @Prop()

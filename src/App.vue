@@ -15,8 +15,8 @@
   @Component({
     components: {
       TabsPanel,
-      ChatContent
-    }
+      ChatContent,
+    },
   })
   export default class App extends Vue {
     mounted() {

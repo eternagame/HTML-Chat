@@ -24,7 +24,7 @@
   user-select: none;
   position: absolute;
   top: -4px;
-  right: 10px;
+  right: 15px;
   font-size: 20px;
   display: block;
   cursor: pointer;

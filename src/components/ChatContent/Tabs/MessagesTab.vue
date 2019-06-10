@@ -33,8 +33,8 @@
       ConnectingMessage,
       MessageComponent,
       Tab,
-      ChatInput
-    }
+      ChatInput,
+    },
   })
   export default class MessagesTab extends Vue {
     @Prop()

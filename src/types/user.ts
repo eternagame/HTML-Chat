@@ -7,7 +7,7 @@ export default class User {
 
   username: string;
 
-  constructor(username: string='', uid: string = '0') {
+  constructor(username: string = '', uid: string = '0') {
     this.nicks = [];
     this.uid = uid;
     this.username = username;
