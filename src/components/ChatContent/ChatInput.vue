@@ -83,11 +83,15 @@
   }
 
   .chat-input,
-  .chat-input-hidden,
-  .connect-button {
+  .chat-input-hidden {
     width: calc(100% - 22px);
     margin: 5px 10px;
     min-height: 19px;
+  }
+
+  .connect-button {
+    width: calc(100% - 20px);
+    margin: 5px 10px;
   }
 
   /* To determine input size */
@@ -98,10 +102,5 @@
     word-wrap: break-word;
     min-height: 19px;
     border: 1px solid;
-  }
-
-  .connect-button {
-    position: absolute;
-    bottom: 9px;
   }
 </style>
