@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator'
-import Vue from '@/types/vue'
+  import { Component, Prop } from 'vue-property-decorator';
+  import Vue from '@/types/vue';
 
   @Component({})
   export default class DictionaryTooltip extends Vue {

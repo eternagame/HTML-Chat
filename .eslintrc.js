@@ -25,6 +25,19 @@ module.exports = {
         indent: 'off',
       },
     },
+    {
+      files: ['*.vue', '*.ts'],
+      rules: {
+        'no-dupe-args': 'off',
+        'no-redeclare': 'off',
+        'no-param-reassign': 'off',
+        'no-shadow': 'off',
+        'no-restricted-syntax': 'off',
+        'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
+        'no-useless-constructor': 'off',
+
+      },
+    },
   ],
   parserOptions: {
     parser: 'typescript-eslint-parser',

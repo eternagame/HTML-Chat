@@ -41,18 +41,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop } from "vue-property-decorator"
-import Vue from '@/types/vue'
-import { Client } from "irc-framework/browser";
-import { parseUsername } from "@/tools/ParseUsername";
-import { User } from '../../../../types/user';
-import { Message } from '../../../../types/message';
+  import { Component, Prop } from 'vue-property-decorator';
+  import Vue from '@/types/vue';
+  import { Client } from 'irc-framework';
+  import parseUsername from '@/tools/parseUsername';
+  import User from '../../../../types/user';
+  import Message from '../../../../types/message';
 
 @Component({})
-export default class ReportDialog extends Vue {
+  export default class ReportDialog extends Vue {
   report = false;
+
   ignore = false;
+
   message: Message | null = null;
+
   get userToReport(): User {
     return this.message ? this.message.user : User.annonymous;
   }
@@ -60,49 +63,53 @@ export default class ReportDialog extends Vue {
   $refs!: {
     reportModal: HTMLFormElement;
   };
-  reportComments: string = "";
+
+  reportComments: string = '';
+
   submit() {
     if (this.ignore) {
-      this.$store.commit("ignore", this.userToReport.username);
+      this.$store.commit('ignore', this.userToReport.username);
     }
     const client = this.$store.state.client!;
     if (this.report) {
       client.say(
-        "#ops-notifications",
+        '#ops-notifications',
         `[REPORT] Reporting ${this.userToReport.username} (${
           this.userToReport.uid
         }) by ${this.$store.state.currentUser.username} (${
           this.$store.state.currentUser.uid
-        }).\r\n`
+        }).\r\n`,
       );
       if (this.message) {
         client.say(
           '#ops-notifications',
-          `[REPORTED MESSAGE] ${this.message!.message}\r\n`
+          `[REPORTED MESSAGE] ${this.message!.message}\r\n`,
         );
       }
       client.say(
-        "#ops-notifications",
-        `[REPORT REASON] ${this.reportComments}\r\n`
+        '#ops-notifications',
+        `[REPORT REASON] ${this.reportComments}\r\n`,
       );
     }
     this.closeModal();
   }
-  closeModal(){
+
+  closeModal() {
     this.$modal.hide('reportModal');
     this.reportComments = '';
   }
+
   created() {
     this.$store.subscribe((mutation, state) => {
-      if (mutation.type === "openReportModal") {
+      if (mutation.type === 'openReportModal') {
         this.message = mutation.payload.message;
         this.report = mutation.payload.defaults.report;
         this.ignore = mutation.payload.defaults.ignore;
-        this.$modal.show("reportModal");
+        this.$modal.show('reportModal');
       }
     });
   }
-}
+  }
 </script>
 
 <style lang="scss">

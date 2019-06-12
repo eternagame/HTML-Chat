@@ -1,28 +1,28 @@
 <template>
   <div id="app1" style="height:100%; overflow-y:hidden;">
-    <div id="chat" style="height: 100%; font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim; font-size: 14px; font-weight: 300;">
-        <tabs-panel></tabs-panel>
-        <chat-content></chat-content>
+    <div class="chat" style="height: 100%;">
+      <tabs-panel></tabs-panel>
+      <chat-content></chat-content>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import Vue from '@/types/vue'
-import TabsPanel from './components/TabsPanel/TabsPanel.vue';
-import ChatContent from './components/ChatContent/ChatContent.vue';
-@Component({
-  components: {
-  TabsPanel,
-  ChatContent,
-  }
+  import { Component } from 'vue-property-decorator';
+  import Vue from '@/types/vue';
+  import TabsPanel from './components/TabsPanel/TabsPanel.vue';
+  import ChatContent from './components/ChatContent/ChatContent.vue';
+  @Component({
+    components: {
+      TabsPanel,
+      ChatContent,
+    },
   })
-export default class App extends Vue {
-  mounted() {
-    this.$store.dispatch('initClient');
+  export default class App extends Vue {
+    mounted() {
+      this.$store.dispatch('initClient');
+    }
   }
-}
 </script>
 
 <style lang="scss">
@@ -45,4 +45,12 @@ textarea {
 //   resize: none;
 //   margin: 10px;
 // }
+</style>
+
+<style scoped lang="scss">
+.chat {
+  font-family: "Helvetica Neue", "Open Sans", Arial, Gulim;
+  font-size: 14px;
+  font-weight: 300;
+}
 </style>

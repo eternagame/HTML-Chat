@@ -8,8 +8,8 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop} from 'vue-property-decorator'
-import Vue from '@/types/vue'
+  import { Component, Prop } from 'vue-property-decorator';
+  import Vue from '@/types/vue';
   import DictionaryTooltip from '@/components/ChatContent/Messages/Dictionary/DictionaryTooltip.vue';
   import GC from '@/components/ChatContent/Messages/Dictionary/Tooltips/GC.vue';
 
@@ -17,19 +17,17 @@ import Vue from '@/types/vue'
     components: {
       DictionaryTooltip,
       GC,
-    }
+    },
   })
   export default class DictionaryWord extends Vue {
     hover = false;
 
     components = {
-      'GC': 'GC',
-      'CG': 'GC',
-    }
+      GC: 'GC',
+      CG: 'GC',
+    };
 
     get keyword() {
-      console.log({hover: this.hover});
-      console.log(this.$slots.default![0]!.text!.trim());
       return this.$slots.default![0]!.text!.trim(); // TODO: Which invisible character is there?
     }
   }
