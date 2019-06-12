@@ -1,19 +1,35 @@
-declare module "irc-framework/browser" {
-  import { EventEmitter } from "eventemitter3";
-  import { DuplexStream } from "stream";
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-dupe-class-members */
+/* eslint-disable camelcase */
+declare module 'irc-framework' {
+  import { EventEmitter } from 'eventemitter3';
+  import { DuplexStream } from 'stream';
+
   export class Client extends EventEmitter {
     constructor(options: ClientConstructorParameters);
+
     static setDefaultTransport(transport: any): void;
-    //get Message(): ClassDecorator;//TODO
-    /**Applies the default options to the options object given as impot, and returns it.*/
+
+    // get Message(): ClassDecorator;//TODO
+    /** Applies the default options to the options object given as impot, and returns it. */
     _applyDefaultOptions(user_options: ClientConstructorParameters): ClientConstructorParameters;
+
     createStructure(): void;
-    /**Is connected to the IRC network and successfully registered.*/
-    connected: boolean; //TODO
-    /**The object for the connected message, as long as the client is connected.*/ user: IrcUser; //TODO
-    /**Request*/ requestCap(capability: string): void;
+
+    /** Is connected to the IRC network and successfully registered. */
+    connected: boolean;
+
+    // TODO
+    /** The object for the connected message, as long as the client is connected. */ user: IrcUser;
+
+    // TODO
+    /** Request */ requestCap(capability: string): void;
+
     use(a: any): any;
+
     connect(connect_options?: Object): void;
+
     /**
      * Proxy the command handler events onto the client object, with some added sugar
      * Events are handled in order:
@@ -23,33 +39,62 @@ declare module "irc-framework/browser" {
      * 4. Emitted from the client instance
      */
     proxyIrcEvents(): void;
+
     addCommandHandlerListeners(): void;
+
     registerToNetwork(): void;
+
     startPeriodicPing(): void;
+
     raw(raw_data_line: string): void;
+
     rawString(...parameters: Array<string>): string;
+
     rawString(parameters: Array<string>): string;
+
     quit(quit_message?: string): void;
+
     ping(message?: string): void;
+
     changeNick(nick: string): void;
+
     sendMessage(commandName: string, target: string, message: string): string[];
+
     say(target: string, message: string): string[];
+
     notice(target: string, message: string): string[];
+
     join(channel: string, key?: string): void;
+
     part(channel: string, message?: string): void;
+
     mode(channel: string, mode: string, extra_args?: string[]): void;
-    inviteList(channel: string, cb: (e: Event) => any): void; //TODO: typeof e?
+
+    inviteList(channel: string, cb: (e: Event) => any): void;
+
+    // TODO: typeof e?
     invite(channel: string, nick: string): void;
+
     addInvite(channel: String, mask: string): void;
+
     removeInvite(channel: string, mask: string): void;
+
     banlist(channel: string, cb: (e: Event) => any): void;
+
     ban(channel: string, mask: string): void;
+
     unban(channel: string, mask: string): void;
+
     setTopic(channel: string, newTopic: string): void;
-    ctcpRequest(target: string, type: string /*, ...params: Array<any>*/): void;
-    ctcpResponse(target: string, type: string /*, params: Array<any>*/): void;
+
+    ctcpRequest(target: string, type: string /* , ...params: Array<any> */): void;
+
+    ctcpResponse(target: string, type: string /* , params: Array<any> */): void;
+
     action(target: string, message: string): string[];
+
     whowas(target: string, cb: (event: Event) => any): void;
+
     whois(nick: string, cb: (event: any) => void): void;
 
     /**
@@ -58,44 +103,82 @@ declare module "irc-framework/browser" {
      * it easier to include the correct replies to callbacks
      */
     who(target: string, cb: (event: any) => void): void;
-    list(/*params: Array<string>*/): void;
+
+    list(/* params: Array<string> */): void;
+
     channel(channel_name: string): IrcChannel;
+
     match(
       match_regex: string,
       cb: (event: Event) => any,
       message_type: string
     ): { stop: () => void };
+
     matchNotice(match_regex: string, cb: (event: Event) => any): void;
+
     matchMessage(match_regex: string, cb: (event: Event) => any): void;
+
     matchAction(match_regex: string, cb: (event: Event) => any): void;
+
     stringToBlocks(str: string, block_size?: number): string[];
-    
-    on(eventType: "raw", cb: (event: IrcRawEventArgs) => void): this;
-    on(eventType: "join", cb: (event: IrcJoinEventArgs) => void): this;
-    on(eventType: "registered", cb: (event: IrcRegisteredEventArgs) => void): this;
-    on(eventType: "quit", cb: (event: IrcQuitEventArgs) => void): this;
-    on(eventType: "part", cb: (event: IrcQuitEventArgs) => void): this;
-    on(eventType: "kick", cb: (event: IrcQuitEventArgs) => void): this;
-    on(eventType: "message", cb: (event: IrcMessageEventArgs) => any): this;
-    on(eventType: "notice", cb: (event: IrcMessageEventArgs/*TODO*/) => any): this;
-    on(eventType: "mode", cb: (event: IrcModeEventArgs) => any): this;
-    on(eventType: "socket close", cb: () => any): this;
-    on(eventType: "socket connected", cb: () => any): this;
-    on(eventType: "raw socket connected", cb: () => any): this;
-    // on(eventType: string, cb: (event: any) => any): any;
+
+    on(eventType: string, cb: (event: any) => any): this;
+
+    on(eventType: 'raw', cb: (event: IrcRawEventArgs) => void): this;
+
+    on(eventType: 'join', cb: (event: IrcJoinEventArgs) => void): this;
+
+    on(eventType: 'registered', cb: (event: IrcRegisteredEventArgs) => void): this;
+
+    on(eventType: 'quit', cb: (event: IrcQuitEventArgs) => void): this;
+
+    on(eventType: 'part', cb: (event: IrcQuitEventArgs) => void): this;
+
+    on(eventType: 'kick', cb: (event: IrcQuitEventArgs) => void): this;
+
+    on(eventType: 'message', cb: (event: IrcMessageEventArgs) => any): this;
+
+    on(eventType: 'notice', cb: (event: IrcMessageEventArgs/* TODO */) => any): this;
+
+    on(eventType: 'mode', cb: (event: IrcModeEventArgs) => any): this;
+
+    on(eventType: 'socket close', cb: (event: {}) => any): this;
+
+    on(eventType: 'socket connected', cb: (event: {}) => any): this;
+
+    on(eventType: 'raw socket connected', cb: (event: {}) => any): this;
+
+    on(eventType: 'server options', cb: (event: IrcServerOptionsEventArgs) => any): this;
+
+    on(eventType: 'debug', cb: (message: string) => any): this;
+
+    on(eventType: 'nick in use', cb: (event: IrcNickInvalidEventArgs) => any): this;
+
+    on(eventType: 'nick invalid', cb: (event: IrcNickInvalidEventArgs) => any): this;
   }
   export class Message {
-    //TODO: What is actually in it and what was in the event?
+    // TODO: What is actually in it and what was in the event?
     constructor(command?: string, ...args: string[]);
+
     account?: IrcUser;
+
     group?: any;
+
     hostname: string;
+
     ident: string;
+
     message: string;
+
     nick: string;
+
     reply(e: any): any;
-    tags: Object; //any
+
+    tags: Object;
+
+    // any
     time?: any;
+
     type: string;
   }
   export interface IrcMessageEventArgs {
@@ -106,12 +189,12 @@ declare module "irc-framework/browser" {
     message: string;
     nick: string;
     reply: (message: string) => void;
-    tags: any; //object
+    tags: any; // object
     target: string;
     time?: any;
-    type: "privmsg" | "action"; //TODO
+    type: 'privmsg' | 'action'; // TODO
   }
-  export interface IrcJoinEventArgs {//todo: is that wrong?
+  export interface IrcJoinEventArgs {// todo: is that wrong?
     account: boolean;
     channel: string;
     gecos: string;
@@ -143,6 +226,10 @@ declare module "irc-framework/browser" {
     nick: string;
     time?: any;
   }
+  interface Mode{
+    mode: string;
+    param: string;
+  }
   export interface IrcModeEventArgs{
     modes: Mode[];
     nick: string;
@@ -151,10 +238,13 @@ declare module "irc-framework/browser" {
     target: string;
     time?: any;
   }
-
-  interface Mode{
-    mode: string;
-    param: string;
+  export interface IrcServerOptionsEventArgs {
+    options: any;
+    cap: any;
+  }
+  export interface IrcNickInvalidEventArgs {
+    nick: string;
+    reason: string;
   }
   // interface IrcUser {
   //   /**The current nick you are currently using.*/
@@ -170,26 +260,38 @@ declare module "irc-framework/browser" {
   //   /**A set() instance with your current message modes.*/
   //   modes: Set<string>;
   // }
-//TODO: what to call it? why is it channel.users empty after join?
+// TODO: what to call it? why is it channel.users empty after join?
   interface IrcUser{
     hostname: string;
     ident: string;
-    modes: string[]; //any[]
+    modes: string[]; // any[]
     nick: string;
   }
-  class IrcChannel {
+  class IrcChannel extends EventEmitter {
     constructor(irc_client: Client, channel_name: string, key: string);
+
     irc_client: Client;
+
     name: string;
+
     say(message: string): string[];
+
     notice(message: string): string[];
+
     join(key?: string): void;
+
     part(message?: string): void;
+
     mode(mode: string, extra_args?: string[]): void;
+
     banlist(cb: (e: Event) => any): void;
+
     ban(mask: string): void;
+
     unban(mask: string): void;
+
     users: IrcUser[];
+
     /**
      * Relay messages between this channel to another
      * @param  {IrcChannel|String} target_chan Target channel
@@ -200,11 +302,46 @@ declare module "irc-framework/browser" {
      * replay_nicks (true) Include the sending nick as part of the relayed message
      */
     relay(target_chan: IrcChannel | String, opts: Object): void;
+
     stream(stream_ops: Object): DuplexStream;
+
     updateUsers(cb: (channel: IrcChannel) => any): void;
+
+    on(eventType: 'channel info', cb: (event: IrcChannelInfoEventArgs) => any): this;
+  }
+  export interface IrcChannelInfoEventArgs{
+    channel: string;
+    created_at?: number;
+    modes?: Mode[]; // TODO: check type
+    url?: string;
+  }
+  export interface IrcUserListEventArgs{
+    channel: string;
+    users: IrcUser[]; // TODO: check type
+  }
+  export interface IrcWhoListEventArgs{
+    target: string;
+    users: IrcUser[]; // TODO: check type
+  }
+  export interface IrcBanlistEventArgs{
+    channel: string;
+    bans: IrcUser[]; // TODO: check type
+  }
+  export interface IrcTopicEventArgs{
+    channel: string;
+    topic: string;
+    nick?: string;
+    time?: number;
+  }
+  export interface IrcTopicSetByEventArgs{
+    channel: string;
+    nick: string;
+    ident: string;
+    hostname: string;
+    when?: number;
   }
   interface ClientConstructorParameters {
-    host: string; //host?: (?)
+    host: string; // host?: (?)
     nick?: string;
     username?: string;
     gecos?: string;

@@ -1,8 +1,8 @@
-import V from 'vue'
+import V from 'vue';
 import { Store } from 'vuex';
 import { State } from '@/store/state';
 
-class Vue extends V{
+class Vue extends V {
     $store!: Store<State>;
 }
 

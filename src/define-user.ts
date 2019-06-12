@@ -1,21 +1,28 @@
-import { User } from './types/user';
-import { parseUsername } from './tools/ParseUsername';
+import User from './types/user';
+import parseUsername from './tools/parseUsername';
+import generateNick from './tools/generateNick';
 
-let NICK = `MasterStormer^${Math.floor(Math.random() * 90)}`;
-let UID = '228064';
-let CHAT_CHANNEL = '#test';
-let WORKBRANCH = 'eternagame.org';
+let username = 'MasterStormer';// ^${Math.floor(Math.random() * 90)}`;
+let uid = '228064';
+let chatChannel = '#test';
+let workbranch = 'eternagame.org';
 
-location.search
+window.location.search
   .slice(1)
   .split('&')
   .forEach((item) => {
     const param = item.split('=')[0];
-    if (param == 'name') NICK = decodeURIComponent(item.split('=')[1]);
-    if (param === 'uid') UID = decodeURIComponent(item.split('=')[1]);
-    if (param == 'channel') CHAT_CHANNEL = decodeURIComponent(item.split('=')[1]);
-    if (param == 'workbranch') WORKBRANCH = decodeURIComponent(item.split('=')[1]);
+    if (param === 'name') username = decodeURIComponent(item.split('=')[1]);
+    if (param === 'uid') uid = decodeURIComponent(item.split('=')[1]);
+    if (param === 'channel') chatChannel = decodeURIComponent(item.split('=')[1]);
+    if (param === 'workbranch') workbranch = decodeURIComponent(item.split('=')[1]);
   });
-// CURRENT_USER.nick = CURRENT_USER.name.replace(/^[^a-zA-Z\x5B-\x60\x7B-\x7D]/, "_").replace(/[^a-zA-Z\x5B-\x60\x7B-\x7D\d-]/g, "-").substr(0, 27-CURRENT_USER.uid.length) + "__" + CURRENT_USER.uid + "^1";
-const CURRENT_USER = new User(parseUsername(NICK), UID);
-export { CHAT_CHANNEL, CURRENT_USER, NICK, WORKBRANCH };
+
+const NICK = generateNick(username, 0);
+const CURRENT_USER = new User(parseUsername(NICK), uid);
+const CHAT_CHANNEL = chatChannel;
+const WORKBRANCH = workbranch;
+
+export {
+  CHAT_CHANNEL, CURRENT_USER, NICK, WORKBRANCH,
+};

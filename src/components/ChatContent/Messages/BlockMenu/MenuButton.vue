@@ -8,15 +8,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop } from "vue-property-decorator";
-import Vue from "@/types/vue";
-import { Message } from '../../../../types/message';
+  import { Component, Prop } from 'vue-property-decorator';
+  import Vue from '@/types/vue';
+  import Message from '../../../../types/message';
 
-@Component({ components: {} })
-export default class MenuButton extends Vue {
-  @Prop()
-  private message!: Message;
-}
+  @Component({ components: {} })
+  export default class MenuButton extends Vue {
+    @Prop()
+    private message!: Message;
+  }
 </script>
 
 <style lang="scss">
@@ -24,7 +24,7 @@ export default class MenuButton extends Vue {
   user-select: none;
   position: absolute;
   top: -4px;
-  right: 10px;
+  right: 15px;
   font-size: 20px;
   display: block;
   cursor: pointer;
