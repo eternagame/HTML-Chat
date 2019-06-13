@@ -1,5 +1,5 @@
 import { Client } from 'irc-framework';
-import { CURRENT_USER, WORKBRANCH, NICK } from '../define-user';
+import { CURRENT_USER, WORKBRANCH } from '../define-user';
 import { BanStatus, consts } from '../types/consts';
 import User from '../types/user';
 import Message from '../types/message';
@@ -36,6 +36,8 @@ class State {
   toBePosted: Message[] = [];
 
   currentUser = CURRENT_USER;
+
+  nick!: string;
 
   connectionData = new ConnectionData();
 
@@ -75,8 +77,6 @@ class State {
   minimized: boolean = false;
 
   banned: { [channel: string]: BanStatus } = {};
-
-  nick: string = NICK;
 
   usersByNick: { [nick: string]: User } = {}
 

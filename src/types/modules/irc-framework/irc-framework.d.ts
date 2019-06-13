@@ -152,7 +152,7 @@ declare module 'irc-framework' {
 
     on(eventType: 'debug', cb: (message: string) => any): this;
 
-    on(eventType: 'nick in use', cb: (event: IrcNickInvalidEventArgs) => any): this;
+    on(eventType: 'nick in use', cb: (event: IrcNickInUseEventArgs) => any): this;
 
     on(eventType: 'nick invalid', cb: (event: IrcNickInvalidEventArgs) => any): this;
   }
@@ -243,6 +243,10 @@ declare module 'irc-framework' {
     cap: any;
   }
   export interface IrcNickInvalidEventArgs {
+    nick: string;
+    reason: string;
+  }
+  export interface IrcNickInUseEventArgs {
     nick: string;
     reason: string;
   }
