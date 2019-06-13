@@ -67,7 +67,7 @@
 
     created() {
       this.$store.subscribe((mutation, state) => {
-        if (mutation.type === 'updateScrollbar' || mutation.type === 'changeTab') {
+        if (mutation.type === 'changeTab') {
           this.onContentChanged();
         }
       });
