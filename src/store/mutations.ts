@@ -36,12 +36,6 @@ const mutations: MutationTree<State> = {
       Vue.delete(state.connectedUsers, user.username);
     }
   },
-  changeNick(state, { nick }: { nick: string }) {
-    const index = state.currentUser.nicks.indexOf(state.nick);
-    if (index !== -1) { state.currentUser.nicks.splice(index, 1); }
-    state.currentUser.nicks.push(nick);
-    state.nick = nick;
-  },
   changeTab(state, { tabIndex }: { tabIndex: number }) {
     state.activeTab = tabIndex;
   },
@@ -55,9 +49,6 @@ const mutations: MutationTree<State> = {
   connectionTimerTick(state) {
     state.connectionData.currentTimer -= 1;
   },
-  openContextMenu(state, { event, message }: { event: any; message: Message }) {
-    // Subscribed to
-  },
   openReportModal(state) {
     // Subscribed to in the report modal file
   },
@@ -69,12 +60,6 @@ const mutations: MutationTree<State> = {
       state.ignoredUsers.splice(state.ignoredUsers.indexOf(username), 1);
     }
     if (username === '*') state.ignoredUsers = [];
-  },
-  updatedHeight(state) {
-    // Subscribed to
-  },
-  updateScrollbar(state) {
-    // Subscribed to
   },
 };
 
