@@ -1,12 +1,11 @@
 import { ActionTree } from 'vuex';
-import Irc, {
+import {
   IrcKickEventArgs,
   IrcMessageEventArgs,
   Client,
   IrcModeEventArgs,
   IrcNickInvalidEventArgs,
 } from 'irc-framework';
-import websocket from 'irc-framework/src/transports/websocket';
 import { State } from './state';
 import parseCommands from '@/tools/parseCommands';
 import Message from '../types/message';
@@ -14,10 +13,12 @@ import Connection from './websocket';
 import { consts } from '@/types/consts';
 import User from '@/types/user';
 import parseUsername from '@/tools/parseUsername';
-import generateNick from '../tools/generateNick';
 
 const actions: ActionTree<State, any> = {
-  initClient({ state, commit, dispatch }) {
+  initClient({
+    state, commit, dispatch,
+  }) {
+    dispatch('generateNick');
     const client = new Client({
       host: 'irc.eternagame.org/chatws/websocket', // "localhost:3000/websocket",//
       nick: state.nick,
@@ -74,7 +75,7 @@ const actions: ActionTree<State, any> = {
       state.connectionData.currentTimer = 0;
     });
     client.on('nick in use', (event) => {
-      dispatch('incrementNick', event);
+      dispatch('onNickInUse', event);
     });
     state.client = client;
     dispatch('connect');
@@ -84,13 +85,15 @@ const actions: ActionTree<State, any> = {
     state.connectionData.currentTimer = 0;
     clearInterval(state.connectionData.timerInterval);
   },
-  incrementNick({ state, commit, dispatch }, { nick }: IrcNickInvalidEventArgs) {
-    state.connectionData.connectionNumber += 1;
+  onNickInUse({ state, commit, dispatch }, { nick, reason }: IrcNickInvalidEventArgs) {
     state.currentUser.nicks.splice(state.currentUser.nicks.indexOf(nick));
-    const newNick = generateNick(state.currentUser.username, state.connectionData.connectionNumber);
-    state.currentUser.nicks.push(newNick);
-    state.nick = newNick;
     dispatch('initClient');
+  },
+  generateNick({ state }) {
+    const connectionId = Math.floor(Math.random() * 1000);
+    const nick = `${state.currentUser.username}^${connectionId}`;
+    state.currentUser.nicks.push(nick);
+    state.nick = nick;
   },
   sendMessage(
     { state, commit, dispatch },

@@ -1,8 +1,6 @@
 import User from './types/user';
-import parseUsername from './tools/parseUsername';
-import generateNick from './tools/generateNick';
 
-let username = 'MasterStormer';// ^${Math.floor(Math.random() * 90)}`;
+let username = 'MasterStormer';
 let uid = '228064';
 let chatChannel = '#test';
 let workbranch = 'eternagame.org';
@@ -18,11 +16,13 @@ window.location.search
     if (param === 'workbranch') workbranch = decodeURIComponent(item.split('=')[1]);
   });
 
-const NICK = generateNick(username, 0);
-const CURRENT_USER = new User(parseUsername(NICK), uid);
+username = username.replace(/^[^a-zA-Z\x5B-\x60\x7B-\x7D]/, '_').replace(/[^a-zA-Z\x5B-\x60\x7B-\x7D\d-]/g, '-').substr(0, 27);
+const uidMatch = uid.match(/\d+/);
+if (uidMatch && uidMatch[0]) { [uid] = uidMatch; } else { uid = ''; }
+const CURRENT_USER = new User(username, uid);
 const CHAT_CHANNEL = chatChannel;
 const WORKBRANCH = workbranch;
 
 export {
-  CHAT_CHANNEL, CURRENT_USER, NICK, WORKBRANCH,
+  CHAT_CHANNEL, CURRENT_USER, WORKBRANCH,
 };
