@@ -2,8 +2,9 @@
   <div style="overflow:hidden">
     <a
       class="chat-message-options"
-      @click.stop="$store.commit('openContextMenu', {event: $event, message})"
+      @click.stop="$refs.contextMenu.open"
     >&vellip;</a>
+    <message-context-menu ref="contextMenu" :message="message"></message-context-menu>
   </div>
 </template>
 
@@ -11,11 +12,16 @@
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import Message from '../../../../types/message';
+  import MessageContextMenu from '@/components/ChatContent/Messages/BlockMenu/MessageContextMenu.vue';
 
-  @Component({ components: {} })
+  @Component({ components: { MessageContextMenu } })
   export default class MenuButton extends Vue {
     @Prop()
     private message!: Message;
+
+    $refs!: {
+      contextMenu: HTMLFormElement;
+    }
   }
 </script>
 

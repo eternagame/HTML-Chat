@@ -5,11 +5,9 @@
         v-for="(message, i) in $store.state.postedMessages[data.channel]"
         :key="i"
         :message="message"
-        @menu-click="openMenu($event, message)"
       ></message-component>
       <connecting-message></connecting-message>
     </ul>
-    <message-context-menu></message-context-menu>
     <template v-slot:footer>
       <chat-input ref="input" :channel="data.channel" @updateHeight="updateTextFieldHeight">
       </chat-input>
@@ -23,13 +21,11 @@
   import MessageComponent from '../Messages/IrcMessage.vue';
   import Tab from './Tab.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
-  import MessageContextMenu from '@/components/ChatContent/Messages/BlockMenu/MessageContextMenu.vue';
   import ChatInput from '@/components/ChatContent/ChatInput.vue';
   import Message from '../../../types/message';
 
   @Component({
     components: {
-      MessageContextMenu,
       ConnectingMessage,
       MessageComponent,
       Tab,
@@ -59,10 +55,6 @@
       this.$store.subscribe((muatation, state) => {
         if (muatation.type === 'setConnected') this.$refs.tab.onContentChanged();
       });
-    }
-
-    openMenu(event: any, message: Message) {
-      this.$refs.vueSimpleContextMenu.showMenu(event, message);
     }
 
     updateTextFieldHeight({ height }: { height: number }) {

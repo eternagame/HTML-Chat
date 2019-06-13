@@ -29,34 +29,20 @@
       menu: HTMLFormElement;
     };
 
-    message: Message | null = null;
-
-    open: boolean = false;
+    @Prop()
+    message!: Message;
 
     get user(): User {
       return this.message!.user;
     }
 
-    onCtxOpen() {
-      this.open = true;
-    }
-
-    onCtxClose() {
-      this.open = false;
-    }
-
-    created() {
-      this.$store.subscribe((mutation, state) => {
-        if (mutation.type === 'openContextMenu') {
-          this.$refs.menu.open(mutation.payload.event);
-          this.message = mutation.payload.message;
-        }
-      });
+    open(event: MouseEvent) {
+      this.$refs.menu.open(event);
     }
 
     goToUserProfile() {
       window.open(
-        `http://${this.$store.state.workbranch}web/player/${this.user.uid}/`,
+        `http://${this.$store.state.workbranch}/web/player/${this.user.uid}/`,
       );
     }
 
@@ -67,4 +53,7 @@
 </script>
 
 <style scoped lang="scss">
+  li {
+    color: black;
+  }
 </style>
