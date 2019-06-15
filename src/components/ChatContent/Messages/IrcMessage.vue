@@ -29,17 +29,15 @@
 <script lang="ts">
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
+  import Message from '@/types/message';
   import Username from './Username.vue';
   import MessageComp from './Message.vue';
-  import DictionaryWord from '@/components/ChatContent/Messages/Dictionary/DictionaryWord.vue';
   import BlockButton from '@/components/ChatContent/Messages/BlockMenu/MenuButton.vue';
   import md from '@/tools/Markdown';
-  import Message from '../../../types/message';
   import Time from './Time.vue';
 
   @Component({
     components: {
-      DictionaryWord,
       Username,
       Message: MessageComp,
       BlockButton,

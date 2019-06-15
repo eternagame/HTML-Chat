@@ -16,7 +16,7 @@
 <script lang="ts">
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
-  import Message from '../../../../types/message';
+  import Message from '@/types/message';
   import MessageContextMenu from '@/components/ChatContent/Messages/BlockMenu/MessageContextMenu.vue';
 
   @Component({ components: { MessageContextMenu } })

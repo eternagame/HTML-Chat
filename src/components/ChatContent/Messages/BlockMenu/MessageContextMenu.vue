@@ -21,7 +21,7 @@
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import { VueContext } from 'vue-context';
-  import Message from '../../../../types/message';
+  import Message from '@/types/message';
   import User from '@/types/user';
 
   @Component({
