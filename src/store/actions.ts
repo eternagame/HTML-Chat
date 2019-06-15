@@ -29,16 +29,14 @@ const actions: ActionTree<State, any> = {
     });
     client.requestCap('server-time');
     client.on('registered', (e) => {
-      for (const channelName of state.channels) {
+      state.channels.forEach((channelName) => {
         const channel = client.channel(channelName);
         channel.join();
 
-        channel.updateUsers((chan) => {
-          for (const user of channel.users) {
-            commit('addUser', { nick: user.nick, uid: user.ident });
-          }
+        channel.updateUsers(() => {
+          channel.users.forEach(user => commit('addUser', { nick: user.nick, uid: user.ident }));
         });
-      }
+      });
       state.connectionData.failedAttempts = 0;
       commit('setConnected', { connected: true });
     });
@@ -97,7 +95,7 @@ const actions: ActionTree<State, any> = {
   },
   sendMessage(
     { state, commit, dispatch },
-    { message, channel }: { message: string; channel: string },
+    { message: rawMessage, channel }: { message: string; channel: string },
   ) {
     function postMessage(
       message: string,
@@ -108,7 +106,7 @@ const actions: ActionTree<State, any> = {
       });
     }
 
-    message = message.trim();
+    let message = rawMessage.trim();
     let isAction = false;
     // No posting as annon or if nothing has been actually posted
     if (state.currentUser.username && message !== '') {
@@ -279,7 +277,7 @@ const actions: ActionTree<State, any> = {
     commit('removeUser', { username: message });
   },
   onModeMessageRecieved({ state, commit, dispatch }, event: IrcModeEventArgs) {
-    for (const mode of event.modes) {
+    event.modes.forEach((mode) => {
       let mute = false;
       if (mode.param && mode.param.startsWith('m;')) {
         mute = true;
@@ -312,7 +310,7 @@ const actions: ActionTree<State, any> = {
           });
         }
       }
-    }
+    });
   },
   onRawMessageRecieved(
     { state, commit, dispatch },

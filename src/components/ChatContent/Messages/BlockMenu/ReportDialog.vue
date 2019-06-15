@@ -1,6 +1,14 @@
 <template>
-  <modal name="reportModal" classes="report-dialog" :maxWidth="350" height="auto" :adaptive="true">
-    <h3 style="text-align: center; margin: 0px;">Ignore/Report User</h3>
+  <modal
+    name="reportModal"
+    classes="report-dialog"
+    :max-width="350"
+    height="auto"
+    :adaptive="true"
+  >
+    <h3 style="text-align: center; margin: 0px;">
+      Ignore/Report User
+    </h3>
     <p>
       Reports will be sent to our current chat moderators,
       <a
@@ -8,34 +16,53 @@
         href="http://www.eternagame.org/web/player/36921/"
       >Hoglahoo</a>
       and
-      <a target="_blank" href="http://www.eternagame.org/web/player/48290/">LFP6</a>.
+      <a
+        target="_blank"
+        href="http://www.eternagame.org/web/player/48290/"
+      >LFP6</a>.
     </p>
-    <p>User: {{userToReport.username}}</p>
+    <p>User: {{ userToReport.username }}</p>
     <div style="text-align: center; margin-top: 15px;">
       <div style="display: inline-block; margin: 0px 12px;">
-        <input type="checkbox" v-model="ignore">
+        <input
+          v-model="ignore"
+          type="checkbox"
+        >
         <label for="report-ignore">Ignore User</label>
       </div>
       <div style="display: inline-block; margin: 0px 12px;">
-        <input type="checkbox" v-model="report">
+        <input
+          v-model="report"
+          type="checkbox"
+        >
         <label for="report-report">Report User</label>
       </div>
     </div>
-    <div style="margin-top: 15px;" v-show="report">
+    <div
+      v-show="report"
+      style="margin-top: 15px;"
+    >
       <label for="report-message">Additional Comments:</label>
-      <textarea v-model="reportComments" style="resize: none; height: 60px;"></textarea>
+      <textarea
+        v-model="reportComments"
+        style="resize: none; height: 60px;"
+      />
     </div>
     <div style="margin-top: 15px;">
       <div
         class="blue-button blue-button-interactive"
         style="width: 40%; display: inline-block; vertical-align: middle;"
         @click="closeModal"
-      >Cancel</div>
+      >
+        Cancel
+      </div>
       <div
         class="green-button green-button-interactive"
         style="width: 40%; display: inline-block; float: right; vertical-align: middle;"
         @click="submit"
-      >Continue</div>
+      >
+        Continue
+      </div>
     </div>
   </modal>
 </template>
@@ -44,7 +71,6 @@
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import { Client } from 'irc-framework';
-  import parseUsername from '@/tools/parseUsername';
   import User from '../../../../types/user';
   import Message from '../../../../types/message';
 

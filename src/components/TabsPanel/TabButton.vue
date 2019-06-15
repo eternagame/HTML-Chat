@@ -1,7 +1,10 @@
 <template>
-  <button @click="changeTab" :class="{active: selected}">
-    {{name}}
-    <slot></slot>
+  <button
+    :class="{active: selected}"
+    @click="changeTab"
+  >
+    {{ name }}
+    <slot />
   </button>
 </template>
 

@@ -1,8 +1,11 @@
 <template>
   <tab ref="tab">
     <ul>
-      <message v-for="user in $store.state.connectedUsers" :key="user.username">
-        <username :user="user"></username>
+      <message
+        v-for="user in $store.state.connectedUsers"
+        :key="user.username"
+      >
+        <username :user="user" />
       </message>
     </ul>
   </tab>

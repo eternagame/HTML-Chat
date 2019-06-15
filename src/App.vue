@@ -1,8 +1,14 @@
 <template>
-  <div id="app1" style="height:100%; overflow-y:hidden;">
-    <div class="chat" style="height: 100%;">
-      <tabs-panel></tabs-panel>
-      <chat-content></chat-content>
+  <div
+    id="app1"
+    style="height:100%; overflow-y:hidden;"
+  >
+    <div
+      class="chat"
+      style="height: 100%;"
+    >
+      <tabs-panel />
+      <chat-content />
     </div>
   </div>
 </template>
@@ -12,6 +18,7 @@
   import Vue from '@/types/vue';
   import TabsPanel from './components/TabsPanel/TabsPanel.vue';
   import ChatContent from './components/ChatContent/ChatContent.vue';
+
   @Component({
     components: {
       TabsPanel,

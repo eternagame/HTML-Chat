@@ -1,9 +1,13 @@
 <template>
   <transition name="fade">
-    <div id="chat-content" class="chat-content" v-show="!$store.state.minimized">
-      <chat-tabs></chat-tabs>
-      <ConnectingPopup></ConnectingPopup>
-      <report-dialog></report-dialog>
+    <div
+      v-show="!$store.state.minimized"
+      id="chat-content"
+      class="chat-content"
+    >
+      <chat-tabs />
+      <ConnectingPopup />
+      <report-dialog />
     </div>
   </transition>
 </template>

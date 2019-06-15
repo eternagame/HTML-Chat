@@ -81,10 +81,10 @@ class State {
   usersByNick: { [nick: string]: User } = {}
 
   constructor() {
-    for (const channel of channels) {
+    channels.forEach((channel) => {
       this.banned[channel] = consts.BAN_STATUS_NORMAL;
       this.postedMessages[channel] = [];
-    }
+    });
   }
 }
 

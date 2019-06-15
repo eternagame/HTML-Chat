@@ -1,18 +1,23 @@
 <template>
   <div>
     <textarea
+      v-show="$store.state.connectionData.connected || $store.state.connectionData.firstConnection"
+      v-model="message"
       :style="{height: `${height}px`}"
       class="chat-input"
+      :disabled="!$store.state.connectionData.connected || !!$store.state.banned[channel]"
       @keyup="onKeyUp"
       @input="onInput"
-      v-model="message"
-      v-show="$store.state.connectionData.connected || $store.state.connectionData.firstConnection"
-      :disabled="!$store.state.connectionData.connected || !!$store.state.banned[channel]"
-    ></textarea>
-    <connect-button v-if="!$store.state.connectionData.firstConnection &&
-                          !$store.state.connectionData.connected" class="connect-button">
-    </connect-button>
-    <div class="chat-input-hidden" ref="hiddenDiv">{{message}}</div>
+    />
+    <connect-button
+      v-if="!$store.state.connectionData.firstConnection &&
+        !$store.state.connectionData.connected"
+      class="connect-button"
+    />
+    <div
+      ref="hiddenDiv"
+      class="chat-input-hidden"
+    >{{ message }}</div>
   </div>
 </template>
 

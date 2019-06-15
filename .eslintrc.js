@@ -28,18 +28,12 @@ module.exports = {
     {
       files: ['*.vue', '*.ts'],
       rules: {
-        'no-dupe-args': 'off',
-        'no-redeclare': 'off',
-        'no-param-reassign': 'off',
-        'no-shadow': 'off',
-        'no-restricted-syntax': 'off',
+        'no-param-reassign': ['error', { "props": false }],
         'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
-        'no-useless-constructor': 'off',
-
       },
     },
   ],
   parserOptions: {
-    parser: 'typescript-eslint-parser',
+    parser: '@typescript-eslint/parser',
   },
 };

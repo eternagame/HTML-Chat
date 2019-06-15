@@ -1,6 +1,6 @@
 <template>
   <div class="tooltiptext">
-    <slot></slot>
+    <slot />
   </div>
 </template>
 

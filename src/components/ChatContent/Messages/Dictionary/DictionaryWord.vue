@@ -1,8 +1,12 @@
 <template>
-  <div class="tooltip dictionary-word" @mouseover="hover = true" @mouseleave="hover = false">
-    <slot></slot>
+  <div
+    class="tooltip dictionary-word"
+    @mouseover="hover = true"
+    @mouseleave="hover = false"
+  >
+    <slot />
     <dictionary-tooltip v-if="hover">
-      <component :is="components[keyword]"></component>
+      <component :is="components[keyword]" />
     </dictionary-tooltip>
   </div>
 </template>
