@@ -1,7 +1,11 @@
 <template>
-  <li class="chat-message" @mouseover="$emit('mouseover')" @mouseleave="$emit('mouseleave')">
+  <li
+    class="chat-message"
+    @mouseover="$emit('mouseover')"
+    @mouseleave="$emit('mouseleave')"
+  >
     <div class="chat-message-content">
-      <slot></slot>
+      <slot />
     </div>
   </li>
 </template>

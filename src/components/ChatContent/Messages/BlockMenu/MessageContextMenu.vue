@@ -2,12 +2,17 @@
   <vue-context ref="menu">
     <ul>
       <li
-        @click="goToUserProfile"
         style="border-bottom: 1px solid black;"
-      >{{ message ? message.user.username : ''}}
+        @click="goToUserProfile"
+      >
+        {{ message ? message.user.username : '' }}
       </li>
-      <li @click="openReportModal({report: true, ignore: false})">Report User / Message</li>
-      <li @click="openReportModal({report: false, ignore: true})">Ignore User</li>
+      <li @click="openReportModal({report: true, ignore: false})">
+        Report User / Message
+      </li>
+      <li @click="openReportModal({report: false, ignore: true})">
+        Ignore User
+      </li>
     </ul>
   </vue-context>
 </template>

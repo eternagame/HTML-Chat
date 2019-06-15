@@ -3,8 +3,13 @@
     <a
       class="chat-message-options"
       @click.stop="$refs.contextMenu.open"
-    >&vellip;</a>
-    <message-context-menu ref="contextMenu" :message="message"></message-context-menu>
+    >
+      &vellip;
+    </a>
+    <message-context-menu
+      ref="contextMenu"
+      :message="message"
+    />
   </div>
 </template>
 

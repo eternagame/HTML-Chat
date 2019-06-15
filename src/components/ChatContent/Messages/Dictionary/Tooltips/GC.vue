@@ -1,5 +1,8 @@
 <template>
-  <img alt="GC" src="../../../../../assets/GC.png">
+  <img
+    alt="GC"
+    src="../../../../../assets/GC.png"
+  >
 </template>
 
 <script lang="ts">

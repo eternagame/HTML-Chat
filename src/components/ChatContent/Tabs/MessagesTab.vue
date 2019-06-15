@@ -5,12 +5,15 @@
         v-for="(message, i) in $store.state.postedMessages[data.channel]"
         :key="i"
         :message="message"
-      ></message-component>
-      <connecting-message></connecting-message>
+      />
+      <connecting-message />
     </ul>
     <template v-slot:footer>
-      <chat-input ref="input" :channel="data.channel" @updateHeight="updateTextFieldHeight">
-      </chat-input>
+      <chat-input
+        ref="input"
+        :channel="data.channel"
+        @updateHeight="updateTextFieldHeight"
+      />
     </template>
   </tab>
 </template>

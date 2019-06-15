@@ -1,9 +1,10 @@
 <template>
   <message
+    v-show="$store.state.ignoredUsers.indexOf(message.user.username) === -1"
+    style="overflow: hidden"
     @mouseleave="hover = false"
     @mouseover="hover = true"
-    v-show="$store.state.ignoredUsers.indexOf(message.user.username) === -1"
-    style="overflow: hidden">
+  >
     <div>
       <span :class="{'chat-message-action': isAction}">
         <username
@@ -11,14 +12,17 @@
           :user="message.user"
           :action="false"
           :color="message.tags ? message.tags['username-color'] || '' : ''"
-          :isAction="isAction"
-        >{{isAction || !message.user.username ? '': ':'}}
+          :is-action="isAction"
+        >{{ isAction || !message.user.username ? '': ':' }}
         </username>
-        &lrm;<span v-html="formattedMessage"></span>
+        &lrm;<span v-html="formattedMessage" />
       </span>
-      &lrm;<message-time :time="message.time"></message-time>
+      &lrm;<message-time :time="message.time" />
     </div>
-    <block-button v-if="hover && message.user.username" :message="message"></block-button>
+    <block-button
+      v-if="hover && message.user.username"
+      :message="message"
+    />
   </message>
 </template>
 
