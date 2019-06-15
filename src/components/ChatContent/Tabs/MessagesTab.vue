@@ -21,11 +21,11 @@
 <script lang="ts">
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
+  import Message from '@/types/message';
   import MessageComponent from '../Messages/IrcMessage.vue';
   import Tab from './Tab.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ChatInput from '@/components/ChatContent/ChatInput.vue';
-  import Message from '../../../types/message';
 
   @Component({
     components: {

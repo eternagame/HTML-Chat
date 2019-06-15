@@ -71,8 +71,8 @@
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import { Client } from 'irc-framework';
-  import User from '../../../../types/user';
-  import Message from '../../../../types/message';
+  import User from '@/types/user';
+  import Message from '@/types/message';
 
 @Component({})
   export default class ReportDialog extends Vue {
