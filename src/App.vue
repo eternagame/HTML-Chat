@@ -43,18 +43,6 @@ textarea {
   width: calc(100% - 10px);
 }
 
-// #chat-input,
-// #reconnect {
-//   position: absolute;
-//   bottom: 0px;
-//   width: calc(100% - 28px);
-//   height: 19px;
-//   resize: none;
-//   margin: 10px;
-// }
-</style>
-
-<style scoped lang="scss">
 .chat {
   font-family: "Helvetica Neue", "Open Sans", Arial, Gulim;
   font-size: 14px;
