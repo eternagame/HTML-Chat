@@ -2,14 +2,14 @@
   <div class="tabs">
     <transition name="fade">
       <div v-show="!$store.state.minimized">
-        <tab-button
+        <TabButton
           v-for="(tab, index) in $store.state.tabs"
           :key="index"
           :index="index"
         />
       </div>
     </transition>
-    <minimization-triangle />
+    <MinimizationTriangle />
   </div>
 </template>
 

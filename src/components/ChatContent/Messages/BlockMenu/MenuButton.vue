@@ -6,7 +6,7 @@
     >
       &vellip;
     </a>
-    <message-context-menu
+    <MessageContextMenu
       ref="contextMenu"
       :message="message"
     />

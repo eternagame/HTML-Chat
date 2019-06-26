@@ -1,15 +1,15 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <tab ref="tab">
     <ul>
-      <message-component
+      <MessageComponent
         v-for="(message, i) in $store.state.postedMessages[data.channel]"
         :key="i"
         :message="message"
       />
-      <connecting-message />
+      <ConnectingMessage />
     </ul>
     <template v-slot:footer>
-      <chat-input
+      <ChatInput
         ref="input"
         :channel="data.channel"
         @updateHeight="updateTextFieldHeight"
