@@ -6,7 +6,7 @@
       :style="{height: `${height}px`}"
       class="chat-input"
       :disabled="!$store.state.connectionData.connected || !!$store.state.banned[channel]"
-      @keyup="onKeyUp"
+      @keyup="updateHeight"
       @input="onInput"
     />
     <ConnectButton
@@ -44,8 +44,8 @@
       hiddenDiv: HTMLFormElement;
     };
 
-    onInput(e: KeyboardEvent) {
-      this.updateHeight();
+    get isBanned(){
+      
     }
 
     onKeyUp(e: KeyboardEvent) {
