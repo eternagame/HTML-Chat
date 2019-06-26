@@ -1,19 +1,24 @@
 <template>
   <vue-context ref="menu">
-    <ul>
-      <li
+    <li>
+      <a
+        :href="profileUrl"
+        target="_blank"
         style="border-bottom: 1px solid black;"
-        @click="goToUserProfile"
       >
         {{ message ? message.user.username : '' }}
-      </li>
-      <li @click="openReportModal({report: true, ignore: false})">
+      </a>
+    </li>
+    <li>
+      <a target="_blank" @click="openReportModal({report: true, ignore: false})">
         Report User / Message
-      </li>
-      <li @click="openReportModal({report: false, ignore: true})">
+      </a>
+    </li>
+    <li>
+      <a target="_blank" @click="openReportModal({report: false, ignore: true})">
         Ignore User
-      </li>
-    </ul>
+      </a>
+    </li>
   </vue-context>
 </template>
 
@@ -41,14 +46,12 @@
       return this.message!.user;
     }
 
-    open(event: MouseEvent) {
-      this.$refs.menu.open(event);
+    get profileUrl(): string {
+      return `http://${this.$store.state.workbranch}/web/player/${this.user.uid}/`;
     }
 
-    goToUserProfile() {
-      window.open(
-        `http://${this.$store.state.workbranch}/web/player/${this.user.uid}/`,
-      );
+    open(event: MouseEvent) {
+      this.$refs.menu.open(event);
     }
 
     openReportModal(defaults: { report: boolean; ignore: boolean }) {
