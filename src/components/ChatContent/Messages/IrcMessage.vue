@@ -1,5 +1,5 @@
 <template>
-  <message
+  <Message
     v-show="$store.state.ignoredUsers.indexOf(message.user.username) === -1"
     style="overflow: hidden"
     @mouseleave="hover = false"
@@ -7,23 +7,23 @@
   >
     <div>
       <span :class="{'chat-message-action': isAction}">
-        <username
+        <Username
           :msg="message.message"
           :user="message.user"
           :action="false"
           :color="message.tags ? message.tags['username-color'] || '' : ''"
           :is-action="isAction"
         >{{ isAction || !message.user.username ? '': ':' }}
-        </username>
+        </Username>
         &lrm;<span v-html="formattedMessage" />
       </span>
-      &lrm;<message-time :time="message.time" />
+      &lrm;<MessageTime :time="message.time" />
     </div>
-    <block-button
+    <BlockButton
       v-if="hover && message.user.username"
       :message="message"
     />
-  </message>
+  </Message>
 </template>
 
 <script lang="ts">

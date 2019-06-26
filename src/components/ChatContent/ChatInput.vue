@@ -9,7 +9,7 @@
       @keyup="onKeyUp"
       @input="onInput"
     />
-    <connect-button
+    <ConnectButton
       v-if="!$store.state.connectionData.firstConnection &&
         !$store.state.connectionData.connected"
       class="connect-button"

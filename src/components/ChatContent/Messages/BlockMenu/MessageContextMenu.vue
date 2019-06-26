@@ -1,5 +1,5 @@
 <template>
-  <vue-context ref="menu">
+  <VueContext ref="menu">
     <li>
       <a
         :href="profileUrl"
@@ -19,7 +19,7 @@
         Ignore User
       </a>
     </li>
-  </vue-context>
+  </VueContext>
 </template>
 
 <script lang="ts">

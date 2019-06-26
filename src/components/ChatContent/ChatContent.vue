@@ -5,9 +5,9 @@
       id="chat-content"
       class="chat-content"
     >
-      <chat-tabs />
+      <ChatTabs />
       <ConnectingPopup />
-      <report-dialog />
+      <ReportDialog />
     </div>
   </transition>
 </template>

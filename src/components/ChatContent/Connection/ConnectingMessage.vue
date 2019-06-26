@@ -1,5 +1,5 @@
 <template>
-  <message
+  <Message
     v-if="!$store.state.connectionData.connected && !$store.state.connectionData.firstConnection"
     id="chat-loading"
   >
@@ -18,7 +18,7 @@
       Connection failed. retrying in
       <span id="timer">{{ $store.state.connectionData.currentTimer }}</span> seconds.
     </span>
-  </message>
+  </Message>
 </template>
 
 <script lang="ts">
