@@ -5,9 +5,10 @@
       v-model="message"
       :style="{height: `${height}px`}"
       class="chat-input"
-      :disabled="!$store.state.connectionData.connected || !!$store.state.banned[channel]"
+      :disabled="!$store.state.connectionData.connected || isBanned"
+      @input="updateHeight"
+      @keypress="onKeyPress"
       @keyup="updateHeight"
-      @input="onInput"
     />
     <ConnectButton
       v-if="!$store.state.connectionData.firstConnection &&
@@ -24,7 +25,7 @@
 <script lang="ts">
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
-  import { CHAT_CHANNEL } from '../../define-user';
+  import { consts } from '@/types/consts';
   import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
 
   @Component({
@@ -44,17 +45,18 @@
       hiddenDiv: HTMLFormElement;
     };
 
-    get isBanned(){
-      
+    get isBanned() {
+      return this.$store.state.banned[this.channel] !== consts.BAN_STATUS_NORMAL;
     }
 
-    onKeyUp(e: KeyboardEvent) {
+    onKeyPress(e: KeyboardEvent) {
       if (e.code === 'Enter' || e.code === 'NumpadEnter') {
         this.$store.dispatch('sendMessage', {
           message: this.message,
           channel: this.channel,
         });
         this.message = '';
+        e.preventDefault();
       }
       this.updateHeight();
     }
