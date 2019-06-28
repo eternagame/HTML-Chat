@@ -1,9 +1,7 @@
 <template>
   <div
     id="chat-tabs"
-    :style="{
-      'height': `100%`
-    }"
+    style="height: 100%"
   >
     <component
       :is="tab.type"
@@ -30,6 +28,3 @@
   export default class ChatTabs extends Vue {
   }
 </script>
-
-<style lang="scss" scoped>
-</style>
