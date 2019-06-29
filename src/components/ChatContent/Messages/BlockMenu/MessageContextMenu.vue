@@ -10,12 +10,12 @@
       </a>
     </li>
     <li>
-      <a target="_blank" @click="openReportModal({report: true, ignore: false})">
+      <a @click="openReportModal({report: true, ignore: false})">
         Report User / Message
       </a>
     </li>
     <li>
-      <a target="_blank" @click="openReportModal({report: false, ignore: true})">
+      <a @click="openReportModal({report: false, ignore: true})">
         Ignore User
       </a>
     </li>
@@ -63,5 +63,9 @@
 <style scoped lang="scss">
   li {
     color: black;
+  }
+
+  a {
+    cursor: pointer;
   }
 </style>
