@@ -2,13 +2,15 @@
   <div style="overflow:hidden">
     <a
       class="chat-message-options"
-      @click.stop="$refs.contextMenu.open"
+      @click.prevent="openContextMenu"
+      v-show="visible"
     >
       &vellip;
     </a>
-    <MessageContextMenu
+    <MessageActionsContextMenu
       ref="contextMenu"
       :message="message"
+      :test="test"
     />
   </div>
 </template>
@@ -17,12 +19,24 @@
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import Message from '@/types/message';
-  import MessageContextMenu from '@/components/ChatContent/Messages/BlockMenu/MessageContextMenu.vue';
+  import MessageActionsContextMenu from '@/components/ChatContent/Messages/BlockMenu/MessageActionsContextMenu.vue';
 
-  @Component({ components: { MessageContextMenu } })
-  export default class MenuButton extends Vue {
+  @Component({ components: { MessageActionsContextMenu } })
+  export default class MessageActions extends Vue {
     @Prop()
     private message!: Message;
+
+    @Prop()
+    private visible!: boolean;
+
+    get test() {
+      console.log(this.visible);
+      return false;
+    }
+
+    openContextMenu(e: MouseEvent) {
+      setTimeout(() => this.$refs.contextMenu.open(e));
+    }
 
     $refs!: {
       contextMenu: HTMLFormElement;

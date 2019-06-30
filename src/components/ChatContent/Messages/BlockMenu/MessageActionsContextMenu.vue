@@ -34,7 +34,7 @@
       VueContext,
     },
   })
-  export default class MessageContextMenu extends Vue {
+  export default class MessageActionsContextMenu extends Vue {
     $refs!: {
       menu: HTMLFormElement;
     };

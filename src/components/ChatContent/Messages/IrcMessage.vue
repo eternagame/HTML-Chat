@@ -19,8 +19,8 @@
       </span>
       &lrm;<MessageTime :time="message.time" />
     </div>
-    <BlockButton
-      v-if="hover && message.user.username"
+    <MessageActions
+      :visible="hover && message.user.username"
       :message="message"
     />
   </Message>
@@ -32,7 +32,7 @@
   import Message from '@/types/message';
   import Username from './Username.vue';
   import MessageComp from './Message.vue';
-  import BlockButton from '@/components/ChatContent/Messages/BlockMenu/MenuButton.vue';
+  import MessageActions from '@/components/ChatContent/Messages/BlockMenu/MessageActions.vue';
   import md from '@/tools/Markdown';
   import Time from './Time.vue';
 
@@ -40,7 +40,7 @@
     components: {
       Username,
       Message: MessageComp,
-      BlockButton,
+      MessageActions,
       MessageTime: Time,
     },
   })
