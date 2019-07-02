@@ -233,6 +233,28 @@ const actions: ActionTree<State, any> = {
       });
     }
   },
+  reportUser({ state }, { userToReport, message, reportComments } :
+                        { userToReport: User, message: Message | null, reportComments: string }) {
+    const client = state.client!;
+    client.say(
+      '#ops-notifications',
+      `[REPORT] Reporting ${userToReport.username} (${
+        userToReport.uid
+      }) by ${state.currentUser.username} (${
+        state.currentUser.uid
+      }).\r\n`,
+    );
+    if (message) {
+      client.say(
+        '#ops-notifications',
+        `[REPORTED MESSAGE] ${message.message}\r\n`,
+      );
+    }
+    client.say(
+      '#ops-notifications',
+      `[REPORT REASON] ${reportComments}\r\n`,
+    );
+  },
   sendMessageRaw({ state }) {
   },
   userKicked(
