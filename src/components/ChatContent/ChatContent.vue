@@ -7,7 +7,7 @@
     >
       <ChatTabs />
       <ConnectingPopup />
-      <ReportDialog />
+      <ReportDialog ref="reportDialog" />
     </div>
   </transition>
 </template>
@@ -30,7 +30,19 @@
       ConnectingPopup,
     },
   })
-  export default class ChatContent extends Vue {}
+  export default class ChatContent extends Vue {
+    $refs!: {
+      reportDialog: HTMLFormElement;
+    }
+
+    created() {
+      this.$store.subscribe((mutation, state) => {
+        if (mutation.type === 'openReportModal') {
+          this.$refs.reportDialog.open(mutation.payload);
+        }
+      });
+    }
+  }
 </script>
 
 
