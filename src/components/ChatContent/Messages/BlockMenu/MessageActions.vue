@@ -10,7 +10,6 @@
     <MessageActionsContextMenu
       ref="contextMenu"
       :message="message"
-      :test="test"
     />
   </div>
 </template>
@@ -28,11 +27,6 @@
 
     @Prop()
     private visible!: boolean;
-
-    get test() {
-      console.log(this.visible);
-      return false;
-    }
 
     openContextMenu(e: MouseEvent) {
       setTimeout(() => this.$refs.contextMenu.open(e));

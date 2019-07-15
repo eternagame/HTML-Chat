@@ -1,24 +1,19 @@
 <template>
-  <div>
+  <div style="overflow: hidden;">
     <textarea
-      v-show="$store.state.connectionData.connected || $store.state.connectionData.firstConnection"
       v-model="message"
       :style="{height: `${height}px`}"
       class="chat-input"
       :disabled="!$store.state.connectionData.connected || isBanned"
       @input="updateHeight"
+      @keydown="updateHeight"
       @keypress="onKeyPress"
       @keyup="updateHeight"
-    />
-    <ConnectButton
-      v-if="!$store.state.connectionData.firstConnection &&
-        !$store.state.connectionData.connected"
-      class="connect-button"
     />
     <div
       ref="hiddenDiv"
       class="chat-input-hidden"
-    >{{ message }}</div>
+    ></div>
   </div>
 </template>
 
@@ -62,12 +57,13 @@
     }
 
     updateHeight() {
+      this.$refs.hiddenDiv.textContent = this.message;
       this.height = this.$refs.hiddenDiv.clientHeight;
-      this.$emit('updateHeight', { height: this.height + 16 });
+      this.$emit('updateHeight', { src: this });
     }
 
     mounted() {
-      this.updateHeight();
+      this.$nextTick(this.updateHeight);
     }
 
     created() {
@@ -87,6 +83,8 @@
   .chat-input {
     resize: none;
     overflow: hidden;
+    position: absolute;
+    bottom: 0px;
   }
 
   .chat-input,
@@ -96,18 +94,11 @@
     min-height: 19px;
   }
 
-  .connect-button {
-    width: calc(100% - 20px);
-    margin: 5px 10px;
-  }
-
   /* To determine input size */
   .chat-input-hidden {
-    position: absolute;
     visibility: hidden;
     white-space: pre-wrap;
     word-wrap: break-word;
-    min-height: 19px;
     border: 1px solid;
   }
 </style>

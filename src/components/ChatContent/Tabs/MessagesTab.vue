@@ -10,9 +10,15 @@
     </ul>
     <template v-slot:footer>
       <ChatInput
-        ref="input"
         :channel="data.channel"
-        @updateHeight="updateTextFieldHeight"
+        @updateHeight="$refs.tab.updateFooterHeight($event)"
+        v-show="$store.state.connectionData.connected ||
+                $store.state.connectionData.firstConnection"
+      />
+      <ConnectButton
+        @updateHeight="$refs.tab.updateFooterHeight($event)"
+        v-show="!$store.state.connectionData.firstConnection &&
+                !$store.state.connectionData.connected"
       />
     </template>
   </tab>
@@ -26,6 +32,7 @@
   import Tab from './Tab.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ChatInput from '@/components/ChatContent/ChatInput.vue';
+  import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
 
   @Component({
     components: {
@@ -33,6 +40,7 @@
       MessageComponent,
       Tab,
       ChatInput,
+      ConnectButton,
     },
   })
   export default class MessagesTab extends Vue {
@@ -42,10 +50,15 @@
     $refs!: {
       tab: Tab;
       vueSimpleContextMenu: HTMLFormElement;
-      input: ChatInput;
     };
 
+
+    mounted() {
+      console.log(this.$refs.tab);
+    }
+
     created() {
+      console.log(this.$refs.tab);
       this.$store.subscribe((mutation, state) => {
         if (
           mutation.type === 'postMessage'
@@ -58,10 +71,6 @@
       this.$store.subscribe((muatation, state) => {
         if (muatation.type === 'setConnected') this.$refs.tab.onContentChanged();
       });
-    }
-
-    updateTextFieldHeight({ height }: { height: number }) {
-      this.$refs.tab.updateFooterHeight(height);
     }
   }
 </script>
