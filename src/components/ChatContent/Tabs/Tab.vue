@@ -67,8 +67,8 @@
       }
     }
 
-    updateFooterHeight(height: number) {
-      this.footerHeight = height;
+    updateFooterHeight({ src } : { src: Vue }) {
+      this.footerHeight = src.$el.clientHeight;
       this.onContentChanged();
     }
 

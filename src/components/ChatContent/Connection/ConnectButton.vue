@@ -15,10 +15,19 @@
   import Vue from '@/types/vue';
 
   @Component({})
-  export default class ConnectButton extends Vue {}
+  export default class ConnectButton extends Vue {
+    mounted() {
+      this.$emit('updateHeight', { src: this });
+    }
+  }
 </script>
 
 <style scoped lang="scss">
+.connect-button {
+  width: calc(100% - 20px);
+  margin: 5px 10px;
+}
+
 div {
   background-color: #4fb748;
   font-weight: normal;

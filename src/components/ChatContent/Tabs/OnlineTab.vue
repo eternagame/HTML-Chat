@@ -8,6 +8,14 @@
         <Username :user="user" />
       </Message>
     </ul>
+    <template v-slot:footer>
+      <ConnectButton
+        v-if="!$store.state.connectionData.firstConnection &&
+        !$store.state.connectionData.connected"
+        class="connect-button"
+        @updateHeight="$refs.tab.updateFooterHeight"
+      />
+    </template>
   </tab>
 </template>
 
@@ -17,12 +25,14 @@
   import Tab from './Tab.vue';
   import Username from '@/components/ChatContent/Messages/Username.vue';
   import Message from '@/components/ChatContent/Messages/Message.vue';
+  import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
 
   @Component({
     components: {
       Username,
       Tab,
       Message,
+      ConnectButton,
     },
   })
   export default class OnlineTab extends Vue {
@@ -35,6 +45,9 @@
         if (['addUser', 'removeUser'].indexOf(mutation.type) !== -1) {
           this.$refs.tab.onContentChanged();
         }
+      });
+      this.$store.subscribe((muatation, state) => {
+        if (muatation.type === 'setConnected') this.$refs.tab.onContentChanged();
       });
     }
   }
