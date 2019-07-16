@@ -16,7 +16,6 @@
   import Vue from '@/types/vue';
   import Component from 'vue-class-component';
   import ChatTabs from './ChatTabs.vue';
-  import ChatInput from './ChatInput.vue';
   import ConnectButton from './Connection/ConnectButton.vue';
   import ReportDialog from '@/components/ChatContent/Messages/BlockMenu/ReportDialog.vue';
   import ConnectingPopup from '@/components/ChatContent/Connection/ConnectingPopup.vue';
@@ -25,7 +24,6 @@
     components: {
       ReportDialog,
       ChatTabs,
-      ChatInput,
       ConnectButton,
       ConnectingPopup,
     },
