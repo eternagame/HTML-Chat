@@ -15,11 +15,7 @@
   import Vue from '@/types/vue';
 
   @Component({})
-  export default class ConnectButton extends Vue {
-    mounted() {
-      this.$emit('updateHeight');
-    }
-  }
+  export default class ConnectButton extends Vue { }
 </script>
 
 <style scoped lang="scss">

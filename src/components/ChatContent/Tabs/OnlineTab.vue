@@ -13,7 +13,6 @@
         v-if="!$store.state.connectionData.firstConnection &&
         !$store.state.connectionData.connected"
         class="connect-button"
-        @updateHeight="$refs.tab.updateFooterHeight()"
       />
     </template>
   </tab>

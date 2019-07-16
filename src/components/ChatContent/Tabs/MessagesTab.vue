@@ -9,14 +9,15 @@
       <ConnectingMessage />
     </ul>
     <template v-slot:footer>
-      <ChatInput
-        :channel="data.channel"
+      <ScalableInput
+        v-model="newMessage"
+        @keypress="onKeyPress"
+        :disabled="!$store.state.connectionData.connected || isBanned"
         @updateHeight="$refs.tab.updateFooterHeight()"
         v-show="$store.state.connectionData.connected ||
                 $store.state.connectionData.firstConnection"
       />
       <ConnectButton
-        @updateHeight="$refs.tab.updateFooterHeight()"
         v-show="!$store.state.connectionData.firstConnection &&
                 !$store.state.connectionData.connected"
       />
@@ -31,15 +32,16 @@
   import MessageComponent from '../Messages/IrcMessage.vue';
   import Tab from './Tab.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
-  import ChatInput from '@/components/ChatContent/ChatInput.vue';
+  import ScalableInput from '@/components/ChatContent/ScalableInput.vue';
   import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
+  import { consts } from '@/types/consts';
 
   @Component({
     components: {
       ConnectingMessage,
       MessageComponent,
       Tab,
-      ChatInput,
+      ScalableInput,
       ConnectButton,
     },
   })
@@ -47,10 +49,27 @@
     @Prop()
     data!: { channel: string };
 
+    newMessage: string = '';
+
     $refs!: {
       tab: Tab;
       vueSimpleContextMenu: HTMLFormElement;
     };
+
+    get isBanned() {
+      return this.$store.state.banned[this.data.channel] !== consts.BAN_STATUS_NORMAL;
+    }
+
+    onKeyPress(e: KeyboardEvent) {
+      if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+        this.$store.dispatch('sendMessage', {
+          message: this.newMessage,
+          channel: this.data.channel,
+        });
+        this.newMessage = '';
+        e.preventDefault();
+      }
+    }
 
     created() {
       this.$store.subscribe((mutation, state) => {

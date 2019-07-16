@@ -78,6 +78,7 @@
       this.$store.subscribe((mutation, state) => {
         if (mutation.type === 'changeTab') {
           this.onContentChanged();
+          this.$nextTick(this.updateFooterHeight);
         }
       });
     }
