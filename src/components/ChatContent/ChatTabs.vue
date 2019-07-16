@@ -1,14 +1,15 @@
 <template>
-  <div id="chat-tabs" :style="{
-            'height': `100%`
-     }">
+  <div
+    id="chat-tabs"
+    style="height: 100%"
+  >
     <component
-      v-for="(tab, i) in $store.state.tabs"
       :is="tab.type"
+      v-for="(tab, i) in $store.state.tabs"
       v-show="$store.state.activeTab === i"
       :key="tab.id"
       :data="tab"
-    ></component>
+    />
   </div>
 </template>
 
@@ -27,6 +28,3 @@
   export default class ChatTabs extends Vue {
   }
 </script>
-
-<style lang="scss" scoped>
-</style>

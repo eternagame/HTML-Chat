@@ -1,10 +1,10 @@
 <template>
   <div
-    style="float: right;"
     id="minimization-triangle"
+    style="float: right;"
     :class="{'flipped': $store.state.minimized}"
     @click="$store.state.minimized = !$store.state.minimized"
-  ></div>
+  />
 </template>
 
 <script lang="ts">

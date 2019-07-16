@@ -1,19 +1,28 @@
 <template>
-  <message
+  <Message
     v-if="!$store.state.connectionData.connected && !$store.state.connectionData.firstConnection"
     id="chat-loading"
   >
-    <img src="https://s3.amazonaws.com/eterna/icon_img/loading.gif" class="loading-icon">
-    <span id="connecting" v-show="$store.state.connectionData.tryingToConnect">Connecting...</span>
-    <span id="failed" v-show="!$store.state.connectionData.tryingToConnect">
+    <img
+      src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
+      class="loading-icon"
+    >
+    <span
+      v-show="$store.state.connectionData.tryingToConnect"
+      id="connecting"
+    >Connecting...</span>
+    <span
+      v-show="!$store.state.connectionData.tryingToConnect"
+      id="failed"
+    >
       Connection failed. retrying in
-      <span id="timer">{{$store.state.connectionData.currentTimer}}</span> seconds.
+      <span id="timer">{{ $store.state.connectionData.currentTimer }}</span> seconds.
     </span>
-  </message>
+  </Message>
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
+  import { Component } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import MessageComp from '@/components/ChatContent/Messages/Message.vue';
 

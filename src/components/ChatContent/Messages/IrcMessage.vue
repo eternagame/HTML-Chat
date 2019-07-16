@@ -1,44 +1,46 @@
 <template>
-  <message
+  <Message
+    v-show="$store.state.ignoredUsers.indexOf(message.user.username) === -1"
+    style="overflow: hidden"
     @mouseleave="hover = false"
     @mouseover="hover = true"
-    v-show="$store.state.ignoredUsers.indexOf(message.user.username) === -1"
-    style="overflow: hidden">
+  >
     <div>
       <span :class="{'chat-message-action': isAction}">
-        <username
+        <Username
           :msg="message.message"
           :user="message.user"
           :action="false"
           :color="message.tags ? message.tags['username-color'] || '' : ''"
-          :isAction="isAction"
-        >{{isAction || !message.user.username ? '': ':'}}
-        </username>
-        &lrm;<span v-html="formattedMessage"></span>
+          :is-action="isAction"
+        >{{ isAction || !message.user.username ? '': ':' }}
+        </Username>
+        &lrm;<span v-html="formattedMessage" />
       </span>
-      &lrm;<message-time :time="message.time"></message-time>
+      &lrm;<MessageTime :time="message.time" />
     </div>
-    <block-button v-if="hover && message.user.username" :message="message"></block-button>
-  </message>
+    <MessageActions
+      :visible="hover && message.user.username"
+      :message="message"
+    />
+  </Message>
 </template>
 
 <script lang="ts">
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
+  import Message from '@/types/message';
   import Username from './Username.vue';
   import MessageComp from './Message.vue';
-  import DictionaryWord from '@/components/ChatContent/Messages/Dictionary/DictionaryWord.vue';
-  import BlockButton from '@/components/ChatContent/Messages/BlockMenu/MenuButton.vue';
+  import MessageActions from '@/components/ChatContent/Messages/BlockMenu/MessageActions.vue';
   import md from '@/tools/Markdown';
-  import Message from '../../../types/message';
   import Time from './Time.vue';
 
   @Component({
     components: {
-      DictionaryWord,
       Username,
       Message: MessageComp,
-      BlockButton,
+      MessageActions,
       MessageTime: Time,
     },
   })

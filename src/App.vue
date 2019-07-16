@@ -1,8 +1,14 @@
 <template>
-  <div id="app1" style="height:100%; overflow-y:hidden;">
-    <div class="chat" style="height: 100%;">
-      <tabs-panel></tabs-panel>
-      <chat-content></chat-content>
+  <div
+    id="app1"
+    style="height:100%; overflow-y:hidden;"
+  >
+    <div
+      class="chat"
+      style="height: 100%;"
+    >
+      <tabs-panel />
+      <chat-content />
     </div>
   </div>
 </template>
@@ -12,6 +18,7 @@
   import Vue from '@/types/vue';
   import TabsPanel from './components/TabsPanel/TabsPanel.vue';
   import ChatContent from './components/ChatContent/ChatContent.vue';
+
   @Component({
     components: {
       TabsPanel,
@@ -36,18 +43,6 @@ textarea {
   width: calc(100% - 10px);
 }
 
-// #chat-input,
-// #reconnect {
-//   position: absolute;
-//   bottom: 0px;
-//   width: calc(100% - 28px);
-//   height: 19px;
-//   resize: none;
-//   margin: 10px;
-// }
-</style>
-
-<style scoped lang="scss">
 .chat {
   font-family: "Helvetica Neue", "Open Sans", Arial, Gulim;
   font-size: 14px;
