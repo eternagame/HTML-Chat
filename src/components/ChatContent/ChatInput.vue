@@ -1,14 +1,12 @@
 <template>
-  <div style="overflow: hidden;">
+  <div style="overflow: hidden; position: relative;">
     <textarea
       v-model="message"
       :style="{height: `${height}px`}"
       class="chat-input"
       :disabled="!$store.state.connectionData.connected || isBanned"
       @input="updateHeight"
-      @keydown="updateHeight"
       @keypress="onKeyPress"
-      @keyup="updateHeight"
     />
     <div
       ref="hiddenDiv"
@@ -59,7 +57,7 @@
     updateHeight() {
       this.$refs.hiddenDiv.textContent = this.message;
       this.height = this.$refs.hiddenDiv.clientHeight;
-      this.$emit('updateHeight', { src: this });
+      this.$emit('updateHeight');
     }
 
     mounted() {
@@ -84,18 +82,18 @@
     resize: none;
     overflow: hidden;
     position: absolute;
-    bottom: 0px;
+    top: 0px;
   }
 
   .chat-input,
   .chat-input-hidden {
-    width: calc(100% - 22px);
-    margin: 5px 10px;
+    width: calc(100% - 2px); //100% - border
     min-height: 19px;
   }
 
   /* To determine input size */
   .chat-input-hidden {
+    position:relative;
     visibility: hidden;
     white-space: pre-wrap;
     word-wrap: break-word;

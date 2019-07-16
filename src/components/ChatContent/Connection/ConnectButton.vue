@@ -2,7 +2,7 @@
   <div
     id="reconnect"
     :class="{active: $store.state.connectionData.tryingToConnect}"
-    class="unselectable clickable green-button-interactive rounded-5 centered"
+    class="unselectable clickable connect-button green-button-interactive rounded-5 centered"
     style="color:white; font-weight:bolder; font-size:13px;"
     @click="$store.dispatch('connect');"
   >
@@ -17,15 +17,14 @@
   @Component({})
   export default class ConnectButton extends Vue {
     mounted() {
-      this.$emit('updateHeight', { src: this });
+      this.$emit('updateHeight');
     }
   }
 </script>
 
 <style scoped lang="scss">
 .connect-button {
-  width: calc(100% - 20px);
-  margin: 5px 10px;
+  width: 100%;
 }
 
 div {

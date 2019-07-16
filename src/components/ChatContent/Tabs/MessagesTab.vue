@@ -11,12 +11,12 @@
     <template v-slot:footer>
       <ChatInput
         :channel="data.channel"
-        @updateHeight="$refs.tab.updateFooterHeight($event)"
+        @updateHeight="$refs.tab.updateFooterHeight()"
         v-show="$store.state.connectionData.connected ||
                 $store.state.connectionData.firstConnection"
       />
       <ConnectButton
-        @updateHeight="$refs.tab.updateFooterHeight($event)"
+        @updateHeight="$refs.tab.updateFooterHeight()"
         v-show="!$store.state.connectionData.firstConnection &&
                 !$store.state.connectionData.connected"
       />
@@ -52,13 +52,7 @@
       vueSimpleContextMenu: HTMLFormElement;
     };
 
-
-    mounted() {
-      console.log(this.$refs.tab);
-    }
-
     created() {
-      console.log(this.$refs.tab);
       this.$store.subscribe((mutation, state) => {
         if (
           mutation.type === 'postMessage'
@@ -71,6 +65,8 @@
       this.$store.subscribe((muatation, state) => {
         if (muatation.type === 'setConnected') this.$refs.tab.onContentChanged();
       });
+      this.$store.watch(state => state.connectionData.connected,
+                       () => this.$nextTick(this.$refs.tab.updateFooterHeight));
     }
   }
 </script>
