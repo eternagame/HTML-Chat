@@ -13,7 +13,7 @@
         v-if="!$store.state.connectionData.firstConnection &&
         !$store.state.connectionData.connected"
         class="connect-button"
-        @updateHeight="$refs.tab.updateFooterHeight"
+        @updateHeight="$refs.tab.updateFooterHeight()"
       />
     </template>
   </tab>
@@ -49,6 +49,8 @@
       this.$store.subscribe((muatation, state) => {
         if (muatation.type === 'setConnected') this.$refs.tab.onContentChanged();
       });
+      this.$store.watch(state => state.connectionData.connected,
+                       () => this.$nextTick(this.$refs.tab.updateFooterHeight));
     }
   }
 </script>

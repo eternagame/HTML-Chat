@@ -16,10 +16,11 @@
       </VuePerfectScrollbar>
     </div>
 
-    <slot
-      ref="footer"
-      name="footer"
-    />
+    <div ref="footer" style="overflow: auto; padding: 5px; 10px;">
+      <slot
+        name="footer"
+      />
+    </div>
   </div>
 </template>
 
@@ -40,6 +41,7 @@
 
     $refs!: {
       afterScrollbar: Vue;
+      footer: HTMLElement;
     }
 
     autoScroll = true;
@@ -67,8 +69,8 @@
       }
     }
 
-    updateFooterHeight({ src } : { src: Vue }) {
-      this.footerHeight = src.$el.clientHeight;
+    updateFooterHeight() {
+      this.footerHeight = this.$refs.footer.clientHeight;
       this.onContentChanged();
     }
 
