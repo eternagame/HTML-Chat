@@ -5,8 +5,11 @@
     class="chat-message-user-link"
     :href="`http://${$store.state.workbranch}/web/player/${user.uid}/`"
   >
-    <span class="chat-message-user" :style="{color: color || computedColor }">
-      {{user.username}}<slot></slot>
+    <span
+      class="chat-message-user"
+      :style="{color: color || computedColor }"
+    >
+      {{ user.username }}<slot />
     </span>
   </a>
 </template>

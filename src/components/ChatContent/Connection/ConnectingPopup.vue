@@ -1,14 +1,24 @@
 <template>
   <div
-    class="connecting-popup"
     v-show="!$store.state.connectionData.connected &&
-              $store.state.connectionData.firstConnection"
+      $store.state.connectionData.firstConnection"
+    class="connecting-popup"
   >
-    <img src="https://s3.amazonaws.com/eterna/icon_img/loading.gif" class="loading-icon" style="display: block">
-    <span id="connecting" v-show="$store.state.connectionData.tryingToConnect">Connecting...</span>
-    <span id="failed" v-show="!$store.state.connectionData.tryingToConnect">
+    <img
+      src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
+      class="loading-icon"
+      style="display: block"
+    >
+    <span
+      v-show="$store.state.connectionData.tryingToConnect"
+      id="connecting"
+    >Connecting...</span>
+    <span
+      v-show="!$store.state.connectionData.tryingToConnect"
+      id="failed"
+    >
       Connection failed. retrying in
-      <span id="timer">{{$store.state.connectionData.currentTimer}}</span> seconds.
+      <span id="timer">{{ $store.state.connectionData.currentTimer }}</span> seconds.
     </span>
   </div>
 </template>

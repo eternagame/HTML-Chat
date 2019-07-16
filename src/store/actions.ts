@@ -1,12 +1,11 @@
 import { ActionTree } from 'vuex';
-import Irc, {
+import {
   IrcKickEventArgs,
   IrcMessageEventArgs,
   Client,
   IrcModeEventArgs,
   IrcNickInvalidEventArgs,
 } from 'irc-framework';
-import websocket from 'irc-framework/src/transports/websocket';
 import { State } from './state';
 import parseCommands from '@/tools/parseCommands';
 import Message from '../types/message';
@@ -14,10 +13,12 @@ import Connection from './websocket';
 import { consts } from '@/types/consts';
 import User from '@/types/user';
 import parseUsername from '@/tools/parseUsername';
-import generateNick from '../tools/generateNick';
 
 const actions: ActionTree<State, any> = {
-  initClient({ state, commit, dispatch }) {
+  initClient({
+    state, commit, dispatch,
+  }) {
+    dispatch('generateNick');
     const client = new Client({
       host: 'irc.eternagame.org/chatws/websocket', // "localhost:3000/websocket",//
       nick: state.nick,
@@ -28,16 +29,14 @@ const actions: ActionTree<State, any> = {
     });
     client.requestCap('server-time');
     client.on('registered', (e) => {
-      for (const channelName of state.channels) {
+      state.channels.forEach((channelName) => {
         const channel = client.channel(channelName);
         channel.join();
 
-        channel.updateUsers((chan) => {
-          for (const user of channel.users) {
-            commit('addUser', { nick: user.nick, uid: user.ident });
-          }
+        channel.updateUsers(() => {
+          channel.users.forEach(user => commit('addUser', { nick: user.nick, uid: user.ident }));
         });
-      }
+      });
       state.connectionData.failedAttempts = 0;
       commit('setConnected', { connected: true });
     });
@@ -74,7 +73,7 @@ const actions: ActionTree<State, any> = {
       state.connectionData.currentTimer = 0;
     });
     client.on('nick in use', (event) => {
-      dispatch('incrementNick', event);
+      dispatch('onNickInUse', event);
     });
     state.client = client;
     dispatch('connect');
@@ -84,17 +83,19 @@ const actions: ActionTree<State, any> = {
     state.connectionData.currentTimer = 0;
     clearInterval(state.connectionData.timerInterval);
   },
-  incrementNick({ state, commit, dispatch }, { nick }: IrcNickInvalidEventArgs) {
-    state.connectionData.connectionNumber += 1;
+  onNickInUse({ state, commit, dispatch }, { nick, reason }: IrcNickInvalidEventArgs) {
     state.currentUser.nicks.splice(state.currentUser.nicks.indexOf(nick));
-    const newNick = generateNick(state.currentUser.username, state.connectionData.connectionNumber);
-    state.currentUser.nicks.push(newNick);
-    state.nick = newNick;
     dispatch('initClient');
+  },
+  generateNick({ state }) {
+    const connectionId = Math.floor(Math.random() * 1000);
+    const nick = `${state.currentUser.username}^${connectionId}`;
+    state.currentUser.nicks.push(nick);
+    state.nick = nick;
   },
   sendMessage(
     { state, commit, dispatch },
-    { message, channel }: { message: string; channel: string },
+    { message: rawMessage, channel }: { message: string; channel: string },
   ) {
     function postMessage(
       message: string,
@@ -105,7 +106,7 @@ const actions: ActionTree<State, any> = {
       });
     }
 
-    message = message.trim();
+    let message = rawMessage.trim();
     let isAction = false;
     // No posting as annon or if nothing has been actually posted
     if (state.currentUser.username && message !== '') {
@@ -232,6 +233,28 @@ const actions: ActionTree<State, any> = {
       });
     }
   },
+  reportUser({ state }, { userToReport, message, reportComments } :
+                        { userToReport: User, message: Message | null, reportComments: string }) {
+    const client = state.client!;
+    client.say(
+      '#ops-notifications',
+      `[REPORT] Reporting ${userToReport.username} (${
+        userToReport.uid
+      }) by ${state.currentUser.username} (${
+        state.currentUser.uid
+      }).\r\n`,
+    );
+    if (message) {
+      client.say(
+        '#ops-notifications',
+        `[REPORTED MESSAGE] ${message.message}\r\n`,
+      );
+    }
+    client.say(
+      '#ops-notifications',
+      `[REPORT REASON] ${reportComments}\r\n`,
+    );
+  },
   sendMessageRaw({ state }) {
   },
   userKicked(
@@ -276,7 +299,7 @@ const actions: ActionTree<State, any> = {
     commit('removeUser', { username: message });
   },
   onModeMessageRecieved({ state, commit, dispatch }, event: IrcModeEventArgs) {
-    for (const mode of event.modes) {
+    event.modes.forEach((mode) => {
       let mute = false;
       if (mode.param && mode.param.startsWith('m;')) {
         mute = true;
@@ -309,7 +332,7 @@ const actions: ActionTree<State, any> = {
           });
         }
       }
-    }
+    });
   },
   onRawMessageRecieved(
     { state, commit, dispatch },

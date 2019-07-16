@@ -1,9 +1,13 @@
 <template>
   <transition name="fade">
-    <div id="chat-content" class="chat-content" v-show="!$store.state.minimized">
-      <chat-tabs></chat-tabs>
-      <ConnectingPopup></ConnectingPopup>
-      <report-dialog></report-dialog>
+    <div
+      v-show="!$store.state.minimized"
+      id="chat-content"
+      class="chat-content"
+    >
+      <ChatTabs />
+      <ConnectingPopup />
+      <ReportDialog ref="reportDialog" />
     </div>
   </transition>
 </template>
@@ -12,7 +16,6 @@
   import Vue from '@/types/vue';
   import Component from 'vue-class-component';
   import ChatTabs from './ChatTabs.vue';
-  import ChatInput from './ChatInput.vue';
   import ConnectButton from './Connection/ConnectButton.vue';
   import ReportDialog from '@/components/ChatContent/Messages/BlockMenu/ReportDialog.vue';
   import ConnectingPopup from '@/components/ChatContent/Connection/ConnectingPopup.vue';
@@ -21,12 +24,23 @@
     components: {
       ReportDialog,
       ChatTabs,
-      ChatInput,
       ConnectButton,
       ConnectingPopup,
     },
   })
-  export default class ChatContent extends Vue {}
+  export default class ChatContent extends Vue {
+    $refs!: {
+      reportDialog: HTMLFormElement;
+    }
+
+    created() {
+      this.$store.subscribe((mutation, state) => {
+        if (mutation.type === 'openReportModal') {
+          this.$refs.reportDialog.open(mutation.payload);
+        }
+      });
+    }
+  }
 </script>
 
 

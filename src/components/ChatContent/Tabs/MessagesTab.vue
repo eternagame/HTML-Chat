@@ -1,18 +1,26 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <tab ref="tab">
     <ul>
-      <message-component
+      <MessageComponent
         v-for="(message, i) in $store.state.postedMessages[data.channel]"
         :key="i"
         :message="message"
-        @menu-click="openMenu($event, message)"
-      ></message-component>
-      <connecting-message></connecting-message>
+      />
+      <ConnectingMessage />
     </ul>
-    <message-context-menu></message-context-menu>
     <template v-slot:footer>
-      <chat-input ref="input" :channel="data.channel" @updateHeight="updateTextFieldHeight">
-      </chat-input>
+      <ScalableInput
+        v-model="newMessage"
+        @keypress="onKeyPress"
+        :disabled="!$store.state.connectionData.connected || isBanned"
+        @updateHeight="$refs.tab.updateFooterHeight()"
+        v-show="$store.state.connectionData.connected ||
+                $store.state.connectionData.firstConnection"
+      />
+      <ConnectButton
+        v-show="!$store.state.connectionData.firstConnection &&
+                !$store.state.connectionData.connected"
+      />
     </template>
   </tab>
 </template>
@@ -20,31 +28,48 @@
 <script lang="ts">
   import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
+  import Message from '@/types/message';
   import MessageComponent from '../Messages/IrcMessage.vue';
   import Tab from './Tab.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
-  import MessageContextMenu from '@/components/ChatContent/Messages/BlockMenu/MessageContextMenu.vue';
-  import ChatInput from '@/components/ChatContent/ChatInput.vue';
-  import Message from '../../../types/message';
+  import ScalableInput from '@/components/ChatContent/ScalableInput.vue';
+  import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
+  import { consts } from '@/types/consts';
 
   @Component({
     components: {
-      MessageContextMenu,
       ConnectingMessage,
       MessageComponent,
       Tab,
-      ChatInput,
+      ScalableInput,
+      ConnectButton,
     },
   })
   export default class MessagesTab extends Vue {
     @Prop()
     data!: { channel: string };
 
+    newMessage: string = '';
+
     $refs!: {
       tab: Tab;
       vueSimpleContextMenu: HTMLFormElement;
-      input: ChatInput;
     };
+
+    get isBanned() {
+      return this.$store.state.banned[this.data.channel] !== consts.BAN_STATUS_NORMAL;
+    }
+
+    onKeyPress(e: KeyboardEvent) {
+      if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+        this.$store.dispatch('sendMessage', {
+          message: this.newMessage,
+          channel: this.data.channel,
+        });
+        this.newMessage = '';
+        e.preventDefault();
+      }
+    }
 
     created() {
       this.$store.subscribe((mutation, state) => {
@@ -59,14 +84,8 @@
       this.$store.subscribe((muatation, state) => {
         if (muatation.type === 'setConnected') this.$refs.tab.onContentChanged();
       });
-    }
-
-    openMenu(event: any, message: Message) {
-      this.$refs.vueSimpleContextMenu.showMenu(event, message);
-    }
-
-    updateTextFieldHeight({ height }: { height: number }) {
-      this.$refs.tab.updateFooterHeight(height);
+      this.$store.watch(state => state.connectionData.connected,
+                       () => this.$nextTick(this.$refs.tab.updateFooterHeight));
     }
   }
 </script>

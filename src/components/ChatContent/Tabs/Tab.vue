@@ -5,14 +5,22 @@
       style="padding: 5.6px 7px;"
       :style="{height: `calc(100% - ${footerHeight}px - 5.6px * 2)`}"
     >
-      <VuePerfectScrollbar class="scroll-area" :settings="settings" @ps-scroll-y="scrollHandle">
+      <VuePerfectScrollbar
+        class="scroll-area"
+        :settings="settings"
+        @ps-scroll-y="scrollHandle"
+      >
         <div style="height: 100%; word-wrap: break-word; white-space: normal;">
-          <slot ref="slot"></slot>
+          <slot ref="slot" />
         </div>
       </VuePerfectScrollbar>
     </div>
 
-    <slot ref="footer" name="footer"></slot>
+    <div ref="footer" style="overflow: auto; padding: 5px; 10px;">
+      <slot
+        name="footer"
+      />
+    </div>
   </div>
 </template>
 
@@ -33,6 +41,7 @@
 
     $refs!: {
       afterScrollbar: Vue;
+      footer: HTMLElement;
     }
 
     autoScroll = true;
@@ -60,15 +69,16 @@
       }
     }
 
-    updateFooterHeight(height: number) {
-      this.footerHeight = height;
+    updateFooterHeight() {
+      this.footerHeight = this.$refs.footer.clientHeight;
       this.onContentChanged();
     }
 
     created() {
       this.$store.subscribe((mutation, state) => {
-        if (mutation.type === 'updateScrollbar' || mutation.type === 'changeTab') {
+        if (mutation.type === 'changeTab') {
           this.onContentChanged();
+          this.$nextTick(this.updateFooterHeight);
         }
       });
     }

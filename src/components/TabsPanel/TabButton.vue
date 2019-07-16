@@ -1,8 +1,11 @@
 <template>
-  <button @click="changeTab" :class="{active: selected}">
-    {{name}}
-    <slot></slot>
-  </button>
+  <Button
+    :class="{active: selected}"
+    @click="changeTab"
+  >
+    {{ name }}
+    <slot />
+  </Button>
 </template>
 
 <script lang="ts">
