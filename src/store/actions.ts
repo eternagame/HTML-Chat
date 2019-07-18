@@ -31,7 +31,7 @@ const actions: ActionTree<State, any> = {
       state.channels.forEach((channelName) => {
         const channel = client.channel(channelName);
         channel.join();
-        for (let i = 0; i < 100; i++) { commit('postMessage', { message: new Message(`${i}`, channel.name, state.currentUser) }); }
+
         channel.updateUsers(() => {
           channel.users.forEach(user => commit('addUser', { nick: user.nick, uid: user.ident }));
         });

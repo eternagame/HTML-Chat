@@ -2,7 +2,7 @@
   <tab ref="tab">
     <ul>
       <Message
-        v-for="user in $store.state.connectedUsers"
+        v-for="user in connectedUsers"
         :key="user.username"
       >
         <Username :user="user" />
@@ -10,8 +10,8 @@
     </ul>
     <template v-slot:footer>
       <ConnectButton
-        v-if="!$store.state.connectionData.firstConnection &&
-        !$store.state.connectionData.connected"
+        v-if="!connectionData.firstConnection &&
+        !connectionData.connected"
         class="connect-button"
       />
     </template>
@@ -38,6 +38,14 @@
     $refs!: {
       tab: HTMLFormElement;
     };
+
+    get connectedUsers() {
+      return this.$store.state.connectedUsers;
+    }
+
+    get connectionData() {
+      return this.$store.state.connectionData;
+    }
 
     created() {
       this.$store.subscribe((mutation, state) => {
