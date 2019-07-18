@@ -35,7 +35,7 @@
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ScalableInput from '@/components/ChatContent/ScalableInput.vue';
   import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
-  import { consts } from '@/types/consts';
+  import BanStatus from '@/types/BanStatus';
   import { State } from '@/store/state';
 
   @Component({
@@ -62,7 +62,7 @@
     }
 
     get isBanned() {
-      return this.$store.state.banned[this.data.channel] !== consts.BAN_STATUS_NORMAL;
+      return this.$store.state.banned[this.data.channel] !== BanStatus.BAN_STATUS_NORMAL;
     }
 
     $refs!: {
