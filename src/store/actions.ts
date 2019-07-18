@@ -4,7 +4,7 @@ import { State } from './state';
 import parseCommands from '@/tools/parseCommands';
 import Message from '../types/message';
 import Connection from './websocket';
-import { consts } from '@/types/consts';
+import BanStatus from '@/types/BanStatus';
 import User from '@/types/user';
 import parseUsername from '@/tools/parseUsername';
 
@@ -264,7 +264,7 @@ const actions: ActionTree<State, any> = {
   ) {
     const username = parseUsername(params.nick);
     if (username === state.currentUser.username) {
-      state.banned[params.channel] = consts.BAN_STATUS_BANNED;
+      state.banned[params.channel] = BanStatus.BAN_STATUS_BANNED;
       commit('postMessage', {
         message: new Message(
           `You have been kicked from chat${params.message ? ` - ${params.message}` : ''}`,
@@ -332,18 +332,18 @@ const actions: ActionTree<State, any> = {
     if (!state.banned[channel]) {
       commit('postMessage', { message: new Message('You have been banned', channel) });
     }
-    state.banned[channel] = consts.BAN_STATUS_BANNED;
+    state.banned[channel] = BanStatus.BAN_STATUS_BANNED;
   },
 
   onMuted({ state, commit }, { channel }: { channel: string }) {
     if (!state.banned[channel]) {
       commit('postMessage', { message: new Message('You have been muted', channel) });
     }
-    state.banned[channel] = consts.BAN_STATUS_QUIET;
+    state.banned[channel] = BanStatus.BAN_STATUS_QUIET;
   },
 
   onUnbanned({ state, commit }, { channel }: {channel: string}) {
-    state.banned[channel] = consts.BAN_STATUS_NORMAL;
+    state.banned[channel] = BanStatus.BAN_STATUS_NORMAL;
     commit('postMessage', {
       message: new Message('You are now allowed to post in chat', channel),
     });

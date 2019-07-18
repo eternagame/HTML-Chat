@@ -1,6 +1,6 @@
 import { Client } from 'irc-framework';
 import { CURRENT_USER, WORKBRANCH } from '../define-user';
-import { BanStatus, consts } from '../types/consts';
+import BanStatus from '../types/BanStatus';
 import User from '../types/user';
 import Message from '../types/message';
 
@@ -87,7 +87,7 @@ class State {
 
   constructor() {
     channels.forEach((channel) => {
-      this.banned[channel] = consts.BAN_STATUS_NORMAL;
+      this.banned[channel] = BanStatus.BAN_STATUS_NORMAL;
       this.postedMessages[channel] = [];
     });
   }
