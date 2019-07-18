@@ -97,7 +97,7 @@
 
     submit() {
       if (this.ignore) {
-        this.$store.commit('ignoreUser', this.userToReport.username);
+        this.$store.commit('ignoreUser', { username: this.userToReport.username });
       }
       const client = this.$store.state.client!;
       if (this.report) {

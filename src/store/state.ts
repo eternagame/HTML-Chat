@@ -46,7 +46,7 @@ class State {
   workbranch = WORKBRANCH;
 
   connectedUsers: {
-    [nick: string]: User
+    [username: string]: User
   } = {};
 
   channels = channels;
@@ -96,4 +96,5 @@ if (localStorage.ignoredUsers) {
     console.error('Encountered an error while parsing the local data of ignored users');
   }
 }
-export { State, state };
+export { State };
+export default state;

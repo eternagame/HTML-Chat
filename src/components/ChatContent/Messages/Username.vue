@@ -25,10 +25,13 @@
     @Prop()
     user!: User;
 
-    private actionColor = '#c0dce7';
+    @Prop({ default: false })
+    private isAction!: boolean;
 
     @Prop()
     color?: string;
+
+    private actionColor = '#c0dce7';
 
     get computedColor() {
       if (this.isAction) return this.actionColor;
@@ -37,9 +40,6 @@
       const c = colors[parseInt(this.user.uid, 10) % colors.length];
       return c;
     }
-
-    @Prop({ default: false })
-    private isAction!: boolean;
   }
 </script>
 

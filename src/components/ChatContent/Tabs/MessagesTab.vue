@@ -2,7 +2,7 @@
   <tab ref="tab">
     <ul>
       <MessageComponent
-        v-for="(message, i) in $store.state.postedMessages[data.channel]"
+        v-for="(message, i) in messages"
         :key="i"
         :message="message"
       />
@@ -12,30 +12,31 @@
       <ScalableInput
         v-model="newMessage"
         @keypress="onKeyPress"
-        :disabled="!$store.state.connectionData.connected || isBanned"
+        :disabled="!connectionData.connected || isBanned"
         @updateHeight="$refs.tab.updateFooterHeight()"
-        v-show="$store.state.connectionData.connected ||
-                $store.state.connectionData.firstConnection"
+        v-show="connectionData.connected ||
+                connectionData.firstConnection"
       />
       <ConnectButton
-        v-show="!$store.state.connectionData.firstConnection &&
-                !$store.state.connectionData.connected"
+        v-show="!connectionData.firstConnection &&
+                !connectionData.connected"
       />
     </template>
   </tab>
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
+  import { Component, Prop, Watch } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import Message from '@/types/message';
+  import { mapState } from 'vuex';
   import MessageComponent from '../Messages/IrcMessage.vue';
   import Tab from './Tab.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ScalableInput from '@/components/ChatContent/ScalableInput.vue';
   import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
   import { consts } from '@/types/consts';
-
+  import { State } from '@/store/state';
   @Component({
     components: {
       ConnectingMessage,
@@ -51,14 +52,22 @@
 
     newMessage: string = '';
 
-    $refs!: {
-      tab: Tab;
-      vueSimpleContextMenu: HTMLFormElement;
-    };
+    get messages() {
+      return this.$store.state.postedMessages[this.data.channel];
+    }
+
+    get connectionData() {
+      return this.$store.state.connectionData;
+    }
 
     get isBanned() {
       return this.$store.state.banned[this.data.channel] !== consts.BAN_STATUS_NORMAL;
     }
+
+    $refs!: {
+      tab: Tab;
+      vueSimpleContextMenu: HTMLFormElement;
+    };
 
     onKeyPress(e: KeyboardEvent) {
       if (e.code === 'Enter' || e.code === 'NumpadEnter') {
@@ -71,21 +80,14 @@
       }
     }
 
-    created() {
-      this.$store.subscribe((mutation, state) => {
-        if (
-          mutation.type === 'postMessage'
-        ) {
-          if (mutation.payload.message.target === this.data.channel || mutation.payload.message.target === '*') {
-            this.$refs.tab.onContentChanged();
-          }
-        }
-      });
-      this.$store.subscribe((muatation, state) => {
-        if (muatation.type === 'setConnected') this.$refs.tab.onContentChanged();
-      });
-      this.$store.watch(state => state.connectionData.connected,
-                       () => this.$nextTick(this.$refs.tab.updateFooterHeight));
+    @Watch('messages')
+    onContentChanged() {
+      this.$refs.tab.onContentChanged();
+    }
+
+    @Watch('connectionData.connected')
+    updateFooterHeight() {
+      this.$nextTick(this.$refs.tab.updateFooterHeight);
     }
   }
 </script>

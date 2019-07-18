@@ -1,6 +1,5 @@
 <template>
   <Message
-    v-show="$store.state.ignoredUsers.indexOf(message.user.username) === -1"
     style="overflow: hidden"
     @mouseleave="hover = false"
     @mouseover="hover = true"
@@ -8,9 +7,7 @@
     <div>
       <span :class="{'chat-message-action': isAction}">
         <Username
-          :msg="message.message"
           :user="message.user"
-          :action="false"
           :color="message.tags ? message.tags['username-color'] || '' : ''"
           :is-action="isAction"
         >{{ isAction || !message.user.username ? '': ':' }}

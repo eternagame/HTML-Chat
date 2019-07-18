@@ -54,13 +54,16 @@ const mutations: MutationTree<State> = {
   },
   ignoreUser(state, { username }: { username: string }) {
     if (!state.ignoredUsers.includes(username)) state.ignoredUsers.push(username);
+    localStorage.ignoredUsers = JSON.stringify(state.ignoredUsers);
   },
   unignoreUser(state, { username }: { username: string }) {
     if (state.ignoredUsers.includes(username)) {
       state.ignoredUsers.splice(state.ignoredUsers.indexOf(username), 1);
     }
     if (username === '*') state.ignoredUsers = [];
+    localStorage.ignoredUsers = JSON.stringify(state.ignoredUsers);
   },
 };
 
-export { mutations, PostMessagePayload };
+export { PostMessagePayload };
+export default mutations;
