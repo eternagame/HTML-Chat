@@ -1,6 +1,6 @@
 <template>
   <Message
-    v-if="!$store.state.connectionData.connected && !$store.state.connectionData.firstConnection"
+    v-if="!connectionData.connected && !connectionData.firstConnection"
     id="chat-loading"
   >
     <img
@@ -8,15 +8,15 @@
       class="loading-icon"
     >
     <span
-      v-show="$store.state.connectionData.tryingToConnect"
+      v-show="connectionData.tryingToConnect"
       id="connecting"
     >Connecting...</span>
     <span
-      v-show="!$store.state.connectionData.tryingToConnect"
+      v-show="!connectionData.tryingToConnect"
       id="failed"
     >
       Connection failed. retrying in
-      <span id="timer">{{ $store.state.connectionData.currentTimer }}</span> seconds.
+      <span id="timer">{{ connectionData.currentTimer }}</span> seconds.
     </span>
   </Message>
 </template>
@@ -27,7 +27,11 @@
   import MessageComp from '@/components/ChatContent/Messages/Message.vue';
 
   @Component({ components: { Message: MessageComp } })
-  export default class ConnectingMessage extends Vue {}
+  export default class ConnectingMessage extends Vue {
+    get connectionData() {
+      return this.$store.state.connectionData;
+    }
+  }
 </script>
 
 <style lang="scss">

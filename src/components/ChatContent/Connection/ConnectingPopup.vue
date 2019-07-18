@@ -1,7 +1,7 @@
 <template>
   <div
-    v-show="!$store.state.connectionData.connected &&
-      $store.state.connectionData.firstConnection"
+    v-show="!connectionData.connected &&
+      connectionData.firstConnection"
     class="connecting-popup"
   >
     <img
@@ -10,15 +10,15 @@
       style="display: block"
     >
     <span
-      v-show="$store.state.connectionData.tryingToConnect"
+      v-show="connectionData.tryingToConnect"
       id="connecting"
     >Connecting...</span>
     <span
-      v-show="!$store.state.connectionData.tryingToConnect"
+      v-show="!connectionData.tryingToConnect"
       id="failed"
     >
       Connection failed. retrying in
-      <span id="timer">{{ $store.state.connectionData.currentTimer }}</span> seconds.
+      <span id="timer">{{ connectionData.currentTimer }}</span> seconds.
     </span>
   </div>
 </template>
@@ -28,7 +28,11 @@
   import Vue from '@/types/vue';
 
   @Component({ components: {} })
-  export default class ConnectingPopup extends Vue {}
+  export default class ConnectingPopup extends Vue {
+    get connectionData() {
+      return this.$store.state.connectionData;
+    }
+  }
 </script>
 
 <style lang="scss" scoped>
