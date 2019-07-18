@@ -27,12 +27,11 @@ const actions: ActionTree<State, any> = {
       transport: Connection,
       ssl: true,
     });
-    client.requestCap('server-time');
     client.on('registered', (e) => {
       state.channels.forEach((channelName) => {
         const channel = client.channel(channelName);
         channel.join();
-
+        for (let i = 0; i < 100; i++) { commit('postMessage', { message: new Message(`${i}`, channel.name, state.currentUser) }); }
         channel.updateUsers(() => {
           channel.users.forEach(user => commit('addUser', { nick: user.nick, uid: user.ident }));
         });
@@ -220,7 +219,6 @@ const actions: ActionTree<State, any> = {
   ) {
     if (!state.ignoredUsers.includes(username)) {
       state.ignoredUsers.push(username);
-      localStorage.ignoredUsers = JSON.stringify(state.ignoredUsers);
       commit('postMessage', {
         message: new Message(
           `Ignored ${username}. To unignore this user, either use the options menu again (on a message or the user list) or type /unignore ${username}`,

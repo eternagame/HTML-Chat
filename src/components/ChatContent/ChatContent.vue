@@ -30,7 +30,7 @@
   })
   export default class ChatContent extends Vue {
     $refs!: {
-      reportDialog: HTMLFormElement;
+      reportDialog: ReportDialog;
     }
 
     created() {
