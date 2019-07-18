@@ -1,7 +1,3 @@
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable no-dupe-class-members */
-/* eslint-disable camelcase */
 declare module 'irc-framework' {
   import { EventEmitter } from 'eventemitter3';
   import { DuplexStream } from 'stream';
@@ -124,23 +120,23 @@ declare module 'irc-framework' {
 
     on(eventType: string, cb: (event: any) => any): this;
 
-    on(eventType: 'raw', cb: (event: IrcRawEventArgs) => void): this;
+    on(eventType: 'raw', cb: (event: RawEventArgs) => void): this;
 
-    on(eventType: 'join', cb: (event: IrcJoinEventArgs) => void): this;
+    on(eventType: 'join', cb: (event: JoinEventArgs) => void): this;
 
-    on(eventType: 'registered', cb: (event: IrcRegisteredEventArgs) => void): this;
+    on(eventType: 'registered', cb: (event: RegisteredEventArgs) => void): this;
 
-    on(eventType: 'quit', cb: (event: IrcQuitEventArgs) => void): this;
+    on(eventType: 'quit', cb: (event: QuitEventArgs) => void): this;
 
-    on(eventType: 'part', cb: (event: IrcQuitEventArgs) => void): this;
+    on(eventType: 'part', cb: (event: QuitEventArgs) => void): this;
 
-    on(eventType: 'kick', cb: (event: IrcQuitEventArgs) => void): this;
+    on(eventType: 'kick', cb: (event: QuitEventArgs) => void): this;
 
-    on(eventType: 'message', cb: (event: IrcMessageEventArgs) => any): this;
+    on(eventType: 'message', cb: (event: MessageEventArgs) => any): this;
 
-    on(eventType: 'notice', cb: (event: IrcMessageEventArgs/* TODO */) => any): this;
+    on(eventType: 'notice', cb: (event: MessageEventArgs/* TODO */) => any): this;
 
-    on(eventType: 'mode', cb: (event: IrcModeEventArgs) => any): this;
+    on(eventType: 'mode', cb: (event: ModeEventArgs) => any): this;
 
     on(eventType: 'socket close', cb: (event: {}) => any): this;
 
@@ -148,13 +144,15 @@ declare module 'irc-framework' {
 
     on(eventType: 'raw socket connected', cb: (event: {}) => any): this;
 
-    on(eventType: 'server options', cb: (event: IrcServerOptionsEventArgs) => any): this;
+    on(eventType: 'server options', cb: (event: ServerOptionsEventArgs) => any): this;
 
     on(eventType: 'debug', cb: (message: string) => any): this;
 
-    on(eventType: 'nick in use', cb: (event: IrcNickInUseEventArgs) => any): this;
+    on(eventType: 'nick in use', cb: (event: NickInUseEventArgs) => any): this;
 
-    on(eventType: 'nick invalid', cb: (event: IrcNickInvalidEventArgs) => any): this;
+    on(eventType: 'nick invalid', cb: (event: NickInvalidEventArgs) => any): this;
+    
+    on(eventType: 'irc error', cb: (event: IrcErrorEventArgs) => any): this;
   }
   export class Message {
     // TODO: What is actually in it and what was in the event?
@@ -181,7 +179,7 @@ declare module 'irc-framework' {
 
     type: string;
   }
-  export interface IrcMessageEventArgs {
+  export interface MessageEventArgs {
     account?: any;
     group?: any;
     hostname: string;
@@ -194,7 +192,7 @@ declare module 'irc-framework' {
     time?: any;
     type: 'privmsg' | 'action'; // TODO
   }
-  export interface IrcJoinEventArgs {// todo: is that wrong?
+  export interface JoinEventArgs {// todo: is that wrong?
     account: boolean;
     channel: string;
     gecos: string;
@@ -203,7 +201,7 @@ declare module 'irc-framework' {
     nick: string;
     time?: any;
   }
-  export interface IrcKickEventArgs {
+  export interface KickEventArgs {
     kicked: string;
     nick: string;
     ident: string;
@@ -212,14 +210,14 @@ declare module 'irc-framework' {
     message: string;
     time: number;
   }
-  export interface IrcRawEventArgs{
+  export interface RawEventArgs{
     from_server: boolean;
     line: string;
   }
-  export interface IrcRegisteredEventArgs{
+  export interface RegisteredEventArgs{
     nick: string;
   }
-  export interface IrcQuitEventArgs{
+  export interface QuitEventArgs{
     hostname: string;
     ident: string;
     message: string;
@@ -230,7 +228,7 @@ declare module 'irc-framework' {
     mode: string;
     param: string;
   }
-  export interface IrcModeEventArgs{
+  export interface ModeEventArgs{
     modes: Mode[];
     nick: string;
     raw_modes: string;
@@ -238,16 +236,21 @@ declare module 'irc-framework' {
     target: string;
     time?: any;
   }
-  export interface IrcServerOptionsEventArgs {
+  export interface ServerOptionsEventArgs {
     options: any;
     cap: any;
   }
-  export interface IrcNickInvalidEventArgs {
+  export interface NickInvalidEventArgs {
     nick: string;
     reason: string;
   }
-  export interface IrcNickInUseEventArgs {
+  export interface NickInUseEventArgs {
     nick: string;
+    reason: string;
+  }
+  export interface IrcErrorEventArgs {
+    error: string;
+    channel: string;
     reason: string;
   }
   // interface IrcUser {
@@ -311,33 +314,33 @@ declare module 'irc-framework' {
 
     updateUsers(cb: (channel: IrcChannel) => any): void;
 
-    on(eventType: 'channel info', cb: (event: IrcChannelInfoEventArgs) => any): this;
+    on(eventType: 'channel info', cb: (event: ChannelInfoEventArgs) => any): this;
   }
-  export interface IrcChannelInfoEventArgs{
+  export interface ChannelInfoEventArgs{
     channel: string;
     created_at?: number;
     modes?: Mode[]; // TODO: check type
     url?: string;
   }
-  export interface IrcUserListEventArgs{
+  export interface UserListEventArgs{
     channel: string;
     users: IrcUser[]; // TODO: check type
   }
-  export interface IrcWhoListEventArgs{
+  export interface WhoListEventArgs{
     target: string;
     users: IrcUser[]; // TODO: check type
   }
-  export interface IrcBanlistEventArgs{
+  export interface BanlistEventArgs{
     channel: string;
     bans: IrcUser[]; // TODO: check type
   }
-  export interface IrcTopicEventArgs{
+  export interface TopicEventArgs{
     channel: string;
     topic: string;
     nick?: string;
     time?: number;
   }
-  export interface IrcTopicSetByEventArgs{
+  export interface TopicSetByEventArgs{
     channel: string;
     nick: string;
     ident: string;

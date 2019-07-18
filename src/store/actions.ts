@@ -1,11 +1,5 @@
 import { ActionTree } from 'vuex';
-import {
-  IrcKickEventArgs,
-  IrcMessageEventArgs,
-  Client,
-  IrcModeEventArgs,
-  IrcNickInvalidEventArgs,
-} from 'irc-framework';
+import Irc from 'irc-framework';
 import { State } from './state';
 import parseCommands from '@/tools/parseCommands';
 import Message from '../types/message';
@@ -19,7 +13,7 @@ const actions: ActionTree<State, any> = {
     state, commit, dispatch,
   }) {
     dispatch('generateNick');
-    const client = new Client({
+    const client = new Irc.Client({
       host: 'irc.eternagame.org/chatws/websocket', // "localhost:3000/websocket",//
       nick: state.nick,
       username: state.currentUser.uid,
@@ -58,9 +52,6 @@ const actions: ActionTree<State, any> = {
     client.on('notice', (event) => {
       dispatch('onMessageReceived', event);
     });
-    client.on('raw', (event) => {
-      dispatch('onRawMessageRecieved', event);
-    });
     client.on('mode', (event) => {
       dispatch('onModeMessageRecieved', event);
     });
@@ -74,24 +65,31 @@ const actions: ActionTree<State, any> = {
     client.on('nick in use', (event) => {
       dispatch('onNickInUse', event);
     });
+    client.on('irc error', (event) => {
+      dispatch('onIrcError', event);
+    });
     state.client = client;
     dispatch('connect');
   },
+
   connect({ state, commit, dispatch }) {
     state.client!.connect();
     state.connectionData.currentTimer = 0;
     clearInterval(state.connectionData.timerInterval);
   },
-  onNickInUse({ state, commit, dispatch }, { nick, reason }: IrcNickInvalidEventArgs) {
+
+  onNickInUse({ state, commit, dispatch }, { nick, reason }: Irc.NickInvalidEventArgs) {
     state.currentUser.nicks.splice(state.currentUser.nicks.indexOf(nick));
     dispatch('initClient');
   },
+
   generateNick({ state }) {
     const connectionId = Math.floor(Math.random() * 1000);
     const nick = `${state.currentUser.username}^${connectionId}`;
     state.currentUser.nicks.push(nick);
     state.nick = nick;
   },
+
   sendMessage(
     { state, commit, dispatch },
     { message: rawMessage, channel }: { message: string; channel: string },
@@ -213,6 +211,7 @@ const actions: ActionTree<State, any> = {
       }
     }
   },
+
   ignoreUser(
     { state, commit, dispatch },
     { username, channel }: { username: string; channel: string },
@@ -231,6 +230,7 @@ const actions: ActionTree<State, any> = {
       });
     }
   },
+
   reportUser({ state }, { userToReport, message, reportComments } :
                         { userToReport: User, message: Message | null, reportComments: string }) {
     const client = state.client!;
@@ -253,14 +253,13 @@ const actions: ActionTree<State, any> = {
       `[REPORT REASON] ${reportComments}\r\n`,
     );
   },
-  sendMessageRaw({ state }) {
-  },
+
   userKicked(
     { state, commit, dispatch },
     {
       params,
     }: {
-      params: IrcKickEventArgs;
+      params: Irc.KickEventArgs;
     },
   ) {
     const username = parseUsername(params.nick);
@@ -275,17 +274,19 @@ const actions: ActionTree<State, any> = {
       commit('removeUser', { username });
     }
   },
+
   onMessageReceived(
     { state, commit, dispatch },
     {
       message, nick, tags, time, type, target,
-    }: IrcMessageEventArgs,
+    }: Irc.MessageEventArgs,
   ) {
     const username = parseUsername(nick);
     commit('postMessage', {
       message: new Message(message, target, state.connectedUsers[username], type === 'action', time),
     });
   },
+
   onUserQuit(
     { state, commit, dispatch },
     {
@@ -296,7 +297,8 @@ const actions: ActionTree<State, any> = {
   ) {
     commit('removeUser', { username: message });
   },
-  onModeMessageRecieved({ state, commit, dispatch }, event: IrcModeEventArgs) {
+
+  onModeMessageRecieved({ state, commit, dispatch }, event: Irc.ModeEventArgs) {
     event.modes.forEach((mode) => {
       let mute = false;
       if (mode.param && mode.param.startsWith('m;')) {
@@ -305,65 +307,48 @@ const actions: ActionTree<State, any> = {
       }
       // Check if message has been either banned or muted, if so disable input and notify in chat
       if (mode.mode === '+b') {
-        const maskParts = mode.param.match(/(~q:)?(.+)!.+/)!;
-        if (state.nick.match(new RegExp(maskParts[2].replace('*', '.+').replace('^', '\\^')))) {
-          state.banned[event.target] = mute ? consts.BAN_STATUS_QUIET : consts.BAN_STATUS_BANNED;
-          if (maskParts[1]) {
-            commit('postMessage', {
-              message: new Message('You are no longer allowed to post in chat', event.target),
-            });
-          } else {
-            commit('postMessage', {
-              message: new Message(
-                `You have been ${mute ? 'muted' : 'banned'} from chat`,
-                event.target,
-              ),
-            });
-          }
+        const maskUser = mode.param.match(/(.+)!.+/)![1];
+        if (state.nick.match(new RegExp(maskUser.replace('*', '.+').replace('^', '\\^')))) {
+          dispatch(mute ? 'onMuted' : 'onBanned', { channel: event.target });
         }
       } else if (mode.mode === '-b') {
-        const maskUser = mode.param.match(/(?:~q:)?(.+)!.+/)![1];
+        const maskUser = mode.param.match(/(.+)!.+/)![1];
         if (state.nick.match(new RegExp(maskUser.replace('*', '.+').replace('^', '\\^')))) {
-          state.banned[event.target] = consts.BAN_STATUS_NORMAL;
-          commit('postMessage', {
-            message: new Message('You are now allowed to post in chat', event.target),
-          });
+          dispatch('onUnbanned', { channel: event.target });
         }
       }
     });
   },
-  onRawMessageRecieved(
-    { state, commit, dispatch },
-    {
-      line,
-    }: {
-      line: string;
-    },
-  ) {
-    const commands = parseCommands(line);
-    for (let i = 0; i < commands.length; i++) {
-      const cmd = commands[i];
 
-      // eslint-disable-next-line default-case
-      switch (cmd.command) {
-        case '404':
-          // Can't post message
-          dispatch('onBanned', { channel: cmd.params[1] });
-          break;
-
-        case '474':
-          // Can't join channel
-          dispatch('onBanned', { channel: cmd.params[1] });
-          break;
-      }
+  onIrcError({ state, commit, dispatch }, { error, channel, reason }: Irc.IrcErrorEventArgs) {
+    if (reason.indexOf('+m') !== -1) {
+      dispatch('onMuted', { channel });
+    } else {
+      dispatch('onBanned', { channel });
     }
   },
-  onBanned({ state, dispatch, commit }, { channel }: { channel: string }) {
+
+  onBanned({ state, commit }, { channel }: { channel: string }) {
     if (!state.banned[channel]) {
       commit('postMessage', { message: new Message('You have been banned', channel) });
     }
     state.banned[channel] = consts.BAN_STATUS_BANNED;
   },
+
+  onMuted({ state, commit }, { channel }: { channel: string }) {
+    if (!state.banned[channel]) {
+      commit('postMessage', { message: new Message('You have been muted', channel) });
+    }
+    state.banned[channel] = consts.BAN_STATUS_QUIET;
+  },
+
+  onUnbanned({ state, commit }, { channel }: {channel: string}) {
+    state.banned[channel] = consts.BAN_STATUS_NORMAL;
+    commit('postMessage', {
+      message: new Message('You are now allowed to post in chat', channel),
+    });
+  },
+
   onDisconnect({ state, dispatch, commit }) {
     const data = state.connectionData;
     if (data.currentTimer > 0) return;
@@ -380,6 +365,7 @@ const actions: ActionTree<State, any> = {
       data.timerInterval = setInterval(() => dispatch('updateTimer'), 1000);
     }
   },
+
   updateTimer({ state, commit, dispatch }) {
     commit('connectionTimerTick');
     if (state.connectionData.currentTimer <= 0) {

@@ -4,7 +4,7 @@ import { BanStatus, consts } from '../types/consts';
 import User from '../types/user';
 import Message from '../types/message';
 
-const channels = ['#general', '#test'];
+const channels = ['#general', '#test', '#test2'];
 
 class ConnectionData {
   connectionNumber = 0;
@@ -56,6 +56,9 @@ class State {
   },
   {
     name: 'Test', type: 'MessagesTab', channel: '#test', id: 'test',
+  },
+  {
+    name: 'Test 2', type: 'MessagesTab', channel: '#test2', id: 'test2',
   },
   {
     state: this,
