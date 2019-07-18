@@ -7,6 +7,8 @@ import Message from '../types/message';
 const channels = ['#general', '#test', '#test2'];
 
 class ConnectionData {
+  serverUrl!: string;
+
   connectionNumber = 0;
 
   firstConnection = true;
@@ -98,6 +100,12 @@ if (localStorage.ignoredUsers) {
   } catch {
     console.error('Encountered an error while parsing the local data of ignored users');
   }
+}
+
+if (process.env.VUE_APP_SERVER_URL) {
+  state.connectionData.serverUrl = process.env.VUE_APP_SERVER_URL;
+} else {
+  console.error("VUE_APP_SERVER_URL wasn't found in the .env file!");
 }
 export { State };
 export default state;

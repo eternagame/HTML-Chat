@@ -14,7 +14,7 @@ const actions: ActionTree<State, any> = {
   }) {
     dispatch('generateNick');
     const client = new Irc.Client({
-      host: 'irc.eternagame.org/chatws/websocket', // "localhost:3000/websocket",//
+      host: state.connectionData.serverUrl,
       nick: state.nick,
       username: state.currentUser.uid,
       gecos: state.currentUser.username,
