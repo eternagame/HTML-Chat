@@ -37,6 +37,7 @@
   import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
   import { consts } from '@/types/consts';
   import { State } from '@/store/state';
+
   @Component({
     components: {
       ConnectingMessage,
