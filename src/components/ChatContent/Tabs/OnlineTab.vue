@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator';
+  import { Component, Watch } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import Tab from './Tab.vue';
   import Username from '@/components/ChatContent/Messages/Username.vue';
@@ -36,7 +36,7 @@
   })
   export default class OnlineTab extends Vue {
     $refs!: {
-      tab: HTMLFormElement;
+      tab: Tab;
     };
 
     get connectedUsers() {
@@ -47,17 +47,14 @@
       return this.$store.state.connectionData;
     }
 
-    created() {
-      this.$store.subscribe((mutation, state) => {
-        if (['addUser', 'removeUser'].indexOf(mutation.type) !== -1) {
-          this.$refs.tab.onContentChanged();
-        }
-      });
-      this.$store.subscribe((muatation, state) => {
-        if (muatation.type === 'setConnected') this.$refs.tab.onContentChanged();
-      });
-      this.$store.watch(state => state.connectionData.connected,
-                       () => this.$nextTick(this.$refs.tab.updateFooterHeight));
+    @Watch('connectedUsers')
+    onContentChanged() {
+      this.$refs.tab.onContentChanged();
+    }
+
+    @Watch('connectionData.connected')
+    updateFooterHeight() {
+      this.$nextTick(this.$refs.tab.updateFooterHeight);
     }
   }
 </script>
