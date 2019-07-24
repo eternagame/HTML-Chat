@@ -54,15 +54,15 @@
     newMessage: string = '';
 
     get messages() {
-      return this.$store.state.postedMessages[this.data.channel];
+      return this.$store.state.$_chat.postedMessages[this.data.channel];
     }
 
     get connectionData() {
-      return this.$store.state.connectionData;
+      return this.$store.state.$_chat.connectionData;
     }
 
     get isBanned() {
-      return this.$store.state.banned[this.data.channel] !== BanStatus.BAN_STATUS_NORMAL;
+      return this.$store.state.$_chat.banned[this.data.channel] !== BanStatus.BAN_STATUS_NORMAL;
     }
 
     $refs!: {
@@ -72,7 +72,7 @@
 
     onKeyPress(e: KeyboardEvent) {
       if (e.code === 'Enter' || e.code === 'NumpadEnter') {
-        this.$store.dispatch('sendMessage', {
+        this.$store.dispatch('$_chat/sendMessage', {
           message: this.newMessage,
           channel: this.data.channel,
         });

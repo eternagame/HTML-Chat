@@ -76,7 +76,7 @@
 
     created() {
       this.$store.subscribe((mutation, state) => {
-        if (mutation.type === 'changeTab') {
+        if (mutation.type === '$_chat/changeTab') {
           this.onContentChanged();
           this.$nextTick(this.updateFooterHeight);
         }

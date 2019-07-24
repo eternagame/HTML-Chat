@@ -3,7 +3,7 @@
     v-if="user"
     target="_blank"
     class="chat-message-user-link"
-    :href="`http://${$store.state.workbranch}/web/player/${user.uid}/`"
+    :href="`http://${$store.state.$_chat.workbranch}/web/player/${user.uid}/`"
   >
     <span
       class="chat-message-user"

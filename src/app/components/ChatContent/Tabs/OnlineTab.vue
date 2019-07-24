@@ -40,11 +40,11 @@
     };
 
     get connectedUsers() {
-      return this.$store.state.connectedUsers;
+      return this.$store.state.$_chat.connectedUsers;
     }
 
     get connectionData() {
-      return this.$store.state.connectionData;
+      return this.$store.state.$_chat.connectionData;
     }
 
     @Watch('connectedUsers')

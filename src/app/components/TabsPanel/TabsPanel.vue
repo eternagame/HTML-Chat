@@ -1,9 +1,9 @@
 <template>
   <div class="tabs">
     <transition name="fade">
-      <div v-show="!$store.state.minimized">
+      <div v-show="!$store.state.$_chat.minimized">
         <TabButton
-          v-for="(tab, index) in $store.state.tabs"
+          v-for="(tab, index) in $store.state.$_chat.tabs"
           :key="index"
           :index="index"
         />

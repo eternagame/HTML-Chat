@@ -97,11 +97,11 @@
 
     submit() {
       if (this.ignore) {
-        this.$store.commit('ignoreUser', { username: this.userToReport.username });
+        this.$store.commit('$_chat/ignoreUser', { username: this.userToReport.username });
       }
-      const client = this.$store.state.client!;
+      const client = this.$store.state.$_chat.client!;
       if (this.report) {
-        this.$store.dispatch('reportUser', { userToReport: this.userToReport, message: this.message, reportComments: this.reportComments });
+        this.$store.dispatch('$_chat/reportUser', { userToReport: this.userToReport, message: this.message, reportComments: this.reportComments });
       }
       this.closeModal();
     }

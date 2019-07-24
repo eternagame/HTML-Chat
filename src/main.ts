@@ -1,16 +1,12 @@
 import Vue from 'vue';
-import VueResource from 'vue-resource';
-import BootstrapVue from 'bootstrap-vue';
-import VModal from 'vue-js-modal';
-import App from './App.vue';
-import store from './store/store';
+import chatPlugin from './app/plugin/plugin';
+import App from './standalnoe/App.vue';
+import store from './standalnoe/store';
 
-Vue.use(VModal);
-Vue.use(BootstrapVue);
-Vue.use(VueResource);
 Vue.config.productionTip = false;
+Vue.use(chatPlugin, { store });
 
 new Vue({
-  store,
   render: h => h(App),
+  store,
 }).$mount('#app');

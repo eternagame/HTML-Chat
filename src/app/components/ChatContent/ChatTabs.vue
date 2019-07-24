@@ -5,8 +5,8 @@
   >
     <component
       :is="tab.type"
-      v-for="(tab, i) in $store.state.tabs"
-      v-show="$store.state.activeTab === i"
+      v-for="(tab, i) in $store.state.$_chat.tabs"
+      v-show="$store.state.$_chat.activeTab === i"
       :key="tab.id"
       :data="tab"
     />

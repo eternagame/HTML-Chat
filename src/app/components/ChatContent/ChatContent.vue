@@ -1,7 +1,7 @@
 <template>
   <transition name="fade">
     <div
-      v-show="!$store.state.minimized"
+      v-show="!$store.state.$_chat.minimized"
       id="chat-content"
       class="chat-content"
     >
@@ -35,7 +35,7 @@
 
     created() {
       this.$store.subscribe((mutation, state) => {
-        if (mutation.type === 'openReportModal') {
+        if (mutation.type === '$_chat/openReportModal') {
           this.$refs.reportDialog.open(mutation.payload);
         }
       });
