@@ -9,7 +9,7 @@ import User from '@/types/user';
 import parseUsername from '@/tools/parseUsername';
 
 const actions: ActionTree<State, any> = {
-  initClient({
+  initClient: function initClient({
     state, commit, dispatch,
   }) {
     dispatch('generateNick');

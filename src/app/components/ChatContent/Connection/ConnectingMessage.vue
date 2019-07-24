@@ -29,7 +29,7 @@
   @Component({ components: { Message: MessageComp } })
   export default class ConnectingMessage extends Vue {
     get connectionData() {
-      return this.$store.state.connectionData;
+      return this.$store.state.$_chat.connectionData;
     }
   }
 </script>

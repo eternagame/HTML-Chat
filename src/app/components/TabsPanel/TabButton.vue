@@ -15,19 +15,19 @@
   @Component
   export default class TabButton extends Vue {
     get name() {
-      return this.$store.state.tabs[this.index].name;
+      return this.$store.state.$_chat.tabs[this.index].name;
     }
 
     @Prop()
     index!: number;
 
     get selected() {
-      return this.$store.state.activeTab === this.index;
+      return this.$store.state.$_chat.activeTab === this.index;
     }
 
     changeTab(e: Event) {
       if (!this.selected) {
-        this.$store.commit('changeTab', { tabIndex: this.index });
+        this.$store.commit('$_chat/changeTab', { tabIndex: this.index });
       }
     }
   }

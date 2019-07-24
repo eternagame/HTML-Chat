@@ -47,7 +47,7 @@
     }
 
     get profileUrl(): string {
-      return `http://${this.$store.state.workbranch}/web/player/${this.user.uid}/`;
+      return `http://${this.$store.state.$_chat.workbranch}/web/player/${this.user.uid}/`;
     }
 
     open(event: MouseEvent) {
@@ -55,7 +55,7 @@
     }
 
     openReportModal(defaults: { report: boolean; ignore: boolean }) {
-      this.$store.commit('openReportModal', { message: this.message, defaults });
+      this.$store.commit('$_chat/openReportModal', { message: this.message, defaults });
     }
   }
 </script>

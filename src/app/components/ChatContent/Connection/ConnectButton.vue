@@ -1,10 +1,10 @@
 <template>
   <div
     id="reconnect"
-    :class="{active: $store.state.connectionData.tryingToConnect}"
+    :class="{active: $store.state.$_chat.connectionData.tryingToConnect}"
     class="unselectable clickable connect-button green-button-interactive rounded-5 centered"
     style="color:white; font-weight:bolder; font-size:13px;"
-    @click="$store.dispatch('connect');"
+    @click="$store.dispatch('$_chat/connect');"
   >
     Reconnect
   </div>
