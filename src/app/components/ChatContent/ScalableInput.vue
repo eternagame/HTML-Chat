@@ -37,12 +37,12 @@
 
     onInput(event: any) {
       this.$emit('input', event.target.value);
-      this.updateHeight();
+      this.$nextTick(this.updateHeight);
     }
 
     onKeyPress(event: any) {
       this.$emit('keypress', event);
-      this.updateHeight();
+      this.$nextTick(this.updateHeight);
     }
 
     updateHeight() {
