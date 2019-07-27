@@ -1,5 +1,4 @@
 import { Client } from 'irc-framework';
-import { CURRENT_USER, WORKBRANCH } from '../define-user';
 import BanStatus from '../types/BanStatus';
 import User from '../types/user';
 import Message from '../types/message';
@@ -37,7 +36,7 @@ class State {
 
   toBePosted: Message[] = [];
 
-  currentUser = CURRENT_USER;
+  currentUser!: User;
 
   nick!: string;
 
@@ -45,7 +44,7 @@ class State {
 
   client?: Client;
 
-  workbranch = WORKBRANCH;
+  workbranch!: string;
 
   connectedUsers: {
     [username: string]: User

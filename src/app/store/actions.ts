@@ -1,7 +1,6 @@
 import { ActionTree } from 'vuex';
 import Irc from 'irc-framework';
 import { State } from './state';
-import parseCommands from '@/tools/parseCommands';
 import Message from '../types/message';
 import Connection from './websocket';
 import BanStatus from '@/types/BanStatus';
@@ -9,7 +8,14 @@ import User from '@/types/user';
 import parseUsername from '@/tools/parseUsername';
 
 const actions: ActionTree<State, any> = {
-  initClient: function initClient({
+  init({ state, dispatch }, { username, workbranch, uid }:
+                  { username: string, workbranch: string, uid: string }) {
+    state.currentUser = new User(username, uid);
+    state.workbranch = workbranch;
+    dispatch('initClient');
+  },
+
+  initClient({
     state, commit, dispatch,
   }) {
     dispatch('generateNick');

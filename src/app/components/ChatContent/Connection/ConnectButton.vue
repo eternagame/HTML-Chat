@@ -2,7 +2,7 @@
   <div
     id="reconnect"
     :class="{active: $store.state.$_chat.connectionData.tryingToConnect}"
-    class="unselectable clickable connect-button green-button-interactive rounded-5 centered"
+    class="connect-button"
     style="color:white; font-weight:bolder; font-size:13px;"
     @click="$store.dispatch('$_chat/connect');"
   >
