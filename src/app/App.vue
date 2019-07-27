@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator';
+  import { Component, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import TabsPanel from './components/TabsPanel/TabsPanel.vue';
   import ChatContent from './components/ChatContent/ChatContent.vue';
@@ -26,8 +26,17 @@
     },
   })
   export default class App extends Vue {
+    @Prop()
+    username!: string;
+
+    @Prop()
+    workbranch!: string;
+
+    @Prop()
+    uid!: string;
+
     mounted() {
-      this.$store.dispatch('$_chat/initClient');
+      this.$store.dispatch('$_chat/init', { username: this.username, workbranch: this.workbranch, uid: this.uid });
     }
   }
 </script>
@@ -39,6 +48,7 @@ textarea {
   font-size: 0.85rem;
   border: 1px solid rgb(169, 169, 169);
   width: calc(100% - 10px);
+  font-size: 14px !important;
 }
 
 .chat {

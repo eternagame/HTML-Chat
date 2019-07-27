@@ -64,6 +64,7 @@
     overflow: hidden;
     position: absolute;
     top: 0px;
+    padding: 0;
   }
 
   .scalable-input,
