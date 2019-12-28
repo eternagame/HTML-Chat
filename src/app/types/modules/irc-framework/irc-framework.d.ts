@@ -187,7 +187,7 @@ declare module 'irc-framework' {
     message: string;
     nick: string;
     reply: (message: string) => void;
-    tags: any; // object
+    tags: { [key: string]: string };
     target: string;
     time?: any;
     type: 'privmsg' | 'action'; // TODO
