@@ -74,9 +74,9 @@ var currentTimer = 0;
 var timerInterval;
 
 var postedMessages = [];
-var toBePosted = [];
 var connected = false;
 var firstConnection = true;
+var historyDone = true;
 
 // Initialize saved preferences
 try {
@@ -278,11 +278,8 @@ function formatTime( string ) {
  *  @param isHistory: If true, it should be pushed at the top, as it is an older message (and may be coming in late)
  *
  */
-function postMessage( raw_msg, isHistory ) {
-    if (!isHistory && !connected) {
-        toBePosted.push(raw_msg);
-        return;
-    }
+function postMessage( raw_msg ) {
+    if (!historyDone && postedMessages.indexOf(raw_msg.trim()) != -1) return;
     postedMessages.push(raw_msg.trim());
 
     var parts, prefix, uid, name, time, isAction, message, classes = '';
@@ -722,38 +719,20 @@ function initSock() {
                     var nick = cmd.origin.split("!")[0];
                     if (nick == NICK) {
                         console.log("Joined " + cmd.params[0]);
-                        console.log("Loading history...");
-                        $.get("https://irc.eternagame.org/history", function(data) {
-                            console.log("History recieved");
-                            var messages = data.trim().split("\n");
-                            var firstNewMessage = 0;
-                            var j;
-                            for (j = 0; j < messages.length; j++)
-                                if (postedMessages.indexOf(messages[j].trim()) == -1) break;
-                            if (!firstConnection)
-                                postMessage("Reconnected to chat - Some messages might be missing if you were away for a long time", true);
-                            for (; j < messages.length; j++) {
-                                postMessage(messages[j], true);
-                            }
-                            while (toBePosted.length) {
-                                postMessage(toBePosted.shift(), true);
-                            }
-                            firstConnection = false;
-                            connected = true;
-                            $("#reconnect").hide();
-                            $("#chat-loading").hide();
-                            $("#chat-input").show();
-                            $("div#chat-loading").detach();
-                            $("#chat-tabs").show();
-                            setTimeout(function(){
-                                $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
-                            }, 100);
-                            if (USERNAME !== "Anonymous") {
-                                $("#chat-input").prop("disabled", false);
-                            } else  {
-                                $("#chat-input").attr("placeholder", "Please log in to chat")
-                            }
-                        });
+                        connected = true;
+                        $("#reconnect").hide();
+                        $("#chat-loading").hide();
+                        $("#chat-input").show();
+                        $("div#chat-loading").detach();
+                        $("#chat-tabs").show();
+                        setTimeout(function(){
+                            $("#chat-tabs").children().mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+                        }, 100);
+                        if (USERNAME !== "Anonymous") {
+                            $("#chat-input").prop("disabled", false);
+                        } else  {
+                            $("#chat-input").attr("placeholder", "Please log in to chat")
+                        }
                     } else {
                         addUser(cmd.origin.split("!")[0]);
                     }
@@ -777,8 +756,20 @@ function initSock() {
                     // Signifies end of names, don't think this is needed?
                     break;
                 case "NOTICE":
+                    if (cmd.params[1].match(/^\*\*\* Replaying up to \d+ lines of history/)) {
+                        historyDone = false;
+                        break;
+                    }
+                    if (cmd.params[1].match(/^\*\*\* End of .+ channel history/)) {
+                        historyDone = true;
+                        if (!firstConnection)
+                            postMessage("Reconnected to chat - Some messages might be missing if you were away for a long time");
+                        firstConnection = false;
+                        break;
+                    }
+                    // Fall through
                 case "PRIVMSG":
-                    postMessage(cmd.params[1], false);
+                    postMessage(cmd.params[1]);
                     break;
                 case "MODE":
                     // Check if user has been banned, if so disable input and notify in chat
