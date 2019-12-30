@@ -21,4 +21,4 @@ Currently compatibility must be maintained between this chat and the legacy Flas
 
 -----------------------------------------
 
-Design and implementation of initial release: [@LFP6](https://github.com/LFP6) ([Eterna](http://www.eternagame.org/web/player/48290/))
+Design and implementation of initial release: [@luxaritas](https://github.com/luxaritas) ([Eterna](http://www.eternagame.org/web/player/48290/))
