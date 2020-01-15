@@ -1,12 +1,12 @@
 <template>
   <tab ref="tab">
     <ul>
-      <Message
+      <li
         v-for="user in connectedUsers"
         :key="user.username"
       >
         <Username :user="user" />
-      </Message>
+      </li>
     </ul>
     <template v-slot:footer>
       <ConnectButton
@@ -23,14 +23,12 @@
   import Vue from '@/types/vue';
   import Tab from './Tab.vue';
   import Username from '@/components/ChatContent/Messages/Username.vue';
-  import Message from '@/components/ChatContent/Messages/Message.vue';
   import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
 
   @Component({
     components: {
       Username,
       Tab,
-      Message,
       ConnectButton,
     },
   })

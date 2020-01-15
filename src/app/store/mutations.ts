@@ -1,7 +1,6 @@
 import { MutationTree, CommitOptions } from 'vuex';
 import Vue from '@/types/vue';
 import { State } from './state';
-import parseUsername from '../tools/parseUsername';
 import User from '../types/user';
 import Message from '../types/message';
 
@@ -20,14 +19,14 @@ const mutations: MutationTree<State> = {
     }
   },
   addUser(state, { nick, uid }: { nick: string, uid: string }) {
-    const username = parseUsername(nick);
+    const username = User.parseUsername(nick);
     if (!(username in state.connectedUsers)) {
       Vue.set(state.connectedUsers, username, new User(username, uid));
     }
     const user = state.connectedUsers[username];
   },
   removeUser(state, { nick }: { nick: string }) {
-    const username = parseUsername(nick);
+    const username = User.parseUsername(nick);
     const user = state.connectedUsers[username];
     if (!user) return;
     const index = user.nicks.indexOf(nick);

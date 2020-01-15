@@ -34,7 +34,7 @@
 
     $refs!: {
       contextMenu: HTMLFormElement;
-    }
+    };
   }
 </script>
 

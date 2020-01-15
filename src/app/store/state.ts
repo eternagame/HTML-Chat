@@ -1,4 +1,5 @@
 import { Client } from 'irc-framework';
+import toBool from 'to-bool';
 import BanStatus from '../types/BanStatus';
 import User from '../types/user';
 import Message from '../types/message';
@@ -7,6 +8,8 @@ const channels = ['#general', '#test', '#test2'];
 
 class ConnectionData {
   serverUrl!: string;
+
+  ssl = false;
 
   connectionNumber = 0;
 
@@ -32,6 +35,10 @@ class State {
 
   postedMessages: {
     [channel: string]: Message[]
+  } = {};
+
+  maxHistoryMessages: {
+    [channel: string]: number
   } = {};
 
   toBePosted: Message[] = [];
@@ -82,12 +89,13 @@ class State {
 
   banned: { [channel: string]: BanStatus } = {};
 
-  usersByNick: { [nick: string]: User } = {}
+  usersByNick: { [nick: string]: User } = {};
 
   constructor() {
     channels.forEach((channel) => {
       this.banned[channel] = BanStatus.BAN_STATUS_NORMAL;
       this.postedMessages[channel] = [];
+      this.maxHistoryMessages[channel] = 50;
     });
   }
 }
@@ -105,6 +113,11 @@ if (process.env.VUE_APP_SERVER_URL) {
   state.connectionData.serverUrl = process.env.VUE_APP_SERVER_URL;
 } else {
   console.error("VUE_APP_SERVER_URL wasn't found in the .env file!");
+}
+if (process.env.VUE_APP_SSL) {
+  state.connectionData.ssl = toBool(process.env.VUE_APP_SSL);
+} else {
+  console.error("VUE_APP_SSL wasn't found in the .env file!");
 }
 export { State };
 export default state;

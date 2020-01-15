@@ -72,8 +72,8 @@
 
 <script lang="ts">
   import { Component, Prop } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
   import { Client } from 'irc-framework';
+  import Vue from '@/types/vue';
   import User from '@/types/user';
   import Message from '@/types/message';
 

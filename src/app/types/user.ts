@@ -7,6 +7,10 @@ export default class User {
 
   username: string;
 
+  static parseUsername(nick: string) {
+    return nick.substr(0, nick.indexOf('^') === -1 ? nick.length : nick.indexOf('^'));
+  }
+
   constructor(username: string = '', uid: string = '0') {
     this.nicks = [];
     this.uid = uid;

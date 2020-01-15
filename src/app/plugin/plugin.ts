@@ -1,6 +1,6 @@
+import { Store } from 'vuex';
 import Chat from '@/main';
 import chatModule from '../store/store';
-import { Store } from 'vuex';
 
 export default {
   install(Vue: any, options: {store: Store<any> }) {

@@ -1,6 +1,6 @@
 <template>
-  <Message
-    style="overflow: hidden"
+  <li
+    class="chat-message"
     @mouseleave="hover = false"
     @mouseover="hover = true"
   >
@@ -14,13 +14,26 @@
         </Username>
         &lrm;<span v-html="formattedMessage" />
       </span>
-      &lrm;<MessageTime :time="message.time" />
+      &lrm;
+      <span class="message-time">{{formattedTime}}</span>
     </div>
     <MessageActions
-      :visible="hover && message.user.username"
       :message="message"
     />
-  </Message>
+    <div style="overflow:hidden">
+      <a
+        class="chat-message-options"
+        @click.prevent="openContextMenu"
+        v-show="hover && message.user.username"
+      >
+        &vellip;
+      </a>
+      <MessageActionsContextMenu
+        ref="contextMenu"
+        :message="message"
+      />
+    </div>
+  </li>
 </template>
 
 <script lang="ts">
@@ -28,17 +41,13 @@
   import Vue from '@/types/vue';
   import Message from '@/types/message';
   import Username from './Username.vue';
-  import MessageComp from './Message.vue';
-  import MessageActions from '@/components/ChatContent/Messages/BlockMenu/MessageActions.vue';
+  import MessageActionsContextMenu from './BlockMenu/MessageActionsContextMenu.vue';
   import md from '@/tools/Markdown';
-  import Time from './Time.vue';
 
   @Component({
     components: {
       Username,
-      Message: MessageComp,
-      MessageActions,
-      MessageTime: Time,
+      MessageActionsContextMenu,
     },
   })
   export default class IrcMessage extends Vue {
@@ -59,6 +68,18 @@
     get formattedMessage(): string {
       return md.renderInline(this.message.message);
     }
+
+    get formattedTime() {
+      return this.message.time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    }
+
+    $refs!: {
+      contextMenu: HTMLFormElement;
+    };
+
+    openContextMenu(e: MouseEvent) {
+      setTimeout(() => this.$refs.contextMenu.open(e));
+    }
   }
 </script>
 
@@ -68,7 +89,6 @@
   }
 
   .chat-message {
-    color: #c0dce7;
     display: block;
     position: relative;
   }
@@ -93,11 +113,19 @@
     color: #c0dce7;
   }
 
-  .chat-message-user-link {
-    text-decoration: none;
+  .chat-message-time {
+    color: #627587;
+    white-space: nowrap;
+    font-size: 0.8em;
   }
 
-  .chat-message-time {
+  .chat-message {
+    color: #c0dce7;
+    display: block;
+    position: relative;
+  }
+
+  .message-time {
     color: #627587;
     white-space: nowrap;
     font-size: 0.8em;

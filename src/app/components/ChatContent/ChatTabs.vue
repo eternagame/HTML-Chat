@@ -4,18 +4,16 @@
     style="height: 100%"
   >
     <component
-      :is="tab.type"
-      v-for="(tab, i) in $store.state.$_chat.tabs"
-      v-show="$store.state.$_chat.activeTab === i"
-      :key="tab.id"
-      :data="tab"
+      :is="activeTab.type"
+      :key="activeTab.id"
+      :data="activeTab"
     />
   </div>
 </template>
 
 <script lang="ts">
-  import Vue from '@/types/vue';
   import Component from 'vue-class-component';
+  import Vue from '@/types/vue';
   import MessagesTab from './Tabs/MessagesTab.vue';
   import OnlineTab from './Tabs/OnlineTab.vue';
 
@@ -26,5 +24,8 @@
     },
   })
   export default class ChatTabs extends Vue {
+    get activeTab() {
+      return this.$store.state.$_chat.tabs[this.$store.state.$_chat.activeTab];
+    }
   }
 </script>

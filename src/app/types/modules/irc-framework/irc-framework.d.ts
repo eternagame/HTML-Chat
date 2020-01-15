@@ -118,7 +118,7 @@ declare module 'irc-framework' {
 
     stringToBlocks(str: string, block_size?: number): string[];
 
-    on(eventType: string, cb: (event: any) => any): this;
+    on(eventType: string | symbol, cb: (event: any) => any): this;
 
     on(eventType: 'raw', cb: (event: RawEventArgs) => void): this;
 
@@ -315,6 +315,9 @@ declare module 'irc-framework' {
     updateUsers(cb: (channel: IrcChannel) => any): void;
 
     on(eventType: 'channel info', cb: (event: ChannelInfoEventArgs) => any): this;
+
+    on(eventType: string | symbol, cb: (event: any) => any): this;
+
   }
   export interface ChannelInfoEventArgs{
     channel: string;
