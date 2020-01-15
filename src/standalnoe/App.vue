@@ -50,6 +50,10 @@
 @import url(https://eternagame.org/workbranch_main/frontend/eterna.min.css?ver=t1563775052);
 @import url(https://fonts.googleapis.com/css?family=Didact+Gothic|Open+Sans:400,300,600,700);
 
+body {
+  min-width: 0;
+}
+
 #app1 {
   color: white;
   font-family: "Helvetica Neue", "Open Sans", Arial, Gulim;

@@ -9,8 +9,8 @@
 </template>
 
 <script lang="ts">
-  import Vue from '@/types/vue';
   import { Component, Prop } from 'vue-property-decorator';
+  import Vue from '@/types/vue';
 
   @Component
   export default class TabButton extends Vue {
@@ -44,6 +44,7 @@
     transition: 0.3s;
     top: 1px;
     padding: 0.4em 1.25em;
+    height: 100%;
     font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
     font-size: 12px;
     font-weight: bold;

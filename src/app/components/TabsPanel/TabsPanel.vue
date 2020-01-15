@@ -1,7 +1,7 @@
 <template>
   <div class="tabs">
     <transition name="fade">
-      <div v-show="!$store.state.$_chat.minimized">
+      <div class="tabs-content" v-show="!$store.state.$_chat.minimized">
         <TabButton
           v-for="(tab, index) in $store.state.$_chat.tabs"
           :key="index"
@@ -14,8 +14,8 @@
 </template>
 
 <script lang="ts">
-  import Vue from '@/types/vue';
   import Component from 'vue-class-component';
+  import Vue from '@/types/vue';
   import TabButton from './TabButton.vue';
   import MinimizationTriangle from './MinimizationTriangle.vue';
 
@@ -36,6 +36,10 @@
     height: 25px;
     margin: 0;
     padding: 0;
+  }
+
+  .tabs-content {
+    display: inline;
   }
 
   .fade-enter-active,

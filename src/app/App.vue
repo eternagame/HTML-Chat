@@ -1,15 +1,10 @@
 <template>
   <div
-    id="app1"
+    id="eterna-chat"
     style="height:100%; overflow-y:hidden;"
   >
-    <div
-      class="chat"
-      style="height: 100%;"
-    >
       <tabs-panel />
       <chat-content />
-    </div>
   </div>
 </template>
 
@@ -42,6 +37,7 @@
 </script>
 
 <style lang="scss">
+
 textarea {
   border-radius: 2px;
   font-family: "Open Sans", "Helvetica Neue", Arial, Gulim;
@@ -51,7 +47,8 @@ textarea {
   font-size: 14px !important;
 }
 
-.chat {
+#eterna-chat {
+  min-width: 0;
   font-family: "Helvetica Neue", "Open Sans", Arial, Gulim;
   font-size: 14px;
   font-weight: 300;

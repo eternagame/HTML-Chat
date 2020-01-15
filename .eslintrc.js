@@ -8,15 +8,25 @@ module.exports = {
     '@vue/airbnb',
     '@vue/typescript',
   ],
+  ignorePatterns: ['vue.config.js', 'server/'],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    camelcase: 'off',
     'vue/script-indent': ['error', 2, {
       baseIndent: 1,
-      switchCase: 1,
-      ignores: [],
     }],
-
+    'no-param-reassign': ['error', { props: false }],
+    semi: 'off',
+    '@typescript-eslint/semi': ['error'],
+    'no-unused-vars': 'off',
+    'arrow-parens': 'off',
+    'no-underscore-dangle': ['error', { allow: ['__INITIAL_STATE__'] }],
+    'no-plusplus': 'off',
+    'max-classes-per-file': 'off',
+  },
+  parserOptions: {
+    parser: '@typescript-eslint/parser',
   },
   overrides: [
     {
@@ -26,14 +36,12 @@ module.exports = {
       },
     },
     {
-      files: ['*.vue', '*.ts'],
-      rules: {
-        'no-param-reassign': ['error', { "props": false }],
-        'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
+      files: [
+        '**/__tests__/*.{j,t}s?(x)',
+      ],
+      env: {
+        jest: true,
       },
     },
   ],
-  parserOptions: {
-    parser: '@typescript-eslint/parser',
-  },
 };

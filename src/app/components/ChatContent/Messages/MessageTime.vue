@@ -7,7 +7,7 @@
   import Vue from '@/types/vue';
 
   @Component
-  export default class Time extends Vue {
+  export default class MessageTime extends Vue {
     @Prop()
     time!: Date;
 

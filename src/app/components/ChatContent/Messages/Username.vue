@@ -48,39 +48,7 @@
     color: #fff;
   }
 
-  .chat-message {
-    color: #c0dce7;
-    display: block;
-    position: relative;
-  }
-
-  .chat-message-system {
-    font-style: italic;
-    text-align: center;
-    align-items: center;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-
-  .chat-message-action {
-    font-style: italic;
-  }
-
-  .chat-message-user {
-    font-weight: bold;
-  }
-
-  .chat-message-action > .chat-message-content > a > .chat-message-user {
-    color: #c0dce7;
-  }
-
   .chat-message-user-link {
     text-decoration: none;
-  }
-
-  .chat-message-time {
-    color: #627587;
-    white-space: nowrap;
-    font-size: 0.8em;
   }
 </style>

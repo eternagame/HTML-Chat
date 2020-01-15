@@ -25,9 +25,9 @@
 </template>
 
 <script lang="ts">
-  import Vue from '@/types/vue';
   import Component from 'vue-class-component';
   import VuePerfectScrollbar from 'vue-perfect-scrollbar';
+  import Vue from '@/types/vue';
 
   @Component({
     components: {
@@ -37,12 +37,13 @@
   export default class Tab extends Vue {
     settings = {
       maxScrollbarLength: 60,
+      suppressScrollX: true,
     };
 
     $refs!: {
       afterScrollbar: Vue;
       footer: HTMLElement;
-    }
+    };
 
     autoScroll = true;
 
@@ -85,6 +86,7 @@
 
     mounted() {
       this.container = this.$el.querySelector('.ps-container')!;
+      this.container!.scrollTop = this.container!.scrollHeight;
     }
   }
 </script>

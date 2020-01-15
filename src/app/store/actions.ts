@@ -5,7 +5,6 @@ import Message from '../types/message';
 import Connection from './websocket';
 import BanStatus from '@/types/BanStatus';
 import User from '@/types/user';
-import parseUsername from '@/tools/parseUsername';
 
 const actions: ActionTree<State, any> = {
   init({ state, dispatch }, { username, workbranch, uid }:
@@ -19,13 +18,14 @@ const actions: ActionTree<State, any> = {
     state, commit, dispatch,
   }) {
     dispatch('generateNick');
+    console.log(state.connectionData.serverUrl);
     const client = new Irc.Client({
       host: state.connectionData.serverUrl,
       nick: state.nick,
       username: state.currentUser.uid,
       gecos: state.currentUser.username,
       transport: Connection,
-      ssl: true,
+      ssl: state.connectionData.ssl,
     });
     client.on('registered', (e) => {
       state.channels.forEach((channelName) => {
@@ -53,6 +53,7 @@ const actions: ActionTree<State, any> = {
     client.on('kick', e => dispatch('userKicked', { data: e })); // TODO;
 
     client.on('message', (event) => {
+      console.log({ event });
       dispatch('onMessageReceived', event);
     });
     client.on('notice', (event) => {
@@ -161,6 +162,13 @@ const actions: ActionTree<State, any> = {
                 break;
             }
             break;
+          case 'disconnect':
+            postMessage('Disconnecting...');
+            dispatch('onDisconnect');
+            break;
+          case 'spam':
+            for (let i = 0; i < 100; i++) { postMessage(`Spam ${i}`); }
+            break;
           case 'me':
             if (!params) {
               postMessage(
@@ -202,7 +210,7 @@ const actions: ActionTree<State, any> = {
       if (post) {
         if (!state.banned[channel]) {
           if (isAction) {
-            state.client!.action(channel, message);
+            state.client!.action(channel, `@test:123 ${message}`);
           } else {
             state.client!.say(channel, message);
           }
@@ -268,7 +276,7 @@ const actions: ActionTree<State, any> = {
       params: Irc.KickEventArgs;
     },
   ) {
-    const username = parseUsername(params.nick);
+    const username = User.parseUsername(params.nick);
     if (username === state.currentUser.username) {
       state.banned[params.channel] = BanStatus.BAN_STATUS_BANNED;
       commit('postMessage', {
@@ -281,15 +289,34 @@ const actions: ActionTree<State, any> = {
     }
   },
 
+  // TODO: Insert messages based on id order
   onMessageReceived(
     { state, commit, dispatch },
     {
       message, nick, tags, time, type, target,
     }: Irc.MessageEventArgs,
   ) {
-    const username = parseUsername(nick);
+    console.log({
+      message, nick, tags, time, type, target,
+    });
+    if (!(target in state.postedMessages)) return;
+    const username = User.parseUsername(nick);
+    const messageObject = new Message(message, target, state.connectedUsers[username], type === 'action', time);
+    const postedMessages = state.postedMessages[target];
+    const maxMessages = Math.min(state.maxHistoryMessages[target] + 1, postedMessages.length);
+    // +1 in case the messages arrive out of order
+    console.log({ time });
+    if (time) {
+      for (let i = 0; i < maxMessages; i++) {
+        const historyMessage = postedMessages[postedMessages.length - 1 - i];
+        if (historyMessage.message === message
+              && historyMessage.time.getTime() - messageObject.time.getTime() < 1000) {
+          return;
+        }
+      }
+    }
     commit('postMessage', {
-      message: new Message(message, target, state.connectedUsers[username], type === 'action', time),
+      message: messageObject,
     });
   },
 

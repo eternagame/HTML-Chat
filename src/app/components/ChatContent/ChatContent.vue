@@ -13,8 +13,8 @@
 </template>
 
 <script lang="ts">
-  import Vue from '@/types/vue';
   import Component from 'vue-class-component';
+  import Vue from '@/types/vue';
   import ChatTabs from './ChatTabs.vue';
   import ConnectButton from './Connection/ConnectButton.vue';
   import ReportDialog from '@/components/ChatContent/Messages/BlockMenu/ReportDialog.vue';
@@ -31,7 +31,7 @@
   export default class ChatContent extends Vue {
     $refs!: {
       reportDialog: ReportDialog;
-    }
+    };
 
     created() {
       this.$store.subscribe((mutation, state) => {
@@ -59,5 +59,6 @@
   border: rgba(255, 255, 255, 0.2) solid 2px;
   height: calc(100% - 29px);
   position: relative;
+  color: #c0dce7;
 }
 </style>

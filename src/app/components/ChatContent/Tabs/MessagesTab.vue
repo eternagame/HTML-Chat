@@ -1,7 +1,7 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <tab ref="tab">
     <ul>
-      <MessageComponent
+      <Message
         v-for="(message, i) in messages"
         :key="i"
         :message="message"
@@ -14,12 +14,10 @@
         @keypress="onKeyPress"
         :disabled="!connectionData.connected || isBanned"
         @updateHeight="$refs.tab.updateFooterHeight()"
-        v-show="connectionData.connected ||
-                connectionData.firstConnection"
+        v-show="showInput"
       />
       <ConnectButton
-        v-show="!connectionData.firstConnection &&
-                !connectionData.connected"
+        v-show="!showInput"
       />
     </template>
   </tab>
@@ -27,10 +25,9 @@
 
 <script lang="ts">
   import { Component, Prop, Watch } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
-  import Message from '@/types/message';
   import { mapState } from 'vuex';
-  import MessageComponent from '../Messages/IrcMessage.vue';
+  import Vue from '@/types/vue';
+  import Message from '../Messages/IrcMessage.vue';
   import Tab from './Tab.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ScalableInput from '@/components/ChatContent/ScalableInput.vue';
@@ -41,7 +38,7 @@
   @Component({
     components: {
       ConnectingMessage,
-      MessageComponent,
+      Message,
       Tab,
       ScalableInput,
       ConnectButton,
@@ -63,6 +60,11 @@
 
     get isBanned() {
       return this.$store.state.$_chat.banned[this.data.channel] !== BanStatus.BAN_STATUS_NORMAL;
+    }
+
+    get showInput() {
+      return this.connectionData.connected
+          || this.connectionData.firstConnection;
     }
 
     $refs!: {

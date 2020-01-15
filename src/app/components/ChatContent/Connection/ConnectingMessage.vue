@@ -1,5 +1,5 @@
 <template>
-  <Message
+  <li
     v-if="!connectionData.connected && !connectionData.firstConnection"
     id="chat-loading"
   >
@@ -18,15 +18,14 @@
       Connection failed. retrying in
       <span id="timer">{{ connectionData.currentTimer }}</span> seconds.
     </span>
-  </Message>
+  </li>
 </template>
 
 <script lang="ts">
   import { Component } from 'vue-property-decorator';
   import Vue from '@/types/vue';
-  import MessageComp from '@/components/ChatContent/Messages/Message.vue';
 
-  @Component({ components: { Message: MessageComp } })
+  @Component({ components: { } })
   export default class ConnectingMessage extends Vue {
     get connectionData() {
       return this.$store.state.$_chat.connectionData;

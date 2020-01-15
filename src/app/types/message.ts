@@ -23,10 +23,12 @@ class Message {
   }
 
   parseTime() {
-    if (this.tags['server-time']) {
-      const timeString = this.tags['server-time'];
+    if (this.tags.time) {
+      const timeString = this.tags.time;
       this.time = new Date(Date.parse(timeString));
-    } else { this.time = new Date(Date.now()); }
+    } else {
+      this.time = new Date(Date.now());
+    }
   }
 }
 
