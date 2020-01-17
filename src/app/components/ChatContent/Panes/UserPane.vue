@@ -1,10 +1,7 @@
 <template>
-  <tab ref="tab">
+  <Pane ref="pane" :visibility="visibility">
     <ul>
-      <li
-        v-for="user in connectedUsers"
-        :key="user.username"
-      >
+      <li v-for="user in connectedUsers" :key="user.username">
         <Username :user="user" />
       </li>
     </ul>
@@ -15,26 +12,29 @@
         class="connect-button"
       />
     </template>
-  </tab>
+  </Pane>
 </template>
 
 <script lang="ts">
-  import { Component, Watch } from 'vue-property-decorator';
+  import { Component, Watch, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
-  import Tab from './Tab.vue';
+  import Pane from './Pane.vue';
   import Username from '@/components/ChatContent/Messages/Username.vue';
   import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
 
   @Component({
     components: {
       Username,
-      Tab,
+      Pane,
       ConnectButton,
     },
   })
-  export default class OnlineTab extends Vue {
+  export default class OnlinePane extends Vue {
+    @Prop({ required: true })
+    visibility!: boolean;
+
     $refs!: {
-      tab: Tab;
+      pane: Pane;
     };
 
     get connectedUsers() {
@@ -47,12 +47,12 @@
 
     @Watch('connectedUsers')
     onContentChanged() {
-      this.$refs.tab.onContentChanged();
+      this.$refs.pane.onContentChanged();
     }
 
     @Watch('connectionData.connected')
     updateFooterHeight() {
-      this.$nextTick(this.$refs.tab.updateFooterHeight);
+      this.$nextTick(this.$refs.pane.updateFooterHeight);
     }
   }
 </script>

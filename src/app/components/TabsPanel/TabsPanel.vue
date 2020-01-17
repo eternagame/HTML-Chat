@@ -9,7 +9,6 @@
         />
       </div>
     </transition>
-    <MinimizationTriangle />
   </div>
 </template>
 
@@ -31,24 +30,5 @@
 
 
 <style lang="scss" scoped>
-  .tabs {
-    position: relative;
-    height: 25px;
-    margin: 0;
-    padding: 0;
-  }
 
-  .tabs-content {
-    display: inline;
-  }
-
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 200ms;
-  }
-
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
-  {
-    opacity: 0;
-  }
 </style>

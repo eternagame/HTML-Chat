@@ -5,28 +5,23 @@
       style="padding: 5.6px 7px;"
       :style="{height: `calc(100% - ${footerHeight}px - 5.6px * 2)`}"
     >
-      <VuePerfectScrollbar
-        class="scroll-area"
-        :settings="settings"
-        @ps-scroll-y="scrollHandle"
+      <VuePerfectScrollbar class="scroll-area" :settings="settings" @ps-scroll-y="scrollHandle"
       >
         <div style="height: 100%; word-wrap: break-word; white-space: normal;">
-          <slot ref="slot" />
+          <slot ref="slot"/>
         </div>
       </VuePerfectScrollbar>
     </div>
 
     <div ref="footer" style="overflow: auto; padding: 5px; 10px;">
-      <slot
-        name="footer"
-      />
+      <slot name="footer"/>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-  import Component from 'vue-class-component';
   import VuePerfectScrollbar from 'vue-perfect-scrollbar';
+  import { Prop, Component, Watch } from 'vue-property-decorator';
   import Vue from '@/types/vue';
 
   @Component({
@@ -34,7 +29,7 @@
       VuePerfectScrollbar,
     },
   })
-  export default class Tab extends Vue {
+  export default class Pane extends Vue {
     settings = {
       maxScrollbarLength: 60,
       suppressScrollX: true,
@@ -51,12 +46,15 @@
 
     footerHeight: number = 0;
 
+    @Prop()
+    visibility!: boolean;
+
     scrollHandle(evt: any) {
       const { container } = this;
-      const actualScrollHeight = container!.scrollHeight - this.container.clientHeight;
+      const actualScrollHeight = container.scrollHeight - this.container.clientHeight;
       if (evt.type === 'ps-scroll-y') {
         this.$forceUpdate();
-        if (container!.scrollTop > actualScrollHeight - 50) {
+        if (container.scrollTop > actualScrollHeight - 50) {
           this.autoScroll = true;
         } else this.autoScroll = false;
       }
@@ -70,23 +68,15 @@
       }
     }
 
+    @Watch('visibility')
     updateFooterHeight() {
       this.footerHeight = this.$refs.footer.clientHeight;
       this.onContentChanged();
     }
 
-    created() {
-      this.$store.subscribe((mutation, state) => {
-        if (mutation.type === '$_chat/changeTab') {
-          this.onContentChanged();
-          this.$nextTick(this.updateFooterHeight);
-        }
-      });
-    }
-
     mounted() {
       this.container = this.$el.querySelector('.ps-container')!;
-      this.container!.scrollTop = this.container!.scrollHeight;
+      this.container.scrollTop = this.container.scrollHeight;
     }
   }
 </script>

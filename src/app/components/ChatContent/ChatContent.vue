@@ -1,15 +1,9 @@
 <template>
-  <transition name="fade">
-    <div
-      v-show="!$store.state.$_chat.minimized"
-      id="chat-content"
-      class="chat-content"
-    >
-      <ChatTabs />
-      <ConnectingPopup />
-      <ReportDialog ref="reportDialog" />
-    </div>
-  </transition>
+  <div class="chat-content">
+    <ChatTabs />
+    <ConnectingPopup />
+    <ReportDialog ref="reportDialog" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -17,7 +11,7 @@
   import Vue from '@/types/vue';
   import ChatTabs from './ChatTabs.vue';
   import ConnectButton from './Connection/ConnectButton.vue';
-  import ReportDialog from '@/components/ChatContent/Messages/BlockMenu/ReportDialog.vue';
+  import ReportDialog from './ReportDialog.vue';
   import ConnectingPopup from '@/components/ChatContent/Connection/ConnectingPopup.vue';
 
   @Component({
@@ -45,16 +39,6 @@
 
 
 <style lang="scss" scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 200ms;
-}
-
-.fade-enter, .fade-leave-to
- {
-  opacity: 0;
-}
-
 .chat-content {
   border: rgba(255, 255, 255, 0.2) solid 2px;
   height: calc(100% - 29px);

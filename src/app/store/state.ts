@@ -60,20 +60,20 @@ class State {
   channels = channels;
 
   tabs = [{
-    name: 'General', type: 'MessagesTab', channel: '#general', id: 'general',
+    name: 'General', type: 'MessagePane', channel: '#general', id: 'general',
   },
   {
-    name: 'Test', type: 'MessagesTab', channel: '#test', id: 'test',
+    name: 'Test', type: 'MessagePane', channel: '#test', id: 'test',
   },
   {
-    name: 'Test 2', type: 'MessagesTab', channel: '#test2', id: 'test2',
+    name: 'Test 2', type: 'MessagePane', channel: '#test2', id: 'test2',
   },
   {
     state: this,
     get name() {
       return `Online (${Object.keys(this.state.connectedUsers).length})`;
     },
-    type: 'OnlineTab',
+    type: 'UserPane',
     id: 'online',
   }];
 

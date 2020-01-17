@@ -18,7 +18,6 @@ const actions: ActionTree<State, any> = {
     state, commit, dispatch,
   }) {
     dispatch('generateNick');
-    console.log(state.connectionData.serverUrl);
     const client = new Irc.Client({
       host: state.connectionData.serverUrl,
       nick: state.nick,
@@ -53,7 +52,6 @@ const actions: ActionTree<State, any> = {
     client.on('kick', e => dispatch('userKicked', { data: e })); // TODO;
 
     client.on('message', (event) => {
-      console.log({ event });
       dispatch('onMessageReceived', event);
     });
     client.on('notice', (event) => {
@@ -296,16 +294,12 @@ const actions: ActionTree<State, any> = {
       message, nick, tags, time, type, target,
     }: Irc.MessageEventArgs,
   ) {
-    console.log({
-      message, nick, tags, time, type, target,
-    });
     if (!(target in state.postedMessages)) return;
     const username = User.parseUsername(nick);
     const messageObject = new Message(message, target, state.connectedUsers[username], type === 'action', time);
     const postedMessages = state.postedMessages[target];
     const maxMessages = Math.min(state.maxHistoryMessages[target] + 1, postedMessages.length);
     // +1 in case the messages arrive out of order
-    console.log({ time });
     if (time) {
       for (let i = 0; i < maxMessages; i++) {
         const historyMessage = postedMessages[postedMessages.length - 1 - i];

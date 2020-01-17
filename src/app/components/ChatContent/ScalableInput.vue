@@ -7,8 +7,8 @@
       :disabled="disabled"
       @keyup="$emit('keyup', $event)"
       @keydown="$emit('keydown', $event)"
-      @input="onInput"
-      @keypress="onKeyPress"
+      @input="$emit('input', $event)"
+      @keypress="$emit('keypress', $event)"
     />
     <div
       ref="hiddenDiv"
@@ -23,7 +23,7 @@
 
   @Component({})
   export default class ScalableInput extends Vue {
-    height = 19;
+    height = 0;
 
     @Prop()
     disabled!: boolean;
@@ -37,23 +37,28 @@
 
     onInput(event: any) {
       this.$emit('input', event.target.value);
-      this.$nextTick(this.updateHeight);
     }
 
     onKeyPress(event: any) {
       this.$emit('keypress', event);
-      this.$nextTick(this.updateHeight);
     }
 
     updateHeight() {
-      this.$refs.hiddenDiv.textContent = this.value;
-      this.height = this.$refs.hiddenDiv.clientHeight;
-      this.$emit('updateHeight');
+      const { hiddenDiv } = this.$refs;
+      hiddenDiv.textContent = this.value;
+      if (this.height !== this.$refs.hiddenDiv.clientHeight) {
+        this.height = hiddenDiv.clientHeight;
+        this.$emit('updateHeight');
+      }
     }
 
     mounted() {
       window.addEventListener('resize', this.updateHeight);
       this.$nextTick(this.updateHeight);
+    }
+
+    updated() {
+      this.updateHeight();
     }
   }
 </script>

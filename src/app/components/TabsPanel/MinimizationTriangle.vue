@@ -2,8 +2,8 @@
   <div
     id="minimization-triangle"
     style="float: right;"
-    :class="{'flipped': $store.state.$_chat.minimized}"
-    @click="$store.state.$_chat.minimized = !$store.state.$_chat.minimized"
+    :class="{'flipped': value}"
+    @click="$emit('input', !value)"
   />
 </template>
 
@@ -13,6 +13,8 @@
 
   @Component
   export default class MinimizationTriangle extends Vue {
+    @Prop()
+    value!: boolean;
   }
 </script>
 

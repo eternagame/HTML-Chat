@@ -17,9 +17,6 @@
       &lrm;
       <span class="message-time">{{formattedTime}}</span>
     </div>
-    <MessageActions
-      :message="message"
-    />
     <div style="overflow:hidden">
       <a
         class="chat-message-options"
@@ -28,7 +25,7 @@
       >
         &vellip;
       </a>
-      <MessageActionsContextMenu
+      <ActionMenu
         ref="contextMenu"
         :message="message"
       />
@@ -41,13 +38,13 @@
   import Vue from '@/types/vue';
   import Message from '@/types/message';
   import Username from './Username.vue';
-  import MessageActionsContextMenu from './BlockMenu/MessageActionsContextMenu.vue';
+  import ActionMenu from './ActionMenu.vue';
   import md from '@/tools/Markdown';
 
   @Component({
     components: {
       Username,
-      MessageActionsContextMenu,
+      ActionMenu,
     },
   })
   export default class IrcMessage extends Vue {
@@ -129,5 +126,16 @@
     color: #627587;
     white-space: nowrap;
     font-size: 0.8em;
+  }
+
+  .chat-message-options {
+    user-select: none;
+    position: absolute;
+    top: -4px;
+    right: 15px;
+    font-size: 20px;
+    display: block;
+    cursor: pointer;
+    overflow: visible;
   }
 </style>
