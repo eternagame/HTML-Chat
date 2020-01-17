@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import chatPlugin from './app/plugin/plugin';
-import App from './standalnoe/App.vue';
-import store from './standalnoe/store';
+import App from './standalone/App.vue';
+import store from './standalone/store';
 
 Vue.config.productionTip = false;
 Vue.use(chatPlugin, { store });

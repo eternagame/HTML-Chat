@@ -1,5 +1,5 @@
-<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-  <tab ref="tab">
+<template>
+  <Pane ref="pane" :visibility="visibility" :data="data">
     <ul>
       <Message
         v-for="(message, i) in messages"
@@ -13,14 +13,14 @@
         v-model="newMessage"
         @keypress="onKeyPress"
         :disabled="!connectionData.connected || isBanned"
-        @updateHeight="$refs.tab.updateFooterHeight()"
+        @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput"
       />
       <ConnectButton
         v-show="!showInput"
       />
     </template>
-  </tab>
+  </Pane>
 </template>
 
 <script lang="ts">
@@ -28,7 +28,7 @@
   import { mapState } from 'vuex';
   import Vue from '@/types/vue';
   import Message from '../Messages/IrcMessage.vue';
-  import Tab from './Tab.vue';
+  import Pane from './Pane.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ScalableInput from '@/components/ChatContent/ScalableInput.vue';
   import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
@@ -39,14 +39,17 @@
     components: {
       ConnectingMessage,
       Message,
-      Tab,
+      Pane,
       ScalableInput,
       ConnectButton,
     },
   })
-  export default class MessagesTab extends Vue {
+  export default class MessagesPane extends Vue {
     @Prop()
     data!: { channel: string };
+
+    @Prop({ required: true })
+    visibility!: boolean;
 
     newMessage: string = '';
 
@@ -68,8 +71,7 @@
     }
 
     $refs!: {
-      tab: Tab;
-      vueSimpleContextMenu: HTMLFormElement;
+      pane: Pane;
     };
 
     onKeyPress(e: KeyboardEvent) {
@@ -85,12 +87,12 @@
 
     @Watch('messages')
     onContentChanged() {
-      this.$refs.tab.onContentChanged();
+      this.$refs.pane.onContentChanged();
     }
 
     @Watch('connectionData.connected')
     updateFooterHeight() {
-      this.$nextTick(this.$refs.tab.updateFooterHeight);
+      this.$nextTick(this.$refs.pane.updateFooterHeight);
     }
   }
 </script>
