@@ -15,7 +15,7 @@
         &lrm;<span v-html="formattedMessage" />
       </span>
       &lrm;
-      <span class="message-time">{{formattedTime}}</span>
+      <span class="message-time">[{{formattedTime}}]</span>
     </div>
     <div style="overflow:hidden">
       <a
@@ -47,7 +47,7 @@
       ActionMenu,
     },
   })
-  export default class IrcMessage extends Vue {
+  export default class UserMessage extends Vue {
     show!: boolean;
 
     hover = false;

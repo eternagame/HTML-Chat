@@ -31,8 +31,6 @@ class ConnectionData {
 }
 
 class State {
-  activeTab = 0;
-
   postedMessages: {
     [channel: string]: Message[]
   } = {};
@@ -60,13 +58,13 @@ class State {
   channels = channels;
 
   tabs = [{
-    name: 'General', type: 'MessagePane', channel: '#general', id: 'general',
+    name: 'General', channel: '#general', id: 'general',
   },
   {
-    name: 'Test', type: 'MessagePane', channel: '#test', id: 'test',
+    name: 'Test', channel: '#test', id: 'test',
   },
   {
-    name: 'Test 2', type: 'MessagePane', channel: '#test2', id: 'test2',
+    name: 'Test 2', channel: '#test2', id: 'test2',
   },
   {
     state: this,
@@ -78,14 +76,6 @@ class State {
   }];
 
   ignoredUsers: string[] = [];
-
-  get currentChannel(): string | undefined {
-    return this.tabs[this.activeTab].channel;
-  }
-
-  inputBoxHeight: number = 0;
-
-  minimized: boolean = false;
 
   banned: { [channel: string]: BanStatus } = {};
 

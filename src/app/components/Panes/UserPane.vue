@@ -19,8 +19,8 @@
   import { Component, Watch, Prop } from 'vue-property-decorator';
   import Vue from '@/types/vue';
   import Pane from './Pane.vue';
-  import Username from '@/components/ChatContent/Messages/Username.vue';
-  import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
+  import Username from '@/components/Messages/Username.vue';
+  import ConnectButton from '@/components/Connection/ConnectButton.vue';
 
   @Component({
     components: {

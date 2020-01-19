@@ -1,6 +1,6 @@
 <template>
   <div
-    id="minimization-triangle"
+    class="minimization-triangle"
     style="float: right;"
     :class="{'flipped': value}"
     @click="$emit('input', !value)"
@@ -20,9 +20,8 @@
 
 
 <style lang="scss" scoped>
-  /************* Minimization Triangle *************/
-  #minimization-triangle {
-    background-image: url("../../assets/minimization-triangle.png");
+  .minimization-triangle {
+    background-image: url("../assets/minimization-triangle.png");
     background-repeat: no-repeat;
     background-size: 60% 40%;
     background-position: center;
@@ -32,7 +31,7 @@
     -webkit-transform: rotate(180deg);
   }
 
-  #minimization-triangle.flipped {
+  .minimization-triangle.flipped {
     transform: rotate(270deg);
     -webkit-transform: rotate(270deg);
   }

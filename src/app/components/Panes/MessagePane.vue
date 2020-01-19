@@ -1,7 +1,7 @@
 <template>
   <Pane ref="pane" :visibility="visibility" :data="data">
     <ul>
-      <Message
+      <UserMessage
         v-for="(message, i) in messages"
         :key="i"
         :message="message"
@@ -11,7 +11,7 @@
     <template v-slot:footer>
       <ScalableInput
         v-model="newMessage"
-        @keypress="onKeyPress"
+        @keypress.native="onKeyPress"
         :disabled="!connectionData.connected || isBanned"
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput"
@@ -27,18 +27,18 @@
   import { Component, Prop, Watch } from 'vue-property-decorator';
   import { mapState } from 'vuex';
   import Vue from '@/types/vue';
-  import Message from '../Messages/IrcMessage.vue';
+  import UserMessage from '../Messages/UserMessage.vue';
   import Pane from './Pane.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
-  import ScalableInput from '@/components/ChatContent/ScalableInput.vue';
-  import ConnectButton from '@/components/ChatContent/Connection/ConnectButton.vue';
+  import ScalableInput from '@/components/ScalableInput.vue';
+  import ConnectButton from '@/components/Connection/ConnectButton.vue';
   import BanStatus from '@/types/BanStatus';
   import { State } from '@/store/state';
 
   @Component({
     components: {
       ConnectingMessage,
-      Message,
+      UserMessage,
       Pane,
       ScalableInput,
       ConnectButton,

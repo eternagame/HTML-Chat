@@ -5,10 +5,7 @@
       :style="{height: `${height}px`}"
       class="scalable-input"
       :disabled="disabled"
-      @keyup="$emit('keyup', $event)"
-      @keydown="$emit('keydown', $event)"
-      @input="$emit('input', $event)"
-      @keypress="$emit('keypress', $event)"
+      @input="$emit('input', $event.target.value)"
     />
     <div
       ref="hiddenDiv"
