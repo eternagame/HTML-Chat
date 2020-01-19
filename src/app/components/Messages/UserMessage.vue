@@ -8,7 +8,7 @@
       <span :class="{'chat-message-action': isAction}">
         <Username
           :user="message.user"
-          :color="message.tags ? message.tags['username-color'] || '' : ''"
+          :color="usernameColor"
           :is-action="isAction"
         >{{ isAction || !message.user.username ? '': ':' }}
         </Username>
@@ -68,6 +68,12 @@
 
     get formattedTime() {
       return this.message.time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    }
+
+    get usernameColor() {
+      if (this.isAction) return '#c0dce7';
+      if (this.message.tags) return this.message.tags['username-color'] ?? null;
+      return null;
     }
 
     $refs!: {

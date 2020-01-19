@@ -4,8 +4,6 @@ import BanStatus from '../types/BanStatus';
 import User from '../types/user';
 import Message from '../types/message';
 
-const channels = ['#general', '#test', '#test2'];
-
 class ConnectionData {
   serverUrl!: string;
 
@@ -55,7 +53,7 @@ class State {
     [username: string]: User
   } = {};
 
-  channels = channels;
+  channels = ['#general', '#test', '#test2'];
 
   tabs = [{
     name: 'General', channel: '#general', id: 'general',
@@ -82,7 +80,7 @@ class State {
   usersByNick: { [nick: string]: User } = {};
 
   constructor() {
-    channels.forEach((channel) => {
+    this.channels.forEach((channel) => {
       this.banned[channel] = BanStatus.BAN_STATUS_NORMAL;
       this.postedMessages[channel] = [];
       this.maxHistoryMessages[channel] = 50;
