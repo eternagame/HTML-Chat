@@ -35,9 +35,6 @@ const mutations: MutationTree<State> = {
       Vue.delete(state.connectedUsers, user.username);
     }
   },
-  changeTab(state, { tabIndex }: { tabIndex: number }) {
-    state.activeTab = tabIndex;
-  },
   setConnected(state, { connected }: { connected: boolean }) {
     state.connectionData.connected = connected;
     if (connected) { state.connectionData.firstConnection = false; }

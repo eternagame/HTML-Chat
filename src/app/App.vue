@@ -3,10 +3,31 @@
     id="eterna-chat"
     style="height:100%; overflow-y:hidden;"
   >
-    <transition-group name="fade">
-      <tabsPanel v-show="!minimized" key="TabsPanel"/>
-      <ChatContent v-show="!minimized" key="ChatContent"/>
-    </transition-group>
+    <transition name="fade">
+      <div style="height: 100%;" v-show="!minimized">
+        <div style="position:relative;">
+          <TabButton
+            v-for="(tab, index) in $store.state.$_chat.tabs"
+            :key="index"
+            :selected="activeTab === index"
+            :name="tab.name"
+            @input="activeTab = index"
+          />
+        </div>
+        <div class="chat-content">
+          <MessagePane
+            v-for="(tab, index) in $store.state.$_chat.tabs.filter(tab => tab.channel)"
+            :key="tab.id"
+            :data="tab"
+            v-show="index === activeTab"
+            :visibility="index === activeTab"
+          />
+          <UserPane :visibility="userPaneSelected" v-show="userPaneSelected"/>
+        </div>
+        <ConnectingPopup/>
+        <ReportDialog ref="reportDialog"/>
+      </div>
+    </transition>
     <MinimizationTriangle class="minimization-triangle" v-model="minimized"/>
   </div>
 </template>
@@ -14,15 +35,21 @@
 <script lang="ts">
   import { Component, Prop, Watch } from 'vue-property-decorator';
   import Vue from '@/types/vue';
-  import TabsPanel from './components/TabsPanel/TabsPanel.vue';
-  import ChatContent from './components/ChatContent/ChatContent.vue';
-  import MinimizationTriangle from './components/TabsPanel/MinimizationTriangle.vue';
+  import MinimizationTriangle from './components/MinimizationTriangle.vue';
+  import TabButton from './components/TabButton.vue';
+  import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
+  import ReportDialog from '@/components/ReportDialog.vue';
+  import MessagePane from '@/components/Panes/MessagePane.vue';
+  import UserPane from '@/components/Panes/UserPane.vue';
 
   @Component({
     components: {
-      TabsPanel,
-      ChatContent,
       MinimizationTriangle,
+      TabButton,
+      ReportDialog,
+      ConnectingPopup,
+      MessagePane,
+      UserPane,
     },
   })
   export default class App extends Vue {
@@ -37,14 +64,35 @@
 
     minimized = false;
 
+    activeTab = 0;
+
+    $refs!: {
+      reportDialog: ReportDialog;
+    };
+
+    get userPaneSelected() {
+      return this.activeTab === this.$store.state.$_chat.tabs.length - 1;
+    }
+
     mounted() {
       this.$store.dispatch('$_chat/init', { username: this.username, workbranch: this.workbranch, uid: this.uid });
+    }
+
+    created() {
+      this.$store.subscribe((mutation, state) => {
+        if (mutation.type === '$_chat/openReportModal') {
+          this.$refs.reportDialog.open(mutation.payload);
+        }
+      });
     }
   }
 </script>
 
 <style lang="scss">
+  @import '~vue-context/src/sass/vue-context';
+</style>
 
+<style lang="scss" scoped>
   textarea {
     border-radius: 2px;
     font-family: "Open Sans", "Helvetica Neue", Arial, Gulim;
@@ -74,10 +122,6 @@
     padding: 0;
   }
 
-  .tabs-content {
-    display: inline;
-  }
-
   .fade-enter-active,
   .fade-leave-active {
     transition: opacity 200ms;
@@ -86,5 +130,12 @@
   .fade-enter, .fade-leave-to
   {
     opacity: 0;
+  }
+
+  .chat-content {
+    border: rgba(255, 255, 255, 0.2) solid 2px;
+    height: calc(100% - 29px);
+    position: relative;
+    color: #c0dce7;
   }
 </style>

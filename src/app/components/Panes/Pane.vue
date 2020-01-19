@@ -5,8 +5,7 @@
       style="padding: 5.6px 7px;"
       :style="{height: `calc(100% - ${footerHeight}px - 5.6px * 2)`}"
     >
-      <VuePerfectScrollbar class="scroll-area" :settings="settings" @ps-scroll-y="scrollHandle"
-      >
+      <VuePerfectScrollbar class="scroll-area" :settings="settings" @ps-scroll-y="scrollHandle">
         <div style="height: 100%; word-wrap: break-word; white-space: normal;">
           <slot ref="slot"/>
         </div>

@@ -1,5 +1,5 @@
 <template>
-  <VueContext ref="menu">
+  <VueContext ref="menu" style="padding: 0;">
     <li>
       <a
         :href="profileUrl"

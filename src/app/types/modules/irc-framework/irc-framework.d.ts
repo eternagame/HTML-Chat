@@ -118,7 +118,7 @@ declare module 'irc-framework' {
 
     stringToBlocks(str: string, block_size?: number): string[];
 
-    on(eventType: string | symbol, cb: (event: any) => any): this;
+    on(eventType: string | symbol, cb: (event: any) => void): this;
 
     on(eventType: 'raw', cb: (event: RawEventArgs) => void): this;
 
