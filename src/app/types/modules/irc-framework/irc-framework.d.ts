@@ -1,7 +1,8 @@
 declare module 'irc-framework' {
   import { EventEmitter } from 'eventemitter3';
   import { DuplexStream } from 'stream';
-
+  import Connection from 'irc-framework/src/transports/websocket';
+  
   export class Client extends EventEmitter {
     constructor(options: ClientConstructorParameters);
 
@@ -365,7 +366,7 @@ declare module 'irc-framework' {
     auto_reconnect_max_retries?: number;
     ping_interval?: number;
     ping_timeout?: number;
-    transport?: any;
+    transport?: new (options: any) => Connection;
     ssl?: boolean;
     webirc?: {
       password?: string;

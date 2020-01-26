@@ -24,13 +24,13 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
+
 
   @Component({ components: {} })
   export default class ConnectingPopup extends Vue {
     get connectionData() {
-      return this.$store.state.$_chat.connectionData;
+      return this.$vxm.chat.connectionData;
     }
   }
 </script>

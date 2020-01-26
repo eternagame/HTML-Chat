@@ -4,16 +4,16 @@
     target="_blank"
     class="username"
     :style="{ color: color || computedColor }"
-    :href="`https://${$store.state.$_chat.workbranch}/web/player/${user.uid}/`"
+    :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
   >
     {{ user.username }}<slot/>
   </a>
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
   import User from '@/types/user';
+
 
   @Component
   export default class Username extends Vue {

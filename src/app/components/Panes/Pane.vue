@@ -20,8 +20,10 @@
 
 <script lang="ts">
   import VuePerfectScrollbar from 'vue-perfect-scrollbar';
-  import { Prop, Component, Watch } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
+  import {
+    Prop, Component, Watch, Vue,
+  } from 'vue-property-decorator';
+
 
   @Component({
     components: {

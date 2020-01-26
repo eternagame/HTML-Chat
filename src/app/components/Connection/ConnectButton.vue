@@ -1,18 +1,17 @@
 <template>
   <div
     id="reconnect"
-    :class="{active: $store.state.$_chat.connectionData.tryingToConnect}"
+    :class="{active: $vxm.chat.connectionData.tryingToConnect}"
     class="connect-button"
     style="color:white; font-weight:bolder; font-size:13px;"
-    @click="$store.dispatch('$_chat/connect');"
+    @click="$vxm.chat.connect;"
   >
     Reconnect
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component({})
   export default class ConnectButton extends Vue { }
