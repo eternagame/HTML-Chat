@@ -412,10 +412,10 @@ export default class ChatModule extends VuexModule {
     if (!channel) return;
     const username = User.parseUsername(nick);
     const messageObject = new Message(message, target, this.connectedUsers[username], type === 'action', time);
-    const { postedMessages } = channel;
-    const maxMessages = Math.min(channel.maxHistoryMessages + 1, postedMessages.length);
-    // +1 in case the messages arrive out of order
     if (time) {
+      const { postedMessages } = channel;
+      // +1 in case the messages arrive out of order
+      const maxMessages = Math.min(channel.maxHistoryMessages + 1, postedMessages.length);
       for (let i = 0; i < maxMessages; i++) {
         const historyMessage = postedMessages[postedMessages.length - 1 - i];
         if (historyMessage.message === message
@@ -504,8 +504,6 @@ export default class ChatModule extends VuexModule {
 
   @action()
   async onDisconnect() {
-    console.log('on disconnect');
-    console.trace();
     const data = this.connectionData;
     if (data.currentTimer > 0) return;
     // TODO: What if connect is called and then immidiately a late "onDisconnect" arives?
