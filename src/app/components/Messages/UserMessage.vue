@@ -34,12 +34,12 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
   import Message from '@/types/message';
   import Username from './Username.vue';
   import ActionMenu from './ActionMenu.vue';
   import md from '@/tools/Markdown';
+
 
   @Component({
     components: {

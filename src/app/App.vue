@@ -7,20 +7,26 @@
       <div style="height: 100%;" v-show="!minimized">
         <div style="position:relative;">
           <TabButton
-            v-for="(tab, index) in $store.state.$_chat.tabs"
-            :key="index"
+            v-for="({name}, index) in messageTabs"
+            :key="name"
             :selected="activeTab === index"
-            :name="tab.name"
+            :name="name.substr(1)"
             @input="activeTab = index"
+          />
+          <TabButton
+            :selected="userPaneSelected"
+            :name="`Online(${userCount})`"
+            @input="activeTab = messageTabs.length"
           />
         </div>
         <div class="chat-content">
           <MessagePane
-            v-for="(tab, index) in $store.state.$_chat.tabs.filter(tab => tab.channel)"
-            :key="tab.id"
-            :data="tab"
+            v-for="(channel, index) in messageTabs"
+            :key="channel.name"
+            :data="channel"
             v-show="index === activeTab"
             :visibility="index === activeTab"
+            @postMessage="postMessage($event, channel.name)"
           />
           <UserPane :visibility="userPaneSelected" v-show="userPaneSelected"/>
         </div>
@@ -33,8 +39,9 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Watch } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
+  import {
+    Vue, Component, Prop, Watch,
+  } from 'vue-property-decorator';
   import MinimizationTriangle from './components/MinimizationTriangle.vue';
   import TabButton from './components/TabButton.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
@@ -70,19 +77,29 @@
       reportDialog: ReportDialog;
     };
 
+    get messageTabs() {
+      return Object.values(this.$vxm.chat.channels).map(channel => channel!);
+    }
+
     get userPaneSelected() {
-      return this.activeTab === this.$store.state.$_chat.tabs.length - 1;
+      return this.activeTab === this.messageTabs.length;
+    }
+
+    get userCount() {
+      return Object.keys(this.$vxm.chat.connectedUsers).length;
+    }
+
+    postMessage(rawMessage: string, channel: string) {
+      this.$vxm.chat.sendMessage({ rawMessage, channel });
     }
 
     mounted() {
-      this.$store.dispatch('$_chat/init', { username: this.username, workbranch: this.workbranch, uid: this.uid });
+      this.$vxm.chat.init({ username: this.username, workbranch: this.workbranch, uid: this.uid });
     }
 
     created() {
-      this.$store.subscribe((mutation, state) => {
-        if (mutation.type === '$_chat/openReportModal') {
-          this.$refs.reportDialog.open(mutation.payload);
-        }
+      this.$vxm.chat.$subscribe('openReportModal', payload => {
+        this.$refs.reportDialog.open(payload);
       });
     }
   }
@@ -90,9 +107,6 @@
 
 <style lang="scss">
   @import '~vue-context/src/sass/vue-context';
-</style>
-
-<style lang="scss" scoped>
   textarea {
     border-radius: 2px;
     font-family: "Open Sans", "Helvetica Neue", Arial, Gulim;
@@ -101,7 +115,9 @@
     width: calc(100% - 10px);
     font-size: 14px !important;
   }
+</style>
 
+<style lang="scss" scoped>
   #eterna-chat {
     min-width: 0;
     font-family: "Helvetica Neue", "Open Sans", Arial, Gulim;

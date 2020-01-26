@@ -9,10 +9,10 @@
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator';
-  import Vue from 'vue';
+  import { Component, Vue } from 'vue-property-decorator';
   import ChatApp from '@/App.vue';
   import Login from './components/Login.vue';
+
   @Component({
     components: {
       ChatApp,

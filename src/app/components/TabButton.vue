@@ -9,8 +9,8 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
+
 
   @Component
   export default class TabButton extends Vue {
@@ -36,6 +36,7 @@
     font-weight: bold;
     color: #fff;
     background-color: rgba(255, 255, 255, 0.07);
+    text-transform: capitalize;
   }
 
   /* Change background color of buttons on hover */

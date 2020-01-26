@@ -24,6 +24,8 @@ module.exports = {
     'no-underscore-dangle': ['error', { allow: ['__INITIAL_STATE__'] }],
     'no-plusplus': 'off',
     'max-classes-per-file': 'off',
+    'class-methods-use-this': 'off',
+    'no-unused-expressions': 'off',
   },
   parserOptions: {
     parser: '@typescript-eslint/parser',

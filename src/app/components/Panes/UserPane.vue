@@ -16,11 +16,13 @@
 </template>
 
 <script lang="ts">
-  import { Component, Watch, Prop } from 'vue-property-decorator';
-  import Vue from '@/types/vue';
+  import {
+    Component, Watch, Prop, Vue,
+  } from 'vue-property-decorator';
   import Pane from './Pane.vue';
   import Username from '@/components/Messages/Username.vue';
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
+
 
   @Component({
     components: {
@@ -38,11 +40,11 @@
     };
 
     get connectedUsers() {
-      return this.$store.state.$_chat.connectedUsers;
+      return this.$vxm.chat.connectedUsers;
     }
 
     get connectionData() {
-      return this.$store.state.$_chat.connectionData;
+      return this.$vxm.chat.connectionData;
     }
 
     @Watch('connectedUsers')

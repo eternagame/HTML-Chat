@@ -67,15 +67,15 @@
         Continue
       </div>
     </div>
-  </modal>
+  </Modal>
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
   import { Client } from 'irc-framework';
-  import Vue from '@/types/vue';
   import User from '@/types/user';
   import Message from '@/types/message';
+
 
   @Component({})
   export default class ReportDialog extends Vue {
@@ -97,11 +97,15 @@
 
     submit() {
       if (this.ignore) {
-        this.$store.commit('$_chat/ignoreUser', { username: this.userToReport.username });
+        this.$vxm.chat.ignoreUser({ username: this.userToReport.username });
       }
-      const client = this.$store.state.$_chat.client!;
+      const client = this.$vxm.chat.client!;
       if (this.report) {
-        this.$store.dispatch('$_chat/reportUser', { userToReport: this.userToReport, message: this.message, reportComments: this.reportComments });
+        this.$vxm.chat.reportUser({
+          userToReport: this.userToReport,
+          message: this.message,
+          reportComments: this.reportComments,
+        });
       }
       this.closeModal();
     }

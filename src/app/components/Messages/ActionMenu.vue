@@ -23,11 +23,11 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
   import { VueContext } from 'vue-context';
-  import Vue from '@/types/vue';
   import Message from '@/types/message';
   import User from '@/types/user';
+
 
   @Component({
     components: {
@@ -47,7 +47,7 @@
     }
 
     get profileUrl(): string {
-      return `http://${this.$store.state.$_chat.workbranch}/web/player/${this.user.uid}/`;
+      return `http://${this.$vxm.chat.workbranch}/web/player/${this.user.uid}/`;
     }
 
     open(event: MouseEvent) {
@@ -55,7 +55,7 @@
     }
 
     openReportModal(defaults: { report: boolean; ignore: boolean }) {
-      this.$store.commit('$_chat/openReportModal', { message: this.message, defaults });
+      this.$vxm.chat.openReportModal({ message: this.message, defaults });
     }
   }
 </script>
