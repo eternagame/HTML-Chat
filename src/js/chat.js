@@ -294,6 +294,25 @@ function postMessage( raw_msg, isHistory ) {
     name = parts[3];
     time = parts[4];
     raw_msg = parts[5];
+    
+    //Emoticons
+    raw_msg = raw_msg.replace(":happy:","&#128512"); //Replace ?happy and synonyms with smiling face emoji. Emoji depends on platform user is on
+    raw_msg = raw_msg.replace(":smile:","&#128512");
+    raw_msg = raw_msg.replace(":smiling:","&#128512");
+    raw_msg = raw_msg.replace(":sad:","&#128546"); //Same as above, but for sad face 
+    raw_msg = raw_msg.replace(":crying:","&#128546");
+    raw_msg = raw_msg.replace(":angry:","&#128544"); //Angry face
+    raw_msg = raw_msg.replace(":mad:","&#128544"); 
+    raw_msg = raw_msg.replace(":surprised:","&#128558"); //Surprised face
+    raw_msg = raw_msg.replace(":shocked:","&#128558");
+    raw_msg = raw_msg.replace(":shock:","&#128558");
+    raw_msg = raw_msg.replace(":surpise:","&#128558");
+    raw_msg = raw_msg.replace(":question:","&#129300"); //Curious face
+    raw_msg = raw_msg.replace(":curious:","&#129300");
+    raw_msg = raw_msg.replace(":wondering:","&#129300");
+    raw_msg = raw_msg.replace(":thumbsup:","&#128077"); //Thumbs up
+    raw_msg = raw_msg.replace(":thumbsup:","&#128078"); //Thumbs down 
+    
     // TODO: In the future, remove this, it's due to Flash chat's pre-escaping before sending.
     raw_msg = raw_msg.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     // TODO: Eventually remove, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
@@ -618,6 +637,15 @@ function sendMessage(message){
                     if (!params){ postMessage("Please include command parameters. Type /help unignore for more usage instructions"); break; }
                     unignoreUser(params)
                     break;
+                case "emotes":
+                    postMessage("Put colons around the emote name. Emote names are:");
+                    postMessage("happy:happy:");
+                    postMessage("sad:sad:");
+                    postMessage("angry:angry:");
+                    postMessage("curious:curious:");
+                    postMessage("surprised:surprised:");
+                    postMessage("thumbsup:thumbsup:");
+                    postMessage("thumbsdown:thumbsdown:");
                 default:
                     postMessage("Invalid command. Type /help for more available commands");
                     break;
