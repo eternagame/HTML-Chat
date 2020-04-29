@@ -613,7 +613,7 @@ function sendMessage(message){
                             postMessage("Example: /unignore *");
                             break;
                         default:
-                            postMessage("Available commands: help, me, ignore, ignore-list, unignore");
+                            postMessage("Available commands: help, me, ignore, ignore-list, unignore, emotes");
                             postMessage("Type /help <command> for information on individual commands");
                             postMessage("Example: /help me");
                             postMessage("Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)");
