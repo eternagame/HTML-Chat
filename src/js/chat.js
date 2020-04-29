@@ -570,6 +570,12 @@ $(document).ready(function() {
             return false;
         }
     });
+    $('#emoticon1').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":happy:");
+    });
+    $('#emoticon2').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":sad:");
+    });
     $("#reconnect").click(initSock);
 
 });
