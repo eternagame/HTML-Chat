@@ -295,8 +295,19 @@ function postMessage( raw_msg, isHistory ) {
     time = parts[4];
     raw_msg = parts[5];
     
+    
+    // TODO: In the future, remove this, it's due to Flash chat's pre-escaping before sending.
+    raw_msg = raw_msg.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    // TODO: Eventually remove, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
+    raw_msg = raw_msg.replace(/<I>(.+)<\/I>/g, '$1');
+    // TODO: Because of how chat works right now, we can only handle the inline styles,
+    // but some of the block-level pieces could be nice too once we have multiline messages (lists, blockquotes, and fences mostly).
+    // Also, the `code` should be styled (ie have a background color and maybe a different text color), and it currently isn't.
+    // Images are also disabled, as we currently don't have a way to format them properly.
+    raw_msg = md.renderInline(raw_msg);
+
     //Emoticons
-    raw_msg = raw_msg.replace(":happy:","&#128512"); //Replace :happy: and synonyms with smiling face emoji. Emoji depends on platform user is on
+    raw_msg = raw_msg.replace(":happy:","&#128512"); //Replace :happy:np and synonyms with smiling face emoji. Emoji depends on platform user is on
     raw_msg = raw_msg.replace(":smile:","&#128512");
     raw_msg = raw_msg.replace(":smiling:","&#128512");
     raw_msg = raw_msg.replace(":sad:","&#128546"); //Same as above, but for sad face 
@@ -311,18 +322,7 @@ function postMessage( raw_msg, isHistory ) {
     raw_msg = raw_msg.replace(":curious:","&#129300");
     raw_msg = raw_msg.replace(":wondering:","&#129300");
     raw_msg = raw_msg.replace(":thumbsup:","&#128077"); //Thumbs up
-    raw_msg = raw_msg.replace(":thumbsup:","&#128078"); //Thumbs down 
-    
-    // TODO: In the future, remove this, it's due to Flash chat's pre-escaping before sending.
-    raw_msg = raw_msg.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-    // TODO: Eventually remove, only needed for Flash chat compatible /me (once the Flash app is removed ACTION should be used)
-    raw_msg = raw_msg.replace(/<I>(.+)<\/I>/g, '$1');
-    // TODO: Because of how chat works right now, we can only handle the inline styles,
-    // but some of the block-level pieces could be nice too once we have multiline messages (lists, blockquotes, and fences mostly).
-    // Also, the `code` should be styled (ie have a background color and maybe a different text color), and it currently isn't.
-    // Images are also disabled, as we currently don't have a way to format them properly.
-    raw_msg = md.renderInline(raw_msg);
-
+    raw_msg = raw_msg.replace(":thumbsdown:","&#128078"); //Thumbs down 
 
     // Don't show messages from user on ignore list
     if ( ignoredUsers.includes(name) ){return;}
@@ -646,6 +646,7 @@ function sendMessage(message){
                     postMessage("surprised:surprised:");
                     postMessage("thumbsup:thumbsup:");
                     postMessage("thumbsdown:thumbsdown:");
+                    break;
                 default:
                     postMessage("Invalid command. Type /help for more available commands");
                     break;
