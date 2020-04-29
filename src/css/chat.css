@@ -17,15 +17,23 @@ textarea {
     width: calc(100% - 10px);
 
 }
+/************* Emoticons *************/
 .emoticon {
     position:relative;
     bottom: 37px;
     padding:4px;
-    margin-left:5px;
     border-radius:2px;
     border-color:white;
     border-style: solid;
     background-color: white;
+}
+#emoticon1 {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+#emoticon2 {
+    margin-right: 0px;
+    margin-left:0px
 }
 /************ Chat Messages ************/
 .chat-message {
@@ -116,7 +124,7 @@ textarea {
 #chat-input, #reconnect {
     position: absolute;
     bottom: 0px;
-    width: Calc(100% - 144px);
+    width: Calc(100% - 110px);
     height: 19px;
     resize: none;
     margin: 10px;
