@@ -33,7 +33,11 @@ textarea {
 }
 #emoticon2 {
     margin-right: 0px;
-    margin-left:0px
+    margin-left:0px;
+}
+#emoticon3 {
+    margin-left:10px;
+    margin-right:0px;
 }
 /************ Chat Messages ************/
 .chat-message {
@@ -124,7 +128,7 @@ textarea {
 #chat-input, #reconnect {
     position: absolute;
     bottom: 0px;
-    width: Calc(100% - 110px);
+    width: Calc(100% - 148px);
     height: 19px;
     resize: none;
     margin: 10px;

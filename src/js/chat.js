@@ -576,6 +576,16 @@ $(document).ready(function() {
     $('#emoticon2').click(function(){
         $('#chat-input').val($('#chat-input').val()+":sad:");
     });
+    $('#emoticon3').click(function(){
+        postMessage("Put the name, given below, surround by colons. For example, :happy: would be : happy : (but without the spaces)")
+        postMessage("happy:happy:");
+        postMessage("sad:sad:");
+        postMessage("angry:angry:");
+        postMessage("curious:curious:");
+        postMessage("surprised:surprised:");
+        postMessage("thumbsup:thumbsup:");
+        postMessage("thumbsdown:thumbsdown:");
+    });
     $("#reconnect").click(initSock);
 
 });
