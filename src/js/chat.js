@@ -296,7 +296,7 @@ function postMessage( raw_msg, isHistory ) {
     raw_msg = parts[5];
     
     //Emoticons
-    raw_msg = raw_msg.replace(":happy:","&#128512"); //Replace ?happy and synonyms with smiling face emoji. Emoji depends on platform user is on
+    raw_msg = raw_msg.replace(":happy:","&#128512"); //Replace :happy: and synonyms with smiling face emoji. Emoji depends on platform user is on
     raw_msg = raw_msg.replace(":smile:","&#128512");
     raw_msg = raw_msg.replace(":smiling:","&#128512");
     raw_msg = raw_msg.replace(":sad:","&#128546"); //Same as above, but for sad face 
