@@ -307,7 +307,7 @@ function postMessage( raw_msg, isHistory ) {
     raw_msg = md.renderInline(raw_msg);
 
     //Emoticons
-    raw_msg = raw_msg.replace(":happy:","&#128512"); //Replace :happy:np and synonyms with smiling face emoji. Emoji depends on platform user is on
+    raw_msg = raw_msg.replace(":happy:","&#128512"); //Replace :happy: and synonyms with smiling face emoji. Emoji depends on platform user is on
     raw_msg = raw_msg.replace(":smile:","&#128512");
     raw_msg = raw_msg.replace(":smiling:","&#128512");
     raw_msg = raw_msg.replace(":sad:","&#128546"); //Same as above, but for sad face 
@@ -574,7 +574,7 @@ $(document).ready(function() {
         $('#chat-input').val($('#chat-input').val()+":happy:");
     });
     $('#emoticon2').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":sad:");
+        $('#chat-input').val($('#chat-input').val()+":thumbsup:");
     });
     $('#emoticon3').click(function(){
         postMessage("Put the name, given below, surround by colons. For example, :happy: would be : happy : (but without the spaces)")
