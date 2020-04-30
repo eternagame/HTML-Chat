@@ -31,17 +31,34 @@ textarea {
 #emoticon1 {
     margin-left: 5px;
     margin-right: 5px;
-    left:5px;
+    right:5px;
 }
 #emoticon2 {
     margin-right: 5px;
     margin-left:5px;
-    left:25px;
+    right:25px;
 }
 #emoticon3 {
     margin-left:5px;
     margin-right:5px;
-    left:45px;
+    right:45px;
+}
+@media (max-width: 300px) {
+    #emoticon3, #emoticon2 {
+        display:none;
+    }
+    #chat-input {
+        width : Calc(100% - 65px);
+    }
+}
+
+@media (min-width: 300px) {
+    #emoticon3, #emoticon2 {
+        display:block;
+    }
+    #chat-input {
+        width : Calc(100% - 105px);
+    }
 }
 /************ Chat Messages ************/
 .chat-message {
@@ -132,8 +149,7 @@ textarea {
 #chat-input, #reconnect {
     position: absolute;
     bottom: 0px;
-    right:0px;
-    width: Calc(100% - 105px);
+    left:0px;
     height: 19px;
     resize: none;
     margin: 10px;
