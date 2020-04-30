@@ -51,7 +51,6 @@ textarea {
         width : Calc(100% - 65px);
     }
 }
-
 @media (min-width: 300px) {
     #emoticon3, #emoticon2 {
         display:block;
