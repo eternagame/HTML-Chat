@@ -572,21 +572,23 @@ $(document).ready(function() {
         }
     });
     $('#emoticon1').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":happy:");
+        $('#emoticon2').toggleClass('emoticon-hidden');
+        $('#emoticon3').toggleClass('emoticon-hidden');
+        $('#emoticon4').toggleClass('emoticon-hidden');
+        $('#emoticon5').toggleClass('emoticon-hidden');
+        $('#emoticon6').toggleClass('emoticon-hidden');
+        $('#emoticon7').toggleClass('emoticon-hidden');
+        $('#emoticon8').toggleClass('emoticon-hidden');
+        $('#chat-input').toggleClass('bigger');
+        $('#chat-input').toggleClass('smaller');
     });
     $('#emoticon2').click(function(){
         $('#chat-input').val($('#chat-input').val()+":thumbsup:");
     });
     $('#emoticon3').click(function(){
-        postMessage("Put the name, given below, surround by colons. For example, :happy: would be : happy : (but without the spaces)")
-        postMessage("happy:happy:");
-        postMessage("sad:sad:");
-        postMessage("angry:angry:");
-        postMessage("curious:curious:");
-        postMessage("surprised:surprised:");
-        postMessage("thumbsup:thumbsup:");
-        postMessage("thumbsdown:thumbsdown:");
+        $('#chat-input').val($('#chat-input').val()+":happy:");
     });
+    
     $("#reconnect").click(initSock);
 
 });

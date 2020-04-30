@@ -18,6 +18,9 @@ textarea {
 
 }
 /************* Emoticons *************/
+.emoticon-hidden {
+    display: none;
+}
 .emoticon {
     position:absolute;
     bottom: 0px;
@@ -31,32 +34,119 @@ textarea {
 #emoticon1 {
     margin-left: 5px;
     margin-right: 5px;
-    right:5px;
+    right:45px;
 }
 #emoticon2 {
     margin-right: 5px;
     margin-left:5px;
-    right:25px;
+    right:65px;
 }
 #emoticon3 {
     margin-left:5px;
     margin-right:5px;
-    right:45px;
+    right:85px;
+}
+#emoticon4 {
+    margin-left: 5px;
+    margin-right: 5px;
+    right:105px;
+}
+#emoticon5 {
+    margin-right: 5px;
+    margin-left:5px;
+    right:125px;
+}
+#emoticon6 {
+    margin-left:5px;
+    margin-right:5px;
+    right:145px;
+}
+#emoticon7 {
+    margin-right: 5px;
+    margin-left:5px;
+    right:165px;
+}
+#emoticon8 {
+    margin-left:5px;
+    margin-right:5px;
+    right:185px;
 }
 @media (max-width: 300px) {
-    #emoticon3, #emoticon2 {
+    .bigger {
+        display:block;
+        width : Calc(100% - 65px);
+    }
+    .smaller {
         display:none;
     }
-    #chat-input {
-        width : Calc(100% - 65px);
+    #emoticon1 {
+        margin-left: 5px;
+        margin-right: 5px;
+        right:5px;
+    }
+    #emoticon2 {
+        margin-right: 5px;
+        margin-left:5px;
+        right:25px;
+    }
+    #emoticon3 {
+        margin-left:5px;
+        margin-right:5px;
+        right:45px;
+    }
+    #emoticon4 {
+        margin-left: 5px;
+        margin-right: 5px;
+        right:65px;
+    }
+    #emoticon5 {
+        margin-right: 5px;
+        margin-left:5px;
+        right:85px;
+    }
+    #emoticon6 {
+        margin-left:5px;
+        margin-right:5px;
+        right:105px;
+    }
+    #emoticon7 {
+        margin-right: 5px;
+        margin-left:5px;
+        right:125px;
+    }
+    #emoticon8 {
+        margin-left:5px;
+        margin-right:5px;
+        right:145px;
+    }
+    #emoticon9,#emoticon10 {
+        display:none;
     }
 }
 @media (min-width: 300px) {
-    #emoticon3, #emoticon2 {
+    .bigger {
         display:block;
+        width: Calc(100% - 105px);
     }
-    #chat-input {
-        width : Calc(100% - 105px);
+    .smaller {
+        display:block;
+        width: Calc(100% - 205px);
+    }
+    #emoticon9 {
+        margin-left:5px;
+        margin-right:5px;
+        right:5px;
+    }
+    #emoticon10 {
+        margin-left:5px;
+        margin-right:5px;
+        right:25px;
+    }
+    #emoticon7 {
+        display:none;
+    }
+    #emoticon8 {
+        display:none;
     }
 }
 /************ Chat Messages ************/
