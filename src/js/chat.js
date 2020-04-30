@@ -583,10 +583,31 @@ $(document).ready(function() {
         $('#chat-input').toggleClass('smaller');
     });
     $('#emoticon2').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":thumbsup:");
+        $('#chat-input').val($('#chat-input').val()+":curious:");
     });
     $('#emoticon3').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":happy:");
+        $('#chat-input').val($('#chat-input').val()+":thumbsdown:");
+    });
+    $('#emoticon4').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":crying:");
+    });
+    $('#emoticon5').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":surprised:");
+    });
+    $('#emoticon6').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":angry:");
+    });
+    $('#emoticon7').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":thumbsup:");
+    });
+    $('#emoticon8').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":smile:");
+    });
+    $('#emoticon9').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":smile:");
+    });
+    $('#emoticon10').click(function(){
+        $('#chat-input').val($('#chat-input').val()+":thumbsup:");
     });
     
     $("#reconnect").click(initSock);
