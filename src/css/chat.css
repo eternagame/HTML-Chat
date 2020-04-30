@@ -19,25 +19,29 @@ textarea {
 }
 /************* Emoticons *************/
 .emoticon {
-    position:relative;
-    bottom: 37px;
+    position:absolute;
+    bottom: 0px;
     padding:4px;
+    margin-bottom: 10px;
     border-radius:2px;
     border-color:white;
     border-style: solid;
     background-color: white;
 }
 #emoticon1 {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    left:5px;
 }
 #emoticon2 {
-    margin-right: 0px;
-    margin-left:0px;
+    margin-right: 5px;
+    margin-left:5px;
+    left:25px;
 }
 #emoticon3 {
-    margin-left:10px;
-    margin-right:0px;
+    margin-left:5px;
+    margin-right:5px;
+    left:45px;
 }
 /************ Chat Messages ************/
 .chat-message {
@@ -128,7 +132,8 @@ textarea {
 #chat-input, #reconnect {
     position: absolute;
     bottom: 0px;
-    width: Calc(100% - 148px);
+    right:0px;
+    width: Calc(100% - 105px);
     height: 19px;
     resize: none;
     margin: 10px;
