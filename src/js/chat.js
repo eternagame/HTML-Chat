@@ -571,6 +571,7 @@ $(document).ready(function() {
             return false;
         }
     });
+    //+ button emoticon
     $('#emoticon1').click(function(){
         $('#emoticon2').toggleClass('emoticon-hidden');
         $('#emoticon3').toggleClass('emoticon-hidden');
@@ -582,6 +583,7 @@ $(document).ready(function() {
         $('#chat-input').toggleClass('bigger');
         $('#chat-input').toggleClass('smaller');
     });
+    //Other emoticons
     $('#emoticon2').click(function(){
         $('#chat-input').val($('#chat-input').val()+":curious:");
     });
@@ -609,7 +611,6 @@ $(document).ready(function() {
     $('#emoticon10').click(function(){
         $('#chat-input').val($('#chat-input').val()+":thumbsup:");
     });
-    
     $("#reconnect").click(initSock);
 
 });
