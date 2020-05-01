@@ -18,6 +18,11 @@
             :name="`Online(${userCount})`"
             @input="activeTab = messageTabs.length"
           />
+          <TabButton
+            :selected="settingsPaneSelected"
+            :name="`Settings`"
+            @input="activeTab = messageTabs.length + 1"
+          />
         </div>
         <div class="chat-content">
           <MessagePane
@@ -29,6 +34,7 @@
             @postMessage="postMessage($event, channel.name)"
           />
           <UserPane :visibility="userPaneSelected" v-show="userPaneSelected"/>
+          <SettingsPane :visibility="settingsPaneSelected" v-show="settingsPaneSelected" />
         </div>
         <ConnectingPopup/>
         <ReportDialog ref="reportDialog"/>
@@ -48,6 +54,7 @@
   import ReportDialog from '@/components/ReportDialog.vue';
   import MessagePane from '@/components/Panes/MessagePane.vue';
   import UserPane from '@/components/Panes/UserPane.vue';
+  import SettingsPane from '@/components/Panes/SettingsPane.vue';
 
   @Component({
     components: {
@@ -57,6 +64,7 @@
       ConnectingPopup,
       MessagePane,
       UserPane,
+      SettingsPane,
     },
   })
   export default class App extends Vue {
@@ -87,6 +95,10 @@
 
     get userCount() {
       return Object.keys(this.$vxm.chat.connectedUsers).length;
+    }
+
+    get settingsPaneSelected() {
+      return this.activeTab === (this.messageTabs.length + 1);
     }
 
     postMessage(rawMessage: string, channel: string) {
