@@ -136,7 +136,9 @@ function onlineUserWithName( username ) {
     res.index = onlineUsers.indexOf(res);
     return res;
 }
-
+var badges = {
+        
+}
 /**
  *  When a user joins, make sure they're on the online list
  *  @param username: Nick of joining user
@@ -178,7 +180,14 @@ function addUser( username ) {
             return 0;
         });
 
-        userli = '<li id="chat-userlist-user-{USERNAME_LOW}" class="chat-userlist-user"><a target="_blank" href="http://{WORKBRANCH}/web/player/{UID}/">{USERNAME}</a>{OPTS}</li>';
+        if (badges[username] === undefined) {
+            badges[username] = [];
+        }
+        var currentUserBadges = username + " doesn't have any badges yet";
+        if (badges[username].length > 0) {
+            currentUserBadges = username + " has " + badges[username].length.toString() + " badge" + (Boolean(badges[userString].length.toString() === "1") ? ": ":"s: ") +badges[userString].join(", ");
+        }
+        userli = '<li id="chat-userlist-user-{USERNAME_LOW}" class="chat-userlist-user"><a target="_blank" href="http://{WORKBRANCH}/web/player/{UID}/">{USERNAME}<div class="tooltip"><h1 class="tooltip-h1">' + username + '</h1><p class="tooltip-p">' + currentUserBadges + '</div></a>{OPTS}</li>';
         userli = userli.replace('{USERNAME_LOW}', username.toLowerCase())
                        .replace('{USERNAME}', username)
                        .replace('{UID}', uid)
@@ -256,7 +265,16 @@ function colorizeUser ( data, uid, isAction ) {
     // Find escaped font tags, and replace them with a span and the hex color signified, if it's an action remove the tag
     var customColored = data.replace(/&lt;font color=(?:&#x27;|\&quot;)?(#[a-fA-F\d]{6})(?:&#x27;|\&quot;)?&gt;(.+)&lt;\/font&gt;/i, isAction ? '$2':'<span style="color:$1;">$2</span>')
     // Construct span, if it's an action omit the coloring
-    return '<a target="_blank" class="chat-message-user-link" href="http://' + WORKBRANCH + '/web/player/' + uid + '/"><span class="chat-message-user" ' + (isAction ? '' : 'style="color:' + colors[uid % colors.length] + ';"') + '>' + customColored + '</span></a>' + (!isAction ? ': ' : ' ');
+    var userString = data.toString();
+    
+    if (badges[userString] === undefined) {
+        badges[userString] = [];
+    }
+    var currentUserBadges = userString + " doesn't have any badges yet";
+    if (badges[userString].length > 0) {
+        currentUserBadges = userString + " has " + badges[userString].length.toString() + " badge" + (Boolean(badges[userString].length.toString() === "1") ? ": ":"s: ") +badges[userString].join(", ");
+    }
+    return '<a target="_blank" class="chat-message-user-link" href="http://' + WORKBRANCH + '/web/player/' + uid + '/"><div class="tooltip"><h1 class="tooltip-h1">' + customColored + '</h1><p class="tooltip-p">' + currentUserBadges + '</div><span class="chat-message-user" ' + (isAction ? '' : 'style="color:' + colors[uid % colors.length] + ';"') + '>' + customColored + '</span></a>' + (!isAction ? ': ' : ' ');
 }
 
 /**

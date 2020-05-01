@@ -243,7 +243,38 @@ textarea {
     resize: none;
     margin: 10px;
 }
-
+/************** Tooltips ***************/
+.chat-message-user-link:hover .tooltip, .tooltip-content {
+    visibility: visible;
+    opacity:1;
+    z-index: 1;
+}
+.chat-userlist-user:hover:hover .tooltip, .tooltip-content {
+    visibility: visible;
+    opacity:1;
+    z-index: 1;
+}
+.tooltip {
+    visibility: hidden;
+    position: absolute;
+    transition: opacity;
+    transition-duration: 0.5s;
+    transition-delay: 1s;
+    opacity:0;
+    background-color: #011e46;
+    color:white;
+    font-family: 'Century Gothic','Didact Gothic','Arial',sans-serif;
+    border: rgba(255, 255, 255, 0.2) solid 2px;
+    left:0px;
+    top:-20px;
+}
+.tooltip-h1 {
+    text-align:center;
+    margin:2px;
+}
+.tooltip-p {
+    margin:5px;
+}
 /************** Buttons ***************/
 
 .unselectable {
