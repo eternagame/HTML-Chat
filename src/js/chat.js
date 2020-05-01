@@ -585,31 +585,31 @@ $(document).ready(function() {
     });
     //Other emoticons
     $('#emoticon2').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":curious:");
+        $('#chat-input').val($('#chat-input').val()+"🤔");
     });
     $('#emoticon3').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":thumbsdown:");
+        $('#chat-input').val($('#chat-input').val()+"👎");
     });
     $('#emoticon4').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":crying:");
+        $('#chat-input').val($('#chat-input').val()+"😢");
     });
     $('#emoticon5').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":surprised:");
+        $('#chat-input').val($('#chat-input').val()+"😮");
     });
     $('#emoticon6').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":angry:");
+        $('#chat-input').val($('#chat-input').val()+"😠");
     });
     $('#emoticon7').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":thumbsup:");
+        $('#chat-input').val($('#chat-input').val()+"👍");
     });
     $('#emoticon8').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":smile:");
+        $('#chat-input').val($('#chat-input').val()+"😀");
     });
     $('#emoticon9').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":smile:");
+        $('#chat-input').val($('#chat-input').val()+"😀");
     });
     $('#emoticon10').click(function(){
-        $('#chat-input').val($('#chat-input').val()+":thumbsup:");
+        $('#chat-input').val($('#chat-input').val()+"👍");
     });
     $("#reconnect").click(initSock);
 
@@ -680,13 +680,13 @@ function sendMessage(message){
                     break;
                 case "emotes":
                     postMessage("Put colons around the emote name. Emote names are:");
-                    postMessage("happy:happy:");
-                    postMessage("sad:sad:");
-                    postMessage("angry:angry:");
-                    postMessage("curious:curious:");
-                    postMessage("surprised:surprised:");
-                    postMessage("thumbsup:thumbsup:");
-                    postMessage("thumbsdown:thumbsdown:");
+                    postMessage("happy 😀");
+                    postMessage("sad: 😢");
+                    postMessage("angry 😠");
+                    postMessage("curious 🤔");
+                    postMessage("surprised 😮");
+                    postMessage("thumbsup 👍");
+                    postMessage("thumbsdown 👎");
                     break;
                 default:
                     postMessage("Invalid command. Type /help for more available commands");
