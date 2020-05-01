@@ -8,7 +8,10 @@
     <ul>
       <li v-for="user in ignoredUsers" :key="user.Username">
         {{ user }}
+        <button class='unignore-user' v-on:click="unign(user)">Unignore</button>
       </li>
+      <button class='unignore-user' v-on:click="unign('*')" v-show="anyIgnoredUsers" >
+        Unignore All</button>
     </ul>
     <template v-slot:footer>
       <ConnectButton
@@ -70,6 +73,10 @@
       return this.$vxm.chat.ignoredUsers;
     }
 
+    get anyIgnoredUsers() {
+      return Boolean(this.ignoredUsers.length > 0);
+    }
+
     @Watch('connectedUsers')
     onContentChanged() {
       this.$refs.pane.onContentChanged();
@@ -78,6 +85,10 @@
     @Watch('connectionData.connected')
     updateFooterHeight() {
       this.$nextTick(this.$refs.pane.updateFooterHeight);
+    }
+
+    unign(user:string) {
+      this.$vxm.chat.unignoreUser(user);
     }
   }
 </script>
@@ -91,5 +102,9 @@ h1 {
 }
 input {
   margin:2px;
+}
+.unignore-user {
+  padding:2px;
+  padding-bottom:3px;
 }
 </style>
