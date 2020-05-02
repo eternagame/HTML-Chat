@@ -107,7 +107,7 @@ export default class ChatModule extends VuexModule {
 
   @mutation
   toggleExpansion() {
-    this.expandedButtons = this.expandedButtons ? false : true;
+    this.expandedButtons = !this.expandedButtons;
   }
 
   @mutation
