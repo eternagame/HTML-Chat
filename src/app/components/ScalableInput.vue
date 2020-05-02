@@ -3,7 +3,7 @@
     <textarea
       :value="value"
       :style="{height: `${height}px`}"
-      class="scalable-input"
+      class="scalable-input bigger"
       :disabled="disabled"
       @input="$emit('input', $event.target.value)"
     />
@@ -16,9 +16,8 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
-
-
-  @Component({})
+  @Component({
+  })
   export default class ScalableInput extends Vue {
     height = 0;
 
@@ -68,10 +67,18 @@
     top: 0px;
     padding: 0;
   }
+  .smaller {
+    width: calc(100% - 195px); //100% - border
+  }
+  .bigger {
+    width: calc(100% - 15px); //100% - border
+  }
+  .biggest {
+    width: calc(100% - 55px);
+  }
 
   .scalable-input,
   .scalable-input-hidden {
-    width: calc(100% - 2px); //100% - border
     min-height: 19px;
   }
 

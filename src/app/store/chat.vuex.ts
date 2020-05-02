@@ -72,7 +72,11 @@ export default class ChatModule extends VuexModule {
 
   usersByNick: { [nick: string]: User } = {};
 
-  fontSize: Number = 18;
+  stringToAdd : string = '';
+
+  expandedButtons : boolean = false;
+
+  screenSmall !: boolean;
 
   constructor() {
     super();
@@ -87,8 +91,23 @@ export default class ChatModule extends VuexModule {
   }
 
   @mutation
-  changeFontSize(to:Number) {
-    this.fontSize = to;
+  changeScreenSmall(to:boolean) {
+    this.screenSmall = to;
+  }
+
+  @mutation
+  addString(str:string) {
+    this.stringToAdd += str;
+  }
+
+  @mutation
+  clearString() {
+    this.stringToAdd = '';
+  }
+
+  @mutation
+  toggleExpansion() {
+    this.expandedButtons = !this.expandedButtons;
   }
 
   @mutation
