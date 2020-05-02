@@ -72,8 +72,6 @@ export default class ChatModule extends VuexModule {
 
   usersByNick: { [nick: string]: User } = {};
 
-  fontSize: Number = 18;
-
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -84,11 +82,6 @@ export default class ChatModule extends VuexModule {
         name: channelName,
       };
     });
-  }
-
-  @mutation
-  changeFontSize(to:Number) {
-    this.fontSize = to;
   }
 
   @mutation
