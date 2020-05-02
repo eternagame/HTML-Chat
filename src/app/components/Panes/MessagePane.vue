@@ -14,19 +14,74 @@
         @keypress.native="onKeyPress"
         :disabled="!connectionData.connected || isBanned"
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
-        v-show="showInput"
+        v-show="showInput && (!sizeSmall || !expansion)"
+        v-bind:class="{'smaller': expansion, 'bigger': !expansion}"
       />
       <EmoticonButton
-        emoticon='😃'
-        position=1
+        emoticon='😀'
+        position=2
+        v-show="showInput && !sizeSmall"
+      />
+      <EmoticonButton
+        emoticon='👍'
+        position=3
+        v-show="showInput && !sizeSmall"
+      />
+      <ExpandButton />
+      <EmoticonButton
+        emoticon='👎'
+        position=4
         v-show="showInput"
+        v-if="expansion"
       />
       <EmoticonButton
         emoticon='😢'
-        position=2
+        position=5
         v-show="showInput"
+        v-if="expansion"
       />
-      <ExpandButton position=3 />
+      <EmoticonButton
+        emoticon='😠'
+        position=6
+        v-show="showInput"
+        v-if="expansion"
+      />
+      <EmoticonButton
+        emoticon='😀'
+        position=3
+        v-show="showInput && expansion && sizeSmall"
+         v-if="expansion"
+      />
+      <EmoticonButton
+        emoticon='👍'
+        position=2
+        v-show="showInput && expansion && sizeSmall"
+        v-if="expansion"
+      />
+      <EmoticonButton
+        emoticon='😮'
+        position=7
+        v-show="showInput"
+        v-if="expansion"
+      />
+      <EmoticonButton
+        emoticon='😮'
+        position=8
+        v-show="showInput"
+        v-if="expansion"
+      />
+      <EmoticonButton
+        emoticon='😂'
+        position=9
+        v-show="showInput"
+        v-if="expansion"
+      />
+      <EmoticonButton
+        emoticon='😎'
+        position=10
+        v-show="showInput"
+        v-if="expansion"
+      />
       <ConnectButton
         v-show="!showInput"
       />
@@ -89,6 +144,12 @@
 
     get expansion() {
       return this.$vxm.chat.expandedButtons;
+    }
+
+    get sizeSmall() {
+      const val = (window.innerWidth < 300);
+      this.$vxm.chat.changeScreenSmall(val);
+      return (window.innerWidth < 300);
     }
 
     $refs!: {

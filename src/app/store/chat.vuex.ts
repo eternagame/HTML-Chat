@@ -76,6 +76,8 @@ export default class ChatModule extends VuexModule {
 
   expandedButtons : boolean = false;
 
+  screenSmall !: boolean;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -86,6 +88,11 @@ export default class ChatModule extends VuexModule {
         name: channelName,
       };
     });
+  }
+
+  @mutation
+  changeScreenSmall(to:boolean) {
+    this.screenSmall = to;
   }
 
   @mutation

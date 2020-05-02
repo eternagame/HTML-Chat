@@ -3,7 +3,7 @@
     <textarea
       :value="value"
       :style="{height: `${height}px`}"
-      class="scalable-input"
+      class="scalable-input bigger"
       :disabled="disabled"
       @input="$emit('input', $event.target.value)"
     />
@@ -67,10 +67,15 @@
     top: 0px;
     padding: 0;
   }
+  .smaller {
+    width: calc(100% - 197px); //100% - border
+  }
+  .bigger {
+    width: calc(100% - 37px); //100% - border
+  }
 
   .scalable-input,
   .scalable-input-hidden {
-    width: calc(100% - 57px); //100% - border
     min-height: 19px;
   }
 
