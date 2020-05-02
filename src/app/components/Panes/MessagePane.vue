@@ -26,6 +26,7 @@
         position=2
         v-show="showInput"
       />
+      <ExpandButton position=3 />
       <ConnectButton
         v-show="!showInput"
       />
@@ -43,6 +44,7 @@
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ScalableInput from '@/components/ScalableInput.vue';
   import EmoticonButton from '@/components/EmoticonButton.vue';
+  import ExpandButton from '@/components/ExpandButton.vue';
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
   import BanStatus from '@/types/BanStatus';
   import Message from '@/types/message';
@@ -55,6 +57,7 @@
       Pane,
       ScalableInput,
       EmoticonButton,
+      ExpandButton,
       ConnectButton,
     },
   })
@@ -82,6 +85,10 @@
 
     get strsNeed() {
       return this.$vxm.chat.stringToAdd;
+    }
+
+    get expansion() {
+      return this.$vxm.chat.expandedButtons;
     }
 
     $refs!: {

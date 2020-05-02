@@ -74,6 +74,8 @@ export default class ChatModule extends VuexModule {
 
   stringToAdd : string = '';
 
+  expandedButtons : boolean = false;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -91,8 +93,14 @@ export default class ChatModule extends VuexModule {
     this.stringToAdd += str;
   }
 
-  @mutation clearString() {
+  @mutation
+  clearString() {
     this.stringToAdd = '';
+  }
+
+  @mutation
+  toggleExpansion() {
+    this.expandedButtons = this.expandedButtons ? false : true;
   }
 
   @mutation
