@@ -13,7 +13,7 @@
 
 
   @Component
-  export default class TabButton extends Vue {
+  export default class SlideoutButton extends Vue {
     @Prop()
     name!: string;
 
@@ -37,7 +37,6 @@
     color: #fff;
     background-color: rgba(255, 255, 255, 0.07);
     text-transform: capitalize;
-    display:block;
   }
 
   /* Change background color of buttons on hover */
