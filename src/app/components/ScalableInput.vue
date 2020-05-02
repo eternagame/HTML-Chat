@@ -70,7 +70,7 @@
 
   .scalable-input,
   .scalable-input-hidden {
-    width: calc(100% - 37px); //100% - border
+    width: calc(100% - 57px); //100% - border
     min-height: 19px;
   }
 

@@ -17,7 +17,14 @@
         v-show="showInput"
       />
       <EmoticonButton
-        emoticon = '😃'
+        emoticon='😃'
+        position=1
+        v-show="showInput"
+      />
+      <EmoticonButton
+        emoticon='😢'
+        position=2
+        v-show="showInput"
       />
       <ConnectButton
         v-show="!showInput"
