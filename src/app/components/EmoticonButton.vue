@@ -36,7 +36,7 @@ button {
   position: absolute;
   bottom: 0px;
   right:0px;
-  padding:3px;
+  padding:4px;
   margin:5px;
   border: solid 1px white;
   border-radius:10%;

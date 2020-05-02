@@ -1,5 +1,5 @@
 <template>
-<button class='plus-emoticon-button' v-on:click="toggle()" :style="{ right: rightAmount + 'px'}">
+<button class='plus-emoticon-button' v-on:click="toggle()">
   {{emote}}
 </button>
 </template>
@@ -20,10 +20,6 @@
       return this.emoticon;
     }
 
-    get rightAmount() {
-      return ((Number(this.position) - 1) * 20).toString();
-    }
-
     toggle() {
       this.$vxm.chat.toggleExpansion();
     }
@@ -34,8 +30,8 @@
 button {
   position: absolute;
   bottom: 0px;
+  padding:4px;
   right:0px;
-  padding:3px;
   margin:5px;
   border: solid 1px white;
   border-radius:10%;
