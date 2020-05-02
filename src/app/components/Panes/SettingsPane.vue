@@ -9,6 +9,7 @@
         {{ user }}
         <button class='unignore-user' v-on:click="unign(user)">Unignore</button>
       </li>
+      <li v-show="!anyIgnoredUsers">You have not ignored any users</li>
       <button class='unignore-user' v-on:click="unign('*')" v-show="anyIgnoredUsers" >
         Unignore All</button>
     </ul>
@@ -53,10 +54,6 @@
         return '';
       }
       return '';
-    }
-
-    get fontSize() {
-      return parseInt(this.message, 10) === 14 ? 14 : 50;
     }
 
     get connectedUsers() {
