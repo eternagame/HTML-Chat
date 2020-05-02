@@ -1,9 +1,8 @@
 <template>
   <Pane ref="pane" :visibility="visibility">
     <h1>Text Size</h1>
-    <input v-model="message" type=range min=10 max=22>
-    <span id='font-size-p'>{{text}}</span>
-    <p id='preview-p' :style='{ fontSize: fontSize + "px" }'>Preview</p>
+    <input v-model="message" type=number min=10 max=22 value=24>
+    <span id='font-size-p'>{{text}} Default is 14</span>
     <h1>Ignored Users</h1>
     <ul>
       <li v-for="user in ignoredUsers" :key="user.Username">
@@ -47,18 +46,17 @@
     };
 
     @Prop({ required: true })
-    message!: '14';
+    message:string = '14';
 
     get text() {
-      if (parseInt(this.message, 10) === 14) {
-        const newMessage = this.message.concat(' (default)');
-        return newMessage;
+      if (this.message.toString()) {
+        return '';
       }
-      return this.message;
+      return '';
     }
 
     get fontSize() {
-      return this.message;
+      return parseInt(this.message, 10) === 14 ? 14 : 50;
     }
 
     get connectedUsers() {
@@ -87,6 +85,11 @@
       this.$nextTick(this.$refs.pane.updateFooterHeight);
     }
 
+    @Watch('message')
+    updateFontSize() {
+      this.$vxm.chat.changeFontSize(parseInt(this.message, 10));
+    }
+
     unign(user:string) {
       this.$vxm.chat.unignoreUser(user);
     }
@@ -94,7 +97,7 @@
 </script>
 <style scoped>
 #font-size-p {
-  vertical-align: super;
+  vertical-align: mid;
   margin-left:2px;
 }
 h1 {

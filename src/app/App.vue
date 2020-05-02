@@ -32,6 +32,7 @@
             v-show="index === activeTab"
             :visibility="index === activeTab"
             @postMessage="postMessage($event, channel.name)"
+            :style='{ fontSize: fontSize + "px" }'
           />
           <UserPane :visibility="userPaneSelected" v-show="userPaneSelected"/>
           <SettingsPane :visibility="settingsPaneSelected" v-show="settingsPaneSelected" />
@@ -84,6 +85,11 @@
     $refs!: {
       reportDialog: ReportDialog;
     };
+
+    get fontSize() {
+      return this.$vxm.chat.fontSize.toString();
+      // return 29;
+    }
 
     get messageTabs() {
       return Object.values(this.$vxm.chat.channels).map(channel => channel!);
