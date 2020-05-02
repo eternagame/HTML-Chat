@@ -72,6 +72,8 @@ export default class ChatModule extends VuexModule {
 
   usersByNick: { [nick: string]: User } = {};
 
+  stringToAdd : string = '';
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -82,6 +84,15 @@ export default class ChatModule extends VuexModule {
         name: channelName,
       };
     });
+  }
+
+  @mutation
+  addString(str:string) {
+    this.stringToAdd += str;
+  }
+
+  @mutation clearString() {
+    this.stringToAdd = '';
   }
 
   @mutation

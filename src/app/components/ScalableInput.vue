@@ -16,9 +16,8 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
-
-
-  @Component({})
+  @Component({
+  })
   export default class ScalableInput extends Vue {
     height = 0;
 
@@ -71,7 +70,7 @@
 
   .scalable-input,
   .scalable-input-hidden {
-    width: calc(100% - 2px); //100% - border
+    width: calc(100% - 37px); //100% - border
     min-height: 19px;
   }
 

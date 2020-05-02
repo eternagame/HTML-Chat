@@ -16,6 +16,9 @@
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput"
       />
+      <EmoticonButton
+        emoticon = '😃'
+      />
       <ConnectButton
         v-show="!showInput"
       />
@@ -32,6 +35,7 @@
   import Pane from './Pane.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ScalableInput from '@/components/ScalableInput.vue';
+  import EmoticonButton from '@/components/EmoticonButton.vue';
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
   import BanStatus from '@/types/BanStatus';
   import Message from '@/types/message';
@@ -43,6 +47,7 @@
       UserMessage,
       Pane,
       ScalableInput,
+      EmoticonButton,
       ConnectButton,
     },
   })
@@ -68,6 +73,10 @@
           || this.connectionData.firstConnection;
     }
 
+    get strsNeed() {
+      return this.$vxm.chat.stringToAdd;
+    }
+
     $refs!: {
       pane: Pane;
     };
@@ -88,6 +97,12 @@
     @Watch('connectionData.connected')
     updateFooterHeight() {
       this.$nextTick(this.$refs.pane.updateFooterHeight);
+    }
+
+    @Watch('strsNeed')
+    newStrs() {
+      this.newMessage += this.strsNeed;
+      this.$vxm.chat.clearString();
     }
   }
 </script>
