@@ -10,11 +10,8 @@
 
   @Component({
   })
-  export default class EmoticonButton extends Vue {
+  export default class ExpandButton extends Vue {
     emoticon = '➕';
-
-    @Prop({ required: true })
-    position!: Number;
 
     get emote() {
       return this.emoticon;

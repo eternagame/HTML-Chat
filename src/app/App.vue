@@ -4,32 +4,17 @@
     style="height:100%; overflow-y:hidden;"
   >
     <transition name="fade">
-      <div style="height: 100%;" v-show="!minimized">
-        <div style="position:relative;">
-          <TabButton
-            v-for="({name}, index) in messageTabs"
-            :key="name"
-            :selected="activeTab === index"
-            :name="name.substr(1)"
-            @input="activeTab = index"
-          />
-          <TabButton
-            :selected="userPaneSelected"
-            :name="`Online(${userCount})`"
-            @input="activeTab = messageTabs.length"
-          />
-        </div>
-        <div class="chat-content">
-          <MessagePane
-            v-for="(channel, index) in messageTabs"
-            :key="channel.name"
-            :data="channel"
-            v-show="index === activeTab"
-            :visibility="index === activeTab"
-            @postMessage="postMessage($event, channel.name)"
-          />
-          <UserPane :visibility="userPaneSelected" v-show="userPaneSelected"/>
-        </div>
+      <slideout></slideout>
+      <div class="chat-content">
+        <MessagePane
+          v-for="(channel, index) in messageTabs"
+          :key="channel.name"
+          :data="channel"
+          v-show="index === activeTab"
+          :visibility="index === activeTab"
+          @postMessage="postMessage($event, channel.name)"
+        />
+        <UserPane :visibility="userPaneSelected" v-show="userPaneSelected"/>
         <ConnectingPopup/>
         <ReportDialog ref="reportDialog"/>
       </div>
@@ -43,7 +28,7 @@
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
   import MinimizationTriangle from './components/MinimizationTriangle.vue';
-  import TabButton from './components/TabButton.vue';
+  import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
   import MessagePane from '@/components/Panes/MessagePane.vue';
@@ -52,7 +37,7 @@
   @Component({
     components: {
       MinimizationTriangle,
-      TabButton,
+      Slideout,
       ReportDialog,
       ConnectingPopup,
       MessagePane,

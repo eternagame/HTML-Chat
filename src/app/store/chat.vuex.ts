@@ -78,6 +78,10 @@ export default class ChatModule extends VuexModule {
 
   screenSmall !: boolean;
 
+  tab1 !: Number;
+
+  tab2 !: Number;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -88,6 +92,16 @@ export default class ChatModule extends VuexModule {
         name: channelName,
       };
     });
+  }
+
+  @mutation
+  changeTab1(to:Number) {
+    this.tab1 = to;
+  }
+
+  @mutation
+  changeTab2(to:Number) {
+    this.tab2 = to;
   }
 
   @mutation
