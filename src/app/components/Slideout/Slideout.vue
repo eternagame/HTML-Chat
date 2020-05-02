@@ -20,12 +20,6 @@
     <SlideoutChats
       v-if="chatSelected"
     />
-    <SlideoutUser>
-      v-if="userSelected"
-    />
-    <SlideoutSettings>
-      v-if="settingsSelected"
-    />
   </div>
 </template>
 
@@ -51,6 +45,9 @@
     },
   })
   export default class Slideout extends Vue {
+    @Prop({ required: true })
+    active!:boolean;
+
     activeTab = 0;
 
     get chatSelected() {
