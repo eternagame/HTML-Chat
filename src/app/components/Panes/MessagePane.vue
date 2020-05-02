@@ -15,7 +15,9 @@
         :disabled="!connectionData.connected || isBanned"
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput && (!sizeSmall || !expansion)"
-        v-bind:class="{'smaller': expansion, 'bigger': !expansion}"
+        v-bind:class="{'smaller': expansion && !sizeSmall,
+        'bigger': !expansion && sizeSmall,
+        'biggest': !expansion && !sizeSmall}"
       />
       <EmoticonButton
         emoticon='😀'

@@ -36,10 +36,13 @@ button {
   position: absolute;
   bottom: 0px;
   right:0px;
-  padding:4px;
+  padding-right:3px;
+  padding-left:3px;
+  padding-bottom:1px;
+  padding-top:1px;
   margin:5px;
   border: solid 1px white;
-  border-radius:10%;
+  border-radius:8%;
   background-color:white;
 }
 </style>
