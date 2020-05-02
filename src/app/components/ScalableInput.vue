@@ -68,10 +68,13 @@
     padding: 0;
   }
   .smaller {
-    width: calc(100% - 197px); //100% - border
+    width: calc(100% - 195px); //100% - border
   }
   .bigger {
-    width: calc(100% - 37px); //100% - border
+    width: calc(100% - 15px); //100% - border
+  }
+  .biggest {
+    width: calc(100% - 55px);
   }
 
   .scalable-input,
