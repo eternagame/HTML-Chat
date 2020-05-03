@@ -72,12 +72,6 @@ export default class ChatModule extends VuexModule {
 
   usersByNick: { [nick: string]: User } = {};
 
-  stringToAdd : string = '';
-
-  expandedButtons : boolean = false;
-
-  screenSmall !: boolean;
-
   tab1 !: Number;
 
   tab2 !: Number;
@@ -102,26 +96,6 @@ export default class ChatModule extends VuexModule {
   @mutation
   changeTab2(to:Number) {
     this.tab2 = to;
-  }
-
-  @mutation
-  changeScreenSmall(to:boolean) {
-    this.screenSmall = to;
-  }
-
-  @mutation
-  addString(str:string) {
-    this.stringToAdd += str;
-  }
-
-  @mutation
-  clearString() {
-    this.stringToAdd = '';
-  }
-
-  @mutation
-  toggleExpansion() {
-    this.expandedButtons = !this.expandedButtons;
   }
 
   @mutation
