@@ -43,8 +43,7 @@
     background-color: rgba(255, 255, 255, 0.07);
     text-transform: capitalize;
     display:block;
-    width:100%;
-    height:min-content;
+    width: 100%;
   }
 
   /* Change background color of buttons on hover */

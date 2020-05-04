@@ -19,7 +19,7 @@
         <ReportDialog ref="reportDialog"/>
       </div>
     </transition>
-    <MinimizationTriangle v-model="minimization" />
+    <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
   </div>
 </template>
 
@@ -80,10 +80,6 @@
       return this.activeTab === 0;
     }
 
-    get userCount() {
-      return Object.keys(this.$vxm.chat.connectedUsers).length;
-    }
-
     get minimized() {
       return this.minimization;
     }
@@ -119,7 +115,7 @@
 <style lang="scss" scoped>
   #eterna-chat {
     min-width: 0;
-    font-family: "Helvetica Neue", "Open Sans", Arial, Gulim;
+    font-family: "Open Sans", "Open Sans", Arial, Gulim;
     font-size: 14px;
     font-weight: 300;
   }
@@ -149,16 +145,17 @@
 
   .chat-content {
     border: rgba(255, 255, 255, 0.2) solid 2px;
-    height: calc(100% - 29px); //Account for top bar and border
+    height: calc(100% - 34px); //Account for top bar and border
     position: absolute;
-    top:23px;
+    top:30px;
     left:0px;
     width:calc(100% - 4px); //Account for border
     color: #c0dce7;
   }
   .minimizationTriangle {
-  position:absolute;
-  top:0px;
-  right:0px;
-}
+    position:absolute;
+    top:0px;
+    margin-top:2.5px;
+    right:30px;
+  }
 </style>
