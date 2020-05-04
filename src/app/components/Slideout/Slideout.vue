@@ -72,11 +72,16 @@
         return this.$vxm.chat.chatChannel;
     }
 
+    get userCount() {
+      return Object.keys(this.$vxm.chat.connectedUsers).length;
+    }
+
     @Watch('activeTab')
     tabChanged() {
       if (this.activeTab !== 0) {
         this.checked = false;
-        this.$vxm.chat.changeChannel(this.activeTab === 1 ? '👤' : '⚙️');
+        const userString = `Users (${this.userCount})`;
+        this.$vxm.chat.changeChannel(this.activeTab === 1 ? userString : 'Settings');
       }
       this.$vxm.chat.changeTab1(this.activeTab);
     }
@@ -87,8 +92,10 @@
 .checkbox {
   width:fit-content;
   position: relative;
+  height:30px;
   vertical-align: middle;
-  margin:5px;
+  margin-left:5px;
+  margin-right:5px;
   background: none;
 }
 .slideout-container {
@@ -110,12 +117,13 @@
 #current-tab {
   position:absolute;
   right:25px;
-  padding-top:1px;
-  font-size:16px;
+  padding-top:0px;
+  font-size:20px;
   top:0px;
   width:calc(100% - 48px);
   float:right;
   text-align: left;
   z-index: 0;
+  height: 30px;
 }
 </style>
