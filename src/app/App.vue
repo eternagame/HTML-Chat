@@ -3,18 +3,18 @@
     id="eterna-chat"
     style="height:100%; overflow-y:hidden;"
   >
+    <slideout style="z-index:1;"></slideout>
     <transition name="fade">
-      <slideout></slideout>
-      <div class="chat-content">
+      <div class="chat-content" style="position:absolute;top:0px;left:0px;height:100%;width:100px;">
         <MessagePane
           v-for="(channel, index) in messageTabs"
           :key="channel.name"
           :data="channel"
-          v-show="index === activeTab"
-          :visibility="index === activeTab"
+          v-show="index === activeTab2 && chatPaneSelected"
+          :visibility="index === activeTab2 && chatPaneSelected"
           @postMessage="postMessage($event, channel.name)"
         />
-        <UserPane :visibility="userPaneSelected" v-show="userPaneSelected"/>
+        <UserPane :visibility="userPaneSelected" v-show="userPaneSelected" />
         <ConnectingPopup/>
         <ReportDialog ref="reportDialog"/>
       </div>
@@ -56,7 +56,13 @@
 
     minimized = false;
 
-    activeTab = 0;
+    get activeTab() {
+      return this.$vxm.chat.tab1;
+    }
+
+    get activeTab2() {
+      return this.$vxm.chat.tab2;
+    }
 
     $refs!: {
       reportDialog: ReportDialog;
@@ -67,7 +73,11 @@
     }
 
     get userPaneSelected() {
-      return this.activeTab === this.messageTabs.length;
+      return this.activeTab === 1;
+    }
+
+    get chatPaneSelected() {
+      return this.activeTab === 0;
     }
 
     get userCount() {
