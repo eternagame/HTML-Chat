@@ -5,7 +5,7 @@
   >
     <slideout style="z-index:1;"></slideout>
     <transition name="fade">
-      <div class="chat-content" style="position:absolute;top:0px;left:0px;height:100%;width:100px;">
+      <div class="chat-content">
         <MessagePane
           v-for="(channel, index) in messageTabs"
           :key="channel.name"
@@ -19,7 +19,6 @@
         <ReportDialog ref="reportDialog"/>
       </div>
     </transition>
-    <MinimizationTriangle class="minimization-triangle" v-model="minimized"/>
   </div>
 </template>
 
@@ -27,7 +26,6 @@
   import {
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
-  import MinimizationTriangle from './components/MinimizationTriangle.vue';
   import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
@@ -36,7 +34,6 @@
 
   @Component({
     components: {
-      MinimizationTriangle,
       Slideout,
       ReportDialog,
       ConnectingPopup,
@@ -145,8 +142,11 @@
 
   .chat-content {
     border: rgba(255, 255, 255, 0.2) solid 2px;
-    height: calc(100% - 29px);
-    position: relative;
+    height: calc(100% - 29px); //Account for top bar and border
+    position: absolute;
+    top:23px;
+    left:0px;
+    width:calc(100% - 4px); //Account for border
     color: #c0dce7;
   }
 </style>

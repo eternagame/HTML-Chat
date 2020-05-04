@@ -17,6 +17,7 @@
   } from 'vue-property-decorator';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import TabButton from '@/components/TabButton.vue';
+  import Slideout from './Slideout.vue';
 
   @Component({
     components: {
@@ -33,6 +34,7 @@
 
     @Watch('activeTab')
     tabChanged() {
+      (this.$parent as Slideout).checked = true;
       this.$vxm.chat.changeTab2(this.activeTab);
     }
   }
