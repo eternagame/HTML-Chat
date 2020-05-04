@@ -76,6 +76,10 @@ export default class ChatModule extends VuexModule {
 
   tab2: Number = 0;
 
+  minimized: boolean = false;
+
+  chatChannel : string = 'General';
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -86,6 +90,16 @@ export default class ChatModule extends VuexModule {
         name: channelName,
       };
     });
+  }
+
+  @mutation
+  changeChannel(to:string) {
+    this.chatChannel = to;
+  }
+
+  @mutation
+  toggleMinimized(to:boolean) {
+    this.minimized = to;
   }
 
   @mutation
