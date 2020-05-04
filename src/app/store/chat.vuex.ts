@@ -72,9 +72,9 @@ export default class ChatModule extends VuexModule {
 
   usersByNick: { [nick: string]: User } = {};
 
-  tab1 !: Number;
+  tab1: Number = 0;
 
-  tab2 !: Number;
+  tab2: Number = 0;
 
   constructor() {
     super();
