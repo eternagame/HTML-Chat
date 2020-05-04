@@ -1,33 +1,32 @@
 <template>
-  <div style="position:relative; background-color:darkblue;">
-    <input type="checkbox" class="checkbox" v-model="checked">
-    <span>
+  <div
+  style="position:relative; width:151px"
+  :class="{ slideoutContainerHidden: !checked, tall:checked}"
+  >
+    <div class="slideout-container" :class="{ slideoutContainerHidden: !checked }">
+      <input type="checkbox" class="checkbox" v-model="checked" v-show="true">
+      <span v-if="checked" id="slideout-content">
       <SlideoutButton
         :selected="chatSelected"
-        :name="`Chat`"
+        :name="`#`"
         @input="activeTab = 0"
-        :class="{ 'big' : checked && activeTab === 0}"
-        v-show="!checked || activeTab === 0"
       />
       <SlideoutButton
         :selected="userSelected"
-        :name="`Users`"
+        :name="`👤`"
         @input="activeTab = 1"
-        :class="{ 'big' : checked && activeTab === 1 }"
-        v-show="!checked || activeTab === 1"
       />
       <SlideoutButton
         :selected="settingsSelected"
-        :name="`Settings`"
+        :name="`⚙️`"
         @input="activeTab = 2"
-        :class="{ 'big' : checked && activeTab === 2 }"
-        v-show="!checked || activeTab === 2"
       />
-    </span>
-    <SlideoutChats
-      v-if="chatSelected"
-      v-show="!checked"
-    />
+      <SlideoutChats
+        v-if="chatSelected"
+      />
+      </span>
+    </div>
+    <div id="current-tab">{{currentTab}}</div>
   </div>
 </template>
 
@@ -37,17 +36,21 @@
   } from 'vue-property-decorator';
   import SlideoutChats from '@/components/Slideout/SlideoutChats.vue';
   import SlideoutButton from '@/components/Slideout/SlideoutButton.vue';
+  import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
 
   @Component({
     components: {
       SlideoutChats,
       SlideoutButton,
+      MinimizationTriangle,
     },
   })
   export default class Slideout extends Vue {
     activeTab = 0;
 
     checked = true;
+
+    minimizedValue = false;
 
     get chatSelected() {
         return this.activeTab === 0;
@@ -61,17 +64,19 @@
       return this.activeTab === 2;
     }
 
-    get centeredValue() {
-      if (!this.checked && this.activeTab === 2) {
-        return ('calc(100% - 23px;');
-      }
-      return '24.59px';
+    get messageTabs() {
+        return Object.values(this.$vxm.chat.channels).map(channel => channel!);
+    }
+
+    get currentTab() {
+        return this.$vxm.chat.chatChannel;
     }
 
     @Watch('activeTab')
     tabChanged() {
       if (this.activeTab !== 0) {
-        this.checked = true;
+        this.checked = false;
+        this.$vxm.chat.changeChannel(this.activeTab === 1 ? '👤' : '⚙️');
       }
       this.$vxm.chat.changeTab1(this.activeTab);
     }
@@ -81,11 +86,36 @@
 <style scoped>
 .checkbox {
   width:fit-content;
+  position: relative;
+  vertical-align: middle;
   margin:5px;
-  vertical-align:middle;
+  background: none;
 }
-.big {
-  width: Calc(100% - 23px);
+.slideout-container {
+  width:fit-content;
+  background-color:black;
+  color:white;
+  height:100%;
+  position:absolute;
+  top:0px;
+  left:0px;
+  z-index: 2;
+}
+.slideoutContainerHidden {
+  height:0px;
+}
+.tall {
+  height:100%
+}
+#current-tab {
+  position:absolute;
+  right:25px;
+  padding-top:1px;
+  font-size:16px;
+  top:0px;
+  width:calc(100% - 48px);
   float:right;
+  text-align: left;
+  z-index: 0;
 }
 </style>

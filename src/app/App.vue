@@ -5,7 +5,7 @@
   >
     <slideout style="z-index:1;"></slideout>
     <transition name="fade">
-      <div class="chat-content">
+      <div class="chat-content" v-if="!minimized">
         <MessagePane
           v-for="(channel, index) in messageTabs"
           :key="channel.name"
@@ -19,6 +19,7 @@
         <ReportDialog ref="reportDialog"/>
       </div>
     </transition>
+    <MinimizationTriangle v-model="minimization" />
   </div>
 </template>
 
@@ -31,6 +32,7 @@
   import ReportDialog from '@/components/ReportDialog.vue';
   import MessagePane from '@/components/Panes/MessagePane.vue';
   import UserPane from '@/components/Panes/UserPane.vue';
+  import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
 
   @Component({
     components: {
@@ -39,6 +41,7 @@
       ConnectingPopup,
       MessagePane,
       UserPane,
+      MinimizationTriangle,
     },
   })
   export default class App extends Vue {
@@ -51,7 +54,7 @@
     @Prop()
     uid!: string;
 
-    minimized = false;
+    minimization = false;
 
     get activeTab() {
       return this.$vxm.chat.tab1;
@@ -79,6 +82,10 @@
 
     get userCount() {
       return Object.keys(this.$vxm.chat.connectedUsers).length;
+    }
+
+    get minimized() {
+      return this.minimization;
     }
 
     postMessage(rawMessage: string, channel: string) {
@@ -149,4 +156,9 @@
     width:calc(100% - 4px); //Account for border
     color: #c0dce7;
   }
+  .minimizationTriangle {
+  position:absolute;
+  top:0px;
+  right:0px;
+}
 </style>

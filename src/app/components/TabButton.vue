@@ -3,7 +3,9 @@
     :class="{active: selected}"
     @click="$emit('input')"
   >
-    {{ name }}
+    <p class='channel-name'>{{ name }}</p><br>
+    <p class='channel-description'>{{ description }}</p>
+    <div class='selected-indicator' v-show="selected" />
     <slot />
   </Button>
 </template>
@@ -16,6 +18,9 @@
   export default class TabButton extends Vue {
     @Prop()
     name!: string;
+
+    @Prop()
+    description!: string;
 
     @Prop({ required: true })
     selected!: string;
@@ -38,6 +43,8 @@
     background-color: rgba(255, 255, 255, 0.07);
     text-transform: capitalize;
     display:block;
+    width:100%;
+    height:min-content;
   }
 
   /* Change background color of buttons on hover */
@@ -47,5 +54,14 @@
 
   button.active {
     background-color: rgba(255, 255, 255, 0.2);
+    border-left: solid blue 10px;
+  }
+
+  .channel-name {
+    font-size: 20px;
+  }
+
+  .channel-description {
+    font-size: 12px;
   }
 </style>

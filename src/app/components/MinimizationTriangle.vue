@@ -29,10 +29,24 @@
     width: 25px;
     transform: rotate(180deg);
     -webkit-transform: rotate(180deg);
+    animation-name: minimization-triangle-rotation-from;
+    animation-duration: 0.2s;
+  }
+
+  @keyframes minimization-triangle-rotation-to {
+    from {transform: rotate(180deg); -webkit-transform: rotate(180deg);}
+    to {transform: rotate(270deg); -webkit-transform: rotate(270deg);}
+  }
+
+  @keyframes minimization-triangle-rotation-from {
+    to {transform: rotate(180deg); -webkit-transform: rotate(180deg);}
+    from {transform: rotate(270deg); -webkit-transform: rotate(270deg);}
   }
 
   .minimization-triangle.flipped {
     transform: rotate(270deg);
     -webkit-transform: rotate(270deg);
+    animation-name: minimization-triangle-rotation-to;
+    animation-duration: 0.2s;
   }
 </style>
