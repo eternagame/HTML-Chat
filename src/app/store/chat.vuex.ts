@@ -80,6 +80,8 @@ export default class ChatModule extends VuexModule {
 
   chatChannel : string = '#general';
 
+  fontSize: Number = 18;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -90,6 +92,11 @@ export default class ChatModule extends VuexModule {
         name: channelName,
       };
     });
+  }
+
+  @mutation
+  changeFontSize(to:Number) {
+    this.fontSize = to;
   }
 
   @mutation
