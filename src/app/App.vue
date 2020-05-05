@@ -15,6 +15,7 @@
           @postMessage="postMessage($event, channel.name)"
         />
         <UserPane :visibility="userPaneSelected" v-show="userPaneSelected" />
+        <SettingsPane :visibility="settingsPaneSelected" v-show="settingsPaneSelected" />
         <ConnectingPopup/>
         <ReportDialog ref="reportDialog"/>
       </div>
@@ -33,6 +34,7 @@
   import ReportDialog from '@/components/ReportDialog.vue';
   import MessagePane from '@/components/Panes/MessagePane.vue';
   import UserPane from '@/components/Panes/UserPane.vue';
+  import SettingsPane from '@/components/Panes/SettingsPane.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
 
   @Component({
@@ -42,6 +44,7 @@
       ConnectingPopup,
       MessagePane,
       UserPane,
+      SettingsPane,
       MinimizationTriangle,
     },
   })
@@ -79,6 +82,10 @@
 
     get chatPaneSelected() {
       return this.activeTab === 0;
+    }
+
+    get settingsPaneSelected() {
+      return this.activeTab === 2;
     }
 
     get minimized() {
