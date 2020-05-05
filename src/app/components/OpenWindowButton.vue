@@ -1,10 +1,10 @@
 <template>
-  <div
+  <a
     class="open-window"
     style="float: right;"
+    href="link-to-full-window"
   >
-    <a href="window-link"></a>
-  </div>
+  </a>
 </template>
 
 <script lang="ts">
