@@ -3,7 +3,7 @@
     :class="{active: isActive}"
     @click="$emit('input');"
   >
-    <p class='channel-name'>{{ name }}</p><br>
+    <p class='channel-name'>#{{ name }}</p><br>
     <p class='channel-description'>{{ description }}</p>
     <slot />
   </Button>
@@ -43,12 +43,12 @@
     cursor: pointer;
     transition: 0.3s;
     padding: 0.4em 1.25em;
-    font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
+    font-family: "Open Sans","Century Gothic", "Didact Gothic", Arial, sans-serif;
     font-size: 12px;
     font-weight: bold;
     color: #fff;
-    background-color: rgba(255, 255, 255, 0.07);
-    text-transform: capitalize;
+    background-color: black;
+    text-transform: none;
     display:block;
     width: 100%;
   }
@@ -59,11 +59,13 @@
   }
 
   button.active {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-left: solid blue 10px;
+    border-left: solid #4A90E2 10px;
+    border-top-left-radius: 5%;
+    border-bottom-left-radius: 5%;
   }
 
   .channel-name {
+    margin-top:15px;
     font-size: 20px;
   }
 

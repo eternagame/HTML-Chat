@@ -66,9 +66,11 @@
     position: absolute;
     top: 0px;
     padding: 0;
+    color:white;
     width:calc(100% - 2px);
     background-color:navy;
     border:gray 0.5px solid;
+    outline: none;
   }
 
   .scalable-input,

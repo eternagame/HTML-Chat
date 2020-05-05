@@ -9,7 +9,9 @@
         :description="channelDescriptions[name]"
         @input="activeTab = index"
         v-on:click="update"
-      />
+      >
+        <Splitter />
+      </TabButton>
     </div>
   </div>
 </template>
@@ -20,11 +22,13 @@
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import TabButton from '@/components/TabButton.vue';
   import Slideout from './Slideout.vue';
+  import Splitter from '../Splitter.vue';
 
   @Component({
     components: {
       MinimizationTriangle,
       TabButton,
+      Splitter,
     },
   })
   export default class SlideoutChats extends Vue {
@@ -52,5 +56,11 @@
       this.$vxm.chat.changeChannel(this.messageTabs[this.activeTab].name);
       this.$vxm.chat.changeTab2(this.activeTab);
     }
+
+    isSelected(of:Number) {
+      return of === this.activeTab;
+    }
   }
 </script>
+<style scoped>
+</style>

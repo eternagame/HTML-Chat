@@ -1,5 +1,7 @@
 <template>
-  <div style="height: 100%">
+  <div
+  style="height: 100%; font-family:'Open Sans','Century Gothic','Didact Gothic,'Arial',sans-serif"
+  >
     <div
       ref="scrollDiv"
       style="padding: 5.6px 7px;"

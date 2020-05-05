@@ -1,5 +1,9 @@
 <template>
-  <Pane ref="pane" :visibility="visibility">
+  <Pane
+    ref="pane"
+    :visibility="visibility"
+    style= "font-family:'Open Sans','Century Gothic','Didact Gothic,'Arial',sans-serif"
+    >
     <ul>
       <li v-for="user in connectedUsers" :key="user.username">
         <Username :user="user" />
