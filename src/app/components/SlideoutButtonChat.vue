@@ -31,12 +31,7 @@
     cursor: pointer;
     transition: 0.3s;
     padding: 0.4em 1.25em;
-    font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.07);
-    text-transform: capitalize;
+    background-color: black;
     height:30px;
     background-image: url("../assets/chat-icon-white.png");
     background-repeat: no-repeat;
@@ -51,7 +46,6 @@
   }
 
   button.active {
-    background-color: rgba(255, 255, 255, 0.2);
     background-image: url("../assets/chat-icon-green.png");
   }
 </style>

@@ -175,7 +175,8 @@
   }
   #current-tab {
   position:absolute;
-  right:25px;
+  right:20px;
+  font-family:'Open Sans','Century Gothic','Didact Gothic','Arial',sans-serif;
   padding-top:0px;
   font-size:20px;
   top:0px;
