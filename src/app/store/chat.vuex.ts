@@ -45,7 +45,7 @@ class ConnectionData {
   }
 }
 
-const channelNames = ['#general', '#test', '#test2'] as const;
+const channelNames = ['#general', '#off-topic', '#help'] as const;
 
 export default class ChatModule extends VuexModule {
   toBePosted: Message[] = [];
@@ -78,7 +78,7 @@ export default class ChatModule extends VuexModule {
 
   minimized: boolean = false;
 
-  chatChannel : string = 'General';
+  chatChannel : string = '#general';
 
   constructor() {
     super();

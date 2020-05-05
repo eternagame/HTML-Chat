@@ -20,6 +20,7 @@
       </div>
     </transition>
     <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
+    <a class="open-window" href="full_window_link_here">↗️</a>
   </div>
 </template>
 
@@ -156,6 +157,14 @@
     position:absolute;
     top:0px;
     margin-top:2.5px;
-    right:30px;
+    right:0px;
+  }
+  .open-window {
+    position:absolute;
+    top:0px;
+    margin-top:5.5px;
+    right:35px;
+    text-decoration: none;
+    vertical-align: middle;
   }
 </style>

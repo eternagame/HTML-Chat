@@ -8,6 +8,7 @@
         :name="name.substr(1)"
         :description="channelDescriptions[name]"
         @input="activeTab = index"
+        v-on:click="update"
       />
     </div>
   </div>
@@ -27,12 +28,12 @@
     },
   })
   export default class SlideoutChats extends Vue {
-    activeTab = 0;
+    activeTab = 4;
 
     channelDescriptions = {
     '#general': 'General chat',
-    '#test': 'Testing chat 1',
-    '#test2': 'Testing chat 2',
+    '#off-topic': 'For off-topic conversations',
+    '#help': 'Help requests',
     };
 
     get messageTabs() {
@@ -41,6 +42,12 @@
 
     @Watch('activeTab')
     tabChanged() {
+      (this.$parent as Slideout).checked = false;
+      this.$vxm.chat.changeChannel(this.messageTabs[this.activeTab].name);
+      this.$vxm.chat.changeTab2(this.activeTab);
+    }
+
+    update() {
       (this.$parent as Slideout).checked = false;
       this.$vxm.chat.changeChannel(this.messageTabs[this.activeTab].name);
       this.$vxm.chat.changeTab2(this.activeTab);
