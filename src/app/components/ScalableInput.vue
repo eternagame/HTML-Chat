@@ -66,15 +66,9 @@
     position: absolute;
     top: 0px;
     padding: 0;
-  }
-  .smaller {
-    width: calc(100% - 195px); //100% - border
-  }
-  .bigger {
-    width: calc(100% - 15px); //100% - border
-  }
-  .biggest {
-    width: calc(100% - 55px);
+    width:calc(100% - 2px);
+    background-color:navy;
+    border:gray 0.5px solid;
   }
 
   .scalable-input,

@@ -16,6 +16,7 @@
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput && (!sizeSmall || !expansion)"
       />
+      <button id="send-button" v-on:click="sendMessage" v-show="showInput">▶️</button>
       <ConnectButton
         v-show="!showInput"
       />
@@ -80,6 +81,11 @@
       }
     }
 
+    sendMessage() {
+      this.$emit('postMessage', this.newMessage);
+      this.newMessage = '';
+    }
+
     @Watch('messages')
     onContentChanged() {
       this.$refs.pane.onContentChanged();
@@ -91,3 +97,17 @@
     }
   }
 </script>
+<style scoped>
+button {
+  position:absolute;
+  right:10px;
+  bottom:9px;
+  padding:0px;
+  width:15px;
+  height:15px;
+  background-color:white;
+  border: white 1px solid;
+  border-radius: 50%;
+  color:black;
+}
+</style>

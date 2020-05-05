@@ -1,17 +1,20 @@
 <template>
   <Button
-    :class="{active: selected}"
-    @click="$emit('input')"
+    :class="{active: isActive}"
+    @click="$emit('input');"
   >
     <p class='channel-name'>{{ name }}</p><br>
     <p class='channel-description'>{{ description }}</p>
-    <div class='selected-indicator' v-show="selected" />
     <slot />
   </Button>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import {
+    Component, Prop, Vue, Watch,
+  } from 'vue-property-decorator';
+  import chat from '@/store/chat.vuex';
+  import SlideoutChats from './Slideout/SlideoutChats.vue';
 
 
   @Component
@@ -22,8 +25,12 @@
     @Prop()
     description!: string;
 
-    @Prop({ required: true })
+    @Prop()
     selected!: string;
+
+    get isActive() {
+      return this.$vxm.chat.chatChannel.includes(this.name);
+    }
   }
 </script>
 
