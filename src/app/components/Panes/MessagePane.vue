@@ -5,6 +5,7 @@
         v-for="(message, i) in data.postedMessages"
         :key="i"
         :message="message"
+        :style="{fontSize:fontSize}"
       />
       <ConnectingMessage />
     </ul>
@@ -69,6 +70,10 @@
     get showInput() {
       return this.connectionData.connected
           || this.connectionData.firstConnection;
+    }
+
+    get fontSize() {
+      return this.$vxm.chat.fontSize.toString().concat('px');
     }
 
     $refs!: {

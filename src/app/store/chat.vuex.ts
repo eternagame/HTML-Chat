@@ -80,7 +80,7 @@ export default class ChatModule extends VuexModule {
 
   chatChannel : string = '#general';
 
-  fontSize: Number = 18;
+  fontSize: Number = 14;
 
   messageToBeSent = false;
 
