@@ -27,25 +27,25 @@
     background-position: center;
     height: 24px;
     width: 25px;
-    transform: rotate(180deg);
-    -webkit-transform: rotate(180deg);
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
     animation-name: minimization-triangle-rotation-from;
     animation-duration: 0.2s;
   }
 
   @keyframes minimization-triangle-rotation-to {
-    from {transform: rotate(180deg); -webkit-transform: rotate(180deg);}
-    to {transform: rotate(270deg); -webkit-transform: rotate(270deg);}
+    from {transform: rotate(0deg); -webkit-transform: rotate(0deg);}
+    to {transform: rotate(90deg); -webkit-transform: rotate(90deg);}
   }
 
   @keyframes minimization-triangle-rotation-from {
-    to {transform: rotate(180deg); -webkit-transform: rotate(180deg);}
-    from {transform: rotate(270deg); -webkit-transform: rotate(270deg);}
+    to {transform: rotate(0deg); -webkit-transform: rotate(0deg);}
+    from {transform: rotate(90deg); -webkit-transform: rotate(90deg);}
   }
 
   .minimization-triangle.flipped {
-    transform: rotate(270deg);
-    -webkit-transform: rotate(270deg);
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
     animation-name: minimization-triangle-rotation-to;
     animation-duration: 0.2s;
   }

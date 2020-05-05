@@ -16,7 +16,7 @@
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput && (!sizeSmall || !expansion)"
       />
-      <button id="send-button" v-on:click="sendMessage" v-show="showInput">▶️</button>
+      <SendButton v-on:click="sendMessage" v-show="showInput" v-model="button" />
       <ConnectButton
         v-show="!showInput"
       />
@@ -37,6 +37,7 @@
   import BanStatus from '@/types/BanStatus';
   import Message from '@/types/message';
   import { Channel } from '@/store/chat.vuex';
+  import SendButton from '@/components/SendButton.vue';
 
   @Component({
     components: {
@@ -45,6 +46,7 @@
       Pane,
       ScalableInput,
       ConnectButton,
+      SendButton,
     },
   })
   export default class MessagesPane extends Vue {
@@ -73,6 +75,10 @@
       pane: Pane;
     };
 
+    get messageSending() {
+      return this.$vxm.chat.messageToBeSent;
+    }
+
     onKeyPress(e: KeyboardEvent) {
       if (e.code === 'Enter' || e.code === 'NumpadEnter') {
         this.$emit('postMessage', this.newMessage);
@@ -81,9 +87,13 @@
       }
     }
 
+    @Watch('messageSending')
     sendMessage() {
-      this.$emit('postMessage', this.newMessage);
-      this.newMessage = '';
+      if (this.messageSending) {
+        this.$emit('postMessage', this.newMessage);
+        this.newMessage = '';
+        this.$vxm.chat.changeMessageToBeSent(false);
+      }
     }
 
     @Watch('messages')
@@ -98,16 +108,12 @@
   }
 </script>
 <style scoped>
-button {
+.send-button {
   position:absolute;
-  right:10px;
-  bottom:9px;
+  right:6px;
+  bottom:6px;
   padding:0px;
-  width:15px;
-  height:15px;
-  background-color:white;
-  border: white 1px solid;
-  border-radius: 50%;
-  color:black;
+  width:20px;
+  height:20px;
 }
 </style>

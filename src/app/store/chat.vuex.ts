@@ -82,6 +82,8 @@ export default class ChatModule extends VuexModule {
 
   fontSize: Number = 18;
 
+  messageToBeSent = false;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -92,6 +94,11 @@ export default class ChatModule extends VuexModule {
         name: channelName,
       };
     });
+  }
+
+  @mutation
+  changeMessageToBeSent(to:boolean) {
+    this.messageToBeSent = to;
   }
 
   @mutation
