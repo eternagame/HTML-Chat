@@ -20,6 +20,7 @@
         <ReportDialog ref="reportDialog"/>
       </div>
     </transition>
+    <div id="current-tab">{{currentTab}}</div>
     <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
     <a class="open-window" href="full_window_link_here">↗️</a>
   </div>
@@ -62,6 +63,10 @@
 
     get activeTab() {
       return this.$vxm.chat.tab1;
+    }
+
+    get currentTab() {
+        return this.$vxm.chat.chatChannel;
     }
 
     get activeTab2() {
@@ -174,4 +179,16 @@
     text-decoration: none;
     vertical-align: middle;
   }
+  #current-tab {
+  position:absolute;
+  right:25px;
+  padding-top:0px;
+  font-size:20px;
+  top:0px;
+  width:calc(100% - 48px);
+  float:right;
+  text-align: left;
+  z-index: 0;
+  height: 30px;
+}
 </style>

@@ -3,30 +3,29 @@
   style="position:relative; width:151px"
   :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
-    <div class="slideout-container" :class="{ slideoutContainerHidden: !checked }">
+      <div class="slideout-container" :class="{ slideoutContainerHidden: !checked }">
       <input type="checkbox" class="checkbox" v-model="checked" v-show="true">
-      <span v-if="checked" id="slideout-content">
-      <SlideoutButton
-        :selected="chatSelected"
-        :name="`#`"
-        @input="activeTab = 0"
-      />
-      <SlideoutButton
-        :selected="userSelected"
-        :name="`👤`"
-        @input="activeTab = 1"
-      />
-      <SlideoutButton
-        :selected="settingsSelected"
-        :name="`⚙️`"
-        @input="activeTab = 2"
-      />
-      <SlideoutChats
-        v-if="chatSelected"
-      />
-      </span>
-    </div>
-    <div id="current-tab">{{currentTab}}</div>
+        <span :class="{slideoutContent: !checked }" >
+          <SlideoutButton
+            :selected="chatSelected"
+            :name="`#`"
+            @input="activeTab = 0"
+          />
+          <SlideoutButton
+            :selected="userSelected"
+            :name="`👤`"
+            @input="activeTab = 1"
+          />
+          <SlideoutButton
+            :selected="settingsSelected"
+            :name="`⚙️`"
+            @input="activeTab = 2"
+          />
+          <SlideoutChats
+           v-if="chatSelected"
+          />
+        </span>
+      </div>
   </div>
 </template>
 
@@ -68,10 +67,6 @@
         return Object.values(this.$vxm.chat.channels).map(channel => channel!);
     }
 
-    get currentTab() {
-        return this.$vxm.chat.chatChannel;
-    }
-
     get userCount() {
       return Object.keys(this.$vxm.chat.connectedUsers).length;
     }
@@ -110,20 +105,21 @@
 }
 .slideoutContainerHidden {
   height:0px;
+  animation: slideBack 0.25s;
+}
+.slideoutContent {
+  visibility: hidden;
+}
+@keyframes slide {
+  from {left: -151px;}
+  to {left:0px;}
+}
+@keyframes slideBack {
+  to {height:100%; width:0px;}
+  from {height:100%;width:151px;}
 }
 .tall {
-  height:100%
-}
-#current-tab {
-  position:absolute;
-  right:25px;
-  padding-top:0px;
-  font-size:20px;
-  top:0px;
-  width:calc(100% - 48px);
-  float:right;
-  text-align: left;
-  z-index: 0;
-  height: 30px;
+  height:100%;
+  animation: slide 0.25s;
 }
 </style>
