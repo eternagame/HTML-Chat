@@ -4,21 +4,18 @@
   :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
       <div class="slideout-container" :class="{ slideoutContainerHidden: !checked }">
-      <input type="checkbox" class="checkbox" v-model="checked" v-show="true">
-        <span :class="{slideoutContent: !checked }" >
-          <SlideoutButton
+        <HamburgerMenuButton v-model="checked" class="checkbox"/>
+        <span :class="{slideoutContent: !checked }" v-show="checked">
+          <SlideoutButtonChat
             :selected="chatSelected"
-            :name="`#`"
             @input="activeTab = 0"
           />
-          <SlideoutButton
+          <SlideoutButtonUsers
             :selected="userSelected"
-            :name="`👤`"
             @input="activeTab = 1"
           />
-          <SlideoutButton
+          <SlideoutButtonSettings
             :selected="settingsSelected"
-            :name="`⚙️`"
             @input="activeTab = 2"
           />
           <SlideoutChats
@@ -35,13 +32,21 @@
   } from 'vue-property-decorator';
   import SlideoutChats from '@/components/Slideout/SlideoutChats.vue';
   import SlideoutButton from '@/components/Slideout/SlideoutButton.vue';
+  import SlideoutButtonUsers from '@/components/SlideoutButtonUsers.vue';
+  import SlideoutButtonChat from '@/components/SlideoutButtonChat.vue';
+  import SlideoutButtonSettings from '@/components/SlideoutButtonSettings.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
+  import HamburgerMenuButton from '@/components/HamburgerMenuButton.vue';
 
   @Component({
     components: {
       SlideoutChats,
       SlideoutButton,
+      SlideoutButtonSettings,
+      SlideoutButtonChat,
+      SlideoutButtonUsers,
       MinimizationTriangle,
+      HamburgerMenuButton,
     },
   })
   export default class Slideout extends Vue {
@@ -85,13 +90,10 @@
 
 <style scoped>
 .checkbox {
-  width:fit-content;
+  width: 25px;
   position: relative;
   height:30px;
-  vertical-align: middle;
-  margin-left:5px;
-  margin-right:5px;
-  background: none;
+  vertical-align: top;
 }
 .slideout-container {
   width:fit-content;
@@ -115,8 +117,8 @@
   to {left:0px;}
 }
 @keyframes slideBack {
-  to {height:100%; width:0px;}
-  from {height:100%;width:151px;}
+  to {height:100%; width:0px}
+  from {height:100%;width:151px}
 }
 .tall {
   height:100%;

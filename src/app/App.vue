@@ -22,7 +22,7 @@
     </transition>
     <div id="current-tab">{{currentTab}}</div>
     <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
-    <a class="open-window" href="full_window_link_here">↗️</a>
+    <OpenWindowButton />
   </div>
 </template>
 
@@ -37,6 +37,7 @@
   import UserPane from '@/components/Panes/UserPane.vue';
   import SettingsPane from '@/components/Panes/SettingsPane.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
+  import OpenWindowButton from '@/components/OpenWindowButton.vue';
 
   @Component({
     components: {
@@ -47,6 +48,7 @@
       UserPane,
       SettingsPane,
       MinimizationTriangle,
+      OpenWindowButton,
     },
   })
   export default class App extends Vue {
@@ -133,12 +135,6 @@
     font-weight: 300;
   }
 
-  .minimization-triangle {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-  }
-
   .tabs {
     position: relative;
     height: 25px;
@@ -174,10 +170,8 @@
   .open-window {
     position:absolute;
     top:0px;
-    margin-top:5.5px;
-    right:35px;
-    text-decoration: none;
-    vertical-align: middle;
+    margin-top:2.5px;
+    right:24px;
   }
   #current-tab {
   position:absolute;
