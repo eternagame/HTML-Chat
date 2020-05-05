@@ -2,7 +2,7 @@
   <Pane ref="pane" :visibility="visibility">
     <h1>Text Size</h1>
     <input v-model="message" type=number min=10 max=22 value=24>
-    <span id='font-size-p'>{{text}} Default is 14</span>
+    <p id='font-size-p'>{{text}} Default is 14</p>
     <h1>Ignored Users</h1>
     <ul>
       <li v-for="user in ignoredUsers" :key="user.Username">
@@ -81,6 +81,11 @@
       this.$nextTick(this.$refs.pane.updateFooterHeight);
     }
 
+    @Watch('ignoredUsers')
+    usersChanged() {
+      this.$refs.pane.onContentChanged();
+    }
+
     @Watch('message')
     updateFontSize() {
       this.$vxm.chat.changeFontSize(parseInt(this.message, 10));
@@ -88,6 +93,7 @@
 
     unign(user:string) {
       this.$vxm.chat.unignoreUser(user);
+      this.$refs.pane.onContentChanged();
     }
   }
 </script>
@@ -105,5 +111,6 @@ input {
 .unignore-user {
   padding:2px;
   padding-bottom:3px;
+  background-color:white;
 }
 </style>

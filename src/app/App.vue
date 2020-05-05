@@ -15,7 +15,7 @@
           @postMessage="postMessage($event, channel.name)"
         />
         <UserPane :visibility="userPaneSelected" v-show="userPaneSelected" />
-        <SettingsPane :visibility="settingsPaneSelected" v-show="settingsPaneSelected" />
+        <SettingsPane :visibility="settingsPaneSelected" v-if="settingsPaneSelected" />
         <ConnectingPopup/>
         <ReportDialog ref="reportDialog"/>
       </div>
