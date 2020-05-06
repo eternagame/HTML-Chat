@@ -1,7 +1,7 @@
 <template>
   <div
     id="eterna-chat"
-    style="height:100%; overflow-y:hidden;"
+    style="height:100%; width:100%; overflow-y:hidden;"
   >
     <slideout style="z-index:1;"></slideout>
     <transition name="fade">
@@ -10,19 +10,18 @@
           v-for="(channel, index) in messageTabs"
           :key="channel.name"
           :data="channel"
-          v-show="index === activeTab2 && chatPaneSelected"
-          :visibility="index === activeTab2 && chatPaneSelected"
+          v-show="index === activeTab2"
+          :visibility="index === activeTab2"
           @postMessage="postMessage($event, channel.name)"
         />
-        <UserPane :visibility="userPaneSelected" v-show="userPaneSelected" />
-        <SettingsPane :visibility="settingsPaneSelected" v-if="settingsPaneSelected" />
         <ConnectingPopup/>
         <ReportDialog ref="reportDialog"/>
       </div>
     </transition>
-    <div id="current-tab">{{currentTab}}</div>
+    <div id="current-tab">{{currentTab}}
+    </div>
     <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
-    <OpenWindowButton />
+    <OpenWindowButton/>
   </div>
 </template>
 
@@ -34,8 +33,6 @@
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
   import MessagePane from '@/components/Panes/MessagePane.vue';
-  import UserPane from '@/components/Panes/UserPane.vue';
-  import SettingsPane from '@/components/Panes/SettingsPane.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import OpenWindowButton from '@/components/OpenWindowButton.vue';
 
@@ -45,8 +42,6 @@
       ReportDialog,
       ConnectingPopup,
       MessagePane,
-      UserPane,
-      SettingsPane,
       MinimizationTriangle,
       OpenWindowButton,
     },
@@ -63,10 +58,6 @@
 
     minimization = false;
 
-    get activeTab() {
-      return this.$vxm.chat.tab1;
-    }
-
     get currentTab() {
         return this.$vxm.chat.chatChannel;
     }
@@ -81,18 +72,6 @@
 
     get messageTabs() {
       return Object.values(this.$vxm.chat.channels).map(channel => channel!);
-    }
-
-    get userPaneSelected() {
-      return this.activeTab === 1;
-    }
-
-    get chatPaneSelected() {
-      return this.activeTab === 0;
-    }
-
-    get settingsPaneSelected() {
-      return this.activeTab === 2;
     }
 
     get minimized() {
@@ -129,10 +108,15 @@
 
 <style lang="scss" scoped>
   #eterna-chat {
-    min-width: 0;
+    width:100%;
+    height:100%;
     font-family: "Open Sans", "Open Sans", Arial, Gulim;
     font-size: 14px;
     font-weight: 300;
+    background-color:#05224b;
+    position:relative;
+    top:0px;
+    left:0px;
   }
 
   .tabs {
@@ -153,15 +137,15 @@
   }
 
   .chat-content {
-    border: solid #05224b 2px;
+    border: solid #043468 2px;
     border-radius:15px;
     height: calc(100% - 54px); //Account for top bar and border
-    position: absolute;
+    position: relative;
     top:40px;
     left:8px;
     width:calc(100% - 20px); //Account for border
     color: #c0dce7;
-    background-color:#05224b;
+    background-color:#043468;
   }
   .minimizationTriangle {
     position:absolute;
@@ -176,7 +160,7 @@
     right:39px;
   }
   #current-tab {
-  position:absolute;
+  position: absolute;
   right:5px;
   font-family:'Open Sans','Century Gothic','Didact Gothic','Arial',sans-serif;
   padding-top:0px;
