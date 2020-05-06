@@ -3,15 +3,15 @@
     id="eterna-chat"
     style="height:100%; width:100%; overflow-y:hidden;"
   >
-    <slideout style="z-index:1;"></slideout>
+    <slideout style="z-index:1;" @change="alert(2)"></slideout>
     <transition name="fade">
       <div class="chat-content" v-if="!minimized">
         <MessagePane
           v-for="(channel, index) in messageTabs"
           :key="channel.name"
           :data="channel"
-          v-show="index === activeTab2"
-          :visibility="index === activeTab2"
+          v-show="index === activeTab"
+          :visibility="index === activeTab"
           @postMessage="postMessage($event, channel.name)"
         />
         <ConnectingPopup/>
@@ -59,11 +59,11 @@
     minimization = false;
 
     get currentTab() {
-        return this.$vxm.chat.chatChannel;
+      return this.$vxm.chat.chatChannel;
     }
 
-    get activeTab2() {
-      return this.$vxm.chat.tab2;
+    get activeTab() {
+      return this.$vxm.chat.tab;
     }
 
     $refs!: {

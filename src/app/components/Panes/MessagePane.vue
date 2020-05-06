@@ -18,7 +18,7 @@
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput"
       />
-      <SendButton @input="send" v-show="showInput" />
+      <SendButton @send="send" v-show="showInput" />
       <ConnectButton
         v-show="!showInput"
       />

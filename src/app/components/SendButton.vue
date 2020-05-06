@@ -13,7 +13,7 @@
   @Component
   export default class SendButton extends Vue {
     sendMessage() {
-      this.$emit('input', this);
+      this.$emit('send');
     }
   }
 </script>
