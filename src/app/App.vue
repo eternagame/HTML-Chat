@@ -140,7 +140,7 @@
     border: solid #043468 2px;
     border-radius:15px;
     height: calc(100% - 54px); //Account for top bar and border
-    position: relative;
+    position: absolute;
     top:40px;
     left:8px;
     width:calc(100% - 20px); //Account for border
