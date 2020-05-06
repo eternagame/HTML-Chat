@@ -67,7 +67,7 @@
   .scalable-input {
     resize: none;
     overflow: hidden;
-    position: relative;
+    position: absolute;
     top: 0px;
     padding: 0;
     color:black;
