@@ -28,10 +28,6 @@
     get userCount() {
       return Object.keys(this.$vxm.chat.connectedUsers).length;
     }
-
-    get connectionData() {
-      return this.$vxm.chat.connectionData;
-    }
   }
 </script>
 <style scoped>
@@ -39,7 +35,7 @@
   padding:5px;
   padding-left:20px;
   overflow: auto;
-  height:calc(100% - 50px);
+  height:calc(100% - 50px); /* Fills slideout and accounts for top bar */
 }
 
 ::-webkit-scrollbar {
@@ -47,14 +43,14 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color:#343a40;
+  background-color:#343a40; /* Make scrollbar visible */
   border-radius:5px;
 }
 
 li {
-  list-style-type: none;
+  list-style-type: none; /* Remove bullet points */
 }
 h3 {
-  margin-bottom:2px;
+  margin-bottom:2px; /* Title */
 }
 </style>

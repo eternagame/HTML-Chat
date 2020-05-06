@@ -7,10 +7,10 @@
     <ul>
       <li v-for="user in ignoredUsers" :key="user.Username">
         {{ user }}
-        <button class='unignore-user' v-on:click="unign(user)">Unignore</button>
+        <button class='unignore-user' v-on:click="unignore(user)">Unignore</button>
       </li>
       <li v-show="!anyIgnoredUsers">No users ignored</li>
-      <button class='unignore-user' v-on:click="unign('*')" v-show="anyIgnoredUsers" >
+      <button class='unignore-user' v-on:click="unignore('*')" v-show="anyIgnoredUsers" >
         Unignore All</button>
     </ul>
   </div>
@@ -31,7 +31,7 @@
   })
   export default class SlideoutSettings extends Vue {
     @Prop({ required: true })
-    size!:string;
+    size!:string; // font size
 
     get connectedUsers() {
       return this.$vxm.chat.connectedUsers;
@@ -53,20 +53,18 @@
       return (this.$parent as Slideout).checked;
     }
 
+    // When tab opened, display stored value if there is one
     created() {
       this.size = this.$vxm.chat.fontSize.toString();
     }
 
-    get msg() {
-      return this.size;
-    }
-
+    // Updates global font size when input changes
     @Watch('size')
     updateFontSize() {
       this.$vxm.chat.changeFontSize(parseInt(this.size, 10));
     }
 
-    unign(user:string) {
+    unignore(user:string) {
       this.$vxm.chat.unignoreUser(user);
     }
   }

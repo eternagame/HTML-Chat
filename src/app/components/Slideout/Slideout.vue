@@ -1,30 +1,29 @@
 <template>
   <div
-  style="position:relative; width:75%"
-  :class="{ slideoutContainerHidden: !checked, tall:checked}"
+    style="position:relative; width:75%"
+    class="slideout-container"
+    :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
-      <div class="slideout-container" :class="{ slideoutContainerHidden: !checked }">
-        <HamburgerMenuButton v-model="checked" class="checkbox"/>
-        <span :class="{slideoutContent: !checked }" v-if="checked">
-          <SlideoutButtonChat
-            :selected="chatSelected"
-            @input="activeTab = 0"
-          />
-          <SlideoutButtonUsers
-            :selected="userSelected"
-            @input="activeTab = 1"
-          />
-          <SlideoutButtonSettings
-            :selected="settingsSelected"
-            @input="activeTab = 2"
-          />
-          <SlideoutChats
-           v-if="chatSelected"
-          />
-          <SlideoutUser v-if="userSelected"/>
-          <SlideoutSettings v-if="settingsSelected" message=14 />
-        </span>
-      </div>
+    <HamburgerMenuButton v-model="checked"/>
+    <span :class="{slideoutContent: !checked }" v-if="checked">
+      <SlideoutButtonChat
+        :selected="chatSelected"
+        @input="activeTab = 0"
+      />
+      <SlideoutButtonUsers
+        :selected="userSelected"
+        @input="activeTab = 1"
+      />
+      <SlideoutButtonSettings
+        :selected="settingsSelected"
+        @input="activeTab = 2"
+      />
+      <SlideoutChats
+        v-if="chatSelected"
+      />
+      <SlideoutUser v-if="userSelected"/>
+      <SlideoutSettings v-if="settingsSelected" size=14 />
+    </span>
   </div>
 </template>
 
@@ -32,13 +31,13 @@
   import {
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
-  import SlideoutChats from '@/components/Slideout/SlideoutChats.vue';
-  import SlideoutUser from '@/components/Slideout/SlideoutUser.vue';
-  import SlideoutSettings from '@/components/Slideout/SlideoutSettings.vue';
-  import SlideoutButton from '@/components/Slideout/SlideoutButton.vue';
-  import SlideoutButtonUsers from '@/components/SlideoutButtonUsers.vue';
-  import SlideoutButtonChat from '@/components/SlideoutButtonChat.vue';
-  import SlideoutButtonSettings from '@/components/SlideoutButtonSettings.vue';
+  import SlideoutChats from './SlideoutChats.vue';
+  import SlideoutUser from './SlideoutUser.vue';
+  import SlideoutSettings from './SlideoutSettings.vue';
+  import SlideoutButton from './SlideoutButton.vue';
+  import SlideoutButtonUsers from '../SlideoutButtonUsers.vue';
+  import SlideoutButtonChat from '../SlideoutButtonChat.vue';
+  import SlideoutButtonSettings from '../SlideoutButtonSettings.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import HamburgerMenuButton from '@/components/HamburgerMenuButton.vue';
 
@@ -60,7 +59,8 @@
 
     checked = false;
 
-    minimizedValue = false;
+    @Prop()
+    minimizedValue !: boolean;
 
     get chatSelected() {
         return this.activeTab === 0;
@@ -74,18 +74,18 @@
       return this.activeTab === 2;
     }
 
-    get messageTabs() {
-        return Object.values(this.$vxm.chat.channels).map(channel => channel!);
-    }
-
-    get userCount() {
-      return Object.keys(this.$vxm.chat.connectedUsers).length;
+    // Slideout slides back when minimized
+    @Watch('minimizedValue')
+    minimzationChanged() {
+      if (!this.minimizedValue) {
+        this.checked = false;
+      }
     }
   }
 </script>
 
 <style scoped>
-.checkbox {
+.hamburger {
   position: relative;
   vertical-align: top;
 }
