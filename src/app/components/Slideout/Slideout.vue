@@ -94,7 +94,6 @@
   background-color:black;
   color:white;
   height:100%;
-  position:absolute;
   top:0px;
   left:0px;
   z-index: 2;

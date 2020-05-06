@@ -114,7 +114,7 @@
 </script>
 <style scoped>
 .send-button {
-  position: absolute;;
+  position: absolute;
   bottom:4px;
   right:4px;
   padding:0px;

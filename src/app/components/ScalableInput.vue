@@ -67,12 +67,12 @@
   .scalable-input {
     resize: none;
     overflow: hidden;
-    position: absolute;
+    position: relative;
     top: 0px;
     padding: 0;
-    color:white;
+    color:black;
     width:calc(100% - 2px);
-    background-color:#05224b;
+    background-color:white;
     border:#343a40 1px solid;
     border-radius:8px;
     outline: none;
