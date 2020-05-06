@@ -3,7 +3,7 @@
     :class="{active: isActive}"
     @click="$emit('input');"
   >
-    <p class='channel-name'>#{{ name }}</p><br>
+    <p class='channel-name'>#{{ name }}</p>
     <p class='channel-description'>{{ description }}</p>
     <slot />
   </Button>
@@ -67,9 +67,12 @@
   .channel-name {
     margin-top:15px;
     font-size: 20px;
+    text-align: justify;
+    text-justify:auto;
   }
 
   .channel-description {
     font-size: 12px;
+    text-align:justify;
   }
 </style>

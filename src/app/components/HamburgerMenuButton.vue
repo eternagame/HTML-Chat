@@ -22,5 +22,7 @@
   background-size: 60% 60%;
   background-position: center;
   display:inline-block;
+  width:40px;
+  height:40px;
 }
 </style>

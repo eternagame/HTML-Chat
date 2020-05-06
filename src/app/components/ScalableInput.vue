@@ -68,14 +68,19 @@
     padding: 0;
     color:white;
     width:calc(100% - 2px);
-    background-color:navy;
-    border:gray 0.5px solid;
+    background-color:#05224b;
+    border:#343a40 1px solid;
+    border-radius:8px;
     outline: none;
+  }
+
+  .scalable-input:focus {
+    border-color: #7b8a8b;
   }
 
   .scalable-input,
   .scalable-input-hidden {
-    min-height: 19px;
+    min-height: 24px;
   }
 
   /* To determine input size */

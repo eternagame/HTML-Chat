@@ -1,6 +1,6 @@
 <template>
   <div
-  style="position:relative; width:151px"
+  style="position:relative; width:75%"
   :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
       <div class="slideout-container" :class="{ slideoutContainerHidden: !checked }">
@@ -52,7 +52,7 @@
   export default class Slideout extends Vue {
     activeTab = 0;
 
-    checked = true;
+    checked = false;
 
     minimizedValue = false;
 
@@ -90,9 +90,7 @@
 
 <style scoped>
 .checkbox {
-  width: 25px;
   position: relative;
-  height:30px;
   vertical-align: top;
 }
 .slideout-container {
@@ -118,7 +116,7 @@
 }
 @keyframes slideBack {
   to {height:100%; width:0px}
-  from {height:100%;width:151px}
+  from {height:100%;width:75%}
 }
 .tall {
   height:100%;

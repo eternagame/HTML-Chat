@@ -144,42 +144,44 @@
 
   .fade-enter-active,
   .fade-leave-active {
-    transition: opacity 200ms;
+    transition: 200ms;
   }
 
   .fade-enter, .fade-leave-to
   {
-    opacity: 0;
+    transform: translateY(-50%) scaleY(0);
   }
 
   .chat-content {
-    border: rgba(255, 255, 255, 0.2) solid 2px;
-    height: calc(100% - 34px); //Account for top bar and border
+    border: solid #05224b 2px;
+    border-radius:5%;
+    height: calc(100% - 54px); //Account for top bar and border
     position: absolute;
-    top:30px;
-    left:0px;
-    width:calc(100% - 4px); //Account for border
+    top:40px;
+    left:8px;
+    width:calc(100% - 20px); //Account for border
     color: #c0dce7;
+    background-color:#05224b;
   }
   .minimizationTriangle {
     position:absolute;
     top:0px;
     margin-top:2.5px;
-    right:0px;
+    right:5px;
   }
   .open-window {
     position:absolute;
     top:0px;
     margin-top:2.5px;
-    right:24px;
+    right:39px;
   }
   #current-tab {
   position:absolute;
-  right:20px;
+  right:5px;
   font-family:'Open Sans','Century Gothic','Didact Gothic','Arial',sans-serif;
   padding-top:0px;
-  font-size:20px;
-  top:0px;
+  font-size:24px;
+  top:1px;
   width:calc(100% - 48px);
   float:right;
   text-align: left;

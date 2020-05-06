@@ -36,7 +36,7 @@
 
     channelDescriptions = {
     '#general': 'General chat',
-    '#off-topic': 'For off-topic conversations',
+    '#off-topic': 'Off-topic conversations',
     '#help': 'Help requests',
     };
 
