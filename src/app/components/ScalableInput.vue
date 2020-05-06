@@ -3,7 +3,7 @@
     <textarea
       :value="value"
       :style="{height: `${height}px`}"
-      class="scalable-input bigger"
+      class="scalable-input"
       :disabled="disabled"
       @input="$emit('input', $event.target.value)"
     />
@@ -16,7 +16,11 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
+  import SendButton from '@/components/SendButton.vue';
   @Component({
+    components: {
+      SendButton,
+    },
   })
   export default class ScalableInput extends Vue {
     height = 0;
