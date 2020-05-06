@@ -1,7 +1,7 @@
 <template>
   <div id="settings-wrapper">
     <h2>Text Size</h2>
-    <input v-model="message" type=number min=10 max=22 value=24>
+    <input v-model="message" type=number min=10 max=22>
     <p id='font-size-p'>Default is 14</p>
     <h2>Ignored Users</h2>
     <ul>
@@ -29,7 +29,7 @@
   })
   export default class SlideoutSettings extends Vue {
     @Prop({ required: true })
-    message:string = '14';
+    message!:string;
 
     get connectedUsers() {
       return this.$vxm.chat.connectedUsers;
@@ -45,6 +45,14 @@
 
     get anyIgnoredUsers() {
       return Boolean(this.ignoredUsers.length > 0);
+    }
+
+    created() {
+      this.message = this.$vxm.chat.fontSize.toString();
+    }
+
+    get msg() {
+      return this.message;
     }
 
     @Watch('message')
