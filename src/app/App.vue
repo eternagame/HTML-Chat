@@ -113,17 +113,10 @@
     font-family: "Open Sans", "Open Sans", Arial, Gulim;
     font-size: 14px;
     font-weight: 300;
-    background-color:#05224b;
+    background-color:#043468;
     position:relative;
     top:0px;
     left:0px;
-  }
-
-  .tabs {
-    position: relative;
-    height: 25px;
-    margin: 0;
-    padding: 0;
   }
 
   .fade-enter-active,
@@ -137,7 +130,7 @@
   }
 
   .chat-content {
-    border: solid #043468 2px;
+    border: solid #0405224b 2px;
     border-radius:15px;
     height: calc(100% - 54px); //Account for top bar and border
     position: absolute;
@@ -145,7 +138,7 @@
     left:8px;
     width:calc(100% - 20px); //Account for border
     color: #c0dce7;
-    background-color:#043468;
+    background-color:#05224b;
   }
   .minimizationTriangle {
     position:absolute;

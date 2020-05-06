@@ -55,13 +55,13 @@
     tabChanged() {
       (this.$parent as Slideout).checked = false;
       this.$vxm.chat.changeChannel(this.messageTabs[this.activeTab].name);
-      this.$vxm.chat.changeTab2(this.activeTab);
+      this.$vxm.chat.changeTab(this.activeTab);
     }
 
     update() {
       (this.$parent as Slideout).checked = false;
       this.$vxm.chat.changeChannel(this.messageTabs[this.activeTab].name);
-      this.$vxm.chat.changeTab2(this.activeTab);
+      this.$vxm.chat.changeTab(this.activeTab);
     }
 
     isSelected(of:Number) {
