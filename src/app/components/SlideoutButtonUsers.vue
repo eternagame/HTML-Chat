@@ -14,9 +14,6 @@
 
   @Component
   export default class SlideoutButtonUsers extends SlideoutButton {
-    @Prop()
-    name:string = 'Users';
-
     @Prop({ required: true })
     selected!: string;
   }

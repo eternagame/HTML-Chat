@@ -21,6 +21,8 @@
           <SlideoutChats
            v-if="chatSelected"
           />
+          <SlideoutUser v-if="userSelected"/>
+          <SlideoutSettings v-if="settingsSelected" message=14 />
         </span>
       </div>
   </div>
@@ -31,6 +33,8 @@
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
   import SlideoutChats from '@/components/Slideout/SlideoutChats.vue';
+  import SlideoutUser from '@/components/Slideout/SlideoutUser.vue';
+  import SlideoutSettings from '@/components/Slideout/SlideoutSettings.vue';
   import SlideoutButton from '@/components/Slideout/SlideoutButton.vue';
   import SlideoutButtonUsers from '@/components/SlideoutButtonUsers.vue';
   import SlideoutButtonChat from '@/components/SlideoutButtonChat.vue';
@@ -41,6 +45,8 @@
   @Component({
     components: {
       SlideoutChats,
+      SlideoutUser,
+      SlideoutSettings,
       SlideoutButton,
       SlideoutButtonSettings,
       SlideoutButtonChat,
@@ -78,11 +84,6 @@
 
     @Watch('activeTab')
     tabChanged() {
-      if (this.activeTab !== 0) {
-        this.checked = false;
-        const userString = `Users (${this.userCount})`;
-        this.$vxm.chat.changeChannel(this.activeTab === 1 ? userString : 'Settings');
-      }
       this.$vxm.chat.changeTab1(this.activeTab);
     }
   }
@@ -116,7 +117,7 @@
 }
 @keyframes slideBack {
   to {height:100%; width:0px}
-  from {height:100%;width:75%}
+  from {height:100%; width:160px}
 }
 .tall {
   height:100%;

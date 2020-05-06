@@ -16,9 +16,9 @@
         @keypress.native="onKeyPress"
         :disabled="!connectionData.connected || isBanned"
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
-        v-show="showInput && (!sizeSmall || !expansion)"
+        v-show="showInput"
       />
-      <SendButton v-on:click="sendMessage" v-show="showInput" v-model="button" />
+      <SendButton v-on:click="sendMessage" v-show="showInput"/>
       <ConnectButton
         v-show="!showInput"
       />

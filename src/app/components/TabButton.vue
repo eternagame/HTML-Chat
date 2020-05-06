@@ -72,7 +72,7 @@
   }
 
   .channel-description {
-    font-size: 12px;
+    font-size: 11px;
     text-align:justify;
   }
 </style>

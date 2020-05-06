@@ -14,9 +14,6 @@
 
   @Component
   export default class SlideoutButtonChat extends SlideoutButton {
-    @Prop()
-    name:string = 'Chat';
-
     @Prop({ required: true })
     selected!: string;
   }
