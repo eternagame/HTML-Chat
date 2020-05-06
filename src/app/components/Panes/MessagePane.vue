@@ -12,6 +12,7 @@
     <template v-slot:footer>
       <ScalableInput
         v-model="newMessage"
+        id="input"
         @keypress.native="onKeyPress"
         :disabled="!connectionData.connected || isBanned"
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
@@ -115,10 +116,10 @@
 <style scoped>
 .send-button {
   position:absolute;
-  right:6px;
-  bottom:6px;
+  right:4px;
+  bottom:4px;
   padding:0px;
-  width:20px;
-  height:20px;
+  width:29px;
+  height:29px;
 }
 </style>

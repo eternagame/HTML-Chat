@@ -32,12 +32,12 @@
     transition: 0.3s;
     padding: 0.4em 1.25em;
     background-color: black;
-    height:30px;
+    height:40px;
     background-image: url("../assets/user-icon-white.png");
     background-repeat: no-repeat;
     background-size: 60% 40%;
     background-position: center;
-    width: 30px;
+    width: 40px;
   }
 
   /* Change background color of buttons on hover */

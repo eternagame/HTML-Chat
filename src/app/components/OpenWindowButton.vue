@@ -23,7 +23,7 @@
     background-repeat: no-repeat;
     background-size: 60% 60%;
     background-position: center;
-    height: 24px;
-    width: 25px;
+    height: 34px;
+    width: 35px;
   }
 </style>

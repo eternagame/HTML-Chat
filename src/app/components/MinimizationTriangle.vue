@@ -25,8 +25,8 @@
     background-repeat: no-repeat;
     background-size: 60% 40%;
     background-position: center;
-    height: 24px;
-    width: 25px;
+    height: 34px;
+    width: 35px;
     transform: rotate(0deg);
     -webkit-transform: rotate(0deg);
     animation-name: minimization-triangle-rotation-from;
