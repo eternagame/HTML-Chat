@@ -154,7 +154,7 @@
 
   .chat-content {
     border: solid #05224b 2px;
-    border-radius:5%;
+    border-radius:15px;
     height: calc(100% - 54px); //Account for top bar and border
     position: absolute;
     top:40px;
