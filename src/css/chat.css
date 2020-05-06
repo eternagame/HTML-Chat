@@ -17,6 +17,7 @@ textarea {
     width: calc(100% - 10px);
 }
 
+
 /************ Chat Messages ************/
 .chat-message {
     color: #C0DCE7;
@@ -103,13 +104,42 @@ textarea {
 }
 
 /************* Chat input *************/
-#chat-input, #reconnect {
-    position: absolute;
-    bottom: 0px;
-    width: Calc(100% - 28px);
-    height: 19px;
+#chat-input, #reconnect {    
+    width: 100%; 
+    height: 25px;   
     resize: none;
+    border: 1px solid #FFFFFF4D;
+    border-radius: 8px;
+    background-color: #010101;
+    padding: 4px;
+}
+
+.chat-input-container {
+    position: relative;
+    width: calc(100% - 60px);
     margin: 10px;
+    height: 35px;
+}
+
+.chat-input-group {
+    display: flex;
+}
+
+.chat-input-button {
+    margin-left: 10px;
+    cursor: pointer;
+    transition: filter .3s;
+}
+
+.chat-input-button:hover {
+    filter: grayscale(1);
+}
+
+.chat-input-img {
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-10px);
 }
 
 /************** Buttons ***************/
@@ -282,4 +312,8 @@ textarea {
     width: Calc(100% - 28px);
     min-height: 19px;
     border: 1px;
+}
+
+.hidden {
+    display: none;
 }
