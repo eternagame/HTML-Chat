@@ -18,7 +18,7 @@
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput"
       />
-      <SendButton v-show="showInput"/>
+      <SendButton @input="send" v-show="showInput" />
       <ConnectButton
         v-show="!showInput"
       />
@@ -77,13 +77,14 @@
       return this.$vxm.chat.fontSize.toString().concat('px');
     }
 
+    send() {
+      this.$emit('postMessage', this.newMessage);
+      this.newMessage = '';
+    }
+
     $refs!: {
       pane: Pane;
     };
-
-    get messageSending() {
-      return this.$vxm.chat.messageToBeSent;
-    }
 
     onKeyPress(e: KeyboardEvent) {
       if (e.code === 'Enter' || e.code === 'NumpadEnter') {
@@ -93,13 +94,11 @@
       }
     }
 
-    @Watch('messageSending')
     sendMessage() {
-      if (this.messageSending) {
-        this.$emit('postMessage', this.newMessage);
-        this.newMessage = '';
-        this.$vxm.chat.changeMessageToBeSent(false);
-      }
+      const e = new KeyboardEvent('send', { code: 'Enter' });
+      this.onKeyPress(e);
+      // eslint-disable-next-line no-alert
+      alert(2);
     }
 
     @Watch('messages')
@@ -115,9 +114,9 @@
 </script>
 <style scoped>
 .send-button {
-  position:absolute;
-  right:4px;
+  position: absolute;;
   bottom:4px;
+  right:4px;
   padding:0px;
   width:29px;
   height:29px;
