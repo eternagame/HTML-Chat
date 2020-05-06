@@ -74,7 +74,7 @@
     }
 
     get fontSize() {
-      return this.$vxm.chat.fontSize.toString().concat('px');
+      return `${this.$vxm.chat.fontSize.toString()}px`;
     }
 
     send() {
@@ -92,13 +92,6 @@
         this.newMessage = '';
         e.preventDefault();
       }
-    }
-
-    sendMessage() {
-      const e = new KeyboardEvent('send', { code: 'Enter' });
-      this.onKeyPress(e);
-      // eslint-disable-next-line no-alert
-      alert(2);
     }
 
     @Watch('messages')

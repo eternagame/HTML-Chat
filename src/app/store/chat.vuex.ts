@@ -72,9 +72,9 @@ export default class ChatModule extends VuexModule {
 
   usersByNick: { [nick: string]: User } = {};
 
-  tab: Number = 0;
+  tab: Number = 0; // Selected tab. One of the chat channels
 
-  chatChannel : string = '#general';
+  chatChannel : string = '#general'; // Name of channel display in top bar
 
   fontSize: Number = 14;
 

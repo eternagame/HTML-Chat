@@ -3,7 +3,11 @@
     id="eterna-chat"
     style="height:100%; width:100%; overflow-y:hidden;"
   >
-    <slideout style="z-index:1;" @change="alert(2)"></slideout>
+    <slideout
+      style="z-index:1;"
+      :minimizedValue="!minimized"
+    >
+    </slideout>
     <transition name="fade">
       <div class="chat-content" v-if="!minimized">
         <MessagePane

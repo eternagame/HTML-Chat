@@ -32,7 +32,7 @@
     },
   })
   export default class SlideoutChats extends Vue {
-    activeTab = 4;
+    activeTab = 4; // If 1-3, causes weird bug. This fixes it
 
     channelDescriptions = {
     '#general': 'General chat',
@@ -44,10 +44,11 @@
       return Object.values(this.$vxm.chat.channels).map(channel => channel!);
     }
 
-    @Watch('activeTab')
+    @Watch('activeTab') // When tab changed
     tabChanged() {
-      (this.$parent as Slideout).checked = false;
-      this.$vxm.chat.changeChannel(this.messageTabs[this.activeTab].name);
+      (this.$parent as Slideout).checked = false; // Close slideout
+      const channelName = this.messageTabs[this.activeTab].name;
+      this.$vxm.chat.changeChannel(channelName); // Change channel name displayed at top
       this.$vxm.chat.changeTab(this.activeTab);
     }
 
@@ -57,7 +58,7 @@
       this.$vxm.chat.changeTab(this.activeTab);
     }
 
-    isSelected(of:Number) {
+    isSelected(of:Number) { // If given tab selected
       return of === this.activeTab;
     }
   }

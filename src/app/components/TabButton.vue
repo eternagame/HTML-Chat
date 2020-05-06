@@ -25,9 +25,6 @@
     @Prop()
     description!: string;
 
-    @Prop()
-    selected!: string;
-
     get isActive() {
       return this.$vxm.chat.chatChannel.includes(this.name);
     }
@@ -61,9 +58,9 @@
   }
 
   button.active {
-    border-left: solid #4A90E2 10px;
-    border-top-left-radius: 5%;
-    border-bottom-left-radius: 5%;
+    border-left: solid #4A90E2 10px; //Selected rectangle to the side is jsut left border
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
     padding-left:5px;
   }
 
@@ -71,7 +68,6 @@
     margin-top:2px;
     font-size: 20px;
     text-align: justify;
-    text-justify:auto;
     margin-left:5px;
     margin-bottom:10px;
   }

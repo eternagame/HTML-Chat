@@ -1,5 +1,5 @@
 <template>
-  <div class="splitter"></div>
+  <div class="splitter"></div> <!--- Just a filled-in div --->
 </template>
 
 <script lang="ts">
@@ -18,7 +18,7 @@
     padding:0px;
     padding-right:5px;
     padding-left:5px;
-    background-color:gray;
+    background-color:#7b8a8b;
     position:relative;
     margin:0px;
     margin-bottom:10px;
