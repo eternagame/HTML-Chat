@@ -1,6 +1,6 @@
 <template>
   <div id="user-wrapper">
-    <h2>Online ({{userCount}})</h2>
+    <h3>Online ({{userCount}})</h3>
     <ul>
       <li v-for="user in connectedUsers" :key="user.username">
         <Username :user="user" />
@@ -37,5 +37,24 @@
 <style scoped>
 #user-wrapper {
   padding:5px;
+  padding-left:20px;
+  overflow: auto;
+  height:calc(100% - 50px);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color:#343a40;
+  border-radius:5px;
+}
+
+li {
+  list-style-type: none;
+}
+h3 {
+  margin-bottom:2px;
 }
 </style>

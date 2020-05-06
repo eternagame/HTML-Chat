@@ -4,13 +4,13 @@
       <TabButton
         v-for="({name}, index) in messageTabs"
         :key="name"
-        :selected="activeTab === index"
+        :isActive="activeTab === index"
         :name="name.substr(1)"
         :description="channelDescriptions[name]"
         @input="activeTab = index"
         v-on:click="update"
       >
-        <Splitter :class="{extraBig:size(index)}"/>
+        <Splitter />
       </TabButton>
     </div>
   </div>
@@ -36,19 +36,12 @@
 
     channelDescriptions = {
     '#general': 'General chat',
-    '#off-topic': 'Off-topic conversations',
+    '#off-topic': 'Off-topic chat',
     '#help': 'Help requests',
     };
 
     get messageTabs() {
       return Object.values(this.$vxm.chat.channels).map(channel => channel!);
-    }
-
-    size(of:Number) {
-      if (of === this.activeTab) {
-        return true;
-      }
-      return false;
     }
 
     @Watch('activeTab')
@@ -70,8 +63,4 @@
   }
 </script>
 <style scoped>
-.extraBig {
-    left:-10px;
-    width:95%;
-}
 </style>

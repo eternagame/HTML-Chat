@@ -64,17 +64,21 @@
     border-left: solid #4A90E2 10px;
     border-top-left-radius: 5%;
     border-bottom-left-radius: 5%;
+    padding-left:5px;
   }
 
   .channel-name {
-    margin-top:15px;
+    margin-top:2px;
     font-size: 20px;
     text-align: justify;
     text-justify:auto;
+    margin-left:5px;
+    margin-bottom:10px;
   }
 
   .channel-description {
-    font-size: 11px;
+    font-size: 12px;
     text-align:justify;
+    margin-left:5px;
   }
 </style>

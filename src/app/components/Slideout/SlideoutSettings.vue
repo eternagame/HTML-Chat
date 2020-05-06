@@ -1,9 +1,9 @@
 <template>
   <div id="settings-wrapper">
-    <h2>Text Size</h2>
+    <h3>Text Size</h3>
     <input v-model="size" type=number min=10 max=22>
     <p id='font-size-p'>Default is 14</p>
-    <h2>Ignored Users</h2>
+    <h3>Ignored List</h3>
     <ul>
       <li v-for="user in ignoredUsers" :key="user.Username">
         {{ user }}
@@ -75,12 +75,15 @@
 #font-size-p {
   vertical-align: mid;
   margin-left:2px;
+  margin-bottom:15px;
 }
-h1 {
-  margin:2px;
+h3 {
+  width:102px;
+  text-align:justify;
 }
 input {
   margin:2px;
+  width:102px;
 }
 .unignore-user {
   padding:2px;
@@ -89,5 +92,19 @@ input {
 }
 #settings-wrapper {
   padding:5px;
+  padding-left:20px;
+  height:calc(100% - 50px);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color:#343a40;
+  border-radius:5px;
+}
+li {
+  list-style-type: none;
 }
 </style>
