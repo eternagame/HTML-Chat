@@ -6,11 +6,6 @@
         <Username :user="user" />
       </li>
     </ul>
-      <ConnectButton
-        v-if="!connectionData.firstConnection &&
-        !connectionData.connected"
-        class="connect-button"
-      />
   </div>
 </template>
 <script lang="ts">
