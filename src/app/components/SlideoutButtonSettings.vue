@@ -32,7 +32,7 @@
     height:40px;
     background-image: url("../assets/settings-icon-white.png");
     background-repeat: no-repeat;
-    background-size: 50% 50%;
+    background-size: 40% 40%;
     background-position: center;
     width: 40px;
   }
