@@ -1,7 +1,7 @@
 <template>
   <button
     class="send-button"
-    v-on:click="sendMSG"
+    v-on:click="sendMsg"
   >
   </button>
 </template>
@@ -12,7 +12,7 @@
 
   @Component
   export default class SendButton extends Vue {
-    sendMSG() {
+    sendMsg() {
       this.$vxm.chat.changeMessageToBeSent(true);
     }
   }

@@ -18,7 +18,7 @@
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         v-show="showInput"
       />
-      <SendButton v-on:click="sendMessage" v-show="showInput"/>
+      <SendButton v-show="showInput"/>
       <ConnectButton
         v-show="!showInput"
       />
