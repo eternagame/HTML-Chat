@@ -21,6 +21,8 @@
   } from 'vue-property-decorator';
   import Username from '@/components/Messages/Username.vue';
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
+  import SlideoutButton from './SlideoutButton.vue';
+  import Slideout from './Slideout.vue';
   @Component({
     components: {
       Username,
@@ -45,6 +47,10 @@
 
     get anyIgnoredUsers() {
       return Boolean(this.ignoredUsers.length > 0);
+    }
+
+    get visible() {
+      return (this.$parent as Slideout).checked;
     }
 
     created() {

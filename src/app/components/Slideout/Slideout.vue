@@ -5,7 +5,7 @@
   >
       <div class="slideout-container" :class="{ slideoutContainerHidden: !checked }">
         <HamburgerMenuButton v-model="checked" class="checkbox"/>
-        <span :class="{slideoutContent: !checked }" v-show="checked">
+        <span :class="{slideoutContent: !checked }" v-if="checked">
           <SlideoutButtonChat
             :selected="chatSelected"
             @input="activeTab = 0"
@@ -80,11 +80,6 @@
 
     get userCount() {
       return Object.keys(this.$vxm.chat.connectedUsers).length;
-    }
-
-    @Watch('activeTab')
-    tabChanged() {
-      this.$vxm.chat.changeTab1(this.activeTab);
     }
   }
 </script>

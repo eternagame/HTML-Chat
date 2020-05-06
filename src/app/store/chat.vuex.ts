@@ -72,11 +72,7 @@ export default class ChatModule extends VuexModule {
 
   usersByNick: { [nick: string]: User } = {};
 
-  tab1: Number = 0;
-
-  tab2: Number = 0;
-
-  minimized: boolean = false;
+  tab: Number = 0;
 
   chatChannel : string = '#general';
 
@@ -105,18 +101,8 @@ export default class ChatModule extends VuexModule {
   }
 
   @mutation
-  toggleMinimized(to:boolean) {
-    this.minimized = to;
-  }
-
-  @mutation
-  changeTab1(to:Number) {
-    this.tab1 = to;
-  }
-
-  @mutation
-  changeTab2(to:Number) {
-    this.tab2 = to;
+  changeTab(to:Number) {
+    this.tab = to;
   }
 
   @mutation
