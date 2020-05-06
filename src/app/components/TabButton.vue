@@ -51,6 +51,8 @@
     text-transform: none;
     display:block;
     width: 100%;
+    height:min-content;
+    margin:0px;
   }
 
   /* Change background color of buttons on hover */

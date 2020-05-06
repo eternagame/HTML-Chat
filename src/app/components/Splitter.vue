@@ -1,5 +1,5 @@
 <template>
-  <div id="splitter"></div>
+  <div class="splitter"></div>
 </template>
 
 <script lang="ts">
@@ -12,7 +12,7 @@
 </script>
 
 <style lang="scss" scoped>
-  #splitter {
+  .splitter {
     height:1px;
     width:90%;
     padding:0px;
@@ -21,7 +21,7 @@
     background-color:gray;
     position:relative;
     margin:0px;
-    margin-bottom:0px;
+    margin-bottom:10px;
     top:15px;
   }
 </style>
