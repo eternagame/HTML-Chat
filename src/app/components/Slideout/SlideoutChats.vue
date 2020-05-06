@@ -10,7 +10,7 @@
         @input="activeTab = index"
         v-on:click="update"
       >
-        <Splitter />
+        <Splitter :class="{extraBig:size(index)}"/>
       </TabButton>
     </div>
   </div>
@@ -44,6 +44,13 @@
       return Object.values(this.$vxm.chat.channels).map(channel => channel!);
     }
 
+    size(of:Number) {
+      if (of === this.activeTab) {
+        return true;
+      }
+      return false;
+    }
+
     @Watch('activeTab')
     tabChanged() {
       (this.$parent as Slideout).checked = false;
@@ -63,4 +70,8 @@
   }
 </script>
 <style scoped>
+.extraBig {
+    left:-10px;
+    width:95%;
+}
 </style>
