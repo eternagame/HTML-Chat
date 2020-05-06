@@ -19,7 +19,7 @@
 .hamburger {
   background-image: url("../assets/hamburger.png");
   background-repeat: no-repeat;
-  background-size: 60% 60%;
+  background-size: 40% 40%;
   background-position: center;
   display:inline-block;
   width:40px;
