@@ -105,8 +105,8 @@
   animation: slideBack 0.25s;
 }
 @keyframes slide { /* Opens slideout */
-  from {height:100%; width: 0;}
-  to {height:100%; width:75%}
+  from { left:-75%}
+  to { left:0}
 }
 /* Height does need to be there for the slideout to work. Otherwise it doesn't animate */
 @keyframes slideBack { /* Closes slideout */
