@@ -105,12 +105,12 @@
   animation: slideBack 0.25s;
 }
 @keyframes slide { /* Opens slideout */
-  from {left: -151px;}
-  to {left:0px;}
+  from {height:100%; width: 0;}
+  to {height:100%; width:75%}
 }
 @keyframes slideBack { /* Closes slideout */
-  to {height:100%; width:0px}
-  from {height:100%; width:160px}
+  to {height:100%; width:0}
+  from {height:100%; width:75%}
 }
 .tall { /* When slideout is open */
   height:100%;
