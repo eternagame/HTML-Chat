@@ -7,7 +7,7 @@
         :message="message"
         :style="{fontSize:fontSize}"
       />
-      <ConnectingMessage />
+      <ConnectingMessage/>
     </ul>
     <template v-slot:footer>
       <ScalableInput
