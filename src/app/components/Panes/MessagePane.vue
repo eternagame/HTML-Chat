@@ -73,6 +73,7 @@
           || this.connectionData.firstConnection;
     }
 
+    // Updates font size
     get fontSize() {
       return `${this.$vxm.chat.fontSize.toString()}px`;
     }
@@ -106,7 +107,7 @@
   }
 </script>
 <style scoped>
-.send-button {
+.send-button { /* Send message button */
   position: absolute;
   bottom:4px;
   right:4px;

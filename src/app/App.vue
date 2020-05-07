@@ -62,10 +62,12 @@
 
     minimization = false;
 
+    // For text in top bar
     get currentTab() {
       return this.$vxm.chat.chatChannel;
     }
 
+    // Gets current chat tab
     get activeTab() {
       return this.$vxm.chat.tab;
     }
@@ -118,7 +120,7 @@
     font-size: 14px;
     font-weight: 300;
     background-color:#043468;
-    position:relative;
+    position:relative; /* Makes sure everything is placed with respect to it, not to its parent */
     top:0px;
     left:0px;
   }
@@ -130,7 +132,7 @@
 
   .fade-enter, .fade-leave-to
   {
-    transform: translateY(-50%) scaleY(0);
+    transform: translateY(-50%) scaleY(0); //Moves everything up without interfering with top bar.
   }
 
   .chat-content {
@@ -144,29 +146,29 @@
     color: #c0dce7;
     background-color:#05224b;
   }
-  .minimizationTriangle {
+  .minimizationTriangle { // Minimization button
     position:absolute;
     top:0px;
     margin-top:2.5px;
     right:5px;
   }
-  .open-window {
+  .open-window { //Link that opens chat in new window
     position:absolute;
     top:0px;
     margin-top:2.5px;
     right:39px;
   }
-  #current-tab {
-  position: absolute;
-  right:5px;
-  font-family:'Open Sans','Century Gothic','Didact Gothic','Arial',sans-serif;
-  padding-top:0px;
-  font-size:24px;
-  top:1px;
-  width:calc(100% - 48px);
-  float:right;
-  text-align: left;
-  z-index: 0;
-  height: 30px;
-}
+  #current-tab { //Text on the top bar that says which chat channel the user is in
+    position: absolute;
+    right:5px;
+    font-family:'Open Sans','Century Gothic','Didact Gothic','Arial',sans-serif;
+    padding-top:0px;
+    font-size:24px;
+    top:1px;
+    width:calc(100% - 48px);
+    float:right;
+    text-align: left;
+    z-index: 0; // Covered by slideout
+    height: 30px;
+  }
 </style>

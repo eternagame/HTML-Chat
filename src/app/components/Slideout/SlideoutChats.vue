@@ -48,14 +48,14 @@
     tabChanged() {
       (this.$parent as Slideout).checked = false; // Close slideout
       const channelName = this.messageTabs[this.activeTab].name;
-      this.$vxm.chat.changeChannel(channelName); // Change channel name displayed at top
-      this.$vxm.chat.changeTab(this.activeTab);
+      this.$vxm.chat.chatChannel = channelName; // Change channel name displayed at top
+      this.$vxm.chat.tab = this.activeTab;
     }
 
     update() {
       (this.$parent as Slideout).checked = false;
-      this.$vxm.chat.changeChannel(this.messageTabs[this.activeTab].name);
-      this.$vxm.chat.changeTab(this.activeTab);
+      this.$vxm.chat.chatChannel = this.messageTabs[this.activeTab].name;
+      this.$vxm.chat.tab = this.activeTab;
     }
 
     isSelected(of:Number) { // If given tab selected

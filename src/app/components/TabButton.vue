@@ -64,7 +64,7 @@
     padding-left:5px;
   }
 
-  .channel-name {
+  .channel-name { /* Name of chat channel */
     margin-top:2px;
     font-size: 20px;
     text-align: justify;
@@ -72,7 +72,7 @@
     margin-bottom:10px;
   }
 
-  .channel-description {
+  .channel-description { /* Description of chat channel */
     font-size: 12px;
     text-align:justify;
     margin-left:5px;

@@ -36,13 +36,7 @@
     background-position: center;
     width: 40px;
   }
-
-  /* Change background color of buttons on hover */
-  button:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.13);
-  }
-
-  button.active {
+  button.active { /* When button is selected, use green icon */
     background-image: url("../assets/chat-icon-green.png");
   }
 </style>

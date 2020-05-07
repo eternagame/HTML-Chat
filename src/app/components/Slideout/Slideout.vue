@@ -5,7 +5,7 @@
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
     <HamburgerMenuButton v-model="checked"/>
-    <span :class="{slideoutContent: !checked }" v-if="checked">
+    <span v-if="checked">
       <SlideoutButtonChat
         :selected="chatSelected"
         @input="activeTab = 0"
@@ -57,11 +57,13 @@
   export default class Slideout extends Vue {
     activeTab = 0;
 
+    // For hamburger
     checked = false;
 
     @Prop()
     minimizedValue !: boolean;
 
+    // Each of the functions below tells whether a given tab is selected
     get chatSelected() {
         return this.activeTab === 0;
     }
@@ -85,11 +87,11 @@
 </script>
 
 <style scoped>
-.hamburger {
+.hamburger { /* Hamburger button */
   position: relative;
   vertical-align: top;
 }
-.slideout-container {
+.slideout-container { /* Container for slideout */
   width:fit-content;
   background-color:black;
   color:white;
@@ -98,22 +100,19 @@
   left:0px;
   z-index: 2;
 }
-.slideoutContainerHidden {
+.slideoutContainerHidden { /* When slideout is closed */
   height:0px;
   animation: slideBack 0.25s;
 }
-.slideoutContent {
-  visibility: hidden;
-}
-@keyframes slide {
+@keyframes slide { /* Opens slideout */
   from {left: -151px;}
   to {left:0px;}
 }
-@keyframes slideBack {
+@keyframes slideBack { /* Closes slideout */
   to {height:100%; width:0px}
   from {height:100%; width:160px}
 }
-.tall {
+.tall { /* When slideout is open */
   height:100%;
   animation: slide 0.25s;
 }
