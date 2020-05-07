@@ -1,6 +1,7 @@
 <template>
   <button
     class="send-button"
+    :class="{animated: animationValue}"
     @click="sendMessage"
   >
   </button>
@@ -12,7 +13,10 @@
 
   @Component
   export default class SendButton extends Vue {
+    animationValue = false;
+
     sendMessage() {
+      this.animationValue = true;
       this.$emit('send');
     }
   }
@@ -28,5 +32,9 @@
     background-position: center;
     height: 30px;
     width: 25px;
+    transition: transform 0.5s;
+  }
+  .send-button:active {
+    transform:translate3d(5px,0,100px) rotateY(90deg);
   }
 </style>

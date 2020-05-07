@@ -127,12 +127,14 @@
 
   .fade-enter-active,
   .fade-leave-active {
-    transition: 200ms;
+    transform-origin: top center;
+    transition: 1000ms;
   }
 
   .fade-enter, .fade-leave-to
   {
-    transform: translateY(-50%) scaleY(0); //Moves everything up without interfering with top bar.
+    transform: rotateX(90deg);
+    //Moves everything up without interfering with top bar.
   }
 
   .chat-content {
@@ -145,6 +147,7 @@
     width:calc(100% - 20px); //Account for border
     color: #c0dce7;
     background-color:#05224b;
+    list-style-type: none;
   }
   .minimizationTriangle { // Minimization button
     position:absolute;

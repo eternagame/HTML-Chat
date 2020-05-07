@@ -108,6 +108,7 @@
   from {height:100%; width: 0;}
   to {height:100%; width:75%}
 }
+/* Height does need to be there for the slideout to work. Otherwise it doesn't animate */
 @keyframes slideBack { /* Closes slideout */
   to {height:100%; width:0}
   from {height:100%; width:75%}
