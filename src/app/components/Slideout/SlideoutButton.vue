@@ -39,13 +39,4 @@
     text-transform: capitalize;
     height:30px;
   }
-
-  /* Change background color of buttons on hover */
-  button:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.13);
-  }
-
-  button.active {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
 </style>

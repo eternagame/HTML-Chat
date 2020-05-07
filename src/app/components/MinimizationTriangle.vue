@@ -20,7 +20,7 @@
 
 
 <style lang="scss" scoped>
-  .minimization-triangle {
+  .minimization-triangle { /* Normal state */
     background-image: url("../assets/minimization-triangle.png");
     background-repeat: no-repeat;
     background-size: 60% 40%;
@@ -33,17 +33,17 @@
     animation-duration: 0.2s;
   }
 
-  @keyframes minimization-triangle-rotation-to {
+  @keyframes minimization-triangle-rotation-to { /* Animates the rotation to minimized state */
     from {transform: rotate(0deg); -webkit-transform: rotate(0deg);}
     to {transform: rotate(90deg); -webkit-transform: rotate(90deg);}
   }
 
-  @keyframes minimization-triangle-rotation-from {
+  @keyframes minimization-triangle-rotation-from { /* Animates rotation to uniminimized state */
     to {transform: rotate(0deg); -webkit-transform: rotate(0deg);}
     from {transform: rotate(90deg); -webkit-transform: rotate(90deg);}
   }
 
-  .minimization-triangle.flipped {
+  .minimization-triangle.flipped { /* Button in minimized state */
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
     animation-name: minimization-triangle-rotation-to;

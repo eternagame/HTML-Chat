@@ -33,22 +33,17 @@
     @Prop({ required: true })
     size!:string; // font size
 
-    get connectedUsers() {
-      return this.$vxm.chat.connectedUsers;
-    }
-
-    get connectionData() {
-      return this.$vxm.chat.connectionData;
-    }
-
+    // Gets a list of ignored users
     get ignoredUsers() {
       return this.$vxm.chat.ignoredUsers;
     }
 
+    // If any users are ignored. Uses ignoredUsers.length
     get anyIgnoredUsers() {
-      return Boolean(this.ignoredUsers.length > 0);
+      return this.ignoredUsers.length > 0;
     }
 
+    // Whether it is visible. Determined by whether slideout is opened
     get visible() {
       return (this.$parent as Slideout).checked;
     }
@@ -61,48 +56,50 @@
     // Updates global font size when input changes
     @Watch('size')
     updateFontSize() {
-      this.$vxm.chat.changeFontSize(parseInt(this.size, 10));
+      this.$vxm.chat.fontSize = parseInt(this.size, 10);
     }
 
+    // Unignore user on list
     unignore(user:string) {
       this.$vxm.chat.unignoreUser(user);
     }
   }
 </script>
 <style scoped>
-#font-size-p {
+#font-size-p { /* 'Default is 14' text */
   vertical-align: mid;
   margin-left:2px;
   margin-bottom:15px;
 }
 h3 {
-  width:102px;
+  width:calc(100% - 23px); /* Accounts for padding on both sides */
   text-align:justify;
 }
 input {
   margin:2px;
-  width:102px;
+  width:calc(100% - 23px); /* Accounts for padding on both sides */
+  max-width:150px; /* Big screens don't have arbitrarily large input */
 }
-.unignore-user {
+.unignore-user { /* Unignore user button */
   padding:2px;
   padding-bottom:3px;
   background-color:white;
 }
-#settings-wrapper {
+#settings-wrapper { /* Wrapper div */
   padding:5px;
   padding-left:20px;
   height:calc(100% - 50px);
 }
 
-::-webkit-scrollbar {
+::-webkit-scrollbar { /* Scrollbar track */
     width: 10px;
 }
 
-::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb { /* Scrollbar bar */
   background-color:#343a40;
   border-radius:5px;
 }
-li {
+li { /* Remove bullets */
   list-style-type: none;
 }
 </style>

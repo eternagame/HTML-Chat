@@ -91,21 +91,6 @@ export default class ChatModule extends VuexModule {
   }
 
   @mutation
-  changeFontSize(to:Number) {
-    this.fontSize = to;
-  }
-
-  @mutation
-  changeChannel(to:string) {
-    this.chatChannel = to;
-  }
-
-  @mutation
-  changeTab(to:Number) {
-    this.tab = to;
-  }
-
-  @mutation
   postMessage(message: Message) {
     if (message.target === '*') {
       Object.values(this.channels).forEach((channel) => {
