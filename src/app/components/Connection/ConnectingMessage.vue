@@ -2,6 +2,7 @@
   <li
     v-if="!connectionData.connected && !connectionData.firstConnection"
     id="chat-loading"
+    style="list-style-type: none"
   >
     <img
       src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"

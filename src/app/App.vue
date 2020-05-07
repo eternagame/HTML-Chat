@@ -18,7 +18,7 @@
           :visibility="index === activeTab"
           @postMessage="postMessage($event, channel.name)"
         />
-        <ConnectingPopup/>
+        <ConnectingPopup />
         <ReportDialog ref="reportDialog"/>
       </div>
     </transition>
@@ -128,12 +128,13 @@
   .fade-enter-active,
   .fade-leave-active {
     transform-origin: top center;
-    transition: 1000ms;
+    transition: 200ms;
   }
 
   .fade-enter, .fade-leave-to
   {
-    transform: rotateX(90deg);
+    transform-origin: top center;
+    transform: scaleY(0);
     //Moves everything up without interfering with top bar.
   }
 
@@ -147,7 +148,7 @@
     width:calc(100% - 20px); //Account for border
     color: #c0dce7;
     background-color:#05224b;
-    list-style-type: none;
+    transform-origin: top center;
   }
   .minimizationTriangle { // Minimization button
     position:absolute;
