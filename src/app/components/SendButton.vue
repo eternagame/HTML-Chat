@@ -35,6 +35,6 @@
     transition: transform 0.5s;
   }
   .send-button:active {
-    transform:translate3d(5px,0,100px) rotateY(90deg);
+    transform:translateX(3px);
   }
 </style>
