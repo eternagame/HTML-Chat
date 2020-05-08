@@ -1,10 +1,10 @@
 <template>
-  <a
+  <div
     class="open-window"
     style="float: right;"
-    href="link-to-full-window"
+    @click="$emit('input', !value)"
   >
-  </a>
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,6 +13,8 @@
 
   @Component
   export default class OpenWindowButton extends Vue {
+    @Prop()
+    value!: boolean;
   }
 </script>
 
