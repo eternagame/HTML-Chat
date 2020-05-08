@@ -4,7 +4,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 const webpackMerge = require('webpack-merge');
-const CopyPlugin = require('copy-webpack-plugin');
 
 const commonConfig = {
     devtool: 'cheap-eval-source-map',
@@ -38,10 +37,7 @@ const commonConfig = {
         }),
         new InlineManifestWebpackPlugin({
             name: 'webpackManifest'
-        }),
-        new CopyPlugin([
-            { from: 'src/resources/*.png', to: 'static/[name].[ext]' }
-        ])
+        })
     ]
 }
 
