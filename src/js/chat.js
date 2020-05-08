@@ -553,6 +553,18 @@ $(document).ready(function() {
     });
     $("#reconnect").click(initSock);
 
+    $("#chat-users-btn").click(function () {
+        document.getElementById('chat-users-btn').classList.add('hidden');
+        document.getElementById('chat-tab-btn').classList.remove('hidden');
+        document.getElementById('chat-tab-global').classList.add('hidden');
+        document.getElementById('chat-tab-users').classList.remove('hidden');
+    });
+    $("#chat-tab-btn").click(function () {
+        document.getElementById('chat-users-btn').classList.remove('hidden');
+        document.getElementById('chat-tab-btn').classList.add('hidden');
+        document.getElementById('chat-tab-global').classList.remove('hidden');
+        document.getElementById('chat-tab-users').classList.add('hidden');
+    });
 });
 
 function sendMessage(message){
