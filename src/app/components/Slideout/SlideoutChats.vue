@@ -6,7 +6,7 @@
         :key="name"
         :isActive="activeTab === index"
         :name="name.substr(1)"
-        :description="channelDescriptions[name]"
+        :description="channelDescription(name)"
         @input="activeTab = index"
         v-on:click="update"
       >
@@ -34,8 +34,8 @@
   export default class SlideoutChats extends Vue {
     activeTab = 4; // If 1-3, causes weird bug. This fixes it
 
-    channelDescriptions = {
-    '#general': 'General chat',
+    channelDescriptions: {[channel:string]:string} = {
+    '#General': 'General chat',
     '#off-topic': 'Off-topic chat',
     '#help': 'Help requests',
     };
@@ -53,13 +53,27 @@
     }
 
     update() {
-      (this.$parent as Slideout).checked = false;
+      (this.$parent as Slideout).checked = false; // Hide slideout
+       // Set current tab name in top bar as this tab's name
       this.$vxm.chat.chatChannel = this.messageTabs[this.activeTab].name;
-      this.$vxm.chat.tab = this.activeTab;
+      this.$vxm.chat.tab = this.activeTab; // Set self as active tab
     }
 
     isSelected(of:Number) { // If given tab selected
       return of === this.activeTab;
+    }
+
+    // Gives channel description given name
+    channelDescription(name:string) {
+      // Gets description for channel, if there is one, from object defined above
+      const description = this.channelDescriptions[name];
+      if (description) { // If description exists, return it
+        return description;
+      }
+      // Remove hashtag
+      const trimmedName = name.substr(1);
+      // Return channel name with first letter capitalized + ' channel'
+      return `${trimmedName.charAt(0).toUpperCase()}${trimmedName.substr(1)} channel`;
     }
   }
 </script>
