@@ -129,6 +129,7 @@ textarea {
     margin-left: 10px;
     cursor: pointer;
     transition: filter .3s;
+    align-self: center;    
 }
 
 .chat-input-button:hover {

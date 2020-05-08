@@ -11,14 +11,14 @@
 
 <body style="height: 100%; margin: 0px; padding: 0px; font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim; font-size: 14px; font-weight: 300;">
     <div id="chat" style="height: 100%; font-family: 'Helvetica Neue', 'Open Sans', Arial, Gulim; font-size: 14px; font-weight: 300;">        
-        <div id="chat-content" style="position: relative;">
+        <div id="chat-content" style="position: relative; height: 100%;">
             <div id="chat-tabs" style="height: calc(100% - 50px);">
-                <div id="chat-tab-global" style="word-wrap: break-word; white-space: normal;">
+                <div id="chat-tab-global" style="word-wrap: break-word; white-space: normal; height: 100%;">
                     <ul id="global-chat-messages"></ul>
                 </div>
 
-                <div id="chat-tab-users" class="hidden">
-                    <ul id="chat-users-list"></ul>
+                <div id="chat-tab-users" class="hidden" style="height: 100%;">
+                    <ul id="chat-users-list" style="margin-block-start: 0px; padding-inline-start: 0px;"></ul>
                 </div>
             </div>
             <div id="chat-loading" style="position: absolute; left: calc(50% - 55px); top: calc(50% - 55px); color: #FFF; text-align: center;">
@@ -32,8 +32,8 @@
                     <textarea id="chat-input" disabled></textarea>
                     <img class="chat-input-img" src="static/submit-button.png" />
                 </div>
-                <img id="chat-users-btn" class="chat-input-button" src="static/chat-users.png" />
-                <img id="chat-tab-btn" class="chat-input-button hidden" src="static/chat-bubble.png" />
+                <img id="chat-users-btn" class="chat-input-button" src="static/chat-users.png" title="Online Users"/>
+                <img id="chat-tab-btn" class="chat-input-button hidden" src="static/chat-bubble.png" title="Chat" />
             </div>            
 
             <div id="reconnect" class="unselectable clickable green-button-interactive rounded-5 centered" style="display:none; color:white; font-weight:bolder; font-size:13px;"><div class="green-button-bg rounded-5"></div>Reconnect</div>
