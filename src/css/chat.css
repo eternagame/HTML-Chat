@@ -23,6 +23,8 @@ textarea {
     color: #C0DCE7;
     display: block;
     position: relative;
+    float: none !important;
+    white-space: normal !important;
 }
 .chat-message-system {
     font-style: italic;
