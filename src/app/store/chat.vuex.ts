@@ -72,11 +72,21 @@ export default class ChatModule extends VuexModule {
 
   usersByNick: { [nick: string]: User } = {};
 
-  tab: Number = 0; // Selected tab. One of the chat channels
+  tab: Number = 1; // Selected tab. One of the chat channels
 
-  chatChannel : string = '#general'; // Name of channel display in top bar
+  chatChannel : string = '#off-topic'; // Name of channel display in top bar
 
   fontSize: Number = 14;
+
+  ignoredChannels = [];
+
+  notificationChannels : {[channel:string]:boolean} = {
+    '#general': false,
+    '#off-topic': false,
+    '#help': false,
+  };
+
+  presentTabs = [];
 
   constructor() {
     super();
@@ -416,6 +426,7 @@ export default class ChatModule extends VuexModule {
   }: Irc.MessageEventArgs) {
     const channel = this.channels[target];
     if (!channel) return;
+    this.notificationChannels[channel.name] = true;
     const username = User.parseUsername(nick);
     const messageObject = new Message(message, target, this.connectedUsers[username], type === 'action', time);
     if (time) {

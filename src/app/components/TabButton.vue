@@ -77,4 +77,7 @@
     text-align:justify;
     margin-left:5px;
   }
+  .notified {
+    color:#e74c3c;
+  }
 </style>

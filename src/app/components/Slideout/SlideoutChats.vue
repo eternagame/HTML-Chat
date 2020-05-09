@@ -9,6 +9,7 @@
         :description="channelDescription(name)"
         @input="activeTab = index"
         v-on:click="update"
+        :class="{notified:isNotified(name)}"
       >
         <Splitter />
       </TabButton>
@@ -74,6 +75,14 @@
       const trimmedName = name.substr(1);
       // Return channel name with first letter capitalized + ' channel'
       return `${trimmedName.charAt(0).toUpperCase()}${trimmedName.substr(1)} channel`;
+    }
+
+    isNotified(name:string) {
+      const { notificationChannels } = this.$vxm.chat; // Gets object that stores notification info
+      if (notificationChannels[name]) {
+        return true;
+      }
+      return false;
     }
   }
 </script>

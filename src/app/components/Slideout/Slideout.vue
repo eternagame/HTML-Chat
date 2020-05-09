@@ -4,7 +4,7 @@
     class="slideout-container"
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
-    <HamburgerMenuButton v-model="checked"/>
+    <HamburgerMenuButton v-model="checked" :notification="notifications"/>
     <span v-if="checked">
       <SlideoutButtonChat
         :selected="chatSelected"
@@ -20,6 +20,7 @@
       />
       <SlideoutChats
         v-if="chatSelected"
+        ref="chat"
       />
       <SlideoutUser v-if="userSelected"/>
       <SlideoutSettings v-if="settingsSelected" size=14 />
@@ -63,6 +64,10 @@
     @Prop()
     minimizedValue !: boolean;
 
+    $refs!: {
+      chat:SlideoutChats,
+    };
+
     // Each of the functions below tells whether a given tab is selected
     get chatSelected() {
         return this.activeTab === 0;
@@ -76,12 +81,34 @@
       return this.activeTab === 2;
     }
 
+    get currentTab() {
+      return this.$vxm.chat.chatChannel;
+    }
+
+    get notifications() {
+      const { notificationChannels } = this.$vxm.chat; // Gets object that stores notification info
+      // Values for each channel
+      const anyNotifications = Object.values(notificationChannels).some(item => item);
+      if (!anyNotifications) { return false; } // If no notifications, don't display any
+       // If notification in current channel, only display if slideout is visible
+      if (notificationChannels[this.currentTab]) {
+        return this.checked;
+      }
+       // If neither of the above were true (there are notifications not in this tab) return true
+      return true;
+    }
+
     // Slideout slides back when minimized
     @Watch('minimizedValue')
     minimzationChanged() {
       if (!this.minimizedValue) {
         this.checked = false;
       }
+    }
+
+    @Watch('checked') // Slideout checked
+    checkedChanged() {
+      this.$emit('input', this.checked);
     }
   }
 </script>

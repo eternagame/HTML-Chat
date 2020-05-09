@@ -7,6 +7,8 @@
     <slideout
       style="z-index:1;"
       :minimizedValue="!minimized"
+      ref="slideout"
+      @input="slideoutChanged"
     >
     </slideout>
     <transition name="fade">
@@ -65,6 +67,8 @@
 
     fullSize = false;
 
+    broadcast: BroadcastChannel = new BroadcastChannel('eterna');
+
     // For text in top bar
     get currentTab() {
       return this.$vxm.chat.chatChannel;
@@ -77,7 +81,16 @@
 
     $refs!: {
       reportDialog: ReportDialog;
+      slideout: Slideout;
     };
+
+    slideoutChanged(e:string) { // When slideout changed
+      const slideoutActive = !e;
+      if (!slideoutActive) {
+         // Dismiss notifications in currently visible chat tab as they have been read
+        this.broadcast.postMessage(this.currentTab);
+      }
+    }
 
     get messageTabs() {
       return Object.values(this.$vxm.chat.channels).map(channel => channel!);
@@ -91,8 +104,20 @@
       return this.fullSize;
     }
 
+    setRead(channel:string) {
+      console.log(channel);
+      this.$vxm.chat.notificationChannels[channel] = false;
+      this.$refs.slideout.notificationsToggle = true;
+    }
+
+    handler(ev:MessageEvent) {
+      console.log(`received message to ignore ${ev.data}. notification data: general - ${this.$vxm.chat.notificationChannels['#general']}, off-topic - ${this.$vxm.chat.notificationChannels['#off-topic']}, help - ${this.$vxm.chat.notificationChannels['#help']}`);
+      this.setRead(ev.data);
+    }
+
     postMessage(rawMessage: string, channel: string) {
       this.$vxm.chat.sendMessage({ rawMessage, channel });
+      this.broadcast.postMessage(channel);
     }
 
     mounted() {
@@ -103,6 +128,7 @@
       this.$vxm.chat.$subscribe('openReportModal', payload => {
         this.$refs.reportDialog.open(payload);
       });
+      this.broadcast.onmessage = this.handler;
     }
 
     @Watch('minimized')
