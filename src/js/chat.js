@@ -550,6 +550,13 @@ $(document).ready(function() {
     });
     $("#reconnect").click(initSock);
 
+    const autoScroll = () => {
+        setTimeout(function(){
+            $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+        }, 100);
+        chatAutoScroll = "bottom"
+    };
+
     $("#chat-users-btn").click(function () {
         document.getElementById('chat-users-btn').classList.add('hidden');
         document.getElementById('chat-tab-btn').classList.remove('hidden');
@@ -561,6 +568,7 @@ $(document).ready(function() {
         document.getElementById('chat-tab-btn').classList.add('hidden');
         document.getElementById('chat-tab-global').classList.remove('hidden');
         document.getElementById('chat-tab-users').classList.add('hidden');
+        autoScroll();
     });
 });
 
