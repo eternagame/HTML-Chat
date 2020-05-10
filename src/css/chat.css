@@ -107,20 +107,24 @@ textarea {
 
 /************* Chat input *************/
 #chat-input, #reconnect {    
-    width: 100%; 
+    width: calc(100% - 10px); 
     height: 25px;   
     resize: none;
     border: 1px solid #FFFFFF4D;
     border-radius: 8px;
     background-color: #010101;
+    color: #CBD5E2;
     padding: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    outline: none;
 }
 
 .chat-input-container {
     position: relative;
-    width: calc(100% - 60px);
-    margin: 10px;
+    width: calc(100% - 30px);
     height: 35px;
+    margin: 10px 0px;
 }
 
 .chat-input-group {
@@ -128,7 +132,8 @@ textarea {
 }
 
 .chat-input-button {
-    margin-left: 10px;
+    margin-left: 8px;
+    margin-right: 2px;
     cursor: pointer;
     transition: filter .3s;
     align-self: center;    
@@ -140,7 +145,7 @@ textarea {
 
 .chat-input-img {
     position: absolute;
-    right: 0px;
+    right: 8px;
     top: 50%;
     transform: translateY(-10px);
     background-image: url('../resources/submit-button.png');
@@ -156,8 +161,8 @@ textarea {
 
 #chat-tab-btn {
     background-image: url('../resources/chat-bubble.png');
-    height: 19px;
-    width: 19px;
+    height: 20px;
+    width: 20px;
 }  
 
 /************** Buttons ***************/
@@ -327,9 +332,14 @@ textarea {
     visibility: hidden;
     white-space: pre-wrap;
     word-wrap: break-word;
-    width: Calc(100% - 28px);
-    min-height: 19px;
+    resize: none;
+    border: 1px solid #FFFFFF4D;
+    border-radius: 8px;
+    width: calc(100% - 10px);
+    min-height: 25px;
     border: 1px;
+    position: absolute;
+    top: 0px;
 }
 
 .hidden {
