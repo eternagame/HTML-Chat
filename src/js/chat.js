@@ -455,6 +455,7 @@ $(document).ready(function() {
         hiddenDiv.html(content + '');
         // Determine height from duplicate div
         $(this).css('height', hiddenDiv.height());
+        $('#chat-tabs').css('height', 'calc(100% - ' + $('.chat-input-group').height() + 'px)')
     });
     // Message options menu
     $("#chat-tabs").contextmenu({
