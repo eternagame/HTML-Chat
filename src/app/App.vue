@@ -42,7 +42,6 @@
   import MessagePane from '@/components/Panes/MessagePane.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import OpenWindowButton from '@/components/OpenWindowButton.vue';
-
   @Component({
     components: {
       Slideout,
@@ -107,7 +106,6 @@
     setRead(channel:string) {
       console.log(channel);
       this.$vxm.chat.notificationChannels[channel] = false;
-      this.$refs.slideout.notificationsToggle = true;
     }
 
     handler(ev:MessageEvent) {
