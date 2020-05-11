@@ -146,7 +146,7 @@ textarea {
     position: absolute;
     right: 8px;
     top: 50%;
-    transform: translateY(-10px);
+    transform: translateY(-13px);
     background-image: url('../resources/submit-button.png');
     width: 20px;
     height: 20px;
