@@ -9,7 +9,7 @@
         :description="channelDescription(name)"
         @input="activeTab = index"
         v-on:click="update"
-        :class="{notified:isNotified(name)}"
+        :class="{ notified:isNotified(name) }"
       >
         <Splitter />
       </TabButton>
@@ -78,9 +78,9 @@
     }
 
     isNotified(name:string) {
-      const { notificationChannels } = this.$vxm.chat; // Gets object that stores notification info
-      if (notificationChannels[name]) {
-        return true;
+      const trueChannel = this.$vxm.chat.channels[name];
+      if (trueChannel) {
+        return trueChannel.notifications;
       }
       return false;
     }

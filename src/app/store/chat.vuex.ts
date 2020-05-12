@@ -18,7 +18,8 @@ interface Channel {
   postedMessages: Message[],
   name: string,
   banned: BanStatus,
-  maxHistoryMessages: number
+  maxHistoryMessages: number,
+  notifications: boolean
 }
 
 class ConnectionData {
@@ -80,13 +81,9 @@ export default class ChatModule extends VuexModule {
 
   ignoredChannels = [];
 
-  notificationChannels : {[channel:string]:boolean} = {
-    '#general': false,
-    '#off-topic': false,
-    '#help': false,
-  };
+  notificationsIgnored = false;
 
-  presentTabs = [];
+  slideoutOpen = false;
 
   constructor() {
     super();
@@ -96,8 +93,25 @@ export default class ChatModule extends VuexModule {
         postedMessages: [],
         maxHistoryMessages: 50,
         name: channelName,
+        notifications: false,
       };
     });
+  }
+
+  @mutation
+  readChannel(channel:string) {
+    const trueChannel = this.channels[channel];
+    if (trueChannel) {
+      trueChannel.notifications = false;
+    }
+  }
+
+  @mutation
+  notify(channel:string) {
+    const trueChannel = this.channels[channel];
+    if (trueChannel) {
+      trueChannel.notifications = true;
+    }
   }
 
   @mutation
@@ -426,7 +440,9 @@ export default class ChatModule extends VuexModule {
   }: Irc.MessageEventArgs) {
     const channel = this.channels[target];
     if (!channel) return;
-    this.notificationChannels[channel.name] = true;
+    if (this.slideoutOpen || channel.name !== this.chatChannel) {
+      this.notify(channel.name);
+    }
     const username = User.parseUsername(nick);
     const messageObject = new Message(message, target, this.connectedUsers[username], type === 'action', time);
     if (time) {
