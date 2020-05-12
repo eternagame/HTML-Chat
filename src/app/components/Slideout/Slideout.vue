@@ -41,6 +41,7 @@
   import SlideoutButtonSettings from '../SlideoutButtonSettings.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import HamburgerMenuButton from '@/components/HamburgerMenuButton.vue';
+  import { Channel } from '../../store/chat.vuex';
 
   @Component({
     components: {
@@ -86,16 +87,7 @@
     }
 
     get notifications() {
-      const { notificationChannels } = this.$vxm.chat; // Gets object that stores notification info
-      // Values for each channel
-      const anyNotifications = Object.values(notificationChannels).some(item => item);
-      if (!anyNotifications) { return false; } // If no notifications, don't display any
-       // If notification in current channel, only display if slideout is visible
-      if (notificationChannels[this.currentTab]) {
-        return this.checked;
-      }
-       // If neither of the above were true (there are notifications not in this tab) return true
-      return true;
+      return Object.values(this.$vxm.chat.channels).some(item => item?.notifications);
     }
 
     // Slideout slides back when minimized

@@ -66,8 +66,6 @@
 
     fullSize = false;
 
-    broadcast: BroadcastChannel = new BroadcastChannel('eterna');
-
     // For text in top bar
     get currentTab() {
       return this.$vxm.chat.chatChannel;
@@ -84,10 +82,10 @@
     };
 
     slideoutChanged(e:string) { // When slideout changed
-      const slideoutActive = !e;
-      if (!slideoutActive) {
-         // Dismiss notifications in currently visible chat tab as they have been read
-        this.broadcast.postMessage(this.currentTab);
+      this.$vxm.chat.slideoutOpen = Boolean(e);
+      if (!e) { // If slideout is closing
+       // Set current tab (what user is looking at) to read
+        this.$vxm.chat.readChannel(this.currentTab);
       }
     }
 
@@ -103,19 +101,8 @@
       return this.fullSize;
     }
 
-    setRead(channel:string) {
-      console.log(channel);
-      this.$vxm.chat.notificationChannels[channel] = false;
-    }
-
-    handler(ev:MessageEvent) {
-      console.log(`received message to ignore ${ev.data}. notification data: general - ${this.$vxm.chat.notificationChannels['#general']}, off-topic - ${this.$vxm.chat.notificationChannels['#off-topic']}, help - ${this.$vxm.chat.notificationChannels['#help']}`);
-      this.setRead(ev.data);
-    }
-
     postMessage(rawMessage: string, channel: string) {
       this.$vxm.chat.sendMessage({ rawMessage, channel });
-      this.broadcast.postMessage(channel);
     }
 
     mounted() {
@@ -126,7 +113,6 @@
       this.$vxm.chat.$subscribe('openReportModal', payload => {
         this.$refs.reportDialog.open(payload);
       });
-      this.broadcast.onmessage = this.handler;
     }
 
     @Watch('minimized')
