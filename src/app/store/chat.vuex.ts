@@ -5,10 +5,16 @@ import {
 } from 'vuex-class-component';
 import toBool from 'to-bool';
 import Vue from 'vue';
+import { BroadcastChannel } from 'broadcast-channel';
 import Message from '../types/message';
 import Connection from '@/tools/websocket';
 import BanStatus from '@/types/BanStatus';
 import User from '@/types/user';
+
+// For polyfill
+declare type BroadcastMessage = {
+  message: string;
+};
 
 const VuexModule = createModule({
   strict: false,
@@ -19,7 +25,8 @@ interface Channel {
   name: string,
   banned: BanStatus,
   maxHistoryMessages: number,
-  notifications: boolean
+  notifications: boolean,
+  notificationsEnabled: boolean,
 }
 
 class ConnectionData {
@@ -85,6 +92,8 @@ export default class ChatModule extends VuexModule {
 
   slideoutOpen = false;
 
+  broadcast: BroadcastChannel<BroadcastMessage>;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -94,22 +103,41 @@ export default class ChatModule extends VuexModule {
         maxHistoryMessages: 50,
         name: channelName,
         notifications: false,
+        notificationsEnabled: true,
       };
     });
+    // Creates channel through which everything is sent
+    this.broadcast = new BroadcastChannel('eterna');
+    // Message handler
+    this.broadcast.onmessage = (ev) => {
+      /* The only messages sent between tabs are channel names.
+      When a tab receives a message, it unignores the channel. */
+      this.readChannel(ev.message);
+    };
+  }
+
+  channelWithName(name:string) {
+    return this.channels[name];
   }
 
   @mutation
   readChannel(channel:string) {
+    // Makes sure channel name corresponds to a channel
     const trueChannel = this.channels[channel];
     if (trueChannel) {
+      // Set notifications for that channel to false
       trueChannel.notifications = false;
     }
+    // When a channel is read, notify other tabs so they update
+    this.broadcast.postMessage(new Message(channel));
   }
 
   @mutation
   notify(channel:string) {
+    // Again, making sure there is an actual channel with the name
     const trueChannel = this.channels[channel];
     if (trueChannel) {
+      // Turning on notifications for that channel
       trueChannel.notifications = true;
     }
   }
@@ -440,8 +468,12 @@ export default class ChatModule extends VuexModule {
   }: Irc.MessageEventArgs) {
     const channel = this.channels[target];
     if (!channel) return;
-    if (this.slideoutOpen || channel.name !== this.chatChannel) {
+    // Notifications should come in if slideout is open, user is in a different channel, or both
+    if ((this.slideoutOpen || channel.name !== this.chatChannel) && channel.notificationsEnabled) {
+      // Notify the channel
       this.notify(channel.name);
+    } else { // If the user is in the channel and the slideout is closed
+      this.readChannel(channel.name); // Set the channel to read
     }
     const username = User.parseUsername(nick);
     const messageObject = new Message(message, target, this.connectedUsers[username], type === 'action', time);

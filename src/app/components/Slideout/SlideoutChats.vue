@@ -77,11 +77,14 @@
       return `${trimmedName.charAt(0).toUpperCase()}${trimmedName.substr(1)} channel`;
     }
 
-    isNotified(name:string) {
+    isNotified(name:string) { // If given tab is notified
+      // Make sure name returns a real channel
       const trueChannel = this.$vxm.chat.channels[name];
       if (trueChannel) {
+        // If it exists, return whether or not it has notifications
         return trueChannel.notifications;
       }
+      // If it doesn't exist, return false (default)
       return false;
     }
   }

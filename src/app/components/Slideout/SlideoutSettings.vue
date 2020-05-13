@@ -2,9 +2,9 @@
   <div id="settings-wrapper">
     <h3>Text Size</h3>
     <input v-model="size" type=number min=10 max=22>
-    <p id='font-size-p'>Default is 14</p>
+    <p id='font-size-p' class='bottom-section'>Default is 14</p>
     <h3>Ignored List</h3>
-    <ul>
+    <ul class='bottom-section'>
       <li v-for="user in ignoredUsers" :key="user.Username">
         {{ user }}
         <button class='unignore-user' v-on:click="unignore(user)">Unignore</button>
@@ -13,6 +13,36 @@
       <button class='unignore-user' v-on:click="unignore('*')" v-show="anyIgnoredUsers" >
         Unignore All</button>
     </ul>
+    <h3>Notifications</h3>
+    <table>
+      <tr v-for="channel in channels" :key="channel.name">
+        <td>{{channel.name}}</td>
+        <td>
+          <button style="width:calc(100% - 6px)" @click="toggleNotificationsEnabled(channel.name)">
+            {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td class='footer'>
+          <button style="width:width:calc(100% - 6px)"
+            :disabled="anyNotificationsDisabled"
+            @click="toggleAll"
+          >
+            Enable all
+          </button>
+        </td>
+        <td class='footer'>
+          <button
+            style="width:width:calc(100% - 6px)"
+              :disabled="anyNotificationsEnabled"
+              @click="toggleAll"
+          >
+            Disable all
+          </button>
+        </td>
+    </tr>
+    </table>
   </div>
 </template>
 <script lang="ts">
@@ -23,6 +53,7 @@
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
   import SlideoutButton from './SlideoutButton.vue';
   import Slideout from './Slideout.vue';
+  import { Channel } from '../../store/chat.vuex';
   @Component({
     components: {
       Username,
@@ -63,12 +94,48 @@
     unignore(user:string) {
       this.$vxm.chat.unignoreUser(user);
     }
+
+    get channels() {
+      return this.$vxm.chat.channels;
+    }
+
+    toggleNotificationsEnabled(channel:string) {
+      const trueChannel = this.$vxm.chat.channels[channel];
+      if (trueChannel) {
+        trueChannel.notificationsEnabled = !trueChannel.notificationsEnabled;
+        if (!trueChannel.notificationsEnabled) {
+          trueChannel.notifications = false;
+        }
+      }
+    }
+
+    get anyNotificationsEnabled() {
+      return Object.values(this.channels).some(item => {
+        const { notificationsEnabled } = item as Channel;
+        return notificationsEnabled;
+      });
+    }
+
+    get anyNotificationsDisabled() {
+      return Object.values(this.channels).some(item => {
+        const { notificationsEnabled } = item as Channel;
+        return !notificationsEnabled;
+      });
+    }
+
+    toggleAll() {
+      Object.values(this.channels).forEach(item => {
+       this.toggleNotificationsEnabled((item as Channel).name);
+      });
+    }
   }
 </script>
 <style scoped>
 #font-size-p { /* 'Default is 14' text */
   vertical-align: mid;
   margin-left:2px;
+}
+.bottom-section {
   margin-bottom:15px;
 }
 h3 {
@@ -80,10 +147,11 @@ input {
   width:calc(100% - 23px); /* Accounts for padding on both sides */
   max-width:150px; /* Big screens don't have arbitrarily large input */
 }
-.unignore-user { /* Unignore user button */
+button { /* Unignore user button */
   padding:2px;
   padding-bottom:3px;
   background-color:white;
+  margin-left:2px;
 }
 #settings-wrapper { /* Wrapper div */
   padding:5px;
@@ -101,5 +169,13 @@ input {
 }
 li { /* Remove bullets */
   list-style-type: none;
+}
+td {
+  border:solid white 1px;
+  padding:4px;
+  width:max-content;
+}
+.footer {
+  border:none;
 }
 </style>
