@@ -22,7 +22,7 @@
         v-if="chatSelected"
       />
       <SlideoutUser v-if="userSelected"/>
-      <SlideoutSettings v-if="settingsSelected" size=14 />
+      <SlideoutSettings v-if="settingsSelected" size=14 indicator="(!)" />
     </span>
   </div>
 </template>
@@ -89,12 +89,14 @@
     @Watch('notifications')
     notificationsChanged() {
       // Notifications indicator in the page title that shows if there are unread messages
-      const notificationIndicator = '(!)';
+      const notificationIndicator: String = ` ${this.$vxm.chat.indicator}` || ' (!)';
       const currentTitle = document.title; // Current title of the page
-      if (this.notifications) { // If notifications were just changed to true
+      const hasIndicator = currentTitle.endsWith(notificationIndicator.toString());
+      if (this.notifications && !hasIndicator) { // If notifications were just changed to true
         document.title += notificationIndicator; // Append indicator to title
       } else { // If notifications just read
-        document.title = currentTitle.replace('(!)', ''); // Remove the indicator
+        const amountToSlice = currentTitle.length - notificationIndicator.length;
+        document.title = currentTitle.slice(0, amountToSlice); // Remove the indicator
       }
     }
 

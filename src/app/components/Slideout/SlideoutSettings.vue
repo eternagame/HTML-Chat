@@ -20,6 +20,7 @@
     </section>
     <section>
       <h3>Notifications</h3>
+      <h4>Ignored</h4>
       <table>
         <tr v-for="channel in channels" :key="channel.name">
           <td>{{channel.name}}</td>
@@ -52,6 +53,9 @@
           </td>
         </tr>
       </table>
+      <h4>Indicator</h4>
+      <p>This is the indicator that will appear in the page title if you have notifications</p>
+      <input type=text v-model="indicator">
     </section>
   </div>
 </template>
@@ -71,8 +75,11 @@
     },
   })
   export default class SlideoutSettings extends Vue {
-    @Prop({ required: true })
+    @Prop()
     size!:string; // font size
+
+    @Prop()
+    indicator!:String;
 
     // Gets a list of ignored users
     get ignoredUsers() {
@@ -91,13 +98,23 @@
 
     // When tab opened, display stored value if there is one
     created() {
-      this.size = this.$vxm.chat.fontSize.toString();
+      if (localStorage.fontSize) {
+        this.size = String(Number(JSON.parse(localStorage.fontSize)));
+      } else {
+        this.size = this.$vxm.chat.fontSize.toString();
+      }
+      /* if (localStorage.indicator) {
+        this.indicator = JSON.parse(localStorage.indicator);
+      } else {
+        this.indicator = this.$vxm.chat.indicator;
+      } */
     }
 
     // Updates global font size when input changes
     @Watch('size')
     updateFontSize() {
       this.$vxm.chat.fontSize = parseInt(this.size, 10);
+      localStorage.fontSize = JSON.stringify(this.size);
     }
 
     // Unignore user on list
@@ -118,6 +135,10 @@
         if (!trueChannel.notificationsEnabled) {
           trueChannel.notifications = false;
         }
+      }
+      this.$vxm.chat.ignoredChannels[channel] = (trueChannel as Channel).notificationsEnabled;
+      if (localStorage && this.$vxm.chat.ignoredChannels) {
+        localStorage.ignoredChannels = JSON.stringify(this.$vxm.chat.ignoredChannels);
       }
     }
 
@@ -162,6 +183,14 @@
         }
       });
     }
+
+    @Watch('indicator')
+    indicatorChanged() {
+      if (localStorage) {
+        localStorage.indicator = JSON.stringify(this.indicator);
+      }
+      this.$vxm.chat.indicator = this.indicator;
+    }
   }
 </script>
 <style scoped>
@@ -191,6 +220,7 @@ button { /* Unignore user button */
   padding:5px;
   padding-left:20px;
   height:calc(100% - 50px);
+  overflow-y:auto;
 }
 
 ::-webkit-scrollbar { /* Scrollbar track */
