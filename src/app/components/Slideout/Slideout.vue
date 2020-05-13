@@ -88,10 +88,13 @@
 
     @Watch('notifications')
     notificationsChanged() {
-      if (this.notifications) {
-        document.title += '(!)';
-      } else {
-        document.title = document.title.slice(0, document.title.length - 3);
+      // Notifications indicator in the page title that shows if there are unread messages
+      const notificationIndicator = '(!)';
+      const currentTitle = document.title; // Current title of the page
+      if (this.notifications) { // If notifications were just changed to true
+        document.title += notificationIndicator; // Append indicator to title
+      } else { // If notifications just read
+        document.title = currentTitle.replace('(!)', ''); // Remove the indicator
       }
     }
 
