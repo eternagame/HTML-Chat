@@ -42,6 +42,7 @@
   import MessagePane from '@/components/Panes/MessagePane.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import OpenWindowButton from '@/components/OpenWindowButton.vue';
+
   @Component({
     components: {
       Slideout,
@@ -84,7 +85,7 @@
     slideoutChanged(e:string) { // When slideout changed
       this.$vxm.chat.slideoutOpen = Boolean(e);
       if (!e) { // If slideout is closing
-       // Set current tab (what user is looking at) to read
+        // Set current tab (what user is looking at) to read
         this.$vxm.chat.readChannel(this.currentTab);
       }
     }
@@ -103,6 +104,8 @@
 
     postMessage(rawMessage: string, channel: string) {
       this.$vxm.chat.sendMessage({ rawMessage, channel });
+       // When user sends a message, make sure it doesn't notify itself
+      this.$vxm.chat.readChannel(channel);
     }
 
     mounted() {

@@ -87,7 +87,10 @@
     }
 
     get notifications() {
-      return Object.values(this.$vxm.chat.channels).some(item => item?.notifications);
+      // If any channels have notifications
+      // eslint-disable-next-line max-len
+      const anyNotifications = Object.values(this.$vxm.chat.channels).some(item => item?.notifications);
+      return anyNotifications;
     }
 
     // Slideout slides back when minimized
