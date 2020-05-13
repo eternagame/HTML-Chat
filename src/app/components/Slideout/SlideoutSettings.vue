@@ -1,48 +1,58 @@
 <template>
   <div id="settings-wrapper">
-    <h3>Text Size</h3>
-    <input v-model="size" type=number min=10 max=22>
-    <p id='font-size-p' class='bottom-section'>Default is 14</p>
-    <h3>Ignored List</h3>
-    <ul class='bottom-section'>
-      <li v-for="user in ignoredUsers" :key="user.Username">
-        {{ user }}
-        <button class='unignore-user' v-on:click="unignore(user)">Unignore</button>
-      </li>
-      <li v-show="!anyIgnoredUsers">No users ignored</li>
-      <button class='unignore-user' v-on:click="unignore('*')" v-show="anyIgnoredUsers" >
-        Unignore All</button>
-    </ul>
-    <h3>Notifications</h3>
-    <table>
-      <tr v-for="channel in channels" :key="channel.name">
-        <td>{{channel.name}}</td>
-        <td>
-          <button style="width:calc(100% - 6px)" @click="toggleNotificationsEnabled(channel.name)">
-            {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td class='footer'>
-          <button style="width:width:calc(100% - 6px)"
-            :disabled="anyNotificationsDisabled"
-            @click="toggleAll"
-          >
-            Enable all
-          </button>
-        </td>
-        <td class='footer'>
-          <button
-            style="width:width:calc(100% - 6px)"
+    <section>
+      <h3>Text Size</h3>
+      <input v-model="size" type=number min=10 max=22>
+      <p id='font-size-p'>Default is 14</p>
+    </section>
+    <section>
+      <h3>Ignored List</h3>
+      <ul>
+        <li v-for="user in ignoredUsers" :key="user.Username">
+          {{ user }}
+          <button class='unignore-user' v-on:click="unignore(user)">Unignore</button>
+        </li>
+        <li v-show="!anyIgnoredUsers">No users ignored</li>
+        <button class='unignore-user' v-on:click="unignore('*')" v-show="anyIgnoredUsers" >
+          Unignore All
+        </button>
+      </ul>
+    </section>
+    <section>
+      <h3>Notifications</h3>
+      <table>
+        <tr v-for="channel in channels" :key="channel.name">
+          <td>{{channel.name}}</td>
+          <td>
+            <button
+              style="width:calc(100% - 6px)"
+              @click="toggleNotificationsEnabled(channel.name)"
+            >
+              {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td class='footer'>
+            <button style="width:width:calc(100% - 6px)"
+              :disabled="anyNotificationsDisabled"
+              @click="enableAll"
+            >
+              Enable all
+            </button>
+          </td>
+          <td class='footer'>
+            <button
+              style="width:width:calc(100% - 6px)"
               :disabled="anyNotificationsEnabled"
-              @click="toggleAll"
-          >
-            Disable all
-          </button>
-        </td>
-    </tr>
-    </table>
+              @click="disableAll"
+            >
+              Disable all
+            </button>
+          </td>
+        </tr>
+      </table>
+    </section>
   </div>
 </template>
 <script lang="ts">
@@ -95,10 +105,12 @@
       this.$vxm.chat.unignoreUser(user);
     }
 
+    // Return list of channels
     get channels() {
       return this.$vxm.chat.channels;
     }
 
+    // Toggle whether notifications are enabled for a specific channel
     toggleNotificationsEnabled(channel:string) {
       const trueChannel = this.$vxm.chat.channels[channel];
       if (trueChannel) {
@@ -109,23 +121,45 @@
       }
     }
 
+    // If any notifications are enabled
     get anyNotificationsEnabled() {
-      return Object.values(this.channels).some(item => {
+      // Iterates through each channel and checks if notifications are enabled
+      return !Object.values(this.channels).some(item => {
+        // Making sure nothing is undefined and gets value from channel
         const { notificationsEnabled } = item as Channel;
         return notificationsEnabled;
       });
     }
 
+    // If any notifications are disabled
     get anyNotificationsDisabled() {
-      return Object.values(this.channels).some(item => {
+      // Again, iterating through each channel
+      return !Object.values(this.channels).some(item => {
+        // Making sure nothing is undefined and gets value from channel
         const { notificationsEnabled } = item as Channel;
         return !notificationsEnabled;
       });
     }
 
-    toggleAll() {
+    // Enables notificaitons for all channels
+    enableAll() {
+      // For each channel
       Object.values(this.channels).forEach(item => {
-       this.toggleNotificationsEnabled((item as Channel).name);
+        // If notifications aren't enabled, toggle their value. If they are, leave them alone
+        if (!(item as Channel).notificationsEnabled) {
+          this.toggleNotificationsEnabled((item as Channel).name);
+        }
+      });
+    }
+
+    // Disables notifications for all channels
+    disableAll() {
+      // For each channel
+      Object.values(this.channels).forEach(item => {
+        // If notifications are enabled, toggle their value. If they aren't, leave them alone
+        if ((item as Channel).notificationsEnabled) {
+          this.toggleNotificationsEnabled((item as Channel).name);
+        }
       });
     }
   }
@@ -135,7 +169,7 @@
   vertical-align: mid;
   margin-left:2px;
 }
-.bottom-section {
+section { /* 'Block' of settings */
   margin-bottom:15px;
 }
 h3 {
@@ -170,12 +204,12 @@ button { /* Unignore user button */
 li { /* Remove bullets */
   list-style-type: none;
 }
-td {
+td { /* Table cell in notifications settings section */
   border:solid white 1px;
   padding:4px;
   width:max-content;
 }
-.footer {
+.footer { /* Enable and disable notifications buttons */
   border:none;
 }
 </style>
