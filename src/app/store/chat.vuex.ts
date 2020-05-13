@@ -90,6 +90,10 @@ export default class ChatModule extends VuexModule {
 
   broadcast: BroadcastChannel<BroadcastMessage>; // For communication between tabs/windows
 
+  ignoredChannels: {[channel:string]:boolean};
+
+  indicator!: String;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -110,6 +114,11 @@ export default class ChatModule extends VuexModule {
       When a tab receives a message, it unignores the channel. */
       this.readChannel(ev.message);
     };
+    this.ignoredChannels = {};
+    channelNames.forEach(e => {
+      const channel = this.channels[e];
+      this.ignoredChannels[e] = (channel as Channel)?.notificationsEnabled;
+    });
   }
 
   channelWithName(name:string) {
@@ -196,11 +205,38 @@ export default class ChatModule extends VuexModule {
     this.currentUser = new User(username, uid);
     this.workbranch = workbranch;
 
-    if (localStorage && localStorage.ignoredUsers) {
-      try {
-        this.ignoredUsers = JSON.parse(localStorage.ignoredUsers);
-      } catch {
-        console.error('Encountered an error while parsing the local data of ignored users');
+    if (localStorage) {
+      if (localStorage.ignoredUsers) {
+        try {
+          this.ignoredUsers = JSON.parse(localStorage.ignoredUsers);
+        } catch {
+          console.error('Encountered an error while parsing the local data of ignored users');
+        }
+      }
+      if (localStorage.fontSize) {
+        try {
+          this.fontSize = Number(localStorage.fontSize);
+        } catch {
+          console.error('Encountered an error while converting the local data of font size');
+        }
+      }
+      if (localStorage.ignoredChannels) {
+        try {
+          const ignored = JSON.parse(localStorage.ignoredChannels);
+          Object.values(this.channels).forEach(e => {
+            const eAsChannel = e as Channel;
+            eAsChannel.notificationsEnabled = ignored[eAsChannel.name];
+          });
+        } catch {
+          console.error('Encountered an error while parsing the local data of notifications settings');
+        }
+      }
+      if (localStorage.indicator) {
+        try {
+          this.indicator = JSON.parse(localStorage.indicator);
+        } catch {
+          console.error('Encountered an error while parsing the local data of indicator text');
+        }
       }
     }
 
