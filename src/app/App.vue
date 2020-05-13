@@ -7,8 +7,6 @@
     <slideout
       style="z-index:1;"
       :minimizedValue="!minimized"
-      ref="slideout"
-      @input="slideoutChanged"
     >
     </slideout>
     <transition name="fade">
@@ -79,16 +77,7 @@
 
     $refs!: {
       reportDialog: ReportDialog;
-      slideout: Slideout;
     };
-
-    slideoutChanged(e:string) { // When slideout changed
-      this.$vxm.chat.slideoutOpen = Boolean(e);
-      if (!e) { // If slideout is closing
-        // Set current tab (what user is looking at) to read
-        this.$vxm.chat.readChannel(this.currentTab);
-      }
-    }
 
     get messageTabs() {
       return Object.values(this.$vxm.chat.channels).map(channel => channel!);

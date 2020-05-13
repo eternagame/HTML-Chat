@@ -20,7 +20,6 @@
       />
       <SlideoutChats
         v-if="chatSelected"
-        ref="chat"
       />
       <SlideoutUser v-if="userSelected"/>
       <SlideoutSettings v-if="settingsSelected" size=14 />
@@ -39,7 +38,6 @@
   import SlideoutButtonUsers from '../SlideoutButtonUsers.vue';
   import SlideoutButtonChat from '../SlideoutButtonChat.vue';
   import SlideoutButtonSettings from '../SlideoutButtonSettings.vue';
-  import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import HamburgerMenuButton from '@/components/HamburgerMenuButton.vue';
   import { Channel } from '../../store/chat.vuex';
 
@@ -52,7 +50,6 @@
       SlideoutButtonSettings,
       SlideoutButtonChat,
       SlideoutButtonUsers,
-      MinimizationTriangle,
       HamburgerMenuButton,
     },
   })
@@ -64,10 +61,6 @@
 
     @Prop()
     minimizedValue !: boolean;
-
-    $refs!: {
-      chat:SlideoutChats,
-    };
 
     // Each of the functions below tells whether a given tab is selected
     get chatSelected() {
@@ -93,6 +86,15 @@
       return anyNotifications;
     }
 
+    @Watch('notifications')
+    notificationsChanged() {
+      if (this.notifications) {
+        document.title += '(!)';
+      } else {
+        document.title = document.title.slice(0, document.title.length - 3);
+      }
+    }
+
     // Slideout slides back when minimized
     @Watch('minimizedValue')
     minimzationChanged() {
@@ -103,7 +105,11 @@
 
     @Watch('checked') // Slideout checked
     checkedChanged() {
-      this.$emit('input', this.checked);
+      this.$vxm.chat.slideoutOpen = Boolean(this.checked);
+      if (!this.checked) { // If slideout is closing
+        // Set current tab (what user is looking at) to read
+        this.$vxm.chat.readChannel(this.currentTab);
+      }
     }
   }
 </script>

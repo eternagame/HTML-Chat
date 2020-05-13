@@ -86,13 +86,9 @@ export default class ChatModule extends VuexModule {
 
   fontSize: Number = 14;
 
-  ignoredChannels = [];
+  slideoutOpen = false; // Whether slideout is open. Updated by App.vue
 
-  notificationsIgnored = false;
-
-  slideoutOpen = false;
-
-  broadcast: BroadcastChannel<BroadcastMessage>;
+  broadcast: BroadcastChannel<BroadcastMessage>; // For communication between tabs/windows
 
   constructor() {
     super();
