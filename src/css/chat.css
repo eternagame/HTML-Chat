@@ -17,11 +17,14 @@ textarea {
     width: calc(100% - 10px);
 }
 
+
 /************ Chat Messages ************/
 .chat-message {
     color: #C0DCE7;
     display: block;
     position: relative;
+    float: none !important;
+    white-space: normal !important;
 }
 .chat-message-system {
     font-style: italic;
@@ -103,14 +106,63 @@ textarea {
 }
 
 /************* Chat input *************/
-#chat-input, #reconnect {
-    position: absolute;
-    bottom: 0px;
-    width: Calc(100% - 28px);
-    height: 19px;
+#chat-input, #reconnect {    
+    width: calc(100% - 10px); 
+    height: 25px;   
     resize: none;
-    margin: 10px;
+    border: 1px solid #FFFFFF4D;
+    border-radius: 8px;
+    background-color: #010101;
+    color: #CBD5E2;
+    padding: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    outline: none;
 }
+
+.chat-input-container {
+    position: relative;
+    width: calc(100% - 30px);
+    margin: 10px 0 0 0;
+}
+
+.chat-input-group {
+    display: flex;
+}
+
+.chat-input-button {
+    margin-left: 8px;
+    margin-right: 2px;
+    cursor: pointer;
+    transition: filter .3s;
+    align-self: center;    
+}
+
+.chat-input-button:hover {
+    filter: grayscale(1);
+}
+
+.chat-input-img {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-13px);
+    background-image: url('../resources/submit-button.png');
+    width: 20px;
+    height: 20px;
+}
+
+#chat-users-btn {
+    background-image: url('../resources/chat-users.png');
+    height: 20px;
+    width: 20px;
+}  
+
+#chat-tab-btn {
+    background-image: url('../resources/chat-bubble.png');
+    height: 20px;
+    width: 20px;
+}  
 
 /************** Buttons ***************/
 
@@ -279,7 +331,16 @@ textarea {
     visibility: hidden;
     white-space: pre-wrap;
     word-wrap: break-word;
-    width: Calc(100% - 28px);
-    min-height: 19px;
+    resize: none;
+    border: 1px solid #FFFFFF4D;
+    border-radius: 8px;
+    width: calc(100% - 10px);
+    min-height: 25px;
     border: 1px;
+    position: absolute;
+    top: 0px;
+}
+
+.hidden {
+    display: none;
 }

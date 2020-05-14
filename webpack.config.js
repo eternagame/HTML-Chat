@@ -37,7 +37,7 @@ const commonConfig = {
         }),
         new InlineManifestWebpackPlugin({
             name: 'webpackManifest'
-        }),
+        })
     ]
 }
 

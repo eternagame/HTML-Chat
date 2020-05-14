@@ -43,7 +43,7 @@
 #chat-tabs > .ui-tabs-panel {
     padding: .4em .5em;
     position: relative;
-    height: Calc(100% - 55px);
+    height: calc(100% - 55px);
 }
 #chat-tabs > .ui-tabs-panel ul {
     margin: 0px;
