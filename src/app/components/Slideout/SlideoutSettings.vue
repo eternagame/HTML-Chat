@@ -75,11 +75,9 @@
     },
   })
   export default class SlideoutSettings extends Vue {
-    @Prop()
-    size!:string; // font size
+    size:string = '14'; // font size
 
-    @Prop()
-    indicator!:String;
+    indicator:string = '(!)';
 
     // Gets a list of ignored users
     get ignoredUsers() {
@@ -103,11 +101,11 @@
       } else {
         this.size = this.$vxm.chat.fontSize.toString();
       }
-      /* if (localStorage.indicator) {
+      if (localStorage.indicator) {
         this.indicator = JSON.parse(localStorage.indicator);
       } else {
         this.indicator = this.$vxm.chat.indicator;
-      } */
+      }
     }
 
     // Updates global font size when input changes

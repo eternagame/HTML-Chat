@@ -22,7 +22,7 @@
         v-if="chatSelected"
       />
       <SlideoutUser v-if="userSelected"/>
-      <SlideoutSettings v-if="settingsSelected" size=14 indicator="(!)" />
+      <SlideoutSettings v-if="settingsSelected" />
     </span>
   </div>
 </template>
