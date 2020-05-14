@@ -455,6 +455,7 @@ $(document).ready(function() {
         hiddenDiv.html(content + '');
         // Determine height from duplicate div
         $(this).css('height', hiddenDiv.height());
+        $('#chat-tabs').css('height', 'calc(100% - ' + $('.chat-input-group').height() + 'px)')
     });
     // Message options menu
     $("#chat-tabs").contextmenu({
@@ -550,6 +551,26 @@ $(document).ready(function() {
     });
     $("#reconnect").click(initSock);
 
+    const autoScroll = () => {
+        setTimeout(function(){
+            $("#chat-tab-global").mCustomScrollbar("scrollTo", "bottom", {callbacks: false});
+        }, 100);
+        chatAutoScroll = "bottom"
+    };
+
+    $("#chat-users-btn").click(function () {
+        document.getElementById('chat-users-btn').classList.add('hidden');
+        document.getElementById('chat-tab-btn').classList.remove('hidden');
+        document.getElementById('chat-tab-global').classList.add('hidden');
+        document.getElementById('chat-tab-users').classList.remove('hidden');
+    });
+    $("#chat-tab-btn").click(function () {
+        document.getElementById('chat-users-btn').classList.remove('hidden');
+        document.getElementById('chat-tab-btn').classList.add('hidden');
+        document.getElementById('chat-tab-global').classList.remove('hidden');
+        document.getElementById('chat-tab-users').classList.add('hidden');
+        autoScroll();
+    });
 });
 
 function sendMessage(message){
