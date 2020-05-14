@@ -23,8 +23,7 @@
         <ReportDialog ref="reportDialog"/>
       </div>
     </transition>
-    <div id="current-tab">{{currentTab}}
-    </div>
+    <div id="current-tab">{{currentTab}} </div>
     <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
     <OpenWindowButton v-model="fullSize"/>
   </div>

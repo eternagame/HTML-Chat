@@ -92,7 +92,7 @@ export default class ChatModule extends VuexModule {
 
   ignoredChannels: {[channel:string]:boolean};
 
-  indicator!: String;
+  indicator!: string;
 
   constructor() {
     super();
