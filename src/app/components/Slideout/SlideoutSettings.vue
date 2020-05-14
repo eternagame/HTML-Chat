@@ -240,4 +240,7 @@ td { /* Table cell in notifications settings section */
 .footer { /* Enable and disable notifications buttons */
   border:none;
 }
+table {
+  margin-top:2px;
+}
 </style>
