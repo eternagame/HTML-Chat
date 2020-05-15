@@ -57,6 +57,10 @@
       <p>This is the indicator that will appear in the page title if you have notifications</p>
       <input type=text v-model="indicator">
     </section>
+    <section>
+      <h3>Username Color</h3>
+      <ColorPicker />
+    </section>
   </div>
 </template>
 <script lang="ts">
@@ -68,10 +72,12 @@
   import SlideoutButton from './SlideoutButton.vue';
   import Slideout from './Slideout.vue';
   import { Channel } from '../../store/chat.vuex';
+  import ColorPicker from '../ColorPicker.vue';
   @Component({
     components: {
       Username,
       ConnectButton,
+      ColorPicker,
     },
   })
   export default class SlideoutSettings extends Vue {

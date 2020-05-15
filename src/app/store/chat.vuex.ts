@@ -21,12 +21,12 @@ const VuexModule = createModule({
 });
 
 interface Channel {
-  postedMessages: Message[],
-  name: string,
-  banned: BanStatus,
-  maxHistoryMessages: number,
-  notifications: boolean,
-  notificationsEnabled: boolean,
+  postedMessages: Message[];
+  name: string;
+  banned: BanStatus;
+  maxHistoryMessages: number;
+  notifications: boolean;
+  notificationsEnabled: boolean;
 }
 
 class ConnectionData {
@@ -74,7 +74,7 @@ export default class ChatModule extends VuexModule {
 
   channels: {
     [channelName: string]: Channel | undefined;
-   } = {};
+  } = {};
 
   ignoredUsers: string[] = [];
 
@@ -82,7 +82,7 @@ export default class ChatModule extends VuexModule {
 
   tab: Number = 1; // Selected tab. One of the chat channels
 
-  chatChannel : string = '#off-topic'; // Name of channel display in top bar
+  chatChannel: string = '#off-topic'; // Name of channel display in top bar
 
   fontSize: Number = 14;
 
@@ -90,9 +90,11 @@ export default class ChatModule extends VuexModule {
 
   broadcast: BroadcastChannel<BroadcastMessage>; // For communication between tabs/windows
 
-  ignoredChannels: {[channel:string]:boolean};
+  ignoredChannels: { [channel: string]: boolean };
 
   indicator!: string;
+
+  usernameColor: string = ''; // Color of username
 
   constructor() {
     super();
@@ -115,18 +117,18 @@ export default class ChatModule extends VuexModule {
       this.readChannel(ev.message);
     };
     this.ignoredChannels = {};
-    channelNames.forEach(e => {
+    channelNames.forEach((e) => {
       const channel = this.channels[e];
       this.ignoredChannels[e] = (channel as Channel)?.notificationsEnabled;
     });
   }
 
-  channelWithName(name:string) {
+  channelWithName(name: string) {
     return this.channels[name];
   }
 
   @mutation
-  readChannel(channel:string) {
+  readChannel(channel: string) {
     // Makes sure channel name corresponds to a channel
     const trueChannel = this.channels[channel];
     if (trueChannel) {
@@ -138,7 +140,7 @@ export default class ChatModule extends VuexModule {
   }
 
   @mutation
-  notify(channel:string) {
+  notify(channel: string) {
     // Again, making sure there is an actual channel with the name
     const trueChannel = this.channels[channel];
     if (trueChannel) {
@@ -159,7 +161,7 @@ export default class ChatModule extends VuexModule {
   }
 
   @mutation
-  addUser({ nick, uid }: { nick: string, uid: string }) {
+  addUser({ nick, uid }: { nick: string; uid: string }) {
     const username = User.parseUsername(nick);
     if (!(username in this.connectedUsers)) {
       Vue.set(this.connectedUsers, username, new User(username, uid));
@@ -186,8 +188,13 @@ export default class ChatModule extends VuexModule {
   }
 
   @mutation
-  openReportModal({ message, defaults }:
-                  { message: Message, defaults: {ignore: boolean, report: boolean} }) {
+  openReportModal({
+    message,
+    defaults,
+  }: {
+    message: Message;
+    defaults: { ignore: boolean; report: boolean };
+  }) {
     // Subscribed to in the report modal file
   }
 
@@ -201,7 +208,7 @@ export default class ChatModule extends VuexModule {
   }
 
   @action()
-  async init({ username, workbranch, uid }: { username: string, workbranch: string, uid: string}) {
+  async init({ username, workbranch, uid }: { username: string; workbranch: string; uid: string }) {
     this.currentUser = new User(username, uid);
     this.workbranch = workbranch;
 
@@ -213,29 +220,17 @@ export default class ChatModule extends VuexModule {
           console.error('Encountered an error while parsing the local data of ignored users');
         }
       }
-      if (localStorage.fontSize) {
-        try {
-          this.fontSize = Number(localStorage.fontSize);
-        } catch {
-          console.error('Encountered an error while converting the local data of font size');
-        }
-      }
       if (localStorage.ignoredChannels) {
         try {
           const ignored = JSON.parse(localStorage.ignoredChannels);
-          Object.values(this.channels).forEach(e => {
+          Object.values(this.channels).forEach((e) => {
             const eAsChannel = e as Channel;
             eAsChannel.notificationsEnabled = ignored[eAsChannel.name];
           });
         } catch {
-          console.error('Encountered an error while parsing the local data of notifications settings');
-        }
-      }
-      if (localStorage.indicator) {
-        try {
-          this.indicator = JSON.parse(localStorage.indicator);
-        } catch {
-          console.error('Encountered an error while parsing the local data of indicator text');
+          console.error(
+            'Encountered an error while parsing the local data of notifications settings',
+          );
         }
       }
     }
@@ -264,18 +259,19 @@ export default class ChatModule extends VuexModule {
       transport: Connection,
       ssl: this.connectionData.ssl,
     });
-    client.on('registered', (e) => {
-      Object.values(this.channels).forEach(c => {
-        const channel = client.channel(c!.name);
-        channel.join();
+    client
+      .on('registered', (e) => {
+        Object.values(this.channels).forEach((c) => {
+          const channel = client.channel(c!.name);
+          channel.join();
 
-        channel.updateUsers(() => {
-          channel.users.forEach(user => this.addUser({ nick: user.nick, uid: user.ident }));
+          channel.updateUsers(() => {
+            channel.users.forEach((user) => this.addUser({ nick: user.nick, uid: user.ident }));
+          });
         });
-      });
-      this.connectionData.failedAttempts = 0;
-      this.connectionData.connected = true;
-    })
+        this.connectionData.failedAttempts = 0;
+        this.connectionData.connected = true;
+      })
       .on('join', (e) => this.addUser({ nick: e.nick, uid: e.ident }))
       .on('quit', (e) => this.removeUser(e.nick)) // TODO: Change the param
       .on('part', (e) => this.removeUser(e.nick)) // TODO: Change the param
@@ -317,7 +313,7 @@ export default class ChatModule extends VuexModule {
   }
 
   @action()
-  async sendMessage({ rawMessage, channel }: { rawMessage: string, channel: string }) {
+  async sendMessage({ rawMessage, channel }: { rawMessage: string; channel: string }) {
     const postMessage = (
       message: string,
       { user = User.annonymous, isHistory = false, isAction = false } = {},
@@ -382,7 +378,9 @@ export default class ChatModule extends VuexModule {
             this.onDisconnect();
             break;
           case 'spam':
-            for (let i = 0; i < 100; i++) { postMessage(`Spam ${i}`); }
+            for (let i = 0; i < 100; i++) {
+              postMessage(`Spam ${i}`);
+            }
             break;
           case 'me':
             if (!params) {
@@ -429,7 +427,7 @@ export default class ChatModule extends VuexModule {
           } else {
             this.client!.say(channel, message);
           }
-          this.postMessage(new Message(message, channel, this.currentUser, isAction));
+          this.postMessage(new Message(message, channel, this.currentUser, isAction, { 'username-color': this.usernameColor }));
         } else {
           this.postMessage(new Message("Can't send messages because you are banned"));
         } // TODO
@@ -438,7 +436,7 @@ export default class ChatModule extends VuexModule {
   }
 
   @action()
-  async ignoreUser({ username, channel }: {username: string, channel?: string}) {
+  async ignoreUser({ username, channel }: { username: string; channel?: string }) {
     if (!this.ignoredUsers.includes(username)) {
       this.ignoredUsers.push(username);
       localStorage.ignoredUsers = JSON.stringify(this.ignoredUsers);
@@ -454,27 +452,24 @@ export default class ChatModule extends VuexModule {
   }
 
   @action()
-  async reportUser({ userToReport, message, reportComments }:
-    {userToReport: User, message: Message | null, reportComments: string}) {
+  async reportUser({
+    userToReport,
+    message,
+    reportComments,
+  }: {
+    userToReport: User;
+    message: Message | null;
+    reportComments: string;
+  }) {
     const client = this.client!;
     client.say(
       '#ops-notifications',
-      `[REPORT] Reporting ${userToReport.username} (${
-        userToReport.uid
-      }) by ${this.currentUser.username} (${
-        this.currentUser.uid
-      }).\r\n`,
+      `[REPORT] Reporting ${userToReport.username} (${userToReport.uid}) by ${this.currentUser.username} (${this.currentUser.uid}).\r\n`,
     );
     if (message) {
-      client.say(
-        '#ops-notifications',
-        `[REPORTED MESSAGE] ${message.message}\r\n`,
-      );
+      client.say('#ops-notifications', `[REPORTED MESSAGE] ${message.message}\r\n`);
     }
-    client.say(
-      '#ops-notifications',
-      `[REPORT REASON] ${reportComments}\r\n`,
-    );
+    client.say('#ops-notifications', `[REPORT REASON] ${reportComments}\r\n`);
   }
 
   @action()
@@ -484,9 +479,7 @@ export default class ChatModule extends VuexModule {
       const channel = this.channels[params.channel];
       if (channel) channel.banned = BanStatus.BAN_STATUS_BANNED;
       this.postMessage(
-        new Message(
-          `You have been kicked from chat${params.message ? ` - ${params.message}` : ''}`,
-        ),
+        new Message(`You have been kicked from chat${params.message ? ` - ${params.message}` : ''}`),
       );
     } else {
       this.removeUser(username);
@@ -504,19 +497,28 @@ export default class ChatModule extends VuexModule {
     if ((this.slideoutOpen || channel.name !== this.chatChannel) && channel.notificationsEnabled) {
       // Notify the channel
       this.notify(channel.name);
-    } else { // If the user is in the channel and the slideout is closed
+    } else {
+      // If the user is in the channel and the slideout is closed
       this.readChannel(channel.name); // Set the channel to read
     }
     const username = User.parseUsername(nick);
-    const messageObject = new Message(message, target, this.connectedUsers[username], type === 'action', time);
+    const messageObject = new Message(
+      message,
+      target,
+      this.connectedUsers[username],
+      type === 'action',
+      time,
+    );
     if (time) {
       const { postedMessages } = channel;
       // +1 in case the messages arrive out of order
       const maxMessages = Math.min(channel.maxHistoryMessages + 1, postedMessages.length);
       for (let i = 0; i < maxMessages; i++) {
         const historyMessage = postedMessages[postedMessages.length - 1 - i];
-        if (historyMessage.message === message
-              && historyMessage.time.getTime() - messageObject.time.getTime() < 1000) {
+        if (
+          historyMessage.message === message
+          && historyMessage.time.getTime() - messageObject.time.getTime() < 1000
+        ) {
           return;
         }
       }
@@ -542,7 +544,11 @@ export default class ChatModule extends VuexModule {
       if (mode.mode === '+b') {
         const maskUser = mode.param.match(/(.+)!.+/)![1];
         if (this.nick.match(new RegExp(maskUser.replace('*', '.+').replace('^', '\\^')))) {
-          if (mute) { this.onMuted(event.target); } else { this.onBanned(event.target); }
+          if (mute) {
+            this.onMuted(event.target);
+          } else {
+            this.onBanned(event.target);
+          }
         }
       } else if (mode.mode === '-b') {
         const maskUser = mode.param.match(/(.+)!.+/)![1];
@@ -552,7 +558,6 @@ export default class ChatModule extends VuexModule {
       }
     });
   }
-
 
   @action()
   async onIrcError(error: Irc.IrcErrorEventArgs) {
@@ -564,7 +569,6 @@ export default class ChatModule extends VuexModule {
     }
   }
 
-
   @action()
   async onBanned(channelName: string) {
     const channel = this.channels[channelName];
@@ -573,11 +577,10 @@ export default class ChatModule extends VuexModule {
       this.postMessage(new Message('You have been banned', channelName));
     }
     channel.banned = BanStatus.BAN_STATUS_BANNED;
-    Object.values(this.channels).forEach(c => {
+    Object.values(this.channels).forEach((c) => {
       if (c) c.banned = BanStatus.BAN_STATUS_BANNED;
     });
   }
-
 
   @action()
   async onMuted(channelName: string) {
@@ -589,7 +592,6 @@ export default class ChatModule extends VuexModule {
     channel.banned = BanStatus.BAN_STATUS_QUIET;
   }
 
-
   @action()
   async onUnbanned(channelName: string) {
     const channel = this.channels[channelName];
@@ -597,7 +599,6 @@ export default class ChatModule extends VuexModule {
     channel.banned = BanStatus.BAN_STATUS_NORMAL;
     this.postMessage(new Message('You are now allowed to post in chat', channelName));
   }
-
 
   @action()
   async onDisconnect() {
