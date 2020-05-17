@@ -1,9 +1,14 @@
 <template>
-  <div id="settings-wrapper" :style="{ fontSize:`${size}px` }">
+  <div id="settings-wrapper" :style="{ fontSize:`${fontSize}px` }">
     <section>
       <h3>Text Size</h3>
       <input v-model="size" type=number min=10 max=22>
       <p id='font-size-p'>Default is 14</p>
+      <p
+        id='font-warning'
+        v-show="size < 10 || size > 22" >
+        Font size must be a number, greater than 10, and less than 22
+      </p>
     </section>
     <section>
       <h3>Ignored List</h3>
@@ -11,7 +16,7 @@
         <li v-for="user in ignoredUsers" :key="user.Username">
           {{ user }}
           <button
-            :style="{ fontSize:`${size * 11 / 14}px` }"
+            :style="{ fontSize:`${fontSize * 11 / 14}px` }"
             class='unignore-user'
             v-on:click="unignore(user)" >
             Unignore
@@ -19,7 +24,7 @@
         </li>
         <li v-show="!anyIgnoredUsers">No users ignored</li>
         <button
-          :style="{ fontSize:`${size * 11 / 14}px` }"
+          :style="{ fontSize:`${fontSize * 11 / 14}px` }"
           class='unignore-user'
           v-on:click="unignore('*')"
           v-show="anyIgnoredUsers"
@@ -38,7 +43,7 @@
             <button
               style="width:calc(100% - 6px)"
               @click="toggleNotificationsEnabled(channel.name)"
-              :style="{ fontSize:`${size * 11 / 14}px` }"
+              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
             >
               {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
             </button>
@@ -49,7 +54,7 @@
             <button style="width:width:calc(100% - 6px)"
               :disabled="anyNotificationsDisabled"
               @click="enableAll"
-              :style="{ fontSize:`${size * 11 / 14}px` }"
+              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
             >
               Enable all
             </button>
@@ -59,7 +64,7 @@
               style="width:width:calc(100% - 6px)"
               :disabled="anyNotificationsEnabled"
               @click="disableAll"
-              :style="{ fontSize:`${size * 11 / 14}px` }"
+              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
             >
               Disable all
             </button>
@@ -132,8 +137,25 @@
     // Updates global font size when input changes
     @Watch('size')
     updateFontSize() {
-      this.$vxm.settings.fontSize = parseInt(this.size, 10);
-      localStorage.fontSize = JSON.stringify(this.size);
+       // Only update if valid font size
+      if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 22) {
+        this.$vxm.settings.fontSize = parseInt(this.size, 10);
+        localStorage.fontSize = JSON.stringify(this.size);
+      }
+    }
+
+    get fontSize() {
+      const numSize = parseInt(this.size, 10); // Font size as an int
+      if (numSize >= 10 && numSize <= 22) {
+        return numSize;
+      }
+      if (numSize >= 22) {
+        return 22; // If font size greater than 22, set to maximum of 22
+      }
+      if (numSize <= 10) {
+        return 10; // If font size less than 10, set to minimum of 10
+      }
+      return 14; // If nothing else works, make it the default, 14
     }
 
     // Unignore user on list
@@ -216,6 +238,9 @@
 #font-size-p { /* 'Default is 14' text */
   vertical-align: mid;
   margin-left:2px;
+}
+#font-warning {
+  color:#f39c12;
 }
 section { /* 'Block' of settings */
   margin-bottom:15px;
