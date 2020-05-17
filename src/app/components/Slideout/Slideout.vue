@@ -89,14 +89,14 @@
     @Watch('notifications')
     notificationsChanged() {
       // Notifications indicator in the page title that shows if there are unread messages
-      const notificationIndicator: String = ` ${this.$vxm.chat.indicator}` || ' (!)';
+      const notificationIndicator: string = ` ${this.$vxm.settings.indicator}`;
       const currentTitle = document.title; // Current title of the page
       const hasIndicator = currentTitle.endsWith(notificationIndicator.toString());
       if (this.notifications && !hasIndicator) { // If notifications were just changed to true
         document.title += notificationIndicator; // Append indicator to title
       } else { // If notifications just read
         const amountToSlice = currentTitle.length - notificationIndicator.length;
-        document.title = currentTitle.slice(0, amountToSlice); // Remove the indicator
+        document.title = currentTitle.replace(notificationIndicator, ''); // Remove the indicator
       }
     }
 

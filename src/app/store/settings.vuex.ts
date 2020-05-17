@@ -12,7 +12,7 @@ const VuexModule = createModule({
 export default class SettingsModule extends VuexModule {
   fontSize: Number = 14;
 
-  indicator!: string;
+  indicator: string = ' (!)';
 
   usernameColor: string = '';
 }
