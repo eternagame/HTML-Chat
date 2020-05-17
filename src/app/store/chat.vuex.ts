@@ -286,6 +286,10 @@ export default class ChatModule extends VuexModule {
     this.connect();
   }
 
+  async authenticate(password:string) {
+    this.client?.raw(`OPER ${this.client.user.nick} ${password}`);
+  }
+
   @action()
   async connect() {
     this.client!.connect();
@@ -422,7 +426,11 @@ export default class ChatModule extends VuexModule {
           } else {
             this.client!.say(channel, message);
           }
-          this.postMessage(new Message(message, channel, this.currentUser, isAction, { 'username-color': this.$store.state.settingsModule.usernameColor }));
+          const msg = new Message(message, channel, this.currentUser, isAction);
+          if (this.$store.state.SettingsModule !== undefined) {
+            msg.tags = { 'username-color': this.$store.state.SettingsModule.usernameColor };
+          }
+          this.postMessage(msg);
         } else {
           this.postMessage(new Message("Can't send messages because you are banned"));
         } // TODO

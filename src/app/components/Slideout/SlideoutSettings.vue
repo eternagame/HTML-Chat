@@ -72,7 +72,7 @@
   import SlideoutButton from './SlideoutButton.vue';
   import Slideout from './Slideout.vue';
   import { Channel } from '../../store/chat.vuex';
-  import ColorPicker from '../ColorPicker.vue';
+  import ColorPicker from './ColorPicker/ColorPicker.vue';
   @Component({
     components: {
       Username,
@@ -239,7 +239,6 @@ li { /* Remove bullets */
   list-style-type: none;
 }
 td { /* Table cell in notifications settings section */
-  border:solid white 1px;
   padding:4px;
   width:max-content;
 }
