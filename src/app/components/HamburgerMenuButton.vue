@@ -28,7 +28,6 @@
   background-repeat: no-repeat;
   background-size: 50% 45%;
   background-position: bottom 10px left 11px;
-  transition: background-image background-size 1s;
 }
 .notified {
   background-image: url("../assets/hamburger-notification.png");

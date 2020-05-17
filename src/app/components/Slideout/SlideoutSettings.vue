@@ -1,5 +1,5 @@
 <template>
-  <div id="settings-wrapper">
+  <div id="settings-wrapper" :style="{ fontSize:`${size}px` }">
     <section>
       <h3>Text Size</h3>
       <input v-model="size" type=number min=10 max=22>
@@ -10,10 +10,20 @@
       <ul>
         <li v-for="user in ignoredUsers" :key="user.Username">
           {{ user }}
-          <button class='unignore-user' v-on:click="unignore(user)">Unignore</button>
+          <button
+            :style="{ fontSize:`${size * 11 / 14}px` }"
+            class='unignore-user'
+            v-on:click="unignore(user)" >
+            Unignore
+          </button>
         </li>
         <li v-show="!anyIgnoredUsers">No users ignored</li>
-        <button class='unignore-user' v-on:click="unignore('*')" v-show="anyIgnoredUsers" >
+        <button
+          :style="{ fontSize:`${size * 11 / 14}px` }"
+          class='unignore-user'
+          v-on:click="unignore('*')"
+          v-show="anyIgnoredUsers"
+        >
           Unignore All
         </button>
       </ul>
@@ -28,6 +38,7 @@
             <button
               style="width:calc(100% - 6px)"
               @click="toggleNotificationsEnabled(channel.name)"
+              :style="{ fontSize:`${size * 11 / 14}px` }"
             >
               {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
             </button>
@@ -38,6 +49,7 @@
             <button style="width:width:calc(100% - 6px)"
               :disabled="anyNotificationsDisabled"
               @click="enableAll"
+              :style="{ fontSize:`${size * 11 / 14}px` }"
             >
               Enable all
             </button>
@@ -47,6 +59,7 @@
               style="width:width:calc(100% - 6px)"
               :disabled="anyNotificationsEnabled"
               @click="disableAll"
+              :style="{ fontSize:`${size * 11 / 14}px` }"
             >
               Disable all
             </button>
@@ -54,7 +67,9 @@
         </tr>
       </table>
       <h4>Indicator</h4>
-      <p>This is the indicator that will appear in the page title if you have notifications</p>
+      <p>
+        This is the indicator that will appear in the page title if you have notifications
+      </p>
       <input type=text v-model="indicator">
     </section>
     <section>
