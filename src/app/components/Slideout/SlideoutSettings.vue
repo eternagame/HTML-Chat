@@ -17,7 +17,7 @@
           {{ user }}
           <button
             :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-            class='unignore-user'
+            class='unignore-user green-button'
             v-on:click="unignore(user)" >
             Unignore
           </button>
@@ -25,7 +25,7 @@
         <li v-show="!anyIgnoredUsers">No users ignored</li>
         <button
           :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-          class='unignore-user'
+          class='unignore-user green-button'
           v-on:click="unignore('*')"
           v-show="anyIgnoredUsers"
         >
@@ -44,6 +44,7 @@
               style="width:calc(100% - 6px)"
               @click="toggleNotificationsEnabled(channel.name)"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+              class="green-button"
             >
               {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
             </button>
@@ -55,6 +56,7 @@
               :disabled="anyNotificationsDisabled"
               @click="enableAll"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+              class="green-button"
             >
               Enable all
             </button>
@@ -65,6 +67,7 @@
               :disabled="anyNotificationsEnabled"
               @click="disableAll"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+              class="green-button"
             >
               Disable all
             </button>
@@ -257,8 +260,9 @@ input {
 button { /* Unignore user button */
   padding:2px;
   padding-bottom:3px;
-  background-color:white;
   margin-left:2px;
+  color:white;
+  border:none;
 }
 #settings-wrapper { /* Wrapper div */
   padding:5px;

@@ -1,6 +1,7 @@
 <template>
   <Button
     :class="{active: selected}"
+    class="slideout-button"
     @click="$emit('input')"
   >
     <slot />
