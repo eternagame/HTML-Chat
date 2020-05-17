@@ -105,19 +105,19 @@
       if (localStorage.fontSize) {
         this.size = String(Number(JSON.parse(localStorage.fontSize)));
       } else {
-        this.size = this.$vxm.chat.fontSize.toString();
+        this.size = this.$vxm.settings.fontSize.toString();
       }
       if (localStorage.indicator) {
         this.indicator = JSON.parse(localStorage.indicator);
       } else {
-        this.indicator = this.$vxm.chat.indicator;
+        this.indicator = this.$vxm.settings.indicator;
       }
     }
 
     // Updates global font size when input changes
     @Watch('size')
     updateFontSize() {
-      this.$vxm.chat.fontSize = parseInt(this.size, 10);
+      this.$vxm.settings.fontSize = parseInt(this.size, 10);
       localStorage.fontSize = JSON.stringify(this.size);
     }
 
@@ -193,7 +193,7 @@
       if (localStorage) {
         localStorage.indicator = JSON.stringify(this.indicator);
       }
-      this.$vxm.chat.indicator = this.indicator;
+      this.$vxm.settings.indicator = this.indicator;
     }
   }
 </script>

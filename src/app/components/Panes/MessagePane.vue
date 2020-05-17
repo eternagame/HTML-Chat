@@ -75,7 +75,7 @@
 
     // Updates font size
     get fontSize() {
-      return `${this.$vxm.chat.fontSize.toString()}px`;
+      return `${this.$vxm.settings.fontSize.toString()}px`;
     }
 
     send() {
