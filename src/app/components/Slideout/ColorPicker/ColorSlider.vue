@@ -100,11 +100,11 @@
     position:relative;
     /* Disables clicks or highlights to the text, so they 'pass through' to the slider */
     pointer-events:none;
-    vertical-align:top;
     overflow-x:hidden;
     text-align:center;
     width:40px;
     display:inline-block;
     margin:0px;
+    font-size: 14px !important;
   }
 </style>

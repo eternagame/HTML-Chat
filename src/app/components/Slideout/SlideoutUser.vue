@@ -1,5 +1,5 @@
 <template>
-  <div id="user-wrapper">
+  <div id="user-wrapper" :style="{ fontSize:`${fontSize}px` }">
     <h3>Online ({{userCount}})</h3>
     <ul>
       <li v-for="user in connectedUsers" :key="user.username">
@@ -27,6 +27,10 @@
 
     get userCount() {
       return Object.keys(this.$vxm.chat.connectedUsers).length;
+    }
+
+    get fontSize() {
+      return this.$vxm.settings.fontSize;
     }
   }
 </script>

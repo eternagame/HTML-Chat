@@ -1,5 +1,5 @@
 <template>
-  <div id='picker' style="font-size:20px !important">
+  <div id='picker'>
     <ColorSlider
       id='red'
       gradientStart="#200"
@@ -29,8 +29,13 @@
           :style="{ backgroundColor:color }"
           @click="setColor(color)" />
       </div>
-    <p id='preview' style='background-color:#05224b;' :style="{ color: color }">Preview</p>
-    <p v-show='!validColor' id='warning'>Not enough contrast</p>
+    <p
+      id='preview'
+      style='background-color:#05224b;'
+      :style="{ color: color, fontSize:fontSize }" >
+        Preview
+    </p>
+    <p v-show='!validColor' id='warning' :style="{ fontSize:fontSize }">Not enough contrast</p>
   </div>
 </template>
 <script lang='ts'>
@@ -135,6 +140,10 @@
       this.red = parseInt(color.substring(1, 3), 16).toString();
       this.green = parseInt(color.substring(3, 5), 16).toString();
       this.blue = parseInt(color.substring(5, 7), 16).toString();
+    }
+
+    get fontSize() {
+      return `${this.$vxm.settings.fontSize}px`;
     }
   }
 </script>
