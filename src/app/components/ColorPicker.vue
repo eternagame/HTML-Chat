@@ -72,10 +72,10 @@
         // If color contrasts well enough with background
         if (this.validColor) {
           // Update vuex
-          this.$vxm.chat.usernameColor = `#${this.colorToHexValue(this.red)}${this.colorToHexValue(this.green)}${this.colorToHexValue(this.blue)}`;
+          this.$vxm.settings.usernameColor = `#${this.colorToHexValue(this.red)}${this.colorToHexValue(this.green)}${this.colorToHexValue(this.blue)}`;
             // Set value to localStorage if available
             if (localStorage) {
-              localStorage.usernameColor = this.$vxm.chat.usernameColor;
+              localStorage.usernameColor = this.$vxm.settings.usernameColor;
             }
         }
         // Sets color of preview test
@@ -130,7 +130,7 @@
         if (localStorage.usernameColor) {
           color = localStorage.usernameColor;
         } else {
-          color = this.$vxm.chat.usernameColor;
+          color = this.$vxm.settings.usernameColor;
         }
         // Converting hex to decimal
         this.red = parseInt(color.substring(1, 3), 16).toString();

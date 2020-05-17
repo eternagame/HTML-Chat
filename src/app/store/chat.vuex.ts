@@ -10,6 +10,7 @@ import Message from '../types/message';
 import Connection from '@/tools/websocket';
 import BanStatus from '@/types/BanStatus';
 import User from '@/types/user';
+import SettingsModule from './settings.vuex';
 
 // For polyfill
 declare type BroadcastMessage = {
@@ -84,17 +85,11 @@ export default class ChatModule extends VuexModule {
 
   chatChannel: string = '#off-topic'; // Name of channel display in top bar
 
-  fontSize: Number = 14;
-
   slideoutOpen = false; // Whether slideout is open. Updated by App.vue
 
   broadcast: BroadcastChannel<BroadcastMessage>; // For communication between tabs/windows
 
   ignoredChannels: { [channel: string]: boolean };
-
-  indicator!: string;
-
-  usernameColor: string = ''; // Color of username
 
   constructor() {
     super();
@@ -427,7 +422,7 @@ export default class ChatModule extends VuexModule {
           } else {
             this.client!.say(channel, message);
           }
-          this.postMessage(new Message(message, channel, this.currentUser, isAction, { 'username-color': this.usernameColor }));
+          this.postMessage(new Message(message, channel, this.currentUser, isAction, { 'username-color': this.$store.state.settingsModule.usernameColor }));
         } else {
           this.postMessage(new Message("Can't send messages because you are banned"));
         } // TODO
