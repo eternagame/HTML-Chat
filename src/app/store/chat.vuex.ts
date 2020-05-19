@@ -91,6 +91,8 @@ export default class ChatModule extends VuexModule {
 
   ignoredChannels: { [channel: string]: boolean };
 
+  usernameColor: string = '';
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -423,8 +425,8 @@ export default class ChatModule extends VuexModule {
             this.client!.say(channel, message);
           }
           const msg = new Message(message, channel, this.currentUser, isAction);
-          if (this.$store.state.SettingsModule !== undefined) {
-            msg.tags = { 'username-color': this.$store.state.SettingsModule.usernameColor };
+          if (this.usernameColor !== undefined && this.usernameColor !== '') {
+            msg.tags = { 'username-color': this.usernameColor };
           }
           this.postMessage(msg);
         } else {

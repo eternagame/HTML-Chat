@@ -52,8 +52,8 @@
         let color;
         if (localStorage.usernameColor) {
           color = localStorage.usernameColor;
-        } else if (this.$vxm.settings.usernameColor !== '' && this.$vxm.settings.usernameColor !== undefined) {
-          color = this.$vxm.settings.usernameColor;
+        } else if (this.$vxm.chat.usernameColor !== '' && this.$vxm.chat.usernameColor !== undefined) {
+          color = this.$vxm.chat.usernameColor;
         } else {
           color = (this.$parent as ColorPicker).color;
         }

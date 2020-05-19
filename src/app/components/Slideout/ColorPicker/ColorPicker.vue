@@ -71,10 +71,10 @@
       // If color contrasts well enough with background
       if (this.validColor) {
         // Update vuex
-        this.$vxm.settings.usernameColor = `#${this.colorToHexValue(this.red)}${this.colorToHexValue(this.green)}${this.colorToHexValue(this.blue)}`;
+        this.$vxm.chat.usernameColor = `#${this.colorToHexValue(this.red)}${this.colorToHexValue(this.green)}${this.colorToHexValue(this.blue)}`;
           // Set value to localStorage if available
           if (localStorage) {
-            localStorage.usernameColor = this.$vxm.settings.usernameColor;
+            localStorage.usernameColor = this.$vxm.chat.usernameColor;
           }
         }
       // Sets color of preview test
@@ -135,9 +135,9 @@
       // If value saved in localStorage, use that
       if (localStorage.usernameColor) {
         color = localStorage.usernameColor;
-      } else if (this.$vxm.settings.usernameColor !== '' && this.$vxm.settings.usernameColor !== undefined) {
+      } else if (this.$vxm.chat.usernameColor !== '' && this.$vxm.chat.usernameColor !== undefined) {
         // If value not in localStorage, check vuex
-        color = this.$vxm.settings.usernameColor;
+        color = this.$vxm.chat.usernameColor;
       } else { // If not, make it a random color from the defaults. Then, it saves in localStorage
         color = this.defaultColors[Math.ceil(Math.random() * 8)];
       }

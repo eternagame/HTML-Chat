@@ -34,6 +34,7 @@
   import {
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
+  import BootstrapVue from 'bootstrap-vue';
   import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
@@ -41,6 +42,8 @@
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import OpenWindowButton from '@/components/OpenWindowButton.vue';
   import DraggableDiv from '@/components/DraggableDiv.vue';
+
+  Vue.use(BootstrapVue);
 
 @Component({
   components: {
@@ -235,11 +238,14 @@ textarea {
 }
 </style>
 <style lang="scss" scoped>
+@import "node_modules/bootstrap-vue/src/_custom.scss";
+@import "~bootstrap/scss/bootstrap.scss";
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
 #eterna-chat {
   font-family: "Open Sans", "Open Sans", Arial, Gulim;
   font-size: 14px;
   font-weight: 300;
-  background-color: #043468;
+  background-color: $med-dark-blue;
   position: relative; /* Makes sure everything is placed with respect to it, not to its parent */
   top: 0px;
   left: 0px;
@@ -247,8 +253,8 @@ textarea {
 }
 
 .eternaChatNormal {
-  width: 300px; // Fill in with normal size
-  height: 500px;
+  width: $container-width; // Fill in with normal size
+  height: $container-height;
   animation: growNormal 1s;
 }
 
@@ -274,7 +280,7 @@ textarea {
   left: 8px;
   width: calc(100% - 20px); //Account for border
   color: #c0dce7;
-  background-color: #05224b;
+  background-color: $dark-blue;
   transform-origin: top center;
 }
 .minimizationTriangle {
@@ -346,7 +352,7 @@ textarea {
   margin-left: 5vw;
   margin-top: 5vh;
   margin-bottom: 5vh;
-  box-shadow: 0 0 2vw 20vw rgba(4, 52, 104, 0.5); /* Creates blur effect */
+  box-shadow: 0 0 2vw 20vw $dark-blue-transparent; /* Creates blur effect */
   animation: growFull 1s;
   left:0px !important; /* Overrides dragging styles so full size chat isn't cut off */
   top:0px !important;
