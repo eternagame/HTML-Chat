@@ -1,28 +1,33 @@
 <template>
-  <div
+  <DraggableDiv
     id="eterna-chat"
     style="overflow-y: hidden;"
     :class="{ eternaChatFull: fullSized, eternaChatNormal: !fullSized, minimizedChat: minimized }"
+    :enabled="!fullSize"
   >
-    <slideout style="z-index: 1;" :minimizedValue="!minimized"></slideout>
-    <transition name="fade">
-      <div class="chat-content" v-if="!minimized">
-        <MessagePane
-          v-for="(channel, index) in messageTabs"
-          :key="channel.name"
-          :data="channel"
-          v-show="index === activeTab"
-          :visibility="index === activeTab"
-          @postMessage="postMessage($event, channel.name)"
-        />
-        <ConnectingPopup />
-        <ReportDialog ref="reportDialog" />
-      </div>
-    </transition>
-    <div id="current-tab">{{ currentTab }}</div>
-    <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
-    <OpenWindowButton v-model="fullSize" />
-  </div>
+    <template slot="main">
+      <slideout style="z-index: 1;" :minimizedValue="!minimized"></slideout>
+      <transition name="fade">
+        <div class="chat-content" v-if="!minimized">
+          <MessagePane
+            v-for="(channel, index) in messageTabs"
+            :key="channel.name"
+            :data="channel"
+            v-show="index === activeTab"
+            :visibility="index === activeTab"
+            @postMessage="postMessage($event, channel.name)"
+          />
+          <ConnectingPopup />
+          <ReportDialog ref="reportDialog" />
+        </div>
+      </transition>
+    </template>
+    <template slot="header">
+      <div id="current-tab">{{ currentTab }}</div>
+      <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
+      <OpenWindowButton v-model="fullSize" />
+    </template>
+  </DraggableDiv>
 </template>
 
 <script lang="ts">
@@ -35,9 +40,11 @@
   import MessagePane from '@/components/Panes/MessagePane.vue';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import OpenWindowButton from '@/components/OpenWindowButton.vue';
+  import DraggableDiv from '@/components/DraggableDiv.vue';
 
 @Component({
   components: {
+    DraggableDiv,
     Slideout,
     ReportDialog,
     ConnectingPopup,
@@ -74,6 +81,10 @@
     reportDialog: ReportDialog;
   };
 
+  get slideoutOpen() {
+    return this.$vxm.chat.slideoutOpen;
+  }
+
   get messageTabs() {
     return Object.values(this.$vxm.chat.channels).map((channel) => channel!);
   }
@@ -109,6 +120,20 @@
   @Watch('minimized')
   minimizedChanged() {
     this.fullSize = false;
+  }
+
+  @Watch('fullSize')
+  sizeChanged() {
+    if (this.fullSize && this.minimized) {
+      this.fullSize = false;
+    }
+  }
+
+  @Watch('slideoutOpen')
+  slideoutChanged() {
+    if (this.slideoutOpen) {
+      this.minimization = false;
+    }
   }
   }
 </script>
@@ -222,8 +247,8 @@ textarea {
 }
 
 .eternaChatNormal {
-  width: 100%;
-  height: 100%;
+  width: 300px; // Fill in with normal size
+  height: 500px;
   animation: growNormal 1s;
 }
 
@@ -282,8 +307,8 @@ textarea {
 }
 @keyframes growFull {
   from {
-    width: 100%;
-    height: 100%;
+    width: 300px; // Fill in with default size
+    height: 500px;
     margin: 0;
   }
   to {
@@ -293,12 +318,14 @@ textarea {
     margin-left: 5vw;
     margin-top: 5vh;
     margin-bottom: 5vh;
+    left: 0px !important;
+    top: 0px !important;
   }
 }
 @keyframes growNormal {
   to {
-    width: 100%;
-    height: 100%;
+    width: 300px; //Fill in with default size
+    height: 500px;
     margin: 0;
   }
   from {
@@ -308,16 +335,23 @@ textarea {
     margin-left: 5vw;
     margin-top: 5vh;
     margin-bottom: 5vh;
+    left: 0px !important;
+    top: 0px !important;
   }
 }
-.eternaChatFull {
-  width: 90vw;
+.eternaChatFull { /* Full size chat */
+  width: 90vw; /* Takes up 90% of the viewport*/
   height: 90vh;
-  margin-right: 5vw;
+  margin-right: 5vw; /* Margins take up the rest*/
   margin-left: 5vw;
   margin-top: 5vh;
   margin-bottom: 5vh;
-  box-shadow: 0 0 2vw 20vw rgba(4, 52, 104, 0.5);
+  box-shadow: 0 0 2vw 20vw rgba(4, 52, 104, 0.5); /* Creates blur effect */
   animation: growFull 1s;
+  left:0px !important; /* Overrides dragging styles so full size chat isn't cut off */
+  top:0px !important;
+}
+.minimizedChat { /* Removes light blue background when chat is minimzed and only shows top bar */
+  height:40px;
 }
 </style>
