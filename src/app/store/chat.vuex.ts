@@ -286,10 +286,6 @@ export default class ChatModule extends VuexModule {
     this.connect();
   }
 
-  async authenticate(password:string) {
-    this.client?.raw(`OPER ${this.client.user.nick} ${password}`);
-  }
-
   @action()
   async connect() {
     this.client!.connect();
