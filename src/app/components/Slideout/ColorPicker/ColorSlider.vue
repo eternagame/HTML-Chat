@@ -17,6 +17,7 @@
   import {
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
+  import ColorPicker from './ColorPicker.vue';
 
   @Component
   export default class ColorSlider extends Vue {
@@ -31,6 +32,8 @@
     @Prop() // Red, green, or blue. Used to fetch value from localStorage/vuex
     colorID !: string;
 
+    defaultColors = ['#f3a891', '#f3c491', '#f3df91', '#e2f391', '#bef391', '#91f3bc', '#f391ba', '#f39196'];
+
     calculateOffset() { // Position of text on slider thumb
       return `${this.sliderValue / 5 - 93}px`;
     }
@@ -44,13 +47,15 @@
       return `-webkit-linear-gradient(left,${this.gradientStart},${this.gradientEnd})`;
     }
 
-    // Gets value from localStorage or vuex when created
+    // Gets value from localStorage, parent, or vuex when created
     created() {
         let color;
         if (localStorage.usernameColor) {
           color = localStorage.usernameColor;
-        } else {
+        } else if (this.$vxm.settings.usernameColor !== '' && this.$vxm.settings.usernameColor !== undefined) {
           color = this.$vxm.settings.usernameColor;
+        } else {
+          color = (this.$parent as ColorPicker).color;
         }
         switch (this.colorID) {
           case 'red':

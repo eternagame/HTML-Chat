@@ -43,6 +43,7 @@
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
   import ColorSlider from './ColorSlider.vue';
+  import User from '@/types/user';
 
   @Component({
     components: {
@@ -131,10 +132,14 @@
     // Gets value from localStorage or vuex when created
     created() {
       let color;
+      // If value saved in localStorage, use that
       if (localStorage.usernameColor) {
         color = localStorage.usernameColor;
-      } else {
+      } else if (this.$vxm.settings.usernameColor !== '' && this.$vxm.settings.usernameColor !== undefined) {
+        // If value not in localStorage, check vuex
         color = this.$vxm.settings.usernameColor;
+      } else { // If not, make it a random color from the defaults. Then, it saves in localStorage
+        color = this.defaultColors[Math.ceil(Math.random() * 8)];
       }
       // Converting hex to decimal
       this.red = parseInt(color.substring(1, 3), 16).toString();
