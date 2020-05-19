@@ -49,9 +49,6 @@
           this.positions.clientY = event.clientY;
           document.onmousemove = this.elementDrag;
           document.onmouseup = this.closeDragElement;
-          console.log('enabled');
-        } else {
-          console.log('disabled');
         }
       },
       elementDrag(event) {
@@ -64,9 +61,6 @@
           // set the element's new position:
           this.$refs.draggableContainer.style.top = `${this.$refs.draggableContainer.offsetTop - this.positions.movementY}px`;
           this.$refs.draggableContainer.style.left = `${this.$refs.draggableContainer.offsetLeft - this.positions.movementX}px`;
-          console.log('enabled');
-        } else {
-          console.log('disabled');
         }
       },
       closeDragElement() {
