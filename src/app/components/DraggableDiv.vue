@@ -34,8 +34,8 @@
       enabled: {
         handler: function changed() {
           if (!this.enabled) {
-            // this.$refs.draggableContainer.style.top = '0px';
-            // this.$refs.draggableContainer.style.left = '0px';
+            this.$refs.draggableContainer.style.top = '0px';
+            this.$refs.draggableContainer.style.left = '0px';
           }
         },
       },

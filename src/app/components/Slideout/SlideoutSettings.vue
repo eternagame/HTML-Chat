@@ -275,6 +275,10 @@ button { /* Unignore user button */
     width: 10px;
 }
 
+::-webkit-scrollbar-corner {
+  background-color:black;
+}
+
 ::-webkit-scrollbar-thumb { /* Scrollbar bar */
   background-color:#343a40;
   border-radius:5px;
