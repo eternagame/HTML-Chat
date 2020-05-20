@@ -71,11 +71,12 @@
     top: 0px;
     padding: 0;
     color:black;
-    width:calc(100% - 2px);
     background-color:white;
     border:#343a40 1px solid;
     border-radius:8px;
     outline: none;
+    padding-right:25px;
+    width:calc(100% - 27px) !important;
   }
 
   .scalable-input:focus {
@@ -94,5 +95,6 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     border: 1px solid;
+    padding-right:25px;
   }
 </style>

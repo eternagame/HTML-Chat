@@ -1,0 +1,69 @@
+// Eterna theme
+// Bootswatch
+
+//
+// Color system
+//
+
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #ecf0f1 !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #b4bcc2 !default;
+$gray-600: #95a5a6 !default;
+$gray-700: #7b8a8b !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black:    #000 !default;
+
+$blue: #21508c !default;
+$dark-blue: #05224b !default;
+$light-blue: #50b2dc !default;
+$med-blue: #2f94d1 !default;
+$med-dark-blue: #043468 !default;
+$dark-blue-transparent: #05224680;
+$green: #53b64e !default;
+$dark-green: #3d8e39 !default;
+$light-green: #97cc93 !default;
+$red: #d73832 !default;
+$orange: #fd7e14 !default;
+$yellow: #fac244 !default;
+$white: #fff !default;
+$gray: #95a5a6 !default;
+$gray-dark: #343a40 !default;
+$primary: $blue !default;
+$secondary: $light-blue !default;
+$success: $green !default;
+$info: $med-blue !default;
+$warning: #f39c12 !default;
+$danger: #e74c3c !default;
+$light: #ecf0f1 !default;
+$dark: #7b8a8b !default;
+
+$colors: () !default;
+// stylelint-disable-next-line scss/dollar-variable-default
+$colors: map-merge(
+  (
+    "blue":       $blue,
+    "dark-blue":     $dark-blue,
+    "light-blue":     $light-blue,
+    "med-blue":       $med-blue,
+    "med-dark-blue":       $med-dark-blue,
+    "red":        $red,
+    "orange":     $orange,
+    "yellow":     $yellow,
+    "green":      $green,
+    "dark-green":       $dark-green,
+    "light-green":       $light-green,
+    "white":      $white,
+    "gray":       $gray-600,
+    "gray-dark":  $gray-800
+  ),
+  $colors
+);
+
+// Default size
+
+$container-width:300px !default;
+$container-height:500px !default;
