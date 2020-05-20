@@ -238,7 +238,7 @@ textarea {
 }
 </style>
 <style lang="scss" scoped>
-@import "node_modules/bootstrap-vue/src/_custom.scss";
+@import "./assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
 #eterna-chat {
@@ -341,8 +341,8 @@ textarea {
     margin-left: 5vw;
     margin-top: 5vh;
     margin-bottom: 5vh;
-    left: 0px !important;
-    top: 0px !important;
+    left:0px !important;
+    top:0px !important;
   }
 }
 .eternaChatFull { /* Full size chat */
