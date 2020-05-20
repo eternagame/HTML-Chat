@@ -107,7 +107,7 @@ textarea {
 
 /************* Chat input *************/
 #chat-input, #reconnect {    
-    width: calc(100% - 10px); 
+    width: calc(100% - 35px); 
     height: 25px;   
     resize: none;
     border: 1px solid #FFFFFF4D;
@@ -118,6 +118,7 @@ textarea {
     white-space: pre-wrap;
     word-wrap: break-word;
     outline: none;
+    padding-right:25px;
 }
 
 .chat-input-container {
