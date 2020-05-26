@@ -10,17 +10,18 @@
       <ConnectingMessage/>
     </ul>
     <template v-slot:footer>
+      <EmoticonBar @emote="add" @expanded="changeWrap" @md="format"/>
       <ScalableInput
         v-model="newMessage"
         id="input"
         @keypress.native="onKeyPress"
         :disabled="!connectionData.connected || isBanned"
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
-        v-show="showInput"
+        ref="input"
       />
-      <SendButton @send="send" v-show="showInput" />
+      <SendButton @send="send"/>
       <ConnectButton
-        v-show="!showInput"
+        v-show="!input"
       />
     </template>
   </Pane>
@@ -31,6 +32,7 @@
     Component, Prop, Watch, Vue,
   } from 'vue-property-decorator';
   import { mapState } from 'vuex';
+  import EmoticonBar from '@/components/Emoticons/EmoticonBar.vue';
   import UserMessage from '../Messages/UserMessage.vue';
   import Pane from './Pane.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
@@ -48,6 +50,7 @@
       Pane,
       ScalableInput,
       ConnectButton,
+      EmoticonBar,
       SendButton,
     },
   })
@@ -60,6 +63,8 @@
 
     newMessage: string = '';
 
+    emoticonsOut: Boolean = false;
+
     get connectionData() {
       return this.$vxm.chat.connectionData;
     }
@@ -68,9 +73,13 @@
       return this.data.banned !== BanStatus.BAN_STATUS_NORMAL;
     }
 
-    get showInput() {
+    get input() {
       return this.connectionData.connected
           || this.connectionData.firstConnection;
+    }
+
+    get showInput() {
+      return this.input && !this.emoticonsOut;
     }
 
     // Updates font size
@@ -81,15 +90,38 @@
     send() {
       this.$emit('postMessage', this.newMessage);
       this.newMessage = '';
+      this.$refs.input.$refs.textarea.value = '';
+    }
+
+    format(options:string) {
+      switch (options) {
+        case 'B': this.$refs.input.wrapOrInsert('**', true); break;
+        case 'I': this.$refs.input.wrapOrInsert('*', true); break;
+        case 'S': this.$refs.input.wrapOrInsert('~~', true); break;
+        case 'C': this.$refs.input.wrapOrInsert('`', true); break;
+        case 'L': this.$refs.input.insertLink(); break;
+        default: break;
+      }
+    }
+
+    add(emote:string) {
+      this.$refs.input.insertCharacter(emote, true);
+      this.newMessage = this.$refs.input.value;
+    }
+
+    changeWrap(large:Boolean) {
+      this.emoticonsOut = large;
     }
 
     $refs!: {
       pane: Pane;
+      input: ScalableInput;
     };
 
     onKeyPress(e: KeyboardEvent) {
       if (e.code === 'Enter' || e.code === 'NumpadEnter') {
         this.$emit('postMessage', this.newMessage);
+        this.$refs.input.$refs.textarea.value = '';
         this.newMessage = '';
         e.preventDefault();
       }
@@ -109,10 +141,10 @@
 <style scoped>
 .send-button { /* Send message button */
   position: absolute;
-  bottom:4px;
+  float:right;
   right:4px;
-  padding:0px;
   width:29px;
   height:29px;
+  bottom:3px;
 }
 </style>

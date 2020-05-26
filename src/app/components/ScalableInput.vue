@@ -1,11 +1,14 @@
 <template>
   <div style="overflow: hidden; position: relative;">
     <textarea
-      :value="value"
-      :style="{height: `${height}px`}"
+      v-model="value"
+      :style="{
+        height: `${height}px`,
+      }"
       class="scalable-input"
       :disabled="disabled"
       @input="$emit('input', $event.target.value)"
+      ref="textarea"
     />
     <div
       ref="hiddenDiv"
@@ -15,7 +18,9 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import {
+    Component, Prop, Vue, Watch,
+  } from 'vue-property-decorator';
   import SendButton from '@/components/SendButton.vue';
   @Component({
     components: {
@@ -25,19 +30,112 @@
   export default class ScalableInput extends Vue {
     height = 0;
 
+    wrap = 25;
+
+    insertCharacter(char:string, keepCursor:Boolean) {
+      // Set focus back on textarea
+      this.$refs.textarea.focus();
+      // Get cursor position
+      const position = this.$refs.textarea.selectionStart;
+      const text = this.$refs.textarea.value;
+      /* Concatenates
+       - Textarea value up to cursor position
+       - Character(s) to be inserted
+       - Textarea value after cursor position
+      Returns 'text_before_cursor+char+text_after_cursor */
+      const newText = `${text.slice(0, position)}${char}${text.slice(position)}`;
+      this.$refs.textarea.value = newText;
+      this.value = this.$refs.textarea.value;
+      if (!keepCursor) {
+        this.$refs.textarea.setSelectionRange(position, position);
+      }
+      this.$emit('input', new KeyboardEvent('keypress', { key: char }));
+    }
+
+    insertLink() {
+      this.$refs.textarea.focus(); // Focus on textarea
+      const startPosition = this.$refs.textarea.selectionStart; // Start and end of selection
+      const endPosition = this.$refs.textarea.selectionEnd;
+      const text = this.$refs.textarea.value; // All text
+      const selection = text.substring(startPosition, endPosition); // Selected text
+      if (this.validURL(text)) { // If the user selected a URL
+        // New text is 'text_before_selection[](selection)text_after_selection
+        const newString = `${text.slice(0, startPosition)}[text](${selection})${text.slice(endPosition)}`;
+        this.$refs.textarea.value = newString;
+        this.value = newString;
+        // Put cursor in other [] field
+        this.$refs.textarea.setSelectionRange(startPosition + 1, startPosition + 5);
+      } else {
+        // New text is 'text_before_selection(selection)[]text_after_selection'
+        const newString = `${text.slice(0, startPosition)}[${selection}](url)${text.slice(endPosition)}`;
+        this.$refs.textarea.value = newString;
+        this.value = newString;
+        this.$refs.textarea.setSelectionRange( // Put cursor in other [] field
+          startPosition + selection.length + 3,
+          startPosition + selection.length + 6,
+        );
+      }
+    }
+
+    validURL(str:string) {
+      const pattern = new RegExp('^(https?:\\/\\/)?' // protocol
+    + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
+    + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
+    + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
+    + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
+    + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+      return !!pattern.test(str);
+    }
+
+    wrapText(inside:string) {
+      // Place focus back on textarea
+      this.$refs.textarea.focus();
+      // Get bounds of selection
+      const startPosition = this.$refs.textarea.selectionStart;
+      const endPosition = this.$refs.textarea.selectionEnd;
+      const text = this.$refs.textarea.value;
+      /* Concatenates:
+       - Textarea value up to selection
+       - What selection should be wrapped in
+       - Text in selection
+       - What selection should be wrapped in
+       - Textarea value after selection
+
+       Returns 'text_before_selection+char+selection+char+text_after_selection'
+      */
+      const newText = `${text.slice(0, startPosition)}${inside}${text.slice(startPosition, endPosition)}${inside}${text.slice(endPosition)}`;
+      this.$refs.textarea.value = newText;
+      this.$refs.textarea.setSelectionRange( // Moves cursor in between wrapped text
+        startPosition + inside.length / 2,
+        endPosition + inside.length / 2,
+      );
+    }
+
+    wrapOrInsert(str:string, two:Boolean) {
+      const startPosition = this.$refs.textarea.selectionStart; // Gets bounds of selection
+      const endPosition = this.$refs.textarea.selectionEnd;
+      if (startPosition === endPosition) { // If text is not selected, insert at cursor location
+        this.insertCharacter(str, true); // For the first insertion, keep the cursor location
+        if (two) { // If there should be two characters (for markdown when no selection)
+          this.insertCharacter(str, false); // Insert again and move the cursor back
+        }
+      } else { // If text selected, wrap selection
+        this.wrapText(str);
+        // Set cursor in between original selection
+        this.$refs.textarea.setSelectionRange(startPosition - 1, endPosition - 1);
+      }
+      this.$nextTick(() => this.$forceUpdate());
+    }
+
     @Prop()
     disabled!: boolean;
 
-    @Prop()
-    value!: string;
+    value = '';
 
     $refs!: {
       hiddenDiv: HTMLFormElement;
+      textarea: HTMLTextAreaElement;
     };
-
-    onInput(event: any) {
-      this.$emit('input', event.target.value);
-    }
 
     onKeyPress(event: any) {
       this.$emit('keypress', event);
@@ -68,15 +166,15 @@
     resize: none;
     overflow: hidden;
     position: absolute;
-    top: 0px;
+    bottom: 0px;
     padding: 0;
     color:black;
     background-color:white;
     border:#343a40 1px solid;
     border-radius:8px;
     outline: none;
-    padding-right:25px;
-    width:calc(100% - 27px) !important;
+    padding-right:20px;
+    width:calc(100% - 22px) !important;
   }
 
   .scalable-input:focus {
