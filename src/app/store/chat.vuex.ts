@@ -230,6 +230,15 @@ export default class ChatModule extends VuexModule {
           );
         }
       }
+      if (localStorage.usernameColor) {
+        try {
+          this.usernameColor = localStorage.usernameColor;
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of username color',
+          );
+        }
+      }
     }
 
     if (process.env.VUE_APP_SERVER_URL) {
@@ -317,7 +326,6 @@ export default class ChatModule extends VuexModule {
     ) => {
       this.postMessage(new Message(message, channel, user, isAction));
     };
-
     let message = rawMessage.trim();
     let isAction = false;
     // No posting as annon or if nothing has been actually posted
@@ -426,7 +434,7 @@ export default class ChatModule extends VuexModule {
           }
           const msg = new Message(message, channel, this.currentUser, isAction);
           if (this.usernameColor !== undefined && this.usernameColor !== '') {
-            msg.tags = { 'username-color': this.usernameColor };
+            msg.tags['username-color'] = this.usernameColor;
           }
           this.postMessage(msg);
         } else {
