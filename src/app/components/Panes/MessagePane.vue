@@ -10,7 +10,12 @@
       <ConnectingMessage/>
     </ul>
     <template v-slot:footer>
-      <EmoticonBar @emote="add" @expanded="changeWrap" @md="format"/>
+      <EmoticonBar
+        @emote="add"
+        @expanded="changeWrap"
+        @md="format"
+        v-if="allChatFeatures"
+      />
       <ScalableInput
         v-model="newMessage"
         id="input"
@@ -87,6 +92,17 @@
       return `${this.$vxm.settings.fontSize.toString()}px`;
     }
 
+    get allChatFeatures() {
+      return (this.$vxm.settings.allChatFeatures
+      || this.$vxm.settings.emoticonChatFeatures
+      || this.$vxm.settings.markdownChatFeatures);
+    }
+
+    @Watch('allChatFeatures')
+    chatFeaturesChanged() {
+      this.$nextTick(this.$refs.pane.updateFooterHeight);
+    }
+
     send() {
       this.$emit('postMessage', this.newMessage);
       this.newMessage = '';
@@ -100,6 +116,8 @@
         case 'S': this.$refs.input.wrapOrInsert('~~', true); break;
         case 'C': this.$refs.input.wrapOrInsert('`', true); break;
         case 'L': this.$refs.input.insertLink(); break;
+        case 'A': this.$refs.input.insertString(0, '/me '); break;
+        case '?': this.$refs.input.insertString(0, '/help '); break;
         default: break;
       }
     }

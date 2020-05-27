@@ -13,4 +13,10 @@ export default class SettingsModule extends VuexModule {
   fontSize: Number = 14;
 
   indicator: string = ' (!)';
+
+  allChatFeatures = true;
+
+  emoticonChatFeatures = true;
+
+  markdownChatFeatures = true;
 }

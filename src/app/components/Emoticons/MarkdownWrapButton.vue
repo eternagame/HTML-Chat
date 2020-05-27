@@ -1,10 +1,12 @@
 <template>
   <div id='md-wrap-button-container' class='md-button' @click="clicked">
     <strong class="text" v-if="b">B</strong>
-    <em class="text" v-if="i">I</em>
+    <em class="text" v-if="i">T</em>
     <div class="text" id="s" v-if="s">S</div>
     <code class="text" v-if="c">C</code>
     <u class="text" v-if="l">L</u>
+    <strong class="text" id="action" v-if="a"><em>me</em></strong>
+    <p class="text" v-if="q">?</p>
   </div>
 </template>
 <script lang='ts'>
@@ -29,6 +31,12 @@
     @Prop()
     link !: boolean;
 
+    @Prop()
+    action !: boolean;
+
+    @Prop()
+    question !: boolean;
+
     get c() {
       return this.code;
     }
@@ -47,6 +55,14 @@
 
     get l() {
       return this.link;
+    }
+
+    get a() {
+      return this.action;
+    }
+
+    get q() {
+      return this.question;
     }
 
     clicked() {
@@ -82,5 +98,10 @@
   #s:before,
   #s:after {
     content: "\00a0\00a0";
+  }
+
+  #action {
+    font-size:12px;
+    padding-left:1px;
   }
 </style>

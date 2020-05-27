@@ -54,7 +54,7 @@ class ConnectionData {
   }
 }
 
-const channelNames = ['#general', '#off-topic', '#help'] as const;
+const channelNames = ['#general', '#off-topic', '#help', '#labs'] as const;
 
 export default class ChatModule extends VuexModule {
   toBePosted: Message[] = [];
@@ -342,36 +342,44 @@ export default class ChatModule extends VuexModule {
           case 'help':
             switch (params) {
               case 'me':
-                postMessage('/me: Posts message formatted as an action');
-                postMessage('Usage: /me <message>');
-                postMessage('Example: /me laughs');
+                postMessage('`/me`: Posts message formatted as an action');
+                postMessage('Usage: `/me <message>`');
+                postMessage('Example: `/me laughs`');
                 break;
               case 'ignore':
                 postMessage(
-                  "/ignore: Don't show messages from a particular message. Show currently ignored users with /ignore-list. Unignore message with /unignore.",
+                  "`/ignore`: Don't show messages from a particular message. Show currently ignored users with `/ignore-list`. Unignore message with `/unignore.`",
                 );
-                postMessage('Usage: /ignore <username>');
-                postMessage('Example: /ignore player1');
+                postMessage('Usage: `/ignore <username>`');
+                postMessage('Example: `/ignore player1`');
                 break;
               case 'ignore-list':
                 postMessage(
-                  '/ignore-list: Shows currently ignored users. Ignore a message with /ignore. Unignore message with /unignore.',
+                  '`/ignore-list`: Shows currently ignored users. Ignore a user with `/ignore`. Unignore the user with `/unignore.` or use the settings tab in the slideout',
                 );
-                postMessage('Usage: /ignore-list');
-                postMessage('Example: /ignore-list');
+                postMessage('Usage: `/ignore-list`');
+                postMessage('Example: `/ignore-list`');
                 break;
               case 'unignore':
                 postMessage(
-                  '/unignore: Shows messages from a message after being igored. Unignores all users when username is *. Ignore a message with /ignore. Show currently ignored users with /ignore-list.',
+                  '`/unignore`: Shows messages from a previously ignored user. Unignores all users when argument is *. Ignore a user with `/ignore`. Show currently ignored users with /ignore-list. Alternatively, use the settings tab in the slideout.',
                 );
-                postMessage('Usage: /unignore <username>');
-                postMessage('Example: /unignore player1');
-                postMessage('Example: /unignore *');
+                postMessage('Usage: `/unignore <username>`');
+                postMessage('Example: `/unignore player1`');
+                postMessage('Example: `/unignore *`');
+                break;
+              case 'change':
+                postMessage(
+                  '`/change`: Changes the current channel to the channel specified',
+                );
+                postMessage('Usage: `/change <channel>`');
+                postMessage('Example: `/change general`');
+                postMessage('Example: `/change #general`');
                 break;
               default:
-                postMessage('Available commands: help, me, ignore, ignore-list, unignore');
-                postMessage('Type /help <command> for information on individual commands');
-                postMessage('Example: /help ignore');
+                postMessage('Available commands: help, me, ignore, ignore-list, unignore, change');
+                postMessage('Type `/help <command>` for information on individual commands');
+                postMessage('Example: `/help ignore`');
                 postMessage(
                   'Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)',
                 );
@@ -390,7 +398,7 @@ export default class ChatModule extends VuexModule {
           case 'me':
             if (!params) {
               postMessage(
-                'Please include command parameters. Type /help me for usage instructions',
+                'Please include command parameters. Type `/help me` for usage instructions',
               );
               break;
             }
@@ -401,7 +409,7 @@ export default class ChatModule extends VuexModule {
           case 'ignore':
             if (!params) {
               postMessage(
-                'Please include command parameters. Type /help ignore for more usage instructions',
+                'Please include command parameters. Type `/help ignore` for more usage instructions',
               );
               break;
             }
@@ -413,14 +421,40 @@ export default class ChatModule extends VuexModule {
           case 'unignore':
             if (!params) {
               postMessage(
-                'Please include command parameters. Type /help unignore for more usage instructions',
+                'Please include command parameters. Type `/help unignore` for more usage instructions',
               );
               break;
             }
             this.unignoreUser(params);
             break;
+          case 'change':
+            if (!params) {
+              postMessage(
+                'Please include command parameters. Type `/help change` for more usage instructions',
+              );
+              break;
+            }
+            /* There's a lot going on here.
+             - channelNames.slice() returns a copy of the channelNames array
+             - channelNames.slice() as [string] ensures that it can be indexed
+             by any string, not just the specific channel names
+             - `#${params}`.replace('##', '#') makes sure that the channel name has a # in front
+             It adds one and then removes it if there are duplicates
+             - .indexOf() gets the position of params in the array
+             This gets the tab number.
+
+             If the number is -1, the name was invalid. It gives an error message and a channel list
+             If the number was not -1, the name worked. It sets the tab to the channel.
+            */
+            if ((channelNames.slice() as [string]).indexOf(`#${params}`.replace('##', '#')) === -1) {
+              postMessage(`Channel name invalid. Channels are ${channelNames.join(', ')}`);
+            } else {
+              this.tab = (channelNames.slice() as [string]).indexOf(`#${params}`.replace('##', '#'));
+              this.chatChannel = params;
+            }
+            break;
           default:
-            postMessage('Invalid command. Type /help for more available commands');
+            postMessage('Invalid command. Type `/help` for more available commands');
             break;
         }
       }
