@@ -76,13 +76,59 @@
       </table>
       <h4>Indicator</h4>
       <p>
-        This is the indicator that will appear in the page title if you have notifications
+        This will appear in the page title if you have notifications
       </p>
       <input type=text v-model="indicator">
     </section>
     <section>
       <h3>Username Color</h3>
       <ColorPicker />
+    </section>
+    <section>
+      <h3>Chat Features</h3>
+      <p>
+        These enable you to send emoticons and formatted text.
+      </p>
+      <table>
+        <tr>
+          <td class="feature-button-container left-side">
+            <button
+              @click="toggleMarkdown"
+              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+              class="green-button" >
+              {{markdownChatFeatures ? 'Disable' : 'Enable'}} markdown
+            </button>
+          </td>
+          <td class="feature-button-container">
+            <button
+              @click="toggleEmoticons"
+              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+              class="green-button feature-button" >
+              {{emoticonChatFeatures ? 'Disable' : 'Enable'}} emoticons
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td class="feature-button-container left-side">
+            <button
+              @click="disableAllChatFeatures"
+              :disabled="!allChatFeatures"
+              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+              class="green-button feature-button" >
+              Disable all
+            </button>
+          </td>
+          <td class="feature-button-container">
+            <button
+              @click="enableAllChatFeatures"
+              :disabled="allChatFeatures"
+              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+              class="green-button feature-button" >
+              Enable all
+           </button>
+          </td>
+        </tr>
+      </table>
     </section>
   </div>
 </template>
@@ -107,6 +153,12 @@
     size:string = '14'; // font size
 
     indicator:string = '(!)';
+
+    allChatFeatures = true;
+
+    emoticonChatFeatures = true;
+
+    markdownChatFeatures = true;
 
     // Gets a list of ignored users
     get ignoredUsers() {
@@ -134,6 +186,77 @@
         this.indicator = JSON.parse(localStorage.indicator);
       } else {
         this.indicator = this.$vxm.settings.indicator;
+      }
+      if (localStorage.allChatFeatures) {
+        this.allChatFeatures = JSON.parse(localStorage.allChatFeatures);
+      } else {
+        this.allChatFeatures = this.$vxm.settings.allChatFeatures;
+      }
+      if (localStorage.emoticonChatFeatures) {
+        this.emoticonChatFeatures = JSON.parse(localStorage.emoticonChatFeatures);
+      } else {
+        this.emoticonChatFeatures = this.$vxm.settings.emoticonChatFeatures;
+      }
+      if (localStorage.markdownChatFeatures) {
+        this.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
+      } else {
+        this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
+      }
+    }
+
+    toggleEmoticons() {
+      this.emoticonChatFeatures = !this.emoticonChatFeatures;
+      if (this.emoticonChatFeatures && this.markdownChatFeatures) {
+        this.allChatFeatures = this.emoticonChatFeatures;
+        this.$vxm.settings.allChatFeatures = this.allChatFeatures;
+        localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
+      }
+      if (!this.emoticonChatFeatures && !this.markdownChatFeatures) {
+        this.allChatFeatures = this.emoticonChatFeatures;
+        this.$vxm.settings.allChatFeatures = this.allChatFeatures;
+        localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
+      }
+      this.$vxm.settings.emoticonChatFeatures = this.emoticonChatFeatures;
+      localStorage.emoticonChatFeatures = JSON.stringify(this.emoticonChatFeatures);
+    }
+
+    toggleMarkdown() {
+      this.markdownChatFeatures = !this.markdownChatFeatures;
+      if (this.emoticonChatFeatures && this.markdownChatFeatures) {
+        this.allChatFeatures = this.markdownChatFeatures;
+        this.$vxm.settings.allChatFeatures = this.allChatFeatures;
+        localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
+      }
+      if (!this.emoticonChatFeatures && !this.markdownChatFeatures) {
+        this.allChatFeatures = this.markdownChatFeatures;
+        this.$vxm.settings.allChatFeatures = this.allChatFeatures;
+        localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
+      }
+      this.$vxm.settings.markdownChatFeatures = this.markdownChatFeatures;
+      localStorage.markdownChatFeatures = JSON.stringify(this.markdownChatFeatures);
+    }
+
+    toggleAllChatFeatures() {
+      this.allChatFeatures = !this.allChatFeatures;
+      this.emoticonChatFeatures = this.allChatFeatures;
+      this.markdownChatFeatures = this.allChatFeatures;
+      this.$vxm.settings.allChatFeatures = this.allChatFeatures;
+      localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
+      this.$vxm.settings.emoticonChatFeatures = this.allChatFeatures;
+      localStorage.emoticonChatFeatures = JSON.stringify(this.allChatFeatures);
+      this.$vxm.settings.markdownChatFeatures = this.allChatFeatures;
+      localStorage.markdownChatFeatures = JSON.stringify(this.allChatFeatures);
+    }
+
+    enableAllChatFeatures() {
+      if (!this.allChatFeatures) {
+        this.toggleAllChatFeatures();
+      }
+    }
+
+    disableAllChatFeatures() {
+      if (this.allChatFeatures) {
+        this.toggleAllChatFeatures();
       }
     }
 
@@ -295,5 +418,15 @@ td { /* Table cell in notifications settings section */
 }
 table {
   margin-top:2px;
+}
+.feature-button-container {
+  padding:2px;
+}
+.feature-button {
+  float:left;
+  width:95%;
+}
+.left-side {
+  padding-left:0;
 }
 </style>

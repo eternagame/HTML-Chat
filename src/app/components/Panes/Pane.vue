@@ -14,7 +14,7 @@
       </VuePerfectScrollbar>
     </div>
 
-    <div ref="footer" style="overflow: auto; padding: 5px; 10px;">
+    <div ref="footer" id="footer">
       <slot name="footer"/>
     </div>
   </div>
@@ -95,5 +95,16 @@
   .ps.ps--active-x > .ps__scrollbar-x-rail,
   .ps.ps--active-y > .ps__scrollbar-y-rail {
     background-color: transparent !important;
+  }
+  #footer {
+    overflow: auto;
+    padding: 5px;
+    position:relative;
+    bottom:0px;
+    position:absolute;
+    width:calc(100% - 10px);
+    width: -webkit-fill-available;
+    width: -moz-available;
+    width: fill-available;
   }
 </style>

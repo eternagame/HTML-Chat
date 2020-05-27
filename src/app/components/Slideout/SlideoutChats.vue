@@ -36,9 +36,10 @@
     activeTab = 4; // If 1-3, causes weird bug. This fixes it
 
     channelDescriptions: {[channel:string]:string} = {
-    '#General': 'General chat',
+    '#general': 'General chat',
     '#off-topic': 'Off-topic chat',
     '#help': 'Help requests',
+    '#labs': 'Discussion related to labs',
     };
 
     get messageTabs() {

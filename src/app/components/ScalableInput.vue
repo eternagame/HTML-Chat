@@ -52,27 +52,45 @@
       this.$emit('input', new KeyboardEvent('keypress', { key: char }));
     }
 
+    insertString(at:number, str:string) {
+      this.$refs.textarea.focus();
+      const text = this.$refs.textarea.value;
+      const newText = `${text.slice(0, at)}${str}${text.slice(at)}`;
+      this.$refs.textarea.value = newText;
+      this.value = newText;
+    }
+
     insertLink() {
       this.$refs.textarea.focus(); // Focus on textarea
       const startPosition = this.$refs.textarea.selectionStart; // Start and end of selection
       const endPosition = this.$refs.textarea.selectionEnd;
       const text = this.$refs.textarea.value; // All text
       const selection = text.substring(startPosition, endPosition); // Selected text
-      if (this.validURL(text)) { // If the user selected a URL
-        // New text is 'text_before_selection[](selection)text_after_selection
-        const newString = `${text.slice(0, startPosition)}[text](${selection})${text.slice(endPosition)}`;
-        this.$refs.textarea.value = newString;
-        this.value = newString;
-        // Put cursor in other [] field
-        this.$refs.textarea.setSelectionRange(startPosition + 1, startPosition + 5);
+      if (startPosition !== endPosition) {
+        if (this.validURL(text)) { // If the user selected a URL
+          // New text is 'text_before_selection[](selection)text_after_selection
+          const newString = `${text.slice(0, startPosition)}[text](${selection})${text.slice(endPosition)}`;
+          this.$refs.textarea.value = newString;
+          this.value = newString;
+          // Put cursor in other [] field
+          this.$refs.textarea.setSelectionRange(startPosition + 1, startPosition + 5);
+        } else {
+          // New text is 'text_before_selection(selection)[]text_after_selection'
+          const newString = `${text.slice(0, startPosition)}[${selection}](url)${text.slice(endPosition)}`;
+          this.$refs.textarea.value = newString;
+          this.value = newString;
+          this.$refs.textarea.setSelectionRange( // Put cursor in other [] field
+            startPosition + selection.length + 3,
+            startPosition + selection.length + 6,
+          );
+        }
       } else {
-        // New text is 'text_before_selection(selection)[]text_after_selection'
-        const newString = `${text.slice(0, startPosition)}[${selection}](url)${text.slice(endPosition)}`;
+        const newString = `${text.slice(0, startPosition)}[text](url)${text.slice(endPosition)}`;
         this.$refs.textarea.value = newString;
         this.value = newString;
         this.$refs.textarea.setSelectionRange( // Put cursor in other [] field
-          startPosition + selection.length + 3,
-          startPosition + selection.length + 6,
+          startPosition + 1,
+          endPosition + 5,
         );
       }
     }
