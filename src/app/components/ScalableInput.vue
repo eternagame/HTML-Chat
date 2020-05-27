@@ -42,7 +42,6 @@
       if (!keepCursor) {
         this.$refs.textarea.setSelectionRange(position, position);
       }
-      this.$emit('input', new KeyboardEvent('keypress', { key: char }));
     }
 
     // Puts string at index in another string. Used for /me and /help insertions
@@ -116,8 +115,8 @@
        Returns 'text_before_selection+char+selection+char+text_after_selection'
       */
       const newText = `${text.slice(0, startPosition)}${inside}${text.slice(startPosition, endPosition)}${inside}${text.slice(endPosition)}`;
-      this.$refs.textarea.value = newText;
       this.value = newText;
+      this.$refs.textarea.value = newText;
       this.$refs.textarea.setSelectionRange( // Moves cursor after selection
         endPosition + inside.length / 2 + 1,
         endPosition + inside.length / 2 + 1,
@@ -135,6 +134,7 @@
       } else { // If text selected, wrap selection
         this.wrapText(str);
       }
+      // Update self
       this.$nextTick(() => this.$forceUpdate());
     }
 
