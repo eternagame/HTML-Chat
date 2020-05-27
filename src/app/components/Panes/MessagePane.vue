@@ -130,6 +130,7 @@
 
     onKeyPress(e: KeyboardEvent) {
       if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+        this.newMessage = this.$refs.input.value;
         this.$emit('postMessage', this.newMessage);
         this.$refs.input.$refs.textarea.value = '';
         this.newMessage = '';
