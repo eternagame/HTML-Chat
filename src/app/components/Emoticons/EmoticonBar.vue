@@ -12,45 +12,38 @@
       v-show="value && emoticonChatFeatures"
       @emote='add' />
     <MarkdownWrapButton
-      name="B"
-      bold=true
+      type="bold"
       class="border-left"
       @md="format"
       v-if="markdownChatFeatures" />
       <MarkdownWrapButton
-      name="T"
-      italics=true
+      type="italics"
       class="border-left"
       @md="format"
       v-if="markdownChatFeatures" />
       <MarkdownWrapButton
-      name="S"
-      strikethrough=true
+      type="strikethrough"
       id="strike"
       class="border-left"
       @md="format"
       v-if="markdownChatFeatures" />
       <MarkdownWrapButton
-      name="C"
-      code=true
+      type="code"
       class="border-left"
       @md="format"
       v-if="markdownChatFeatures" />
       <MarkdownWrapButton
-      name="L"
-      link=true
+      type="link"
       class="border-left"
       @md="format"
       v-if="markdownChatFeatures" />
       <MarkdownWrapButton
-      name="A"
-      action=true
+      type="action"
       class="border-left"
       @md="format"
       v-if="markdownChatFeatures" />
       <MarkdownWrapButton
-      name="?"
-      question=true
+      type="question"
       class="border-left"
       @md="format"
       v-if="markdownChatFeatures" />
@@ -75,55 +68,42 @@
   export default class EmoticonBar extends Vue {
     value = false;
 
-    emotesList = ['🙁', '😡'];
+    emotesList = ['🙁', '😡']; // Emotes that appear when expanded
 
     expand(val:boolean) {
-      this.$emit('expanded', val);
       this.value = val;
     }
 
-    add(emote:string) {
+    add(emote:string) { // Emits event to MessagePane
       this.$emit('emote', emote);
     }
 
-    format(options:string) {
+    format(options:string) { // Emits event to MessagePane
       this.$emit('md', options);
     }
 
-    get emoticonChatFeatures() {
+    get emoticonChatFeatures() { // Gets values from settings vuex
       return this.$vxm.settings.emoticonChatFeatures;
     }
 
     get markdownChatFeatures() {
       return this.$vxm.settings.markdownChatFeatures;
     }
-
-    get allChatFeatures() {
-      if (this.$vxm.settings.allChatFeatures) {
-        return true;
-      }
-      return (this.markdownChatFeatures || this.emoticonChatFeatures);
-    }
   }
 </script>
 <style scoped>
 #emoticon-bar-container {
-  position: relative;
-  top:0;
   background-color:white;
-  width:calc(100% - 2px);
+  width:calc(100% - 2px); /* Same width as textarea */
   border-radius:8px;
   height:25px;
   margin-bottom:5px;
-  overflow:hidden;
+  overflow:hidden; /* Prevents awkward scrolling and overflow */
 }
 .border-left {
   border-left: 1px solid black;
 }
-.border-right {
-  border-right: 1px solid black;
-}
-#strike {
+#strike { /* Strikethrough isn't cut off */
   padding:2px;
   padding-right:2px;
   overflow-x:hidden;

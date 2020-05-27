@@ -1,12 +1,12 @@
 <template>
   <div id='md-wrap-button-container' class='md-button' @click="clicked">
-    <strong class="text" v-if="b">B</strong>
-    <em class="text" v-if="i">T</em>
-    <div class="text" id="s" v-if="s">S</div>
-    <code class="text" v-if="c">C</code>
-    <u class="text" v-if="l">L</u>
-    <strong class="text" id="action" v-if="a"><em>me</em></strong>
-    <p class="text" v-if="q">?</p>
+    <strong class="text" v-if="typeIs('bold')">B</strong>
+    <em class="text" v-if="typeIs('italics')">T</em>
+    <div class="text" id="s" v-if="typeIs('strikethrough')">S</div>
+    <code class="text" v-if="typeIs('code')">C</code>
+    <u class="text" v-if="typeIs('link')">L</u>
+    <strong class="text" id="action" v-if="typeIs('action')"><em>me</em></strong>
+    <p class="text" v-if="typeIs('question')">?</p>
   </div>
 </template>
 <script lang='ts'>
@@ -14,59 +14,14 @@
   @Component
   export default class MarkdownWrapButton extends Vue {
     @Prop()
-    name !: string;
+    type !: string;
 
-    @Prop()
-    italics !: boolean;
-
-    @Prop()
-    bold !: boolean;
-
-    @Prop()
-    strikethrough !: boolean;
-
-    @Prop()
-    code !: boolean;
-
-    @Prop()
-    link !: boolean;
-
-    @Prop()
-    action !: boolean;
-
-    @Prop()
-    question !: boolean;
-
-    get c() {
-      return this.code;
-    }
-
-    get i() {
-      return this.italics;
-    }
-
-    get b() {
-      return this.bold;
-    }
-
-    get s() {
-      return this.strikethrough;
-    }
-
-    get l() {
-      return this.link;
-    }
-
-    get a() {
-      return this.action;
-    }
-
-    get q() {
-      return this.question;
+    typeIs(type:string) {
+      return this.type === type;
     }
 
     clicked() {
-      this.$emit('md', this.name);
+      this.$emit('md', this.type);
     }
   }
 </script>

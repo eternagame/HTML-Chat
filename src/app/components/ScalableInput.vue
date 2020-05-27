@@ -21,16 +21,9 @@
   import {
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
-  import SendButton from '@/components/SendButton.vue';
-  @Component({
-    components: {
-      SendButton,
-    },
-  })
+  @Component
   export default class ScalableInput extends Vue {
     height = 0;
-
-    wrap = 25;
 
     insertCharacter(char:string, keepCursor:Boolean) {
       // Set focus back on textarea
@@ -52,6 +45,7 @@
       this.$emit('input', new KeyboardEvent('keypress', { key: char }));
     }
 
+    // Puts string at index in another string. Used for /me and /help insertions
     insertString(at:number, str:string) {
       this.$refs.textarea.focus();
       const text = this.$refs.textarea.value;
@@ -66,7 +60,7 @@
       const endPosition = this.$refs.textarea.selectionEnd;
       const text = this.$refs.textarea.value; // All text
       const selection = text.substring(startPosition, endPosition); // Selected text
-      if (startPosition !== endPosition) {
+      if (startPosition !== endPosition) { // If the user selected text
         if (this.validURL(text)) { // If the user selected a URL
           // New text is 'text_before_selection[](selection)text_after_selection
           const newString = `${text.slice(0, startPosition)}[text](${selection})${text.slice(endPosition)}`;
@@ -74,7 +68,7 @@
           this.value = newString;
           // Put cursor in other [] field
           this.$refs.textarea.setSelectionRange(startPosition + 1, startPosition + 5);
-        } else {
+        } else { // If they didn't
           // New text is 'text_before_selection(selection)[]text_after_selection'
           const newString = `${text.slice(0, startPosition)}[${selection}](url)${text.slice(endPosition)}`;
           this.$refs.textarea.value = newString;
@@ -84,7 +78,7 @@
             startPosition + selection.length + 6,
           );
         }
-      } else {
+      } else { // If the user has not selected text
         const newString = `${text.slice(0, startPosition)}[text](url)${text.slice(endPosition)}`;
         this.$refs.textarea.value = newString;
         this.value = newString;
@@ -95,7 +89,7 @@
       }
     }
 
-    validURL(str:string) {
+    validURL(str:string) { // Used for hyperlink detection
       const pattern = new RegExp('^(https?:\\/\\/)?' // protocol
     + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
     + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
@@ -123,9 +117,10 @@
       */
       const newText = `${text.slice(0, startPosition)}${inside}${text.slice(startPosition, endPosition)}${inside}${text.slice(endPosition)}`;
       this.$refs.textarea.value = newText;
-      this.$refs.textarea.setSelectionRange( // Moves cursor in between wrapped text
-        startPosition + inside.length / 2,
-        endPosition + inside.length / 2,
+      this.value = newText;
+      this.$refs.textarea.setSelectionRange( // Moves cursor after selection
+        endPosition + inside.length / 2 + 1,
+        endPosition + inside.length / 2 + 1,
       );
     }
 
@@ -139,8 +134,6 @@
         }
       } else { // If text selected, wrap selection
         this.wrapText(str);
-        // Set cursor in between original selection
-        this.$refs.textarea.setSelectionRange(startPosition - 1, endPosition - 1);
       }
       this.$nextTick(() => this.$forceUpdate());
     }
