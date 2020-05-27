@@ -12,9 +12,8 @@
     <template v-slot:footer>
       <EmoticonBar
         @emote="add"
-        @expanded="changeWrap"
         @md="format"
-        v-if="allChatFeatures"
+        v-if="anyChatFeatures"
       />
       <ScalableInput
         v-model="newMessage"
@@ -68,8 +67,6 @@
 
     newMessage: string = '';
 
-    emoticonsOut: Boolean = false;
-
     get connectionData() {
       return this.$vxm.chat.connectionData;
     }
@@ -83,26 +80,24 @@
           || this.connectionData.firstConnection;
     }
 
-    get showInput() {
-      return this.input && !this.emoticonsOut;
-    }
-
     // Updates font size
     get fontSize() {
       return `${this.$vxm.settings.fontSize.toString()}px`;
     }
 
-    get allChatFeatures() {
+    get anyChatFeatures() { // Checks if any chat features are enabled
       return (this.$vxm.settings.allChatFeatures
       || this.$vxm.settings.emoticonChatFeatures
       || this.$vxm.settings.markdownChatFeatures);
     }
 
-    @Watch('allChatFeatures')
+    // Updates footer height when chat disappears/appears
+    @Watch('anyChatFeatures')
     chatFeaturesChanged() {
       this.$nextTick(this.$refs.pane.updateFooterHeight);
     }
 
+    // For send button
     send() {
       this.$emit('postMessage', this.newMessage);
       this.newMessage = '';
@@ -110,25 +105,22 @@
     }
 
     format(options:string) {
+      // Adds markdown formatting
       switch (options) {
-        case 'B': this.$refs.input.wrapOrInsert('**', true); break;
-        case 'I': this.$refs.input.wrapOrInsert('*', true); break;
-        case 'S': this.$refs.input.wrapOrInsert('~~', true); break;
-        case 'C': this.$refs.input.wrapOrInsert('`', true); break;
-        case 'L': this.$refs.input.insertLink(); break;
-        case 'A': this.$refs.input.insertString(0, '/me '); break;
-        case '?': this.$refs.input.insertString(0, '/help '); break;
+        case 'bold': this.$refs.input.wrapOrInsert('**', true); break;
+        case 'italics': this.$refs.input.wrapOrInsert('*', true); break;
+        case 'strikethrough': this.$refs.input.wrapOrInsert('~~', true); break;
+        case 'code': this.$refs.input.wrapOrInsert('`', true); break;
+        case 'link': this.$refs.input.insertLink(); break;
+        case 'action': this.$refs.input.insertString(0, '/me '); break;
+        case 'question': this.$refs.input.insertString(0, '/help '); break;
         default: break;
       }
     }
 
-    add(emote:string) {
+    add(emote:string) { // Inserts an emote at cursor position
       this.$refs.input.insertCharacter(emote, true);
       this.newMessage = this.$refs.input.value;
-    }
-
-    changeWrap(large:Boolean) {
-      this.emoticonsOut = large;
     }
 
     $refs!: {
