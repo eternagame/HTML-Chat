@@ -39,7 +39,7 @@
     text-align:center;
   }
   .md-button:hover {
-    background-color:#00275b;
+    background-color:#21508c;
   }
   .text {
     vertical-align: middle;

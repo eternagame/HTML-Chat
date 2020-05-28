@@ -111,5 +111,8 @@
     display:inline-block;
     margin:0px;
     font-size: 14px !important;
+    height:17px;
+    top:-1px;
+    bottom:0;
   }
 </style>

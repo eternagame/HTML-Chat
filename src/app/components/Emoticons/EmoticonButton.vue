@@ -32,7 +32,7 @@
     text-align:center;
   }
   #emoticon-button-container :hover {
-    background-color: #00275b;
+    background-color: #21508c;
   }
   #emoticon-text-container {
     vertical-align: middle;
