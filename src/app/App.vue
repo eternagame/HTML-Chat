@@ -45,6 +45,12 @@
 
   Vue.use(BootstrapVue);
 
+  Vue.component('v-style', {
+    render: function c(createElement) {
+      return createElement('style', this.$slots.default);
+    },
+  });
+
 @Component({
   components: {
     DraggableDiv,
@@ -114,10 +120,18 @@
     });
   }
 
+  key(e:KeyboardEvent) {
+    if (e.code === 'Tab') {
+      this.$vxm.chat.tabbing = true;
+      window.removeEventListener('keydown', this.key);
+    }
+  }
+
   created() {
     this.$vxm.chat.$subscribe('openReportModal', (payload) => {
       this.$refs.reportDialog.open(payload);
     });
+    window.addEventListener('keydown', this.key);
   }
 
   @Watch('minimized')

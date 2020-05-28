@@ -7,6 +7,7 @@
     <u class="text" v-if="typeIs('link')">L</u>
     <strong class="text" id="action" v-if="typeIs('action')"><em>me</em></strong>
     <p class="text" v-if="typeIs('question')">?</p>
+    <em class="text" v-if="typeIs('italicsbold')"><strong>E</strong></em>
   </div>
 </template>
 <script lang='ts'>
@@ -27,13 +28,12 @@
 </script>
 <style scoped>
   .md-button {
-    color:black;
+    color:white;
     border:none;
-    float:right;
+    float:left;
     position: relative;
-    width:20px;
+    width:25px;
     height:25px;
-    padding-right:2.5px;
     padding-top:1px;
     text-align:center;
   }

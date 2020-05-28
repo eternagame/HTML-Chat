@@ -10,11 +10,6 @@
       <ConnectingMessage/>
     </ul>
     <template v-slot:footer>
-      <EmoticonBar
-        @emote="add"
-        @md="format"
-        v-if="anyChatFeatures"
-      />
       <ScalableInput
         v-model="newMessage"
         id="input"
@@ -22,6 +17,12 @@
         :disabled="!connectionData.connected || isBanned"
         @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
         ref="input"
+      />
+      <EmoticonBar
+        @emote="add"
+        @md="format"
+        v-if="anyChatFeatures"
+        @update="$nextTick($refs.pane.updateFooterHeight)"
       />
       <SendButton @send="send"/>
       <ConnectButton
@@ -95,6 +96,7 @@
     @Watch('anyChatFeatures')
     chatFeaturesChanged() {
       this.$nextTick(this.$refs.pane.updateFooterHeight);
+      this.$refs.input.alone = this.anyChatFeatures;
     }
 
     // For send button
@@ -109,11 +111,12 @@
       switch (options) {
         case 'bold': this.$refs.input.wrapOrInsert('**', true); break;
         case 'italics': this.$refs.input.wrapOrInsert('*', true); break;
+        case 'italicsbold': this.$refs.input.wrapOrInsert('***', true); break;
         case 'strikethrough': this.$refs.input.wrapOrInsert('~~', true); break;
         case 'code': this.$refs.input.wrapOrInsert('`', true); break;
         case 'link': this.$refs.input.insertLink(); break;
         case 'action': this.$refs.input.insertString(0, '/me '); break;
-        case 'question': this.$refs.input.insertString(0, '/help '); break;
+        case 'question': this.$emit('postMessage', '/help'); break;
         default: break;
       }
     }
@@ -133,6 +136,7 @@
         this.newMessage = this.$refs.input.value;
         this.$emit('postMessage', this.newMessage);
         this.$refs.input.$refs.textarea.value = '';
+        this.$refs.input.value = '';
         this.newMessage = '';
         e.preventDefault();
       }
@@ -156,6 +160,6 @@
   right:4px;
   width:29px;
   height:29px;
-  bottom:3px;
+  top:4px;
 }
 </style>
