@@ -1,13 +1,20 @@
 <template>
   <div style="overflow: hidden; position: relative;">
+    <v-style>
+      .scalable-input:focus {
+        box-shadow: {{bshadow}};
+      }
+    </v-style>
     <textarea
       v-model="value"
       :style="{
         height: `${height}px`,
+        'border-bottom-right-radius': radius,
+        'border-bottom-left-radius': radius,
       }"
       class="scalable-input"
       :disabled="disabled"
-      @input="$emit('input', $event.target.value)"
+      @input="$emit('input', $event.target.value);"
       ref="textarea"
     />
     <div
@@ -25,6 +32,8 @@
   export default class ScalableInput extends Vue {
     height = 0;
 
+    alone : boolean = true;
+
     insertCharacter(char:string, keepCursor:Boolean) {
       // Set focus back on textarea
       this.$refs.textarea.focus();
@@ -41,7 +50,25 @@
       this.value = this.$refs.textarea.value;
       if (!keepCursor) {
         this.$refs.textarea.setSelectionRange(position, position);
+      } else {
+        this.$refs.textarea.setSelectionRange(position + char.length, position + char.length);
       }
+    }
+
+    get radius() {
+      if (!this.alone) {
+        return '8px';
+      }
+      return '0px';
+    }
+
+    get bshadow() {
+      if (this.$vxm.chat.tabbing) {
+        2;
+      } else {
+        return 'none';
+      }
+      return 'box-shadow: 0px 0px 5px 2px rgba(255,255,255,1);';
     }
 
     // Puts string at index in another string. Used for /me and /help insertions
@@ -179,17 +206,16 @@
     position: absolute;
     bottom: 0px;
     padding: 0;
-    color:black;
-    background-color:white;
-    border:#343a40 1px solid;
-    border-radius:8px;
+    padding-left:2px;
+    color:white;
+    background-color:lighten(#043468, 5%);
+    border:none;
+    border-bottom:1px solid white;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
     outline: none;
     padding-right:20px;
-    width:calc(100% - 22px) !important;
-  }
-
-  .scalable-input:focus {
-    border-color: #7b8a8b;
+    width:calc(100% - 24px) !important;
   }
 
   .scalable-input,

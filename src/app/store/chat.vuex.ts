@@ -93,6 +93,8 @@ export default class ChatModule extends VuexModule {
 
   usernameColor: string = '';
 
+  tabbing = false;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {

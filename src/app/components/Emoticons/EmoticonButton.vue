@@ -17,8 +17,10 @@
 </script>
 <style scoped>
   .emoticon-button {
+    background-color:#043468;
+    color:white;
     border:none;
-    float:right;
+    float:left;
     position: relative;
     width:20px;
     height:25px;
