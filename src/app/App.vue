@@ -121,7 +121,7 @@
   }
 
   key(e:KeyboardEvent) {
-    if (e.code === 'Tab') {
+    if (e.code === 'Tab') { /* Watches for tabs. If a tab is detected, outline on input will remain on focus */
       this.$vxm.chat.tabbing = true;
       window.removeEventListener('keydown', this.key);
     }

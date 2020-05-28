@@ -11,7 +11,6 @@
         height: `${height}px`,
         'border-bottom-right-radius': radius,
         'border-bottom-left-radius': radius,
-        'border-bottom-width': border,
       }"
       class="scalable-input"
       :disabled="disabled"
@@ -73,13 +72,6 @@
     get radius() {
       if (!this.alone) {
         return '8px';
-      }
-      return '0px';
-    }
-
-    get border() {
-      if (this.alone) {
-        return '1px';
       }
       return '0px';
     }
