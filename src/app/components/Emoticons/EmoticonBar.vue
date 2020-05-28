@@ -76,7 +76,7 @@
     value = false;
 
     get emotesList() {
-      const defaultEmotes = ['👍', '👎', '🙂', '🙁', '😂'];
+      const defaultEmotes = ['👍', '👎', '🙂', '🙁'];
       return defaultEmotes.concat(this.customEmoticons);
     }
 
@@ -156,9 +156,6 @@
   border-bottom:1px solid white;
   overflow:hidden; /* Prevents awkward scrolling and overflow */
 }
-.border-right {
-  border-right: 1px solid white;
-}
 #strike { /* Strikethrough isn't cut off */
   padding:2px;
   padding-right:2px;
@@ -177,7 +174,6 @@
 .other-menu-button {
   float:right;
   border:none;
-  border-left:1px solid white;
 }
 .menu-container {
   background-color:#043468;

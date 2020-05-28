@@ -1,14 +1,14 @@
 <template>
-  <div id='md-wrap-button-container' class='md-button' @click="clicked">
+  <button id='md-wrap-button-container' class='md-button' @click="clicked">
     <strong class="text" v-if="typeIs('bold')">B</strong>
     <em class="text" v-if="typeIs('italics')">T</em>
-    <div class="text" id="s" v-if="typeIs('strikethrough')">S</div>
+    <span class="text" id="s" v-if="typeIs('strikethrough')">S</span>
     <code class="text" v-if="typeIs('code')">C</code>
     <u class="text" v-if="typeIs('link')">L</u>
     <strong class="text" id="action" v-if="typeIs('action')"><em>me</em></strong>
-    <p class="text" v-if="typeIs('question')">?</p>
+    <span class="text" v-if="typeIs('question')">?</span>
     <em class="text" v-if="typeIs('italicsbold')"><strong>E</strong></em>
-  </div>
+  </button>
 </template>
 <script lang='ts'>
   import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -29,13 +29,17 @@
 <style scoped>
   .md-button {
     color:white;
+    background-color:#043468;
     border:none;
     float:left;
     position: relative;
-    width:25px;
+    width:30px;
     height:25px;
     padding-top:1px;
     text-align:center;
+  }
+  .md-button:hover {
+    background-color:#00275b;
   }
   .text {
     vertical-align: middle;
@@ -47,7 +51,7 @@
   #s {
     text-decoration: line-through;
     font-size:12px;
-    padding-top:2px;
+    padding-top:5px;
   }
 
   #s:before,

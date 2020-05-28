@@ -26,12 +26,13 @@
     border:none;
     float:left;
     position: relative;
-    width:20px;
+    width:30px;
     height:25px;
-    padding-right:2.5px;
-    padding-left:2.5px;
     padding-top:1px;
     text-align:center;
+  }
+  #emoticon-button-container :hover {
+    background-color: #00275b;
   }
   #emoticon-text-container {
     vertical-align: middle;
