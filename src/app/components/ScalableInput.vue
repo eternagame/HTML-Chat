@@ -216,7 +216,7 @@
     padding: 0;
     padding-left:2px;
     color:white;
-    background-color:lighten(#043468, 5%);
+    background-color:lighten(#043468, 10%);
     border:none;
     border-bottom:solid white;
     border-top-right-radius: 8px;
