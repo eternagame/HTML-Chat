@@ -10,21 +10,23 @@
       <ConnectingMessage/>
     </ul>
     <template v-slot:footer>
-      <ScalableInput
-        v-model="newMessage"
-        id="input"
-        @keypress.native="onKeyPress"
-        :disabled="!connectionData.connected || isBanned"
-        @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
-        ref="input"
-      />
       <EmoticonBar
         @emote="add"
         @md="format"
-        v-if="anyChatFeatures"
         @update="$nextTick($refs.pane.updateFooterHeight)"
-      />
-      <SendButton @send="send"/>
+      >
+      <template slot="input">
+        <ScalableInput
+          v-model="newMessage"
+          id="input"
+          @postMessage="send"
+          @keypress.native="onKeyPress"
+          :disabled="!connectionData.connected || isBanned"
+          @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
+          ref="input"
+        />
+      </template>
+      </EmoticonBar>
       <ConnectButton
         v-show="!input"
       />
@@ -46,7 +48,6 @@
   import BanStatus from '@/types/BanStatus';
   import Message from '@/types/message';
   import { Channel } from '@/store/chat.vuex';
-  import SendButton from '@/components/SendButton.vue';
 
   @Component({
     components: {
@@ -56,7 +57,6 @@
       ScalableInput,
       ConnectButton,
       EmoticonBar,
-      SendButton,
     },
   })
   export default class MessagesPane extends Vue {
@@ -154,12 +154,4 @@
   }
 </script>
 <style scoped>
-.send-button { /* Send message button */
-  position: absolute;
-  float:right;
-  right:4px;
-  width:29px;
-  height:29px;
-  top:5px;
-}
 </style>

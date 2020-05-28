@@ -1,32 +1,6 @@
 <template>
   <div id='menu-container'>
-    <div
-      id='emoticon-bar-container'
-      :style="{
-        'border-bottom-right-radius': radius,
-        'border-bottom-left-radius': radius,
-        'border-bottom-width': border,
-      }" >
-      <MenuButton
-        id="emoticonSelect"
-        name="👍"
-        styles=""
-        @button="select(false);"
-      />
-      <MenuButton
-        id="markdownSelect"
-        name="MD"
-        styles="bold italics underline"
-        @button="select(true);"
-      />
-      <MenuButton
-        name="?"
-        class="other-menu-button"
-        styles=""
-        @button="menuButtonClicked"
-      />
-    </div>
-    <div id='submenu' v-show='emoticonsSelected || markdownSelected'>
+    <div id='submenu' v-show='(emoticonsSelected || markdownSelected) && anyChatFeatures'>
       <div id='emoticon-submenu' v-show="emoticonsSelected" >
         <EmoticonButton
           v-for="emoticon in emotesList"
@@ -49,6 +23,31 @@
         class="other-menu-button"
         name="X"
         styles="bold"
+        @button="menuButtonClicked"
+      />
+    </div>
+    <div id='input'>
+        <slot name="input"></slot>
+      </div>
+    <div
+      id='emoticon-bar-container'
+      v-if="anyChatFeatures" >
+      <MenuButton
+        id="emoticonSelect"
+        name="👍"
+        styles=""
+        @button="select(false);"
+      />
+      <MenuButton
+        id="markdownSelect"
+        name="A"
+        styles="bold italics underline"
+        @button="select(true);"
+      />
+      <MenuButton
+        name="?"
+        class="other-menu-button"
+        styles=""
         @button="menuButtonClicked"
       />
     </div>
@@ -144,6 +143,10 @@
     get markdownChatFeatures() {
       return this.$vxm.settings.markdownChatFeatures;
     }
+
+    get anyChatFeatures() {
+      return this.emoticonChatFeatures || this.markdownChatFeatures;
+    }
   }
 </script>
 <style scoped>
@@ -153,8 +156,9 @@
   width:calc(100% - 2px); /* Same width as textarea */
   height:25px;
   border:none;
-  border-bottom:1px solid white;
   overflow:hidden; /* Prevents awkward scrolling and overflow */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 #strike { /* Strikethrough isn't cut off */
   padding:2px;
@@ -166,10 +170,10 @@
   background-color:#043468;
   color:white;
   width:calc(100% - 2px); /* Same width as textarea */
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-radius:8px;
   height:25px;
   overflow:hidden; /* Prevents awkward scrolling and overflow */
+  margin-bottom:3px;
 }
 .other-menu-button {
   float:right;

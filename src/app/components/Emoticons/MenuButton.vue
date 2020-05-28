@@ -32,8 +32,9 @@
   width:30px; /* Corresponds to a real width of 25px accounting for border */
   color:white;
   float:left;
+  font-size:14px;
 }
 .menu-button:hover {
-  background-color:#00275b;
+  background-color:#06488f;
 }
 </style>

@@ -18,6 +18,7 @@
       @input="$emit('input', $event.target.value);"
       ref="textarea"
     />
+    <SendButton @send="send"/>
     <div
       ref="hiddenDiv"
       class="scalable-input-hidden"
@@ -29,7 +30,13 @@
   import {
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
-  @Component
+  import SendButton from '@/components/SendButton.vue';
+
+  @Component({
+    components: {
+      SendButton,
+    },
+  })
   export default class ScalableInput extends Vue {
     height = 0;
 
@@ -54,6 +61,13 @@
       } else {
         this.$refs.textarea.setSelectionRange(position + char.length, position + char.length);
       }
+    }
+
+    // For send button
+    send() {
+      this.$emit('postMessage');
+      this.value = '';
+      this.$refs.textarea.value = '';
     }
 
     get radius() {
@@ -218,7 +232,6 @@
     color:white;
     background-color:lighten(#043468, 8%);
     border:none;
-    border-bottom:solid white;
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
     outline: none;
@@ -239,5 +252,12 @@
     word-wrap: break-word;
     border: 1px solid;
     padding-right:25px;
+  }
+  .send-button { /* Send message button */
+    position: absolute;
+    float:right;
+    right:0;
+    width:29px;
+    height:29px;
   }
 </style>
