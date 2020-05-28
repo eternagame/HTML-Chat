@@ -222,7 +222,7 @@
     padding: 0;
     padding-left:2px;
     color:white;
-    background-color:lighten(#043468, 8%);
+    background-color:#21508c;
     border:none;
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;

@@ -35,6 +35,6 @@
   font-size:14px;
 }
 .menu-button:hover {
-  background-color:#06488f; /* Lightened version of med-dark-blue. Same as input background */
+  background-color:#21508c; /* Lightened version of med-dark-blue. Same as input background */
 }
 </style>
