@@ -1,6 +1,6 @@
 <template>
   <div id='emoticon-button-container' class='emoticon-button' @click="clicked">
-    <p id='emoticon-text-container'>{{emoticon}}</p>
+    <p id='emoticon-text-container'>{{displayedValue}}</p>
   </div>
 </template>
 <script lang='ts'>
@@ -9,6 +9,10 @@
   export default class EmoticonButton extends Vue {
     @Prop()
     emoticon !: string;
+
+    get displayedValue() {
+      return this.emoticon;
+    }
 
     clicked() {
       this.$emit('emote', this.emoticon);
@@ -25,6 +29,7 @@
     width:20px;
     height:25px;
     padding-right:2.5px;
+    padding-left:2.5px;
     padding-top:1px;
     text-align:center;
   }

@@ -27,7 +27,7 @@
       />
     </div>
     <div id='submenu' v-show='emoticonsSelected || markdownSelected'>
-      <div id='emoticon-submenu' v-show="emoticonsSelected">
+      <div id='emoticon-submenu' v-show="emoticonsSelected" >
         <EmoticonButton
           v-for="emoticon in emotesList"
           :key="emoticon"
@@ -75,7 +75,14 @@
   export default class EmoticonBar extends Vue {
     value = false;
 
-    emotesList = ['👍', '👎', '🙂', '🙁', '😡', '😂', '😜', '🤔', '😮']; // Emotes that appear when expanded
+    get emotesList() {
+      const defaultEmotes = ['👍', '👎', '🙂', '🙁', '😂'];
+      return defaultEmotes.concat(this.customEmoticons);
+    }
+
+    get customEmoticons() {
+      return this.$vxm.chat.customEmoticons;
+    }
 
     markdownCodes = ['bold', 'italics', 'italicsbold', 'strikethrough', 'code', 'link', 'action'];
 

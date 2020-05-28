@@ -95,6 +95,8 @@ export default class ChatModule extends VuexModule {
 
   tabbing = false;
 
+  customEmoticons = ['😜', '🤔', '😮'];
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -241,6 +243,15 @@ export default class ChatModule extends VuexModule {
           );
         }
       }
+      if (localStorage.customEmoticons) {
+        try {
+          this.customEmoticons = JSON.parse(localStorage.customEmoticons);
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of custom emoticons',
+          );
+        }
+      }
     }
 
     if (process.env.VUE_APP_SERVER_URL) {
@@ -340,6 +351,8 @@ export default class ChatModule extends VuexModule {
         const command = parts ? parts[1] : '';
         parts = message.match(/^\/\w+ (.+)/);
         const params = parts ? parts[1] : '';
+        const first = params.split(' ')[0];
+        const second = params.split(' ')[1];
         switch (command) {
           case 'help':
             switch (params) {
@@ -378,8 +391,22 @@ export default class ChatModule extends VuexModule {
                 postMessage('Example: `/change general`');
                 postMessage('Example: `/change #general`');
                 break;
+              case 'emoticon':
+                postMessage(
+                  '`/emoticon`: Changes the emoticon in one of the 3 custom emoticon slots. To see the current emoticons, click the emoticon icon the the menu under the text field or use the `/emoticon-list` command',
+                );
+                postMessage('Usage: `/emoticon <emoticon> <slot>`');
+                postMessage('Example: `/emoticon 🐔 1`');
+                break;
+              case 'emoticon-list':
+                postMessage(
+                  '`/emoticon-list`: Lists the emoticons in the 3 custom emoticon slots',
+                );
+                postMessage('Usage: `/emoticon-list`');
+                postMessage('Example: `/emoticon-list`');
+                break;
               default:
-                postMessage('Available commands: help, me, ignore, ignore-list, unignore, change');
+                postMessage('Available commands: help, me, ignore, ignore-list, unignore, change, emoticon');
                 postMessage('Type `/help <command>` for information on individual commands');
                 postMessage('Example: `/help ignore`');
                 postMessage(
@@ -454,6 +481,30 @@ export default class ChatModule extends VuexModule {
               this.tab = (channelNames.slice() as [string]).indexOf(`#${params}`.replace('##', '#'));
               this.chatChannel = params;
             }
+            break;
+          case 'emoticon':
+            if (!first || !second) {
+              postMessage(
+                'Please include command parameters. Type `/help emoticon` for more usage instructions',
+              );
+              break;
+            } else if (parseInt(second, 10) > 3 || parseInt(second, 10) < 1) {
+              postMessage('You have three custom emoticon slots. Type `/help emoticon` for more usage instructions');
+              break;
+            } else if (
+              (JSON.parse(localStorage.customEmoticons) as string[]).some(e => e === first)) {
+              postMessage('You already have that emoticon in a custom slot');
+              break;
+            } else if (!first.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/)) {
+              postMessage('You may only add emoticons to custom slots');
+              break;
+            }
+            // Changing the array elements with array[index] = newValue isn't reactive
+            Vue.set(this.customEmoticons, (parseInt(second, 10) - 1), first);
+            localStorage.customEmoticons = JSON.stringify(this.customEmoticons);
+            break;
+          case 'emoticon-list':
+            postMessage(`Your custom emoticons are ${this.customEmoticons[0]} (slot 1), ${this.customEmoticons[1]} (slot 2), and ${this.customEmoticons[2]} (slot 3).`);
             break;
           default:
             postMessage('Invalid command. Type `/help` for more available commands');
