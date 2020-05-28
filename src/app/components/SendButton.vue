@@ -28,7 +28,7 @@
     border:none;
     background-image: url("../assets/send-button.png");
     background-repeat: no-repeat;
-    background-size: 65% 65%;
+    background-size: 60% 60%;
     background-position: center;
     height: 30px;
     width: 25px;

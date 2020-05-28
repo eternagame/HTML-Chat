@@ -11,6 +11,7 @@
         height: `${height}px`,
         'border-bottom-right-radius': radius,
         'border-bottom-left-radius': radius,
+        'border-bottom-width': border,
       }"
       class="scalable-input"
       :disabled="disabled"
@@ -58,6 +59,13 @@
     get radius() {
       if (!this.alone) {
         return '8px';
+      }
+      return '0px';
+    }
+
+    get border() {
+      if (this.alone) {
+        return '1px';
       }
       return '0px';
     }
@@ -210,7 +218,7 @@
     color:white;
     background-color:lighten(#043468, 5%);
     border:none;
-    border-bottom:1px solid white;
+    border-bottom:solid white;
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
     outline: none;
