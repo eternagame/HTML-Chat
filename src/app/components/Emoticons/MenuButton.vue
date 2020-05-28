@@ -2,7 +2,7 @@
   <button
     class='menu-button'
     :style="{
-      'font-weight':styles.includes('bold') ? 'bold' : 'normal',
+      'font-weight':styles.includes('bold') ? 'bold' : 'normal', /* Applies text styling */
       'font-style':styles.includes('italics') ? 'italic' : 'normal',
       'text-decoration':styles.includes('underline') ? 'underline' : 'normal',
     }"
@@ -35,6 +35,6 @@
   font-size:14px;
 }
 .menu-button:hover {
-  background-color:#06488f;
+  background-color:#06488f; /* Lightened version of med-dark-blue. Same as input background */
 }
 </style>

@@ -72,14 +72,12 @@
     },
   })
   export default class EmoticonBar extends Vue {
-    value = false;
-
-    get emotesList() {
+    get emotesList() { // List of all emotes from defaults and custom
       const defaultEmotes = ['👍', '👎', '🙂', '🙁'];
       return defaultEmotes.concat(this.customEmoticons);
     }
 
-    get customEmoticons() {
+    get customEmoticons() { // Gets custom emoticons
       return this.$vxm.chat.customEmoticons;
     }
 
@@ -89,20 +87,7 @@
 
     markdownSelected = false;
 
-    get radius() {
-      if (!this.emoticonsSelected && !this.markdownSelected) {
-        return '8px';
-      }
-      return '0px';
-    }
-
-    get border() {
-      if (!this.emoticonsSelected && !this.markdownSelected) {
-        return '0px';
-      }
-      return '1px';
-    }
-
+    /* Opens emoticon or markdown submenu depending on which button was pressed */
     select(markdown:boolean) {
       if (markdown) {
         this.markdownSelected = true;
@@ -114,16 +99,16 @@
       this.$emit('update');
     }
 
-    menuButtonClicked(button:string) {
+    menuButtonClicked(button:string) { // Handles button clicks
       switch (button) {
-        case 'X':
-          this.markdownSelected = false;
-          this.emoticonsSelected = false;
-          break;
-        case '?':
-          this.$emit('md', 'question');
-          break;
-        default: break;
+      case 'X':
+        this.markdownSelected = false;
+        this.emoticonsSelected = false;
+        break;
+      case '?':
+        this.$emit('md', 'question');
+        break;
+      default: break;
       }
       this.$emit('update');
     }
@@ -176,8 +161,7 @@
   margin-bottom:3px;
 }
 .other-menu-button {
-  float:right;
-  border:none;
+  float:right; /* Menu buttons floated to the right */
 }
 .menu-container {
   background-color:#043468;
