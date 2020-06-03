@@ -103,8 +103,8 @@
         parseInt(this.red, 10),
         parseInt(this.green, 10),
         parseInt(this.blue, 10),
-      );
-      return (backgroundValue - colorValue) < 0;
+      ) + 20;
+      return Math.abs(colorValue - backgroundValue) > 24;
     }
 
     // Sets color to a hex string. Used by color swatches.

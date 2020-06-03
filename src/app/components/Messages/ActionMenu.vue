@@ -19,6 +19,31 @@
         Ignore User
       </a>
     </li>
+    <li v-if="oper">
+      <a @click="ban">
+        Ban User
+      </a>
+    </li>
+    <li v-if="oper">
+      <a @click="unban">
+        Unban User
+      </a>
+    </li>
+    <li v-if="oper">
+      <a @click="kick">
+        Kick User
+      </a>
+    </li>
+    <li v-if="oper">
+      <a @click="quiet">
+        Quiet User
+      </a>
+    </li>
+    <li v-if="oper">
+      <a @click="unquiet">
+        Unquiet User
+      </a>
+    </li>
   </VueContext>
 </template>
 
@@ -44,6 +69,30 @@
 
     get user(): User {
       return this.message!.user;
+    }
+
+    ban() {
+      this.$vxm.chat.ban(this.user);
+    }
+
+    quiet() {
+      this.$vxm.chat.quiet(this.user);
+    }
+
+    kick() {
+      this.$vxm.chat.kick(this.user);
+    }
+
+    unquiet() {
+      this.$vxm.chat.unquiet(this.user);
+    }
+
+    unban() {
+      this.$vxm.chat.unban(this.user);
+    }
+
+    get oper() {
+      return this.$vxm.chat.oper;
     }
 
     get profileUrl(): string {

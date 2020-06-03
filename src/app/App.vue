@@ -6,7 +6,7 @@
     :enabled="!fullSize"
   >
     <template slot="main">
-      <slideout style="z-index: 1;" :minimizedValue="!minimized"></slideout>
+      <slideout style="z-index: 1;" :minimizedValue="!minimized" @auth="showAuth = true"></slideout>
       <transition name="fade">
         <div class="chat-content" v-if="!minimized">
           <MessagePane
@@ -21,6 +21,7 @@
           <ReportDialog ref="reportDialog" />
         </div>
       </transition>
+      <OperLogin @login="operAuthenticate" v-if="showAuth" @cancel="showAuth=false" ref="login" />
     </template>
     <template slot="header">
       <div id="current-tab">{{ currentTab }}</div>
@@ -42,6 +43,9 @@
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import OpenWindowButton from '@/components/OpenWindowButton.vue';
   import DraggableDiv from '@/components/DraggableDiv.vue';
+  import Message from '@/types/message';
+  import OperLogin from '@/components/OperLogin.vue';
+  import Ban from '@/types/Ban';
 
   Vue.use(BootstrapVue);
 
@@ -60,6 +64,7 @@
     MessagePane,
     MinimizationTriangle,
     OpenWindowButton,
+    OperLogin,
   },
 })
   export default class App extends Vue {
@@ -76,6 +81,12 @@
 
   fullSize = false;
 
+  showAuth = false;
+
+  get isOper() {
+    return this.$vxm.chat.oper;
+  }
+
   // For text in top bar
   get currentTab() {
     return this.$vxm.chat.chatChannel;
@@ -88,6 +99,7 @@
 
   $refs!: {
     reportDialog: ReportDialog;
+    login: OperLogin,
   };
 
   get slideoutOpen() {
@@ -112,6 +124,36 @@
     this.$vxm.chat.readChannel(channel);
   }
 
+  operAuthenticate({ username, password }: {username: string, password: string}) {
+    this.$vxm.chat.operLoginUser = username; // Sets creds used for authentification by chat.vuex
+    this.$vxm.chat.operLoginPassword = password;
+    this.$vxm.chat.operCommand(); // Set all nicks as opers
+    setTimeout(this.operLoginStatus, 200); // A precaution so messages are received properly
+  }
+
+  operLoginStatus() {
+    if (this.isOper) {
+      this.$refs.login.message = 'Login succeeded'; // Success message
+      this.$refs.login.showsMessage = true; // Modal shows success message
+      this.$vxm.chat.oper = true; // Makes sure it knows user is oper
+    } else {
+      this.$refs.login.authFailed = true; // Sets 'incorrect user/pass' message
+      this.$refs.login.password = ''; // Resets password field
+    }
+  }
+
+  get show() {
+    return this.$vxm.chat.auth;
+  }
+
+  @Watch('show')
+  showAuthentification() {
+    if (this.show) {
+      this.showAuth = true;
+      this.$vxm.chat.auth = false;
+    }
+  }
+
   mounted() {
     this.$vxm.chat.init({
       username: this.username,
@@ -132,6 +174,10 @@
       this.$refs.reportDialog.open(payload);
     });
     window.addEventListener('keydown', this.key);
+  }
+
+  postScreenshot(url:string, puzzleName:string) {
+    this.postMessage(`[${puzzleName}](${url})`, '#help');
   }
 
   @Watch('minimized')

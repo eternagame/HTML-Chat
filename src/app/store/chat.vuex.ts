@@ -10,7 +10,7 @@ import Message from '../types/message';
 import Connection from '@/tools/websocket';
 import BanStatus from '@/types/BanStatus';
 import User from '@/types/user';
-import SettingsModule from './settings.vuex';
+import Ban from '@/types/Ban';
 
 // For polyfill
 declare type BroadcastMessage = {
@@ -54,7 +54,7 @@ class ConnectionData {
   }
 }
 
-const channelNames = ['#general', '#off-topic', '#help', '#labs'] as const;
+const channelNames = ['#general', '#off-topic', '#help', '#labs', '#global', '#test'] as const;
 
 export default class ChatModule extends VuexModule {
   toBePosted: Message[] = [];
@@ -97,6 +97,19 @@ export default class ChatModule extends VuexModule {
 
   customEmoticons = ['😜', '🤔', '😮'];
 
+  oper = false;
+
+  operLoginUser = '';
+
+  operLoginPassword = '';
+
+  banList: Ban[] = [];
+
+  quietList: Ban[] = [];
+
+  auth = false;
+
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -110,7 +123,7 @@ export default class ChatModule extends VuexModule {
       };
     });
     // Creates channel through which everything is sent
-    this.broadcast = new BroadcastChannel('eterna');
+    this.broadcast = new BroadcastChannel('eterna-chat');
     // Message handler
     this.broadcast.onmessage = (ev) => {
       /* The only messages sent between tabs are channel names.
@@ -305,9 +318,41 @@ export default class ChatModule extends VuexModule {
         this.connectionData.currentTimer = 0;
       })
       .on('nick in use', this.onNickInUse)
-      .on('irc error', this.onIrcError);
+      .on('irc error', this.onIrcError)
+      .on('raw', (e) => {
+        if (e.from_server) {
+          const commandNumber = parseInt(e.line.substring(20, 23), 10);
+          if (e.line.match(/^:irc\.eternagame\.org .+\^\d{3} #*.* /)) {
+            const response = e.line.replace(/^:(\S+\s){3}/, '').split(' ');
+            const chan = response[0];
+            const mask = response[1];
+            switch (commandNumber) {
+              case 482: this.postMessage(new Message("You're not a channel operator/moderator")); break;
+              case 481: this.postMessage(new Message("You're not an IRC operator/moderator")); break;
+              default: break;
+            }
+          }
+        }
+      });
     this.client = client;
     this.connect();
+  }
+
+  @action()
+  async setChannelOps() { // Sets +o for all nicks for all channels
+    // This.connectedUsers[this.currentUser.username].nicks returns a list of the user's nicks
+    // Converting the array to a set and then back removes duplicates
+    // Iterates through to make sure each nick for the user has proper permissions
+    Array.from(new Set(this.connectedUsers[this.currentUser.username]?.nicks)).forEach(i => {
+      // Iterates through all channels
+      channelNames.forEach(e => this.client?.raw(`SAMODE ${e} +o ${i}`));
+    });
+  }
+
+  @action()
+  async operCommand() {
+    this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
+    setTimeout(this.setChannelOps, 100);
   }
 
   @action()
@@ -335,13 +380,22 @@ export default class ChatModule extends VuexModule {
   async sendMessage({ rawMessage, channel }: { rawMessage: string; channel: string }) {
     const postMessage = (
       message: string,
-      { user = User.annonymous, isHistory = false, isAction = false } = {},
+      {
+        user = User.annonymous, isHistory = false, isAction = false,
+      } = {},
     ) => {
       this.postMessage(new Message(message, channel, user, isAction));
     };
     let message = rawMessage.trim();
+    const oldMessage = message;
+    message = `${message} [${this.usernameColor}]`; // Message with tags added on
     let isAction = false;
     // No posting as annon or if nothing has been actually posted
+    let notBanned = true;
+    if (this.banList.some(e => e.username.includes(this.currentUser.username))
+      || this.quietList.some(e => e.username.includes(this.currentUser.username))) {
+      notBanned = false;
+    }
     if (this.currentUser.username && message !== '') {
       let post = true;
       // Chat commands
@@ -405,10 +459,35 @@ export default class ChatModule extends VuexModule {
                 postMessage('Usage: `/emoticon-list`');
                 postMessage('Example: `/emoticon-list`');
                 break;
+              case 'ban':
+                postMessage(
+                  '`/ban`: Bans a user from a channel',
+                );
+                postMessage('Usage: `/ban <channel> <username>`');
+                postMessage('Example: `/ban #general Ahalb`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'unban':
+                postMessage(
+                  '`/ban`: Unbans a user from a channel',
+                );
+                postMessage('Usage: `/unban <channel> <username>`');
+                postMessage('Example: `/unban #general Ahalb`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'kick':
+                postMessage(
+                  '`/kick`: Kicks a user from a channel',
+                );
+                postMessage('Usage: `/kick <channel> <username>`');
+                postMessage('Example: `/kick #general Ahalb`');
+                postMessage('You must be an operator to use this command');
+                break;
               default:
                 postMessage('Available commands: help, me, ignore, ignore-list, unignore, change, emoticon');
                 postMessage('Type `/help <command>` for information on individual commands');
                 postMessage('Example: `/help ignore`');
+                postMessage(` You are ${this.oper ? '' : 'not'} logged in as an operator/moderator. Operators may use the \`/ban\`, \`/unban\`, and \`/kick\` commands`);
                 postMessage(
                   'Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)',
                 );
@@ -506,24 +585,148 @@ export default class ChatModule extends VuexModule {
           case 'emoticon-list':
             postMessage(`Your custom emoticons are ${this.customEmoticons[0]} (slot 1), ${this.customEmoticons[1]} (slot 2), and ${this.customEmoticons[2]} (slot 3).`);
             break;
+          case 'ban':
+            if (params.split(' ').length < 2) {
+              postMessage('Please include command parameters. Type `/help ban` for more usage instructions');
+              break;
+            }
+            if (this.oper) {
+              if (params.split(' ')[0] === '*') {
+                channelNames.forEach(c => {
+                  this.client?.ban(c, `*!${params.split(' ')[1]}@*`);
+                });
+              } else {
+                this.client?.ban(params.split(' ')[0], `*!${params.split(' ')[1]}@*`);
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to ban users.');
+            }
+            break;
+          case 'unban':
+            if (params.split(' ').length < 2) {
+              postMessage('Please include command parameters. Type `/help unban` for more usage instructions');
+              break;
+            }
+            if (this.oper) {
+              if (params.split(' ')[0] === '*') {
+                channelNames.forEach(c => {
+                  this.client?.unban(c, `*!${params.split(' ')[1]}@*`);
+                });
+              } else {
+                this.client?.unban(params.split(' ')[0], `*!${params.split(' ')[1]}@*`);
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to unban users.');
+            }
+            break;
+          case 'kick':
+            if (params.split(' ').length < 2) {
+              postMessage('Please include command parameters. Type `/help kick` for more usage instructions');
+              break;
+            }
+            if (this.oper) {
+              if (params.split(' ').length >= 2) {
+                this.connectedUsers[params.split(' ')[1]]?.nicks.forEach((e) => {
+                  if (params.split(' ')[0] === '*') {
+                    channelNames.forEach(c => {
+                      this.client?.raw(`KICK ${c} ${e}`);
+                    });
+                  } else {
+                    this.client?.raw(`KICK ${params.split(' ')[0]} ${e}`);
+                  }
+                });
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to kick users');
+            }
+            break;
+          case 'quiet':
+            if (this.oper) {
+              if (params.split(' ').length >= 2) {
+                if (params.split(' ')[0] === '*') {
+                  channelNames.forEach(c => {
+                    this.client?.raw(`MODE ${c} +b m;*!${params.split(' ')[1]}@*`);
+                  });
+                } else {
+                  this.client?.raw(`MODE ${params.split(' ')[0]} +b m;*!${params.split(' ')[1]}@*`);
+                }
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to quiet users');
+            }
+            break;
+          case 'unquiet':
+            if (this.oper) {
+              if (params.split(' ').length >= 2) {
+                if (params.split(' ')[0] === '*') {
+                  channelNames.forEach(c => {
+                    this.client?.raw(`MODE ${c} -b m;*!${params.split(' ')[1]}@*`);
+                  });
+                } else {
+                  this.client?.raw(`MODE ${params.split(' ')[0]} -b m;*!${params.split(' ')[1]}@*`);
+                }
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to unquiet users');
+            }
+            break;
+          case 'banlist':
+            if (this.oper) {
+              this.banList = [];
+              this.quietList = [];
+              channelNames.forEach((c) => {
+                this.client?.channel(c).banlist((e) => {
+                  // eslint-disable-next-line dot-notation
+                  e.bans.forEach((b) => {
+                    const ban = new Ban(b.banned, b.channel);
+                    if (ban.username.includes('m;')) {
+                      this.quietList.push(ban);
+                    } else {
+                      this.banList.push(ban);
+                    }
+                    postMessage(`${ban.username
+                      .replace('*!', '')
+                      .replace('@*', '')
+                      .replace('!*', ' (nick) ')
+                      .replace('m;', '(Quiet) ')} in ${ban.channel}`);
+                  });
+                });
+              });
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to view the ban list');
+            }
+            break;
           default:
             postMessage('Invalid command. Type `/help` for more available commands');
             break;
         }
       }
-
+      this.client?.channel(channel).banlist(e => {
+        e.bans.forEach(b => {
+          const ban = new Ban(b.banned, b.channel);
+          if (ban.username.startsWith('m;')) {
+            this.quietList.push(ban);
+          } else {
+            this.banList.push(ban);
+          }
+        });
+      });
       if (post && this.channels[channel] !== undefined) {
-        if (!this.channels[channel]!.banned) {
+        if (!this.channels[channel]!.banned && notBanned) {
           if (isAction) {
             this.client!.action(channel, `@test:123 ${message}`);
           } else {
             this.client!.say(channel, message);
           }
-          const msg = new Message(message, channel, this.currentUser, isAction);
-          if (this.usernameColor !== undefined && this.usernameColor !== '') {
-            msg.tags['username-color'] = this.usernameColor;
-          }
-          this.postMessage(msg);
+          this.postMessage(new Message(message, channel, this.currentUser, isAction));
+        } else if (this.quietList.some(e => e.username.includes(this.currentUser.username))) {
+          this.postMessage(new Message("Can't send messages because you are quieted"));
         } else {
           this.postMessage(new Message("Can't send messages because you are banned"));
         } // TODO
@@ -652,7 +855,50 @@ export default class ChatModule extends VuexModule {
           this.onUnbanned(event.target);
         }
       }
+      if (mode.mode === '+o') {
+        if (!this.oper) {
+          console.log(`You are an operator (${mode.param})`);
+          this.oper = true;
+        }
+      }
     });
+  }
+
+  @action()
+  async ban(user:User) {
+    if (this.oper) {
+      this.client?.ban(this.chatChannel, `*!${user.username}@*`);
+    }
+  }
+
+  @action()
+  async kick(user:User) {
+    if (this.oper) {
+      this.connectedUsers[user.username]?.nicks.forEach((e) => {
+        this.client?.raw(`KICK ${this.chatChannel} ${e}`);
+      });
+    }
+  }
+
+  @action()
+  async quiet(user:User) {
+    if (this.oper) {
+      this.client?.raw(`MODE ${this.chatChannel} +b m;*!${user.username}@*`);
+    }
+  }
+
+  @action()
+  async unquiet(user:User) {
+    if (this.oper) {
+      this.client?.raw(`MODE ${this.chatChannel} -b m;*!${user.username}@*`);
+    }
+  }
+
+  @action()
+  async unban(user:User) {
+    if (this.oper) {
+      this.client?.unban(this.chatChannel, `*!${user.username}@*`);
+    }
   }
 
   @action()
