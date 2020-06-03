@@ -22,7 +22,7 @@
         v-if="chatSelected"
       />
       <SlideoutUser v-if="userSelected"/>
-      <SlideoutSettings v-if="settingsSelected" />
+      <SlideoutSettings v-if="settingsSelected" @auth="$emit('auth')"/>
     </span>
   </div>
 </template>

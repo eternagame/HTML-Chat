@@ -76,7 +76,7 @@ declare module 'irc-framework' {
 
     removeInvite(channel: string, mask: string): void;
 
-    banlist(channel: string, cb: (e: Event) => any): void;
+    banlist(channel: string, cb: (e: BanlistEventArgs) => any): void;
 
     ban(channel: string, mask: string): void;
 
@@ -292,7 +292,7 @@ declare module 'irc-framework' {
 
     mode(mode: string, extra_args?: string[]): void;
 
-    banlist(cb: (e: Event) => any): void;
+    banlist(cb: (event: BanlistEventArgs) => any): void;
 
     ban(mask: string): void;
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="position:relative;">
+    <div style="position:relative; overflow-y:auto">
       <TabButton
         v-for="({name}, index) in messageTabs"
         :key="name"
@@ -91,4 +91,18 @@
   }
 </script>
 <style scoped>
+::-webkit-scrollbar {
+    width: 10px;
+    height:10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color:#343a40; /* Make scrollbar visible */
+  border-radius:5px;
+}
+
+::-webkit-scrollbar-corner {
+  background-color:#343a40;
+  border-radius:5px;
+}
 </style>

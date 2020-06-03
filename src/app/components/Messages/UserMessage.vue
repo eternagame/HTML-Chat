@@ -37,6 +37,7 @@
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import Message from '@/types/message';
   import Username from './Username.vue';
+  import User from '@/types/user';
   import ActionMenu from './ActionMenu.vue';
   import md from '@/tools/Markdown';
 
@@ -63,6 +64,11 @@
     }
 
     get formattedMessage(): string {
+      // If there are tags, remove them before the message is seen
+      if (this.messageHasTags(this.message.message)) {
+        const tagsStringPosition = this.message.message.search(/\[(.+,)*.+\]$/);
+        return md.renderInline(this.message.message.substring(0, tagsStringPosition));
+      } // If not, just show the message
       return md.renderInline(this.message.message);
     }
 
@@ -72,8 +78,19 @@
 
     get usernameColor() {
       if (this.isAction) return '#c0dce7';
-      if (this.message.tags) return this.message.tags['username-color'] ?? null;
-      return null;
+      const colorValue: string | null = this.parseMessageTags(this.message.message)[0];
+      return colorValue; // Color value is first message tag
+    }
+
+    parseMessageTags(message:string) { // Gets tags as array from message
+      const tagsStringPosition = message.search(/\[(.+,)*.+\]$/); // Searches for [...,...] at end of message
+      let tagsString = message.substring(tagsStringPosition); // Gets tags as a string
+      tagsString = tagsString.substring(1, tagsString.length - 1); // Removes brackets
+      return tagsString.split(','); // Returns array split by commas
+    }
+
+    messageHasTags(message:string) { // If a message has any tags
+      return message.match(/\[(.+,)*.+\]$/);
     }
 
     $refs!: {

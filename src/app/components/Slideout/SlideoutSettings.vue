@@ -130,6 +130,17 @@
         </tr>
       </table>
     </section>
+    <section>
+      <h3>Operator</h3>
+      <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
+      <button
+        @click="$emit('auth')"
+        style="{ fontSize:`${fontSize * 11 / 14}px` }"
+        class="green-button"
+        v-show="!isOper" >
+          Log in as operator
+      </button>
+    </section>
   </div>
 </template>
 <script lang="ts">
@@ -159,6 +170,10 @@
     emoticonChatFeatures = true;
 
     markdownChatFeatures = true;
+
+    get isOper() {
+      return this.$vxm.chat.oper;
+    }
 
     // Gets a list of ignored users
     get ignoredUsers() {
