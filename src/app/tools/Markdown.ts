@@ -2,6 +2,7 @@
 import MarkdownIt from 'markdown-it';
 
 const md = new MarkdownIt({
+  html: true,
   linkify: true,
   typographer: true,
 }).disable('image');
@@ -21,9 +22,22 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
   } else {
     tokens[idx].attrs[aIndex][1] = '_blank'; // replace value of existing attr
   }
+  let result = '';
+  tokens.forEach((t) => {
+    const { content } = t;
+    // If the link URL is an Eterna screenshot
+    if (content.match(/https:\/\/eternagame.org\/sites\/default\/files\/chat_screens\/\d{6}_\d{10}\.png/)) {
+      result = `<br><a target="_blank" href="${content}"><img src="${content}" style="max-width:90%"></a><br>`;
+      t.content = '';
+    }
+  });
+  if (result !== '' && result !== undefined) {
+    return result;
+  }
+  return defaultRender(tokens, idx, options, env, self);
 
   // pass token to default renderer.
-  return defaultRender(tokens, idx, options, env, self);
+  // return defaultRender(tokens, idx, options, env, self);
 };
 
 export default md;
