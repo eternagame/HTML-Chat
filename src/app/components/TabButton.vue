@@ -3,7 +3,7 @@
     :class="{active: isActive}"
     @click="$emit('input');"
   >
-    <p class='channel-name'>#{{ name }}</p>
+    <p class='channel-name'>{{ name }}</p>
     <p class='channel-description'>{{ description }}</p>
     <slot />
   </Button>

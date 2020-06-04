@@ -19,6 +19,7 @@
           />
           <ConnectingPopup />
           <ReportDialog ref="reportDialog" />
+          <PrivateMessageModal ref="privmsgmodal" v-show="showPrivMsgModal"/>
         </div>
       </transition>
       <OperLogin @login="operAuthenticate" v-if="showAuth" @cancel="showAuth=false" ref="login" />
@@ -46,6 +47,7 @@
   import Message from '@/types/message';
   import OperLogin from '@/components/OperLogin.vue';
   import Ban from '@/types/Ban';
+  import PrivateMessageModal from '@/components/Messages/PrivateMessageModal.vue';
 
   Vue.use(BootstrapVue);
 
@@ -65,6 +67,7 @@
     MinimizationTriangle,
     OpenWindowButton,
     OperLogin,
+    PrivateMessageModal,
   },
 })
   export default class App extends Vue {
@@ -83,6 +86,17 @@
 
   showAuth = false;
 
+  get showPrivMsgModal() {
+    return this.$vxm.chat.privMsgModal;
+  }
+
+  @Watch('showPrivMsgModal')
+  triggerStart() {
+    if (this.showPrivMsgModal) {
+      this.$refs.privmsgmodal.onStart();
+    }
+  }
+
   get isOper() {
     return this.$vxm.chat.oper;
   }
@@ -100,6 +114,7 @@
   $refs!: {
     reportDialog: ReportDialog;
     login: OperLogin,
+    privmsgmodal: PrivateMessageModal,
   };
 
   get slideoutOpen() {
@@ -119,7 +134,11 @@
   }
 
   postMessage(rawMessage: string, channel: string) {
-    this.$vxm.chat.sendMessage({ rawMessage, channel });
+    if (!channel.startsWith('#')) { // If it's a PRIVMSG
+      this.$vxm.chat.postToQuery(`${channel}|${rawMessage}`);
+    } else { // Otherwise
+      this.$vxm.chat.sendMessage({ rawMessage, channel });
+    }
     // When user sends a message, make sure it doesn't notify itself
     this.$vxm.chat.readChannel(channel);
   }
