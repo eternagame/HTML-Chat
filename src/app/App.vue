@@ -196,7 +196,7 @@
   }
 
   postScreenshot(url:string, puzzleName:string) {
-    this.postMessage(`[${puzzleName}](${url})`, '#help');
+    this.postMessage(`${puzzleName} ${url}`, '#help');
   }
 
   @Watch('minimized')

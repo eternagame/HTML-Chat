@@ -183,7 +183,10 @@ export default class ChatModule extends VuexModule {
       Object.values(this.channels).forEach((channel) => {
         channel?.postedMessages.push(message);
       });
-    } else {
+    // eslint-disable-next-line brace-style
+    } /* else if (message.target === 'notice') {
+      this.channels[this.chatChannel]?.postedMessages.push(message);
+    } */ else {
       this.channels[message.target]?.postedMessages.push(message);
     }
   }
@@ -324,7 +327,7 @@ export default class ChatModule extends VuexModule {
       // TODO: Make it call another function once we implement joining specific channels
       .on('kick', this.userKicked) // TODO;
       .on('message', this.onMessageReceived)
-      .on('notice', this.onMessageReceived)
+      .on('notice', this.onNoticeReceived)
       .on('mode', this.onModeMessageRecieved)
       .on('socket close', this.onDisconnect)
       .on('socket connected', () => {
@@ -342,6 +345,30 @@ export default class ChatModule extends VuexModule {
               case 481: this.postMessage(new Message("You're not an IRC operator/moderator")); break;
               default: break;
             }
+          }
+          if (e.line.startsWith('@server-time')) { // Indicates a message containing history
+            const str = e.line
+              .substring(13) // Remove '@server-time='
+              .replace(/;batch=.{9}/, '') // Remove batch number
+              .replace(/@\S* /, '') // Removes hostname
+              .replace('PRIVMSG', ''); // Removes PRIVMSG
+            const parts = str.split(' ');
+            const time = parts[0];
+            const userInfo = parts[1];
+            const channel = parts[2];
+            const messageInfo = str.replace(time, '') // Remove time
+              .replace(userInfo, '') // Remove user
+              .replace(channel, '') // Remove channel
+              .trim()
+              .replace(/\u0001/, '') // Remove weird spacing
+              .replace(/^ACTION/, '/me'); // Replace ACTION with the more familiar /me
+            const userName = userInfo.substring(1, userInfo.indexOf('^')); // Gets the user name
+            const uid = userInfo
+              .replace(userName, '') // Removes username
+              .replace(/^:\^\d+!/, ''); // Removes surrounding characters
+            const msg = new Message(messageInfo.replace('/me ', ''), channel, new User(userName, uid), messageInfo.includes('/me'));
+            msg.time = new Date(time); // Sets the time of the message
+            this.postMessage(msg); // Post the message
           }
         }
       });
@@ -834,6 +861,13 @@ export default class ChatModule extends VuexModule {
     Array.from(new Set(this.connectedUsers[User.parseUsername(chan)]?.nicks)).forEach(e => {
       this.sendMessage({ rawMessage: msg, channel: e }); // Send message to all nicks
     });
+  }
+
+  @action()
+  async onNoticeReceived({
+    message,
+  }: Irc.MessageEventArgs) {
+    this.postMessage(new Message(message, 'notice'));
   }
 
   // TODO: Insert messages based on id order
