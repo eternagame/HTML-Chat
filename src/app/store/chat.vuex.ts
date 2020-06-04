@@ -139,10 +139,10 @@ export default class ChatModule extends VuexModule {
     });
   }
 
-  channelWithName(name: string) {
-    return this.channels[name];
-  }
-
+  /**
+   * Sets a channel as 'read', clearing notifications and syncing with other tabs
+   * @param channel {string} - The channel to be read
+   */
   @mutation
   readChannel(channel: string) {
     if (channel.startsWith('!')) { // If it came from BroadcastChannel
@@ -163,6 +163,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Turns notifications on for a channel
+   * @param channel {string} - The channel notifications should be turned on for
+   */
   @mutation
   notify(channel: string) {
     // Again, making sure there is an actual channel with the name
@@ -333,9 +337,6 @@ export default class ChatModule extends VuexModule {
         if (e.from_server) {
           const commandNumber = parseInt(e.line.substring(20, 23), 10);
           if (e.line.match(/^:irc\.eternagame\.org .+\^\d{3} #*.* /)) {
-            const response = e.line.replace(/^:(\S+\s){3}/, '').split(' ');
-            const chan = response[0];
-            const mask = response[1];
             switch (commandNumber) {
               case 482: this.postMessage(new Message("You're not a channel operator/moderator")); break;
               case 481: this.postMessage(new Message("You're not an IRC operator/moderator")); break;
@@ -348,8 +349,11 @@ export default class ChatModule extends VuexModule {
     this.connect();
   }
 
+  /**
+   * Sets +o for all nicks for all channels
+   */
   @action()
-  async setChannelOps() { // Sets +o for all nicks for all channels
+  async setChannelOps() {
     // This.connectedUsers[this.currentUser.username].nicks returns a list of the user's nicks
     // Converting the array to a set and then back removes duplicates
     // Iterates through to make sure each nick for the user has proper permissions
@@ -359,7 +363,9 @@ export default class ChatModule extends VuexModule {
     });
   }
 
-  // Logs in as oper
+  /**
+   * Sends the OPER command to log the user in as an operator
+   */
   @action()
   async operCommand() {
     this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
@@ -924,10 +930,16 @@ export default class ChatModule extends VuexModule {
         if (!this.oper) {
           this.oper = true;
         }
+      } else if (mode.mode === '-o') {
+        this.oper = false;
       }
     });
   }
 
+  /**
+   * Bans a user
+   * @param user {User} - The user to be banned
+   */
   @action()
   async ban(user:User) {
     if (this.oper) {
@@ -935,6 +947,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Kicks a user
+   * @param user {User} - The user to be kicked
+   */
   @action()
   async kick(user:User) {
     if (this.oper) {
@@ -944,6 +960,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Quiets a user
+   * @param user {User} - The user to be quieted
+   */
   @action()
   async quiet(user:User) {
     if (this.oper) {
@@ -951,6 +971,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Unquiets a user
+   * @param user {User} - The user to be unquieted
+   */
   @action()
   async unquiet(user:User) {
     if (this.oper) {
@@ -958,6 +982,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Unbans a user
+   * @param user {User} - The user to be unbanned
+   */
   @action()
   async unban(user:User) {
     if (this.oper) {
