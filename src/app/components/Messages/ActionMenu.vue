@@ -44,6 +44,11 @@
         Unquiet User
       </a>
     </li>
+    <li >
+      <a @click="privmsg">
+        Private Message User
+      </a>
+    </li>
   </VueContext>
 </template>
 
@@ -89,6 +94,11 @@
 
     unban() {
       this.$vxm.chat.unban(this.user);
+    }
+
+    privmsg() { // Opens up the private message modal
+      this.$vxm.chat.userToPrivMsg = this.user.username;
+      this.$vxm.chat.privMsgModal = true;
     }
 
     get oper() {

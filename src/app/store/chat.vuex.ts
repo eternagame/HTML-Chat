@@ -54,7 +54,8 @@ class ConnectionData {
   }
 }
 
-const channelNames = ['#general', '#off-topic', '#help', '#labs', '#global', '#test'] as const;
+// eslint-disable-next-line prefer-const
+let channelNames = ['#general', '#off-topic', '#help', '#labs', '#global', '#test'];
 
 export default class ChatModule extends VuexModule {
   toBePosted: Message[] = [];
@@ -78,8 +79,6 @@ export default class ChatModule extends VuexModule {
   } = {};
 
   ignoredUsers: string[] = [];
-
-  usersByNick: { [nick: string]: User } = {};
 
   tab: Number = 1; // Selected tab. One of the chat channels
 
@@ -109,6 +108,9 @@ export default class ChatModule extends VuexModule {
 
   auth = false;
 
+  userToPrivMsg = '';
+
+  privMsgModal = false;
 
   constructor() {
     super();
@@ -128,7 +130,7 @@ export default class ChatModule extends VuexModule {
     this.broadcast.onmessage = (ev) => {
       /* The only messages sent between tabs are channel names.
       When a tab receives a message, it unignores the channel. */
-      this.readChannel(ev.message);
+      this.readChannel(`!${ev.message}`);
     };
     this.ignoredChannels = {};
     channelNames.forEach((e) => {
@@ -143,14 +145,22 @@ export default class ChatModule extends VuexModule {
 
   @mutation
   readChannel(channel: string) {
-    // Makes sure channel name corresponds to a channel
-    const trueChannel = this.channels[channel];
-    if (trueChannel) {
-      // Set notifications for that channel to false
-      trueChannel.notifications = false;
+    if (channel.startsWith('!')) { // If it came from BroadcastChannel
+      const trueChannel = this.channels[channel.substring(1)];
+      if (trueChannel) {
+        // Set notifications for that channel to false
+        trueChannel.notifications = false;
+      }
+    } else {
+      const trueChannel = this.channels[channel];
+      if (trueChannel) {
+        // Set notifications for that channel to false
+        trueChannel.notifications = false;
+      }
+      /* Only relay the message if it didn't come from BroadcastChannel
+      so there isn't a loop of messages */
+      this.broadcast.postMessage(new Message(channel));
     }
-    // When a channel is read, notify other tabs so they update
-    this.broadcast.postMessage(new Message(channel));
   }
 
   @mutation
@@ -349,10 +359,11 @@ export default class ChatModule extends VuexModule {
     });
   }
 
+  // Logs in as oper
   @action()
   async operCommand() {
     this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
-    setTimeout(this.setChannelOps, 100);
+    setTimeout(this.setChannelOps, 100); // Make sure events happen in order
   }
 
   @action()
@@ -562,7 +573,7 @@ export default class ChatModule extends VuexModule {
             }
             break;
           case 'emoticon':
-            if (!first || !second) {
+            if (!first || !second) { // Parameter check
               postMessage(
                 'Please include command parameters. Type `/help emoticon` for more usage instructions',
               );
@@ -591,19 +602,19 @@ export default class ChatModule extends VuexModule {
               break;
             }
             if (this.oper) {
-              if (params.split(' ')[0] === '*') {
-                channelNames.forEach(c => {
-                  this.client?.ban(c, `*!${params.split(' ')[1]}@*`);
+              if (params.split(' ')[0] === '*') { // If ban should be in all channels
+                channelNames.forEach(c => { // For each channel
+                  this.client?.ban(c, `*!${params.split(' ')[1]}@*`); // Ban the user's username
                 });
-              } else {
+              } else { // Otherwise, just ban them from the one channel
                 this.client?.ban(params.split(' ')[0], `*!${params.split(' ')[1]}@*`);
               }
             } else {
-              this.auth = true;
+              this.auth = true; // If not an oper, present the modal to log in
               postMessage('You are not an operator or moderator and do not have permission to ban users.');
             }
             break;
-          case 'unban':
+          case 'unban': // Exact same as ban, just replacing 'ban' with 'unban'
             if (params.split(' ').length < 2) {
               postMessage('Please include command parameters. Type `/help unban` for more usage instructions');
               break;
@@ -628,17 +639,17 @@ export default class ChatModule extends VuexModule {
             }
             if (this.oper) {
               if (params.split(' ').length >= 2) {
-                this.connectedUsers[params.split(' ')[1]]?.nicks.forEach((e) => {
+                this.connectedUsers[params.split(' ')[1]]?.nicks.forEach((e) => { // Kicks each nick
                   if (params.split(' ')[0] === '*') {
-                    channelNames.forEach(c => {
+                    channelNames.forEach(c => { // If user should be kicked from all channels
                       this.client?.raw(`KICK ${c} ${e}`);
                     });
-                  } else {
+                  } else { // Otherwise, kick from the one channel
                     this.client?.raw(`KICK ${params.split(' ')[0]} ${e}`);
                   }
                 });
               }
-            } else {
+            } else { // Same thing for all oper commands
               this.auth = true;
               postMessage('You are not an operator or moderator and do not have permission to kick users');
             }
@@ -647,7 +658,7 @@ export default class ChatModule extends VuexModule {
             if (this.oper) {
               if (params.split(' ').length >= 2) {
                 if (params.split(' ')[0] === '*') {
-                  channelNames.forEach(c => {
+                  channelNames.forEach(c => { // If user should be quieted in all channels
                     this.client?.raw(`MODE ${c} +b m;*!${params.split(' ')[1]}@*`);
                   });
                 } else {
@@ -659,7 +670,7 @@ export default class ChatModule extends VuexModule {
               postMessage('You are not an operator or moderator and do not have permission to quiet users');
             }
             break;
-          case 'unquiet':
+          case 'unquiet': // Same as quiet, but 'quiet' is replaced with 'unquiet' and '+b' with '-b'
             if (this.oper) {
               if (params.split(' ').length >= 2) {
                 if (params.split(' ')[0] === '*') {
@@ -677,23 +688,24 @@ export default class ChatModule extends VuexModule {
             break;
           case 'banlist':
             if (this.oper) {
-              this.banList = [];
+              this.banList = []; // Resets banlist and quietlist to avoid duplicates
               this.quietList = [];
-              channelNames.forEach((c) => {
+              channelNames.forEach((c) => { // For each channel
                 this.client?.channel(c).banlist((e) => {
                   // eslint-disable-next-line dot-notation
                   e.bans.forEach((b) => {
+                    // Type is not actualy IrcUser[]; it's an object. This code works
                     const ban = new Ban(b.banned, b.channel);
-                    if (ban.username.includes('m;')) {
-                      this.quietList.push(ban);
-                    } else {
+                    if (ban.username.includes('m;')) { // If a quiet ban
+                      this.quietList.push(ban); // Add to quiet list
+                    } else { // If not, add to ban list
                       this.banList.push(ban);
                     }
                     postMessage(`${ban.username
-                      .replace('*!', '')
+                      .replace('*!', '') // Remove hostmask formatting
                       .replace('@*', '')
-                      .replace('!*', ' (nick) ')
-                      .replace('m;', '(Quiet) ')} in ${ban.channel}`);
+                      .replace('!*', ' (nick) ') // If !* appears, the nick is banned, not a user
+                      .replace('m;', '(Quiet) ')} in ${ban.channel}`); // If m; appears, it's a quiet ban
                   });
                 });
               });
@@ -707,7 +719,7 @@ export default class ChatModule extends VuexModule {
             break;
         }
       }
-      this.client?.channel(channel).banlist(e => {
+      this.client?.channel(channel).banlist(e => { // Update banlist when message sent
         e.bans.forEach(b => {
           const ban = new Ban(b.banned, b.channel);
           if (ban.username.startsWith('m;')) {
@@ -717,14 +729,20 @@ export default class ChatModule extends VuexModule {
           }
         });
       });
-      if (post && this.channels[channel] !== undefined) {
-        if (!this.channels[channel]!.banned && notBanned) {
+      if (post) {
+        if (!this.channels[channel]?.banned && notBanned) {
           if (isAction) {
-            this.client!.action(channel, `@test:123 ${message}`);
+            this.client!.action(channel, `${message}`);
           } else {
             this.client!.say(channel, message);
           }
-          this.postMessage(new Message(message, channel, this.currentUser, isAction));
+          const name = User.parseUsername(channel);
+          // If it's a private message, send to the username, not the nick
+          if (this.connectedUsers[User.parseUsername(channel)]?.nicks.includes(channel)) {
+            this.postMessage(new Message(message, name, this.currentUser, isAction));
+          } else {
+            this.postMessage(new Message(message, channel, this.currentUser, isAction));
+          }
         } else if (this.quietList.some(e => e.username.includes(this.currentUser.username))) {
           this.postMessage(new Message("Can't send messages because you are quieted"));
         } else {
@@ -785,13 +803,60 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Sends a message to a private channel
+   * @param {string} message - The user and the message to be sent. Takes the form <nick>|<message>
+   */
+
+  @action()
+  async postToQuery(message:string) { /* @action() can only take 1 argument */
+    /* Splits argument into message and channel
+    Will only cause issues if people are putting | in their nick */
+    const chan = message.substring(0, message.indexOf('|'));
+    const msg = message.substring(message.indexOf('|') + 1);
+    if (this.channels[User.parseUsername(chan)] === undefined) {
+      Vue.set(this.channels, User.parseUsername(chan), {
+        name: User.parseUsername(chan),
+        maxHistoryMessages: 50,
+        notifications: false,
+        notificationsEnabled: true,
+        banned: BanStatus.BAN_STATUS_NORMAL,
+        postedMessages: [],
+      });
+    }
+    // Converting from array to set to array removes duplicates
+    Array.from(new Set(this.connectedUsers[User.parseUsername(chan)]?.nicks)).forEach(e => {
+      this.sendMessage({ rawMessage: msg, channel: e }); // Send message to all nicks
+    });
+  }
+
   // TODO: Insert messages based on id order
   @action()
   async onMessageReceived({
     message, nick, tags, time, type, target,
   }: Irc.MessageEventArgs) {
-    const channel = this.channels[target];
-    if (!channel) return;
+    let channel = this.channels[target];
+    // If it's a PRIVMSG
+    if (this.currentUser.username.includes(User.parseUsername(target)) && nick) {
+      if (!this.channels[User.parseUsername(nick)]) { // If the channel doesn't exist yet
+        // Vue.set is reactive
+        Vue.set(this.channels, User.parseUsername(nick), {
+          name: User.parseUsername(nick),
+          maxHistoryMessages: 50,
+          notifications: false,
+          notificationsEnabled: true,
+          postedMessages: [],
+          banned: BanStatus.BAN_STATUS_NORMAL,
+        });
+        channelNames.push(User.parseUsername(nick));
+      }
+      // Add the message
+      this.channels[User.parseUsername(nick)]?.postedMessages.push(new Message(message, this.currentUser.username, new User(User.parseUsername(nick)), type === 'action'));
+      channel = this.channels[User.parseUsername(nick)];
+    }
+    if (!channel) {
+      return;
+    }
     // Notifications should come in if slideout is open, user is in a different channel, or both
     if ((this.slideoutOpen || channel.name !== this.chatChannel) && channel.notificationsEnabled) {
       // Notify the channel
@@ -857,7 +922,6 @@ export default class ChatModule extends VuexModule {
       }
       if (mode.mode === '+o') {
         if (!this.oper) {
-          console.log(`You are an operator (${mode.param})`);
           this.oper = true;
         }
       }

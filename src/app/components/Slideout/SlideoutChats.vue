@@ -1,19 +1,17 @@
 <template>
-  <div>
-    <div style="position:relative; overflow-y:auto">
-      <TabButton
-        v-for="({name}, index) in messageTabs"
-        :key="name"
-        :isActive="activeTab === index"
-        :name="name.substr(1)"
-        :description="channelDescription(name)"
-        @input="activeTab = index"
-        v-on:click="update"
-        :class="{ notified:isNotified(name) }"
-      >
-        <Splitter />
-      </TabButton>
-    </div>
+  <div style="position:relative; overflow-y:auto; height:calc(100% - 40px)">
+    <TabButton
+      v-for="({name}, index) in messageTabs"
+      :key="name"
+      :isActive="activeTab === index"
+      :name="name"
+      :description="channelDescription(name)"
+      @input="activeTab = index"
+      v-on:click="update"
+      :class="{ notified:isNotified(name) }"
+    >
+      <Splitter />
+    </TabButton>
   </div>
 </template>
 <script lang="ts">
@@ -72,8 +70,11 @@
       if (description) { // If description exists, return it
         return description;
       }
+      if (!name.startsWith('#')) { // If it's a private message, use a custom description
+        return `Direct chat with ${name}`;
+      }
       // Remove hashtag
-      const trimmedName = name.substr(1);
+      const trimmedName = name.replace('#', '');
       // Return channel name with first letter capitalized + ' channel'
       return `${trimmedName.charAt(0).toUpperCase()}${trimmedName.substr(1)} channel`;
     }
