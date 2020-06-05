@@ -9,6 +9,12 @@ a {
     color: #fff;
 }
 
+ul {
+    padding-inline-start: 0px;
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
+
 textarea {
     border-radius: 2px;
     font-family: 'Open Sans', 'Helvetica Neue', Arial, Gulim;

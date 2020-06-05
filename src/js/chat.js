@@ -4,11 +4,6 @@ import 'jquery-ui/ui/widgets/tabs';
 import 'jquery-ui/ui/widgets/dialog';
 import 'jquery-ui/ui/widgets/button';
 import 'jquery-ui/ui/position';
-import 'jquery-ui/themes/base/core.css';
-import 'jquery-ui/themes/base/tabs.css';
-import 'jquery-ui/themes/base/menu.css';
-import 'jquery-ui/themes/base/dialog.css';
-import 'jquery-ui/themes/base/button.css';
 
 // mCustomScrollbar
 import scrollbar from 'malihu-custom-scrollbar-plugin';
