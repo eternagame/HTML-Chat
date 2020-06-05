@@ -21,12 +21,16 @@
             <td><span for="password">Password:</span></td>
             <td><input type="password" id="password" v-model="password"/></td>
           </tr>
+          <tr>
+            <td><span for="remember">Remember:</span></td>
+            <td><input type="checkbox" id="remember" v-model="remember"/></td>
+          </tr>
         </table>
         <p v-show="authFailed">Username or password incorrect</p>
         <div
           class="green-button"
           style="width: 90%; left: 50%; transform: translateX(-50%); margin-top:10px"
-          @click="$emit('login', { password, username })"
+          @click="$emit('login', { password, username, remember })"
         >
         Continue
         </div>
@@ -45,11 +49,12 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
 
-
   @Component({
     components: {},
   })
   export default class OperLogin extends Vue {
+    remember = false;
+
     password: string = '';
 
     username: string = '';

@@ -182,12 +182,14 @@ export default class ChatModule extends VuexModule {
     if (message.target === '*') {
       Object.values(this.channels).forEach((channel) => {
         channel?.postedMessages.push(message);
+        this.channels[message.target]?.postedMessages.slice(0, 50);
       });
     // eslint-disable-next-line brace-style
     } /* else if (message.target === 'notice') {
       this.channels[this.chatChannel]?.postedMessages.push(message);
     } */ else {
       this.channels[message.target]?.postedMessages.push(message);
+      this.channels[message.target]?.postedMessages.slice(0, 50);
     }
   }
 
@@ -347,33 +349,42 @@ export default class ChatModule extends VuexModule {
             }
           }
           if (e.line.startsWith('@server-time')) { // Indicates a message containing history
-            const str = e.line
-              .substring(13) // Remove '@server-time='
-              .replace(/;batch=.{9}/, '') // Remove batch number
-              .replace(/@\S* /, '') // Removes hostname
-              .replace('PRIVMSG', ''); // Removes PRIVMSG
-            const parts = str.split(' ');
-            const time = parts[0];
-            const userInfo = parts[1];
-            const channel = parts[2];
-            const messageInfo = str.replace(time, '') // Remove time
-              .replace(userInfo, '') // Remove user
-              .replace(channel, '') // Remove channel
-              .trim()
-              .replace(/\u0001/, '') // Remove weird spacing
-              .replace(/^ACTION/, '/me'); // Replace ACTION with the more familiar /me
-            const userName = userInfo.substring(1, userInfo.indexOf('^')); // Gets the user name
-            const uid = userInfo
-              .replace(userName, '') // Removes username
-              .replace(/^:\^\d+!/, ''); // Removes surrounding characters
-            const msg = new Message(messageInfo.replace('/me ', ''), channel, new User(userName, uid), messageInfo.includes('/me'));
-            msg.time = new Date(time); // Sets the time of the message
-            this.postMessage(msg); // Post the message
+            setTimeout(() => { this.processAndPost(e.line); }, 0);
           }
         }
       });
     this.client = client;
     this.connect();
+  }
+
+  @action()
+  async processAndPost(raw:string) {
+    console.log(2);
+    const str = raw
+      .substring(13) // Remove '@server-time='
+      .replace(/;batch=.{9}/, '') // Remove batch number
+      .replace(/@\S* /, '') // Removes hostname
+      .replace('PRIVMSG', ''); // Removes PRIVMSG
+    const parts = str.split(' ');
+    const time = parts[0];
+    const userInfo = parts[1];
+    const channel = parts[2];
+    const messageInfo = str.replace(time, '') // Remove time
+      .replace(userInfo, '') // Remove user
+      .replace(channel, '') // Remove channel
+      .replace(/^\s+:/, '') // Remove weird spaces
+      .trim() // ^
+      // eslint-disable-next-line no-control-regex
+      .replace(/\u0001/, '') // ^^
+      .trimStart() // ^^^
+      .replace(/^ACTION/, '/me');
+    const userName = userInfo.substring(1, userInfo.indexOf('^'));
+    const uid = userInfo
+      .replace(userName, '')
+      .replace(/^:\^\d+!/, '');
+    const msg = new Message(messageInfo.replace('/me ', ''), channel, new User(userName, uid), messageInfo.includes('/me'));
+    msg.time = new Date(time);
+    this.postMessage(msg);
   }
 
   /**

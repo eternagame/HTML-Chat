@@ -153,6 +153,7 @@
   import Slideout from './Slideout.vue';
   import { Channel } from '../../store/chat.vuex';
   import ColorPicker from './ColorPicker/ColorPicker.vue';
+
   @Component({
     components: {
       Username,

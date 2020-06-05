@@ -23,11 +23,11 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
     tokens[idx].attrs[aIndex][1] = '_blank'; // replace value of existing attr
   }
   let result = '';
-  tokens.forEach((t) => {
+  tokens.forEach((t: { content: any; }) => {
     const { content } = t;
     // If the link URL is an Eterna screenshot
     if (content.match(/https:\/\/eternagame.org\/sites\/default\/files\/chat_screens\/\d{6}_\d{10}\.png/)) {
-      result = `<br><a target="_blank" href="${content}"><img src="${content}" style="max-width:90%"></a><br>`;
+      result = `<br><a target="_blank" href="${content}"><img src="${content}" style="max-width:calc(100% - 25px)"></a><br>`;
       t.content = '';
     }
   });

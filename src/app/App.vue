@@ -37,6 +37,9 @@
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
   import BootstrapVue from 'bootstrap-vue';
+  import {
+    openDB, deleteDB, wrap, unwrap,
+  } from 'idb';
   import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
@@ -143,21 +146,37 @@
     this.$vxm.chat.readChannel(channel);
   }
 
-  operAuthenticate({ username, password }: {username: string, password: string}) {
+  async operAuthenticate(
+    { username, password, remember }: {username: string, password: string, remember: boolean},
+  ) {
     this.$vxm.chat.operLoginUser = username; // Sets creds used for authentification by chat.vuex
     this.$vxm.chat.operLoginPassword = password;
+    if (remember) {
+      const database = await openDB('oper', 1, {
+        upgrade(db) {
+          const store = db.createObjectStore('oper');
+          store.createIndex('password', 'password');
+          store.createIndex('user', 'user');
+        },
+      });
+      database.put('oper', username, 'user');
+      database.put('oper', password, 'password');
+    }
     this.$vxm.chat.operCommand(); // Set all nicks as opers
     setTimeout(this.operLoginStatus, 200); // A precaution so messages are received properly
   }
 
   operLoginStatus() {
-    if (this.isOper) {
-      this.$refs.login.message = 'Login succeeded'; // Success message
-      this.$refs.login.showsMessage = true; // Modal shows success message
-      this.$vxm.chat.oper = true; // Makes sure it knows user is oper
+    if (this.$refs.login) {
+      if (this.isOper) {
+        this.$refs.login.message = 'Login succeeded'; // Success message
+        this.$refs.login.showsMessage = true; // Modal shows success message
+      } else {
+        this.$refs.login.authFailed = true; // Sets 'incorrect user/pass' message
+        this.$refs.login.password = ''; // Resets password field
+      }
     } else {
-      this.$refs.login.authFailed = true; // Sets 'incorrect user/pass' message
-      this.$refs.login.password = ''; // Resets password field
+      this.$vxm.chat.oper = this.isOper;
     }
   }
 
@@ -179,6 +198,26 @@
       workbranch: this.workbranch,
       uid: this.uid,
     });
+    setTimeout(this.logInOper, 1000);
+  }
+
+  async logInOper() {
+    const database = await openDB('oper', 1, {
+      upgrade(db) {
+        const store = db.createObjectStore('oper');
+        store.createIndex('password', 'password');
+        store.createIndex('user', 'user');
+      },
+    });
+    const pass = await database.get('oper', 'password');
+    const user = await database.get('oper', 'user');
+    if (user && pass) {
+      this.$vxm.chat.operLoginPassword = pass;
+      this.$vxm.chat.operLoginUser = user;
+      this.$vxm.chat.operCommand();
+      setTimeout(this.operLoginStatus, 150);
+      setTimeout(() => console.log(this.isOper), 200);
+    }
   }
 
   key(e:KeyboardEvent) {

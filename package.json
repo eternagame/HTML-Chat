@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@types/irc": "^0.3.33",
-    "@types/node": "^14.0.10",
+    "@types/node": "^14.0.11",
     "@types/punycode": "^2.1.0",
     "@types/vuedraggable": "^2.23.1",
     "axios": "^0.19.2",
@@ -22,6 +22,7 @@
     "broadcast-channel": "^3.1.0",
     "broadcastchannel-polyfill": "^1.0.1",
     "eventemitter3": "^4.0.4",
+    "idb": "^5.0.4",
     "irc-framework": "^4.8.1",
     "lodash": "^4.17.15",
     "markdown-it": "^11.0.0",
@@ -65,7 +66,7 @@
     "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2",
     "ts-jest": "^26.1.0",
-    "typescript": "^3.9.3",
+    "typescript": "^3.9.5",
     "vue-eslint-parser": "^7.1.0",
     "vue-template-compiler": "^2.6.11"
   },
