@@ -2,22 +2,22 @@
   <div id="settings-wrapper" :style="{ fontSize:`${fontSize}px` }">
     <section>
       <h3>Text Size</h3>
-      <input v-model="size" type=number min=10 max=22>
+      <input v-model="size" type=number min=10 max=18>
       <p id='font-size-p'>Default is 14</p>
       <p
         id='font-warning'
-        v-show="size < 10 || size > 22" >
-        Font size must be a number, greater than 10, and less than 22
+        v-show="size < 10 || size > 18" >
+        Font size must be a number, greater than 10, and less than 18
       </p>
     </section>
     <section>
-      <h3>Ignored List</h3>
+      <h3>Ignored</h3>
       <ul>
         <li v-for="user in ignoredUsers" :key="user.Username">
           {{ user }}
           <button
             :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-            class='unignore-user green-button'
+            class='unignore-user btn settings-button'
             v-on:click="unignore(user)" >
             Unignore
           </button>
@@ -25,7 +25,7 @@
         <li v-show="!anyIgnoredUsers">No users ignored</li>
         <button
           :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-          class='unignore-user green-button'
+          class='unignore-user btn settings-button'
           v-on:click="unignore('*')"
           v-show="anyIgnoredUsers"
         >
@@ -41,10 +41,10 @@
           <td>{{channel.name}}</td>
           <td>
             <button
-              style="width:calc(100% - 6px)"
+              style="width:calc(100% - 2px)"
               @click="toggleNotificationsEnabled(channel.name)"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="green-button"
+              class="btn settings-button"
             >
               {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
             </button>
@@ -52,22 +52,23 @@
         </tr>
         <tr>
           <td class='footer'>
-            <button style="width:width:calc(100% - 6px)"
+            <button
+              style="width:calc(100% - 0px)"
               :disabled="anyNotificationsDisabled"
               @click="enableAll"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="green-button"
+              class="btn settings-button"
             >
               Enable all
             </button>
           </td>
           <td class='footer'>
             <button
-              style="width:width:calc(100% - 6px)"
+              style="width:calc(100% - 0px)"
               :disabled="anyNotificationsEnabled"
               @click="disableAll"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="green-button"
+              class="btn settings-button"
             >
               Disable all
             </button>
@@ -78,14 +79,14 @@
       <p>
         This will appear in the page title if you have notifications
       </p>
-      <input type=text v-model="indicator">
+      <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
     </section>
     <section>
       <h3>Username Color</h3>
       <ColorPicker />
     </section>
     <section>
-      <h3>Chat Features</h3>
+      <h3>Toolbar Features</h3>
       <p>
         These enable you to send emoticons and formatted text.
       </p>
@@ -95,7 +96,7 @@
             <button
               @click="toggleMarkdown"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="green-button" >
+              class="btn settings-button" >
               {{markdownChatFeatures ? 'Disable' : 'Enable'}} markdown
             </button>
           </td>
@@ -103,7 +104,7 @@
             <button
               @click="toggleEmoticons"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="green-button feature-button" >
+              class="btn settings-button feature-button" >
               {{emoticonChatFeatures ? 'Disable' : 'Enable'}} emoticons
             </button>
           </td>
@@ -114,7 +115,7 @@
               @click="disableAllChatFeatures"
               :disabled="!allChatFeatures"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="green-button feature-button" >
+              class="btn settings-button feature-button" >
               Disable all
             </button>
           </td>
@@ -123,7 +124,8 @@
               @click="enableAllChatFeatures"
               :disabled="allChatFeatures"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="green-button feature-button" >
+              style="margin-top:1px;"
+              class="btn settings-button feature-button" >
               Enable all
            </button>
           </td>
@@ -135,8 +137,8 @@
       <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
       <button
         @click="$emit('auth')"
-        style="{ fontSize:`${fontSize * 11 / 14}px` }"
-        class="green-button"
+        :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+        class="btn settings-button"
         v-show="!isOper" >
           Log in as operator
       </button>
@@ -147,12 +149,15 @@
   import {
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
+  import BootstrapVue from 'bootstrap-vue';
   import Username from '@/components/Messages/Username.vue';
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
   import SlideoutButton from './SlideoutButton.vue';
   import Slideout from './Slideout.vue';
   import { Channel } from '../../store/chat.vuex';
   import ColorPicker from './ColorPicker/ColorPicker.vue';
+
+  Vue.use(BootstrapVue);
 
   @Component({
     components: {
@@ -280,7 +285,7 @@
     @Watch('size')
     updateFontSize() {
        // Only update if valid font size
-      if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 22) {
+      if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 18) {
         this.$vxm.settings.fontSize = parseInt(this.size, 10);
         localStorage.fontSize = JSON.stringify(this.size);
       }
@@ -288,11 +293,11 @@
 
     get fontSize() {
       const numSize = parseInt(this.size, 10); // Font size as an int
-      if (numSize >= 10 && numSize <= 22) {
+      if (numSize >= 10 && numSize <= 18) {
         return numSize;
       }
-      if (numSize >= 22) {
-        return 22; // If font size greater than 22, set to maximum of 22
+      if (numSize >= 18) {
+        return 18; // If font size greater than 18, set to maximum of 18
       }
       if (numSize <= 10) {
         return 10; // If font size less than 10, set to minimum of 10
@@ -376,7 +381,13 @@
     }
   }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/_custom.scss";
+@import "~bootstrap/scss/bootstrap.scss";
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
+.settings-button {
+  background-color:$green;
+}
 #font-size-p { /* 'Default is 14' text */
   vertical-align: mid;
   margin-left:2px;
@@ -434,6 +445,7 @@ td { /* Table cell in notifications settings section */
 }
 table {
   margin-top:2px;
+  margin-bottom:2px;
 }
 .feature-button-container {
   padding:2px;

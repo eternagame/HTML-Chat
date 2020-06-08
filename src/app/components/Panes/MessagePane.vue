@@ -24,6 +24,7 @@
           :disabled="!connectionData.connected || isBanned"
           @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
           ref="input"
+          @focused="updateFocus"
         />
       </template>
       </EmoticonBar>
@@ -97,6 +98,30 @@
     chatFeaturesChanged() {
       this.$nextTick(this.$refs.pane.updateFooterHeight);
       this.$refs.input.alone = this.anyChatFeatures;
+    }
+
+    get updateMessage() {
+      return this.$vxm.chat.updateMessage;
+    }
+
+    get inputUpdate() {
+      return this.$vxm.chat.inputUpdate;
+    }
+
+    updateFocus(to:boolean) {
+      this.focused = to;
+    }
+
+    focused = false;
+
+    @Watch('inputUpdate')
+    update() {
+      if (this.updateMessage.trim() !== '' && this.inputUpdate && !this.focused) {
+        this.$refs.input.value = this.updateMessage;
+        this.newMessage = this.updateMessage;
+        this.$refs.input.$refs.textarea.value = this.updateMessage;
+        this.$nextTick(() => { this.$vxm.chat.inputUpdate = false; });
+      }
     }
 
     // For send button

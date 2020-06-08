@@ -16,6 +16,8 @@
       :disabled="disabled"
       @input="$emit('input', $event.target.value);"
       ref="textarea"
+      @focus="$emit('focused', true)"
+      @blur="$emit('focused', false)"
     />
     <SendButton @send="send"/>
     <div

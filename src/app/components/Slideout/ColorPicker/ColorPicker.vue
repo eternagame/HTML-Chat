@@ -2,22 +2,22 @@
   <div id='picker'>
     <ColorSlider
       id='red'
-      gradientStart="#200"
-      gradientEnd="#a00"
+      gradientStart="#300"
+      gradientEnd="#c00"
       @sliderChanged="redChanged"
       colorID="red"
       ref="red" />
     <ColorSlider
       id='green'
-      gradientStart='#020'
-      gradientEnd='#0a0'
+      gradientStart='#030'
+      gradientEnd='#0c0'
       @sliderChanged="greenChanged"
       colorID="green"
       ref="green" />
     <ColorSlider
       id='blue'
-      gradientStart='#002'
-      gradientEnd='#00a'
+      gradientStart='#003'
+      gradientEnd='#00c'
       @sliderChanged="blueChanged"
       colorID="blue"
       ref="blue" />
