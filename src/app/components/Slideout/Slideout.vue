@@ -5,18 +5,27 @@
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
     <HamburgerMenuButton v-model="checked" :notification="notifications"/>
+    <v-style>
+      .slideout-button:focus {
+        border: {{tabbing ? 'solid white 1px' : 'none !important'}};
+        outline: {{tabbing ? 'solid white 1px' : 'none !important'}};
+      }
+    </v-style>
     <span v-if="checked">
       <SlideoutButtonChat
         :selected="chatSelected"
         @input="activeTab = 0"
+        class='slideout-button'
       />
       <SlideoutButtonUsers
         :selected="userSelected"
         @input="activeTab = 1"
+        class='slideout-button'
       />
       <SlideoutButtonSettings
         :selected="settingsSelected"
         @input="activeTab = 2"
+        class='slideout-button'
       />
       <SlideoutChats
         v-if="chatSelected"
@@ -61,6 +70,10 @@
 
     @Prop()
     minimizedValue !: boolean;
+
+    get tabbing() {
+      return this.$vxm.chat.tabbing;
+    }
 
     // Each of the functions below tells whether a given tab is selected
     get chatSelected() {

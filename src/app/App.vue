@@ -375,6 +375,7 @@
   margin-top: 5vh;
   margin-bottom: 5vh;
   box-shadow: 0 0 2vw 20vw $dark-blue-transparent; /* Creates blur effect */
+  transition: left 1s, top 1s;
   left:0px !important; /* Overrides dragging styles so full size chat isn't cut off */
   top:0px !important;
 }
