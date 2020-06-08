@@ -7,7 +7,7 @@
       :style='{ background:getGradient()}'>
     <p
       class='value-thumb'
-      :style="{ left:calculateOffset() }"
+      :style="{ left:calculateOffset }"
     >
       {{ sliderValue }}
     </p> <br>
@@ -34,8 +34,12 @@
 
     defaultColors = ['#f3a891', '#f3c491', '#f3df91', '#e2f391', '#bef391', '#91f3bc', '#f391ba', '#f39196'];
 
-    calculateOffset() { // Position of text on slider thumb
-      return `${this.sliderValue / 5 - 93}px`;
+    get calculateOffset() { // Position of text on slider thumb
+      const percent = this.sliderValue / (255); // Slider value as percent
+      // Slider width - thumb width. Means slider can go from 0 to 80 pixels
+      const range = (120 - 40);
+      const percentPixels = percent * range; //
+      return `${percentPixels + 1}px`;
     }
 
     @Watch('sliderValue') // Updates parent, ColorPicker
@@ -73,7 +77,13 @@
   }
 </script>
 <style scoped>
-.slider { /* Sliders for color values */
+  .color-slider-container {
+    position:relative;
+    height:15px;
+    margin:8px;
+    margin-left:0;
+  }
+  .slider { /* Sliders for color values */
     -webkit-appearance: none;
     appearance: none;
     outline: none;
@@ -82,7 +92,8 @@
     height:15px;
     margin:2px;
     margin-left:0px;
-    width:90px;
+    width:120px;
+    padding:0;
   }
   .slider::-webkit-slider-thumb { /* Draggable part of slider */
     -webkit-appearance: none;
@@ -90,11 +101,14 @@
     background-color:#7b8a8b;
     width:40px;
     height:15px;
+    border-radius:2px;
   }
   .slider::-moz-range-thumb { /* Draggable part of slider (for firefox compatibility) */
     background-color:#7b8a8b;
+    appearance: none;
     width:40px;
-    height:15px;
+    height:px;
+    border-radius:2px;
   }
   .slider:focus { /* Avoids unwanted outlines */
     outline:none;
@@ -102,7 +116,7 @@
   }
   /* Overlays that show the value of the slider on top of the draggable part of the slider */
   .value-thumb {
-    position:relative;
+    position:absolute;
     /* Disables clicks or highlights to the text, so they 'pass through' to the slider */
     pointer-events:none;
     overflow-x:hidden;
@@ -111,8 +125,6 @@
     display:inline-block;
     margin:0px;
     font-size: 14px !important;
-    height:17px;
-    top:-1px;
-    bottom:0;
+    height:15px;
   }
 </style>

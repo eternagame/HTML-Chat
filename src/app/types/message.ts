@@ -11,13 +11,16 @@ class Message {
 
   isAction!: boolean;
 
+  isNotice !: boolean;
+
   time!: Date;
 
-  constructor(message: string, target = '*', user: User = User.annonymous, isAction: boolean = false, tags: {[key: string] : string} = {}) {
+  constructor(message: string, target = '*', user: User = User.annonymous, isAction: boolean = false, isNotice: boolean = false, tags: {[key: string] : string} = {}) {
     this.message = message;
     this.target = target;
     this.tags = tags;
     this.isAction = isAction;
+    this.isNotice = isNotice;
     this.user = user;
     this.parseTime();
   }

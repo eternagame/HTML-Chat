@@ -339,8 +339,8 @@ declare module 'irc-framework' {
     bans: BanlistBanObject[]; // TODO: check type
   }
   export interface BanlistBanObject {
-    banned:string;
-    channel:string
+    banned: string;
+    channel: string;
   }
   export interface TopicEventArgs{
     channel: string;

@@ -5,6 +5,7 @@ import {
 } from 'vuex-class-component';
 import toBool from 'to-bool';
 import Vue from 'vue';
+import { Component, Prop, Watch } from 'vue-property-decorator';
 import { BroadcastChannel } from 'broadcast-channel';
 import Message from '../types/message';
 import Connection from '@/tools/websocket';
@@ -80,9 +81,9 @@ export default class ChatModule extends VuexModule {
 
   ignoredUsers: string[] = [];
 
-  tab: Number = 1; // Selected tab. One of the chat channels
+  tab: Number = 5; // Selected tab. One of the chat channels
 
-  chatChannel: string = '#off-topic'; // Name of channel display in top bar
+  chatChannel: string = '#test'; // Name of channel display in top bar
 
   slideoutOpen = false; // Whether slideout is open. Updated by App.vue
 
@@ -92,13 +93,14 @@ export default class ChatModule extends VuexModule {
 
   usernameColor: string = '';
 
+  // Whether user has clicked the tab key - used for enabling outlines for accesibility
   tabbing = false;
 
   customEmoticons = ['😜', '🤔', '😮'];
 
-  oper = false;
+  oper = false; // Whether user is logged in as oper
 
-  operLoginUser = '';
+  operLoginUser = ''; // Oper login credentials
 
   operLoginPassword = '';
 
@@ -106,11 +108,17 @@ export default class ChatModule extends VuexModule {
 
   quietList: Ban[] = [];
 
-  auth = false;
+  auth = false; // When oper login modal should show
 
-  userToPrivMsg = '';
+  userToPrivMsg = ''; // User being private messaged
 
-  privMsgModal = false;
+  privMsgModal = false; // Whether to show the private message modal
+
+  updateMessage = ''; // The updated message to be put in the input when the user has pressed the up arrow
+
+  inputUpdate = false; // Whether the user has pressed the up arrow and the input should be updated
+
+  rawHistoryMessages: string[] = []; // Stores history messages
 
   constructor() {
     super();
@@ -184,10 +192,7 @@ export default class ChatModule extends VuexModule {
         channel?.postedMessages.push(message);
         this.channels[message.target]?.postedMessages.slice(0, 50);
       });
-    // eslint-disable-next-line brace-style
-    } /* else if (message.target === 'notice') {
-      this.channels[this.chatChannel]?.postedMessages.push(message);
-    } */ else {
+    } else {
       this.channels[message.target]?.postedMessages.push(message);
       this.channels[message.target]?.postedMessages.slice(0, 50);
     }
@@ -338,18 +343,16 @@ export default class ChatModule extends VuexModule {
       })
       .on('nick in use', this.onNickInUse)
       .on('irc error', this.onIrcError)
-      .on('raw', (e) => {
+      .on('raw', async (e) => {
         if (e.from_server) {
           const commandNumber = parseInt(e.line.substring(20, 23), 10);
           if (e.line.match(/^:irc\.eternagame\.org .+\^\d{3} #*.* /)) {
-            switch (commandNumber) {
-              case 482: this.postMessage(new Message("You're not a channel operator/moderator")); break;
-              case 481: this.postMessage(new Message("You're not an IRC operator/moderator")); break;
+            switch (commandNumber) { // Might be useful in the future
               default: break;
             }
           }
           if (e.line.startsWith('@server-time')) { // Indicates a message containing history
-            setTimeout(() => { this.processAndPost(e.line); }, 0);
+            this.rawHistoryMessages.push(e.line); // Add it to the list
           }
         }
       });
@@ -357,33 +360,35 @@ export default class ChatModule extends VuexModule {
     this.connect();
   }
 
+  /**
+   * Loads messages from history for a channel
+   * @param channel {string} - The channel history messages should be loaded for
+   */
+  @action()
+  async loadMessagesForChannel(channel:string) {
+    // For all raw messages for the given channel
+    this.rawHistoryMessages.filter(e => e.split(' ')[3] === channel).forEach(e => {
+      this.processAndPost(e);
+    });
+  }
+
+  /**
+   * Takes in a raw string from the server and parses it into a history message that it posts
+   * @param raw - The raw string to parse and post to the chat
+   */
   @action()
   async processAndPost(raw:string) {
-    console.log(2);
-    const str = raw
-      .substring(13) // Remove '@server-time='
-      .replace(/;batch=.{9}/, '') // Remove batch number
-      .replace(/@\S* /, '') // Removes hostname
-      .replace('PRIVMSG', ''); // Removes PRIVMSG
+    const str = raw;
     const parts = str.split(' ');
-    const time = parts[0];
-    const userInfo = parts[1];
-    const channel = parts[2];
-    const messageInfo = str.replace(time, '') // Remove time
-      .replace(userInfo, '') // Remove user
-      .replace(channel, '') // Remove channel
-      .replace(/^\s+:/, '') // Remove weird spaces
-      .trim() // ^
-      // eslint-disable-next-line no-control-regex
-      .replace(/\u0001/, '') // ^^
-      .trimStart() // ^^^
-      .replace(/^ACTION/, '/me');
-    const userName = userInfo.substring(1, userInfo.indexOf('^'));
-    const uid = userInfo
-      .replace(userName, '')
-      .replace(/^:\^\d+!/, '');
-    const msg = new Message(messageInfo.replace('/me ', ''), channel, new User(userName, uid), messageInfo.includes('/me'));
-    msg.time = new Date(time);
+    const time = parts[0].substring(13, 37);
+    const channel = parts[3];
+    const message = str.substring(str.indexOf(channel) + channel.length + 2);
+    const user = parts[1].substring(1, parts[1].indexOf('@'));
+    const username = user.substring(0, user.lastIndexOf('!'));
+    const uid = user.substring(user.lastIndexOf('!') + 1);
+    const date = new Date(time);
+    const msg = new Message(message.replace('/me ', ''), channel, new User(User.parseUsername(username), uid), message.includes('/me'));
+    msg.time = date;
     this.postMessage(msg);
   }
 
@@ -455,6 +460,7 @@ export default class ChatModule extends VuexModule {
       let post = true;
       // Chat commands
       if (message.startsWith('/')) {
+        message = message.replace(/\[.+\]$/, '');
         post = false;
         let parts = message.match(/^\/([^ ]+)/);
         const command = parts ? parts[1] : '';
@@ -472,7 +478,7 @@ export default class ChatModule extends VuexModule {
                 break;
               case 'ignore':
                 postMessage(
-                  "`/ignore`: Don't show messages from a particular message. Show currently ignored users with `/ignore-list`. Unignore message with `/unignore.`",
+                  "`/ignore`: Don't show messages from a particular user. Show currently ignored users with `/ignore-list`. Unignore user with `/unignore.`",
                 );
                 postMessage('Usage: `/ignore <username>`');
                 postMessage('Example: `/ignore player1`');
@@ -516,33 +522,71 @@ export default class ChatModule extends VuexModule {
                 break;
               case 'ban':
                 postMessage(
-                  '`/ban`: Bans a user from a channel',
+                  '`/ban`: Bans a user from a channel. Bans user from all channels if channel argument is *.',
                 );
                 postMessage('Usage: `/ban <channel> <username>`');
-                postMessage('Example: `/ban #general Ahalb`');
+                postMessage('Example: `/ban #general ProblematicUser`');
+                postMessage('Example: `/ban * ProblematicUser`');
                 postMessage('You must be an operator to use this command');
                 break;
               case 'unban':
                 postMessage(
-                  '`/ban`: Unbans a user from a channel',
+                  '`/ban`: Unbans a user from a channel. Unbans user from all channels if channel argument is *.',
                 );
                 postMessage('Usage: `/unban <channel> <username>`');
-                postMessage('Example: `/unban #general Ahalb`');
+                postMessage('Example: `/unban #general ProblematicUser`');
+                postMessage('Example: `/unban * ProblematicUser`');
                 postMessage('You must be an operator to use this command');
                 break;
               case 'kick':
                 postMessage(
-                  '`/kick`: Kicks a user from a channel',
+                  '`/kick`: Kicks a user from a channel. Kicks user from all channels if channel argument is *.',
                 );
                 postMessage('Usage: `/kick <channel> <username>`');
-                postMessage('Example: `/kick #general Ahalb`');
+                postMessage('Example: `/kick #general ProblematicUser`');
+                postMessage('Example: `/kick * ProblematicUser`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'quiet':
+                postMessage(
+                  '`/quiet`: Quiets a user from a channel. A quieted user can not send messages. Quiets user in all channels if channel argument is *.',
+                );
+                postMessage('Usage: `/quiet <channel> <username>`');
+                postMessage('Example: `/quiet #general ProblematicUser`');
+                postMessage('Example: `/quiet * ProblematicUser`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'unquiet':
+                postMessage(
+                  '`/unquiet`: Unquiets a user from a channel. An unquieted user can send messages. Unquiets user in all channels if channel argument is *.',
+                );
+                postMessage('Usage: `/unquiet <channel> <username>`');
+                postMessage('Example: `/unquiet #general ProblematicUser`');
+                postMessage('Example: `/unquiet * ProblematicUser`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'banlist':
+                postMessage(
+                  '`/banlist`: Displays a list of bans, showing the channel, username and/or nick, and if the ban is quiet.',
+                );
+                postMessage('Usage: `/banlist`');
+                postMessage('Example: `/banlist`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'notice':
+                postMessage(
+                  '`/notice`: Sends a notice to a channel. Sends a notice to all channels if channel argument is *.',
+                );
+                postMessage('Usage: `/notice <channel> <message>`');
+                postMessage('Example: `/notice #general Hello, everyone`');
+                postMessage('Example: `/notice * Hello, everyone`');
                 postMessage('You must be an operator to use this command');
                 break;
               default:
                 postMessage('Available commands: help, me, ignore, ignore-list, unignore, change, emoticon');
                 postMessage('Type `/help <command>` for information on individual commands');
                 postMessage('Example: `/help ignore`');
-                postMessage(` You are ${this.oper ? '' : 'not'} logged in as an operator/moderator. Operators may use the \`/ban\`, \`/unban\`, and \`/kick\` commands`);
+                postMessage(` You are ${this.oper ? '' : 'not'} logged in as an operator/moderator. Operators may use the \`/ban\`, \`/unban\`, \`/quiet\`, \`/unquiet\`, \`/notice\`, and \`/kick\` commands`);
                 postMessage(
                   'Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)',
                 );
@@ -708,6 +752,8 @@ export default class ChatModule extends VuexModule {
                 } else {
                   this.client?.raw(`MODE ${params.split(' ')[0]} +b m;*!${params.split(' ')[1]}@*`);
                 }
+              } else {
+                postMessage('Please include command parameters. Type `/help quiet` for more usage instructions');
               }
             } else {
               this.auth = true;
@@ -724,6 +770,8 @@ export default class ChatModule extends VuexModule {
                 } else {
                   this.client?.raw(`MODE ${params.split(' ')[0]} -b m;*!${params.split(' ')[1]}@*`);
                 }
+              } else {
+                postMessage('Please include command parameters. Type `/help unquiet` for more usage instructions');
               }
             } else {
               this.auth = true;
@@ -756,6 +804,36 @@ export default class ChatModule extends VuexModule {
             } else {
               this.auth = true;
               postMessage('You are not an operator or moderator and do not have permission to view the ban list');
+            }
+            break;
+          case 'notice':
+            if (this.oper) {
+              if (params.split(' ').length > 1) {
+                if (params.split(' ')[0] === '*') {
+                  channelNames.forEach(c => {
+                    const msg = message
+                      .replace('/notice', '')
+                      .replace(/ \[#[a-f0-9]{6}\]$/, '')
+                      .replace(params.split(' ')[0], '')
+                      .trim();
+                    this.client?.notice(c, msg);
+                    this.postMessage(new Message(msg, c, this.currentUser, false, true));
+                  });
+                } else {
+                  const msg = message
+                    .replace('/notice', '')
+                    .replace(/ \[#[a-f0-9]{6}\]$/, '')
+                    .replace(params.split(' ')[0], '')
+                    .trim();
+                  this.client?.notice(params.split(' ')[0], msg);
+                  this.postMessage(new Message(msg, params.split(' ')[0], this.currentUser, false, true));
+                }
+              } else {
+                postMessage('Please include command parameters. Type `/help notice` for more usage instructions');
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to post messages');
             }
             break;
           default:
@@ -876,9 +954,12 @@ export default class ChatModule extends VuexModule {
 
   @action()
   async onNoticeReceived({
-    message,
+    message, target, tags, time, nick, type,
   }: Irc.MessageEventArgs) {
-    this.postMessage(new Message(message, 'notice'));
+    const user = this.connectedUsers[User.parseUsername(nick)];
+    const msg = new Message(message, target, user, false, true);
+    msg.time = time;
+    this.postMessage(msg);
   }
 
   // TODO: Insert messages based on id order

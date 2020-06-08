@@ -109,6 +109,13 @@
     return this.$vxm.chat.chatChannel;
   }
 
+  @Watch('currentTab')
+  loadHistory() {
+    if (this.$vxm.chat.channels[this.currentTab]!.postedMessages.length <= 50) {
+      this.$vxm.chat.loadMessagesForChannel(this.currentTab);
+    }
+  }
+
   // Gets current chat tab
   get activeTab() {
     return this.$vxm.chat.tab;
@@ -223,7 +230,15 @@
   key(e:KeyboardEvent) {
     if (e.code === 'Tab') { /* Watches for tabs. If a tab is detected, outline on input will remain on focus */
       this.$vxm.chat.tabbing = true;
-      window.removeEventListener('keydown', this.key);
+    }
+    if (e.code === 'ArrowUp') {
+      const channelMsgs = this.$vxm.chat.channels[this.currentTab]?.postedMessages;
+      let recent = channelMsgs?.filter(m => m.user.username === this.username).reverse()[0].message;
+      if (recent?.match(/\[#[a-f0-9]{6}\]$/)) {
+        recent = recent.substring(0, recent.length - 10);
+      }
+      this.$vxm.chat.updateMessage = recent || '';
+      this.$vxm.chat.inputUpdate = true;
     }
   }
 
@@ -259,102 +274,7 @@
   }
 </script>
 
-<style lang="scss">
-@import "~vue-context/src/sass/vue-context";
-textarea {
-  border-radius: 2px;
-  font-family: "Open Sans", "Helvetica Neue", Arial, Gulim;
-  font-size: 0.85rem;
-  border: 1px solid rgb(169, 169, 169);
-  width: calc(100% - 10px);
-  font-size: 14px !important;
-}
-</style>
-<style lang="scss">
-.green-button {
-  margin-bottom: 5px !important;
-  padding: 4px 7px !important;
-}
 
-.green-button,
-.green-button-interactive,
-.green-button-interactive2D {
-    background-color: #4FB748;
-    font-weight: normal;
-    position: relative;
-    text-align: center;
-    font-size: 12px;
-    padding: 0px;
-    text-transform: capitalized;
-    font-family: 'Open Sans', 'Century Gothic', 'Didact Gothic', Arial, sans-serif;
-}
-
-.green-button-bg {
-    position: absolute;
-}
-
-.green-button-interactive {
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    text-decoration: none;
-    box-shadow: 5px 5px #2C6628;
-}
-
-.green-button-interactive:hover,
-.green-button-interactive.hover {
-    background-color: #48A641;
-    box-shadow: 4px 4px #2C6628;
-    -webkit-transform: translate(1px, 1px);
-    -moz-transform: translate(1px, 1px);
-    transform: translate(1px, 1px);
-}
-
-.green-button-interactive:active,
-.green-button-interactive.active {
-    background-color: #48A641;
-    box-shadow: 2px 2px #2C6628;
-    -webkit-transform: translate(3px, 3px);
-    -moz-transform: translate(3px, 3px);
-    transform: translate(3px, 3px);
-}
-
-.green-button,
-.green-button-interactive2D {
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    text-decoration: none;
-    box-shadow: 0px 5px #2C6628;
-    margin: 0px 2.5px;
-}
-
-.green-button:hover,
-.green-button.hover,
-.green-button-interactive2D:hover,
-.green-button-interactive2D.hover {
-    background-color: #48A641;
-    box-shadow: 0px 4px #2C6628;
-    -webkit-transform: translate(0px, 1px);
-    -moz-transform: translate(0px, 1px);
-    transform: translate(0px, 1px);
-}
-
-.green-button:active,
-.green-button.active,
-.green-button-interactive2D:active,
-.green-button-interactive2D.active {
-    background-color: #48A641;
-    box-shadow: 0px 2px #2C6628;
-    -webkit-transform: translate(0px, 3px);
-    -moz-transform: translate(0px, 3px);
-    transform: translate(0px, 3px);
-}
-.green-button:disabled {
-  background-color:darken($color: (#48A641), $amount: 10%);
-  color:darken($color: (#fff), $amount: 20%);
-}
-</style>
 <style lang="scss" scoped>
 @import "./assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";

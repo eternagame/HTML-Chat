@@ -4,18 +4,23 @@
     @mouseleave="hover = false"
     @mouseover="hover = true"
   >
-    <div>
+    <div :style="{ textAlign: isNotice ? 'center' : 'left'}">
       <span :class="{'chat-message-action': isAction}">
         <Username
           :user="message.user"
           :color="usernameColor"
           :is-action="isAction"
+          v-if="!isNotice"
         >{{ isAction || !message.user.username ? '': ':' }}
         </Username>
-        &lrm;<span v-html="formattedMessage" />
+        &lrm;<span
+          :style="{
+            fontStyle:isNotice ? 'italic' : '',
+          }"
+          v-html="formattedMessage" />
       </span>
       &lrm;
-      <span class="message-time">[{{formattedTime}}]</span>
+      <span v-if="!isNotice" class="message-time">[{{formattedTime}}]</span>
     </div>
     <div style="overflow:hidden">
       <a
@@ -55,6 +60,10 @@
 
     @Prop({ default: false })
     private isHistory!: boolean;
+
+    get isNotice() {
+      return this.message.isNotice;
+    }
 
     @Prop()
     private message!: Message;
