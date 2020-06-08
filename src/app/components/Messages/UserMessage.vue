@@ -99,7 +99,6 @@
       } else {
         tagsString = tagsString.substring(1, tagsString.length - 1); // Removes bracket
       }
-      console.log(tagsString);
       return tagsString.split(','); // Returns array split by commas
     }
 
