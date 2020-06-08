@@ -387,7 +387,7 @@ export default class ChatModule extends VuexModule {
     const username = user.substring(0, user.lastIndexOf('!'));
     const uid = user.substring(user.lastIndexOf('!') + 1);
     const date = new Date(time);
-    const msg = new Message(message.replace('/me ', ''), channel, new User(User.parseUsername(username), uid), message.includes('/me'));
+    const msg = new Message(message.replace('\u0001ACTION ', ''), channel, new User(User.parseUsername(username), uid), message.includes('\u0001ACTION'));
     msg.time = date;
     this.postMessage(msg);
   }
