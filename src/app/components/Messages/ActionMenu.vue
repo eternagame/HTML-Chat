@@ -1,10 +1,12 @@
 <template>
-  <VueContext ref="menu" style="padding: 0;">
-    <li>
+  <VueContext ref="menu" class="action-menu-container">
+    <li
+      style="border-bottom: 1px solid white"
+    >
       <a
         :href="profileUrl"
         target="_blank"
-        style="border-bottom: 1px solid black;"
+        style="color:white;"
       >
         {{ message ? message.user.username : '' }}
       </a>
@@ -44,7 +46,7 @@
         Unquiet User
       </a>
     </li>
-    <li >
+    <li>
       <a @click="privmsg">
         Private Message User
       </a>
@@ -53,7 +55,9 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import {
+    Component, Prop, Vue, Watch,
+  } from 'vue-property-decorator';
   import { VueContext } from 'vue-context';
   import Message from '@/types/message';
   import User from '@/types/user';
@@ -120,11 +124,34 @@
 </script>
 
 <style scoped lang="scss">
+@import "../../assets/_custom.scss";
+@import "~bootstrap/scss/bootstrap.scss";
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
+@import '~vue-context/src/sass/vue-context';
   li {
-    color: black;
+    color: white;
+    padding:0px 5px;
   }
 
-  a {
+  li:hover {
+    background-color:$blue !important;
+  }
+
+  .action-menu-container {
+    border-radius:5px;
+    background-color:$med-dark-blue;
+  }
+
+  .action-menu-container:focus {
+    outline:none;
+  }
+
+  li > a {
     cursor: pointer;
+    color:white !important;
+  }
+
+  a:hover {
+    background: transparent !important;
   }
 </style>
