@@ -1019,6 +1019,9 @@ export default class ChatModule extends VuexModule {
         }
       }
     }
+    if (channel.postedMessages.length === 0) {
+      this.loadMessagesForChannel(channel.name);
+    }
     this.postMessage(messageObject);
   }
 

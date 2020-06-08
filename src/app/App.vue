@@ -16,6 +16,7 @@
             v-show="index === activeTab"
             :visibility="index === activeTab"
             @postMessage="postMessage($event, channel.name)"
+            ref="messagepanes"
           />
           <ConnectingPopup />
           <ReportDialog ref="reportDialog" />
@@ -110,9 +111,10 @@
   }
 
   @Watch('currentTab')
-  loadHistory() {
+  loadHistory() { // Load history when tab changed
+    // Don't put duplicates of existing history messages
     if (this.$vxm.chat.channels[this.currentTab]!.postedMessages.length <= 50) {
-      this.$vxm.chat.loadMessagesForChannel(this.currentTab);
+      this.$vxm.chat.loadMessagesForChannel(this.currentTab); // Load messages
     }
   }
 
@@ -125,6 +127,7 @@
     reportDialog: ReportDialog;
     login: OperLogin,
     privmsgmodal: PrivateMessageModal,
+    messagepanes: MessagePane,
   };
 
   get slideoutOpen() {
@@ -158,16 +161,9 @@
   ) {
     this.$vxm.chat.operLoginUser = username; // Sets creds used for authentification by chat.vuex
     this.$vxm.chat.operLoginPassword = password;
-    if (remember) {
-      const database = await openDB('oper', 1, {
-        upgrade(db) {
-          const store = db.createObjectStore('oper');
-          store.createIndex('password', 'password');
-          store.createIndex('user', 'user');
-        },
-      });
-      database.put('oper', username, 'user');
-      database.put('oper', password, 'password');
+    if (remember) { // Store values
+      localStorage.operPass = password;
+      localStorage.operUser = username;
     }
     this.$vxm.chat.operCommand(); // Set all nicks as opers
     setTimeout(this.operLoginStatus, 200); // A precaution so messages are received properly
@@ -191,7 +187,7 @@
     return this.$vxm.chat.auth;
   }
 
-  @Watch('show')
+  @Watch('show') // Show modal
   showAuthentification() {
     if (this.show) {
       this.showAuth = true;
@@ -205,25 +201,35 @@
       workbranch: this.workbranch,
       uid: this.uid,
     });
-    setTimeout(this.logInOper, 1000);
+    const timer = setInterval(() => { // Creates a timer to check for history and connection
+      this.logInOper();
+      if (this.$vxm.chat.rawHistoryMessages.length > 0) {
+        clearInterval(timer); // Once history messages start coming in, stop the timer
+        setTimeout(() => { // Make sure all of them come in, then process them
+          this.$vxm.chat.loadMessagesForChannel('#test');
+          setTimeout(() => {
+            /* This gives an error because it doesn't recognize
+            using ref on a v-for gives an Array of VueComponents.
+            It think's its just a normal MessagePane
+            */
+            this.$refs.messagepanes[5].scrollDown(); // Scroll down
+          }, 100);
+        }, 500);
+      }
+    }, 100);
   }
 
+  /**
+   * Logs the user in as an operator
+   */
   async logInOper() {
-    const database = await openDB('oper', 1, {
-      upgrade(db) {
-        const store = db.createObjectStore('oper');
-        store.createIndex('password', 'password');
-        store.createIndex('user', 'user');
-      },
-    });
-    const pass = await database.get('oper', 'password');
-    const user = await database.get('oper', 'user');
+    const pass = localStorage.operPass;
+    const user = localStorage.operUser;
     if (user && pass) {
-      this.$vxm.chat.operLoginPassword = pass;
+      this.$vxm.chat.operLoginPassword = pass; // Log in
       this.$vxm.chat.operLoginUser = user;
       this.$vxm.chat.operCommand();
       setTimeout(this.operLoginStatus, 150);
-      setTimeout(() => console.log(this.isOper), 200);
     }
   }
 
