@@ -1,4 +1,4 @@
-<template>
+<template> <!-- Repurposed for chat selector buttons -->
   <Button
     :class="{active: isActive}"
     @click="$emit('input');"
@@ -58,7 +58,7 @@
   }
 
   button.active {
-    border-left: solid #4A90E2 10px; //Selected rectangle to the side is jsut left border
+    border-left: solid #4A90E2 10px; //Selected rectangle to the side is just left border
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     padding-left:5px;

@@ -27,7 +27,7 @@
 
     get computedColor() {
       let numUid = parseInt(this.user.uid, 10);
-      /* Temporary */
+      /* Temporary, for compatibility with current chat */
       if (!numUid) { // If uid isn't present, check the end of the username
         numUid = parseInt(this.user.username.substring(this.user.username.lastIndexOf('_') + 1), 10);
       }
@@ -41,9 +41,6 @@
     }
 
     get displayedColor() {
-      if (this.color?.includes('o')) { // Override for oper
-        return this.color.substring(0, 7);
-      }
       let red;
       let green;
       let blue;

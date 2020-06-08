@@ -21,7 +21,7 @@
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import TabButton from '@/components/TabButton.vue';
   import Slideout from './Slideout.vue';
-  import Splitter from '../Splitter.vue';
+  import Splitter from './Splitter.vue';
 
   @Component({
     components: {
@@ -31,7 +31,7 @@
     },
   })
   export default class SlideoutChats extends Vue {
-    activeTab = 4; // If 1-3, causes weird bug. This fixes it
+    activeTab = 6; // If any real channel index (or unset), causes weird bug. This fixes it
 
     channelDescriptions: {[channel:string]:string} = {
     '#general': 'General chat',

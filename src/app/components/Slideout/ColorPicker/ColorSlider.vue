@@ -4,13 +4,12 @@
       class="slider"
       v-model="sliderValue"
       type=range min=0 max=255
-      :style='{ background:getGradient()}'>
+      :style='{ background:getGradient()}'
+      :name="colorID">
     <p
-      class='value-thumb'
-      :style="{ left:calculateOffset }"
-    >
-      {{ sliderValue }}
-    </p> <br>
+      class="value-thumb"
+      :style="{ left: calculateOffset}"
+    >{{sliderValue}}</p>
   </div>
 </template>
 <script lang='ts'>
@@ -77,11 +76,14 @@
   }
 </script>
 <style scoped>
-  .color-slider-container {
+  .color-slider-container { /* Container */
     position:relative;
-    height:15px;
+    height:20px;
     margin:8px;
     margin-left:0;
+    width:120px;
+    padding:0;
+    overflow:hidden;
   }
   .slider { /* Sliders for color values */
     -webkit-appearance: none;
@@ -95,7 +97,7 @@
     width:120px;
     padding:0;
   }
-  .slider::-webkit-slider-thumb { /* Draggable part of slider */
+  .slider::-webkit-slider-thumb { /* Draggable part of slider (for webkit compatibility) */
     -webkit-appearance: none;
     appearance: none;
     background-color:#7b8a8b;
@@ -125,6 +127,7 @@
     display:inline-block;
     margin:0px;
     font-size: 14px !important;
-    height:15px;
+    height:20px;
+    top: 0px;
   }
 </style>

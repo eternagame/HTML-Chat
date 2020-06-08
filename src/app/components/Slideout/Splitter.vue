@@ -21,7 +21,6 @@
     background-color:#7b8a8b;
     position:relative;
     margin:0px;
-    margin-bottom:10px;
-    top:15px;
+    top:5px;
   }
 </style>
