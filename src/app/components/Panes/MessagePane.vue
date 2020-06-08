@@ -167,6 +167,10 @@
       }
     }
 
+    scrollDown() {
+      this.$refs.pane.scrollDown();
+    }
+
     @Watch('messages')
     onContentChanged() {
       this.$refs.pane.onContentChanged();

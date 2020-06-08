@@ -1,6 +1,7 @@
 <template>
   <div
   style="height: 100%; font-family:'Open Sans','Century Gothic','Didact Gothic,'Arial',sans-serif"
+  id="cont"
   >
     <div
       ref="scrollDiv"
@@ -61,6 +62,11 @@
           this.autoScroll = true;
         } else this.autoScroll = false;
       }
+    }
+
+    scrollDown() {
+      this.$nextTick(() => { this.container.scrollTop = this.container.scrollHeight; });
+      this.$nextTick(this.updateFooterHeight);
     }
 
     onContentChanged() {
