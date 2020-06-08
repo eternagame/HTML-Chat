@@ -107,9 +107,6 @@
     padding: 5px;
     bottom:0px;
     position:absolute; /* Necessary to keep it at the bottom */
-    width:calc(100% - 10px); /* Fallback */
-    width: -webkit-fill-available;
-    width: -moz-available;
-    width: fill-available; /* Equivalent of what width was with position:relative */
+    width:calc(100% + 2px);
   }
 </style>

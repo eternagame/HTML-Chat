@@ -11,6 +11,7 @@
         height: `${height}px`,
         'border-bottom-right-radius': radius,
         'border-bottom-left-radius': radius,
+        'font-size': `${fontsize}px`
       }"
       class="scalable-input"
       :disabled="disabled"
@@ -76,6 +77,10 @@
         return '8px';
       }
       return '0px';
+    }
+
+    get fontsize() {
+      return this.$vxm.settings.fontSize;
     }
 
     get bshadow() {
@@ -229,8 +234,8 @@
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
     outline: none;
-    padding-right:20px;
-    width:calc(100% - 24px) !important;
+    padding-right:24px;
+    width:calc(100% - 2px) !important;
   }
 
   .scalable-input,
@@ -245,13 +250,14 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     border: 1px solid;
-    padding-right:25px;
+    padding-right:0px;
   }
   .send-button { /* Send message button */
     position: absolute;
     float:right;
     right:0;
-    width:29px;
-    height:29px;
+    width:30px;
+    height:30px;
+    top:-3px;
   }
 </style>

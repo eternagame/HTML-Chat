@@ -1,7 +1,7 @@
 <template>
   <div id="settings-wrapper" :style="{ fontSize:`${fontSize}px` }">
     <section>
-      <h3>Text Size</h3>
+      <h5>Text Size</h5>
       <input v-model="size" type=number min=10 max=18>
       <p id='font-size-p'>Default is 14</p>
       <p
@@ -11,37 +11,38 @@
       </p>
     </section>
     <section>
-      <h3>Ignored</h3>
-      <ul>
-        <li v-for="user in ignoredUsers" :key="user.Username">
-          {{ user }}
+      <h5>Ignored</h5>
+      <table style="width:175px">
+        <tr v-for="user in ignoredUsers" :key="user.Username">
           <button
             :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+            style="right:0; width:150px;"
             class='unignore-user btn settings-button'
             v-on:click="unignore(user)" >
-            Unignore
+            Unignore {{user}}
           </button>
-        </li>
-        <li v-show="!anyIgnoredUsers">No users ignored</li>
-        <button
+        </tr>
+        <tr v-show="!anyIgnoredUsers">No users ignored</tr>
+        <tr><button
           :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+          style="margin-top:5px; width:150px"
           class='unignore-user btn settings-button'
           v-on:click="unignore('*')"
           v-show="anyIgnoredUsers"
         >
           Unignore All
-        </button>
-      </ul>
+        </button></tr>
+      </table>
     </section>
     <section>
-      <h3>Notifications</h3>
-      <h4>Ignored</h4>
+      <h5>Notifications</h5>
+      <h6>Ignored</h6>
       <table>
         <tr v-for="channel in channels" :key="channel.name">
           <td>{{channel.name}}</td>
           <td>
             <button
-              style="width:calc(100% - 2px)"
+              style="width:100%"
               @click="toggleNotificationsEnabled(channel.name)"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
               class="btn settings-button"
@@ -53,7 +54,7 @@
         <tr>
           <td class='footer'>
             <button
-              style="width:calc(100% - 0px)"
+              style="width:100%"
               :disabled="anyNotificationsDisabled"
               @click="enableAll"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
@@ -64,7 +65,7 @@
           </td>
           <td class='footer'>
             <button
-              style="width:calc(100% - 0px)"
+              style="width:100%"
               :disabled="anyNotificationsEnabled"
               @click="disableAll"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
@@ -75,18 +76,18 @@
           </td>
         </tr>
       </table>
-      <h4>Indicator</h4>
+      <h6>Indicator</h6>
       <p>
         This will appear in the page title if you have notifications
       </p>
       <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
     </section>
     <section>
-      <h3>Username Color</h3>
+      <h5>Username Color</h5>
       <ColorPicker />
     </section>
     <section>
-      <h3>Toolbar Features</h3>
+      <h5>Toolbar Features</h5>
       <p>
         These enable you to send emoticons and formatted text.
       </p>
@@ -96,7 +97,7 @@
             <button
               @click="toggleMarkdown"
               :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="btn settings-button" >
+              class="btn settings-button feature-button" >
               {{markdownChatFeatures ? 'Disable' : 'Enable'}} markdown
             </button>
           </td>
@@ -133,7 +134,7 @@
       </table>
     </section>
     <section>
-      <h3>Operator</h3>
+      <h5>Operator</h5>
       <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
       <button
         @click="$emit('auth')"

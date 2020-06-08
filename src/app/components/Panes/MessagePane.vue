@@ -114,8 +114,10 @@
 
     focused = false;
 
-    @Watch('inputUpdate')
+    @Watch('inputUpdate') // Updates input when up arrow pressed
     update() {
+      /* Makes sure new value is valid and input isn't focused
+      We don't want a user to accidentally replace what they just typed */
       if (this.updateMessage.trim() !== '' && this.inputUpdate && !this.focused) {
         this.$refs.input.value = this.updateMessage;
         this.newMessage = this.updateMessage;

@@ -28,15 +28,15 @@
         </table>
         <p v-show="authFailed">Username or password incorrect</p>
         <div
-          class="green-button"
-          style="width: 90%; left: 50%; transform: translateX(-50%); margin-top:10px"
+          class="btn login-button"
+          style="width: 100%; left: 50%; margin-top:10px"
           @click="$emit('login', { password, username, remember })"
         >
         Continue
         </div>
         <div
-          class="green-button"
-          style="width: 90%; left: 50%; transform: translateX(-50%); margin-top:10px;"
+          class="btn login-button"
+          style="width: 100%; left: 50%; margin-top:10px;"
           @click="$emit('cancel')"
         >
           Cancel
@@ -47,7 +47,10 @@
 </template>
 
 <script lang="ts">
+  import BootstrapVue from 'bootstrap-vue';
   import { Component, Vue } from 'vue-property-decorator';
+
+  Vue.use(BootstrapVue);
 
   @Component({
     components: {},
@@ -68,6 +71,9 @@
 </script>
 
 <style lang="scss">
+@import "../assets/_custom.scss";
+@import "~bootstrap/scss/bootstrap.scss";
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
   .login {
     position: absolute;
     left: 50%;
@@ -83,8 +89,8 @@
     padding: 2px;
   }
 
-  .blue-button,
-  .green-button {
-    padding: 4px 7px !important;
+  .login-button {
+    color:white;
+    background-color:$green;
   }
 </style>

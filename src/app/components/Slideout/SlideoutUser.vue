@@ -1,6 +1,6 @@
 <template>
   <div id="user-wrapper" :style="{ fontSize:`${fontSize}px` }">
-    <h3>Online ({{userCount}})</h3>
+    <h4>Online ({{userCount}})</h4>
     <ul>
       <SlideoutUsername
         v-for="user in connectedUsers"

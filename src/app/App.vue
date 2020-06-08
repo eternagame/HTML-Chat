@@ -237,12 +237,14 @@
     if (e.code === 'Tab') { /* Watches for tabs. If a tab is detected, outline on input will remain on focus */
       this.$vxm.chat.tabbing = true;
     }
-    if (e.code === 'ArrowUp') {
+    if (e.code === 'ArrowUp') { // Checks if up arrow has been pressed
+      // Finds the most recent message the user has sent
       const channelMsgs = this.$vxm.chat.channels[this.currentTab]?.postedMessages;
       let recent = channelMsgs?.filter(m => m.user.username === this.username).reverse()[0].message;
-      if (recent?.match(/\[#[a-f0-9]{6}\]$/)) {
+      if (recent?.match(/\[#[a-f0-9]{6}\]$/)) { // Remove the color
         recent = recent.substring(0, recent.length - 10);
       }
+      // Notify the input
       this.$vxm.chat.updateMessage = recent || '';
       this.$vxm.chat.inputUpdate = true;
     }
