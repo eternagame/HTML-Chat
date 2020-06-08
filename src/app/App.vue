@@ -2,6 +2,7 @@
   <DraggableDiv
     id="eterna-chat"
     style="overflow-y: hidden;"
+    :style="{animation: animation }"
     :class="{ eternaChatFull: fullSized, eternaChatNormal: !fullSized, minimizedChat: minimized }"
     :enabled="!fullSize"
   >
@@ -80,6 +81,13 @@
 
   @Prop()
   workbranch!: string;
+
+  get animation() {
+    if (this.loaded) {
+      return 'none';
+    }
+    return 'growFull 1s';
+  }
 
   @Prop()
   uid!: string;
@@ -217,7 +225,10 @@
         }, 500);
       }
     }, 100);
+    this.loaded = false;
   }
+
+  loaded = true;
 
   /**
    * Logs the user in as an operator
@@ -295,13 +306,12 @@
   position: relative; /* Makes sure everything is placed with respect to it, not to its parent */
   top: 0px;
   left: 0px;
-  transition: height 200ms;
+  transition: width 200ms, height 200ms, margin 1s, position 1s;
 }
 
 .eternaChatNormal {
   width: $container-width; // Fill in with normal size
   height: $container-height;
-  animation: growNormal 1s;
 }
 
 .fade-enter-active,
@@ -357,40 +367,6 @@
   z-index: 0; // Covered by slideout
   height: 30px;
 }
-@keyframes growFull {
-  from {
-    width: 300px; // Fill in with default size
-    height: 500px;
-    margin: 0;
-  }
-  to {
-    width: 90vw;
-    height: 90vh;
-    margin-right: 5vw;
-    margin-left: 5vw;
-    margin-top: 5vh;
-    margin-bottom: 5vh;
-    left: 0px !important;
-    top: 0px !important;
-  }
-}
-@keyframes growNormal {
-  to {
-    width: 300px; //Fill in with default size
-    height: 500px;
-    margin: 0;
-  }
-  from {
-    width: 90vw;
-    height: 90vh;
-    margin-right: 5vw;
-    margin-left: 5vw;
-    margin-top: 5vh;
-    margin-bottom: 5vh;
-    left:0px !important;
-    top:0px !important;
-  }
-}
 .eternaChatFull { /* Full size chat */
   width: 90vw; /* Takes up 90% of the viewport*/
   height: 90vh;
@@ -399,7 +375,6 @@
   margin-top: 5vh;
   margin-bottom: 5vh;
   box-shadow: 0 0 2vw 20vw $dark-blue-transparent; /* Creates blur effect */
-  animation: growFull 1s;
   left:0px !important; /* Overrides dragging styles so full size chat isn't cut off */
   top:0px !important;
 }
