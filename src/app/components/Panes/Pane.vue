@@ -6,7 +6,7 @@
     <div
       ref="scrollDiv"
       style="padding: 5.6px 7px;"
-      :style="{height: `calc(100% - ${footerHeight}px - 5.6px * 1)`}"
+      :style="{height: `calc(100% - ${footerHeight}px - 5.6px * 0)`}"
     >
       <VuePerfectScrollbar class="scroll-area" :settings="settings" @ps-scroll-y="scrollHandle">
         <div style="height: 100%; word-wrap: break-word; white-space: normal;">
@@ -79,7 +79,7 @@
 
     @Watch('visibility')
     updateFooterHeight() {
-      this.footerHeight = this.$refs.footer.clientHeight - 5.76;
+      this.footerHeight = this.$refs.footer.clientHeight;
       this.onContentChanged();
     }
 
