@@ -2,7 +2,7 @@
   <span
     class="hamburger"
     @click="$emit('input', !value)"
-    :class="{notified:notification}"
+    :class="{notified:notification, mentioned:mention}"
   />
 </template>
 
@@ -17,6 +17,9 @@
 
     @Prop()
     notification!: boolean;
+
+    @Prop()
+    mention!: boolean;
   }
 </script>
 <style scoped>
@@ -33,5 +36,8 @@
   background-image: url("../assets/hamburger-notification.png");
   background-size: 62.5% 55%;
   background-position:bottom 10px left 11px;
+}
+.mentioned {
+  background-image: url("../assets/hamburger-mention.png") !important;
 }
 </style>
