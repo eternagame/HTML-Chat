@@ -80,4 +80,8 @@
   .notified {
     color:#e74c3c;
   }
+
+  .mentioned {
+    color:orange !important; /* Overrides notification styles */
+  }
 </style>

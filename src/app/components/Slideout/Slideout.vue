@@ -4,7 +4,7 @@
     class="slideout-container"
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
-    <HamburgerMenuButton v-model="checked" :notification="notifications"/>
+    <HamburgerMenuButton v-model="checked" :notification="notifications" :mentions="mentions"/>
     <v-style>
       .slideout-button:focus {
         border: {{tabbing ? 'solid white 1px' : 'none !important'}};
@@ -97,6 +97,13 @@
       // eslint-disable-next-line max-len
       const anyNotifications = Object.values(this.$vxm.chat.channels).some(item => item?.notifications);
       return anyNotifications;
+    }
+
+    get mentions() {
+      // If any channels have mentions
+      // eslint-disable-next-line max-len
+      const anyMentions = Object.values(this.$vxm.chat.channels).some(item => item?.mentioned);
+      return anyMentions;
     }
 
     @Watch('notifications')
