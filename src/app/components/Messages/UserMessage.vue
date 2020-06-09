@@ -75,7 +75,7 @@
     get formattedMessage(): string {
       // If there are tags, remove them before the message is seen
       if (this.messageHasTags(this.message.message)) {
-        const tagsStringPosition = this.message.message.search(/\[(.+,)*.+\]?\r$/);
+        const tagsStringPosition = this.message.message.search(/\[(.+,)*.+\]\r?$/);
         return md.renderInline(this.message.message.substring(0, tagsStringPosition));
       } // If not, just show the message
       return md.renderInline(this.message.message);
@@ -92,7 +92,7 @@
     }
 
     parseMessageTags(message:string) { // Gets tags as array from message
-      const tagsStringPosition = message.search(/\[(.+,)*.+\]?\r$/); // Searches for [...,...] at end of message
+      const tagsStringPosition = message.search(/\[(.+,)*.+\]\r?$/); // Searches for [...,...] at end of message
       let tagsString = message.substring(tagsStringPosition); // Gets tags as a string
       if (tagsString.includes('\r')) { // In history messages, message ends with \r
         tagsString = tagsString.substring(1, tagsString.length - 2); // Removes bracket
@@ -103,7 +103,7 @@
     }
 
     messageHasTags(message:string) { // If a message has any tags
-      return message.match(/\[(.+,)*.+\]?\r$/);
+      return message.match(/\[(.+,)*.+\]\r?$/);
     }
 
     $refs!: {
