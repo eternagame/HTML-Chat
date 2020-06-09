@@ -29,6 +29,7 @@ interface Channel {
   maxHistoryMessages: number;
   notifications: boolean;
   notificationsEnabled: boolean;
+  mentioned: boolean,
 }
 
 class ConnectionData {
@@ -129,6 +130,7 @@ export default class ChatModule extends VuexModule {
         maxHistoryMessages: 50,
         name: channelName,
         notifications: false,
+        mentioned: false,
         notificationsEnabled: true,
       };
     });
@@ -158,12 +160,14 @@ export default class ChatModule extends VuexModule {
       if (trueChannel) {
         // Set notifications for that channel to false
         trueChannel.notifications = false;
+        trueChannel.mentioned = false;
       }
     } else {
       const trueChannel = this.channels[channel];
       if (trueChannel) {
         // Set notifications for that channel to false
         trueChannel.notifications = false;
+        trueChannel.mentioned = false;
       }
       /* Only relay the message if it didn't come from BroadcastChannel
       so there isn't a loop of messages */
@@ -182,6 +186,20 @@ export default class ChatModule extends VuexModule {
     if (trueChannel) {
       // Turning on notifications for that channel
       trueChannel.notifications = true;
+    }
+  }
+
+  /**
+   * Sets a channel as mentioned (the user's username is mentioned in an unread message)
+   * @param channel {string} - The channel notifications should be turned on for
+   */
+  @mutation
+  mention(channel: string) {
+    // Again, making sure there is an actual channel with the name
+    const trueChannel = this.channels[channel];
+    if (trueChannel) {
+      // Turning on notifications for that channel
+      trueChannel.mentioned = true;
     }
   }
 
@@ -978,6 +996,7 @@ export default class ChatModule extends VuexModule {
           maxHistoryMessages: 50,
           notifications: false,
           notificationsEnabled: true,
+          mentioned: false,
           postedMessages: [],
           banned: BanStatus.BAN_STATUS_NORMAL,
         });
@@ -994,6 +1013,9 @@ export default class ChatModule extends VuexModule {
     if ((this.slideoutOpen || channel.name !== this.chatChannel) && channel.notificationsEnabled) {
       // Notify the channel
       this.notify(channel.name);
+      if (message.toLowerCase().includes(this.currentUser.username.toLowerCase())) {
+        this.mention(channel.name);
+      }
     } else {
       // If the user is in the channel and the slideout is closed
       this.readChannel(channel.name); // Set the channel to read

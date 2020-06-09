@@ -8,7 +8,7 @@
       :description="channelDescription(name)"
       @input="activeTab = index"
       v-on:click="update"
-      :class="{ notified:isNotified(name) }"
+      :class="{ notified:isNotified(name), mentioned:isMentioned(name) }"
     >
       <Splitter />
     </TabButton>
@@ -85,6 +85,17 @@
       if (trueChannel) {
         // If it exists, return whether or not it has notifications
         return trueChannel.notifications;
+      }
+      // If it doesn't exist, return false (default)
+      return false;
+    }
+
+    isMentioned(name:string) { // If given tab is notified
+      // Make sure name returns a real channel
+      const trueChannel = this.$vxm.chat.channels[name];
+      if (trueChannel) {
+        // If it exists, return whether or not it has notifications
+        return trueChannel.mentioned;
       }
       // If it doesn't exist, return false (default)
       return false;

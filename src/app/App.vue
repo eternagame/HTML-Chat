@@ -33,7 +33,7 @@
     </template>
   </DraggableDiv>
 </template>
-
+<!-- TODO: autoconvert :) to smiley, etc-->
 <script lang="ts">
   import {
     Vue, Component, Prop, Watch,
