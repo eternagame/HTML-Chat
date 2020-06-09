@@ -214,13 +214,13 @@
       if (this.$vxm.chat.rawHistoryMessages.length > 0) {
         clearInterval(timer); // Once history messages start coming in, stop the timer
         setTimeout(() => { // Make sure all of them come in, then process them
-          this.$vxm.chat.loadMessagesForChannel('#test');
+          this.$vxm.chat.loadMessagesForChannel('#general');
           setTimeout(() => {
             /* This gives an error because it doesn't recognize
             using ref on a v-for gives an Array of VueComponents.
             It think's its just a normal MessagePane
             */
-            this.$refs.messagepanes[5].scrollDown(); // Scroll down
+            this.$refs.messagepanes[0].scrollDown(); // Scroll down
           }, 100);
         }, 500);
       }

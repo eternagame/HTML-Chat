@@ -56,7 +56,7 @@ class ConnectionData {
 }
 
 // eslint-disable-next-line prefer-const
-let channelNames = ['#general', '#off-topic', '#help', '#labs', '#global', '#test'];
+let channelNames = ['#general', '#off-topic', '#help', '#labs'];
 
 export default class ChatModule extends VuexModule {
   toBePosted: Message[] = [];
@@ -81,9 +81,9 @@ export default class ChatModule extends VuexModule {
 
   ignoredUsers: string[] = [];
 
-  tab: Number = 5; // Selected tab. One of the chat channels
+  tab: Number = 0; // Selected tab. One of the chat channels
 
-  chatChannel: string = '#test'; // Name of channel display in top bar
+  chatChannel: string = '#general'; // Name of channel display in top bar
 
   slideoutOpen = false; // Whether slideout is open. Updated by App.vue
 
@@ -456,7 +456,7 @@ export default class ChatModule extends VuexModule {
       || this.quietList.some(e => e.username.includes(this.currentUser.username))) {
       notBanned = false;
     }
-    if (this.currentUser.username && message !== '') {
+    if (this.currentUser.username && message.replace(/\[.*\]\r?$/, '').trim() !== '') {
       let post = true;
       // Chat commands
       if (message.startsWith('/')) {
@@ -868,6 +868,7 @@ export default class ChatModule extends VuexModule {
         } else if (this.quietList.some(e => e.username.includes(this.currentUser.username))) {
           this.postMessage(new Message("Can't send messages because you are quieted"));
         } else {
+          console.log(message, message.replace(/\[.*\]\r?$/, ''));
           this.postMessage(new Message("Can't send messages because you are banned"));
         } // TODO
       }
