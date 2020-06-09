@@ -4,7 +4,7 @@
     class="slideout-container"
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
-    <HamburgerMenuButton v-model="checked" :notification="notifications" :mentions="mentions"/>
+    <HamburgerMenuButton v-model="checked" :notification="notifications" :mention="mentions"/>
     <v-style>
       .slideout-button:focus {
         border: {{tabbing ? 'solid white 1px' : 'none !important'}};
