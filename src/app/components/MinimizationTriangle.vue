@@ -2,7 +2,9 @@
   <div
     class="minimization-triangle"
     style="float: right;"
-    :class="{'flipped': value}"
+    :class="{'flipped': value && !settings,
+    'settings-flipped': value && settings,
+    'settings':settings}"
     @click="$emit('input', !value)"
   />
 </template>
@@ -15,6 +17,9 @@
   export default class MinimizationTriangle extends Vue {
     @Prop()
     value!: boolean;
+
+    @Prop()
+    settings !: boolean;
   }
 </script>
 
@@ -29,24 +34,24 @@
     width: 35px;
     transform: rotate(0deg);
     -webkit-transform: rotate(0deg);
-    animation-name: minimization-triangle-rotation-from;
-    animation-duration: 0.2s;
+    transition: transform 0.2s;
   }
 
-  @keyframes minimization-triangle-rotation-to { /* Animates the rotation to minimized state */
-    from {transform: rotate(0deg); -webkit-transform: rotate(0deg);}
-    to {transform: rotate(90deg); -webkit-transform: rotate(90deg);}
+  .minimization-triangle.settings-flipped {
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    // animation: minimization-triangle-rotation-from-settings 0.2s !important;
+    transition: transform 0.2s;
   }
 
-  @keyframes minimization-triangle-rotation-from { /* Animates rotation to uniminimized state */
-    to {transform: rotate(0deg); -webkit-transform: rotate(0deg);}
-    from {transform: rotate(90deg); -webkit-transform: rotate(90deg);}
+  .settings {
+    // animation: minimization-triangle-rotation-to-settings 0.2s !important;
+    transition: transform 0.2s;
   }
 
   .minimization-triangle.flipped { /* Button in minimized state */
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
-    animation-name: minimization-triangle-rotation-to;
-    animation-duration: 0.2s;
+    transition: transform 0.2s;
   }
 </style>
