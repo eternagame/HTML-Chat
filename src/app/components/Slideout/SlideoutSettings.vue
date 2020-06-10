@@ -160,8 +160,10 @@
       </transition>
     </section>
     <section>
+      <li class="settings-section-header">
       <h5 class="heading" >Operator</h5>
       <MinimizationTriangle style="display:inline-block" settings="true" v-model="operOpen" />
+      </li>
       <transition name="settings-slide">
       <div v-show="!operOpen" class="settings-content-container">
         <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
@@ -445,6 +447,7 @@
 }
 section { /* 'Block' of settings */
   margin-bottom:5px;
+  position: relative;
 }
 h3 {
   width:calc(100% - 23px); /* Accounts for padding on both sides */
@@ -467,19 +470,6 @@ button { /* Unignore user button */
   padding-left:20px;
   height:calc(100% - 50px);
   overflow-y:auto;
-}
-
-::-webkit-scrollbar { /* Scrollbar track */
-    width: 10px;
-}
-
-::-webkit-scrollbar-corner {
-  background-color:black;
-}
-
-::-webkit-scrollbar-thumb { /* Scrollbar bar */
-  background-color:#343a40;
-  border-radius:5px;
 }
 li { /* Remove bullets */
   list-style-type: none;
@@ -513,6 +503,9 @@ table {
 .minimization-triangle {
   height:30px;
   width:30px;
+  position:absolute;
+  right:10px;
+  top:0px;
 }
 .settings-slide-enter-active {
   transition: max-height 0.2s cubic-bezier(1,0,1,0);
