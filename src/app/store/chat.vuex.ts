@@ -464,7 +464,11 @@ export default class ChatModule extends VuexModule {
     ) => {
       this.postMessage(new Message(message, channel, user, isAction));
     };
-    let message = rawMessage.trim();
+    let message = rawMessage.trim()
+      .replace(':)', '🙂')
+      .replace('(:', '🙂')
+      .replace('):', '🙁')
+      .replace(':(', '🙁');
     const oldMessage = message;
     message = `${message} [${this.usernameColor}]`; // Message with tags added on
     let isAction = false;
