@@ -1,18 +1,26 @@
 <template>
   <div id="settings-wrapper" :style="{ fontSize:`${fontSize}px` }">
     <section>
-      <h5>Text Size</h5>
-      <input v-model="size" type=number min=10 max=18>
-      <p id='font-size-p'>Default is 14</p>
-      <p
-        id='font-warning'
-        v-show="size < 10 || size > 18" >
-        Font size must be a number, greater than 10, and less than 18
-      </p>
+      <h5 class="heading" >Text Size</h5>
+      <MinimizationTriangle style="display:inline-block" settings="true" v-model="textSizeOpen" />
+      <transition name="settings-slide">
+      <div v-show="!textSizeOpen" class="settings-content-container">
+        <input v-model="size" type=number min=10 max=18>
+        <p id='font-size-p'>Default is 14</p>
+        <p
+          id='font-warning'
+          v-show="size < 10 || size > 18" >
+          Font size must be a number, greater than 10, and less than 18
+        </p>
+      </div>
+      </transition>
     </section>
     <section>
-      <h5>Ignored</h5>
-      <table style="width:175px">
+      <h5 class="heading" >Ignored</h5>
+      <MinimizationTriangle style="display:inline-block" settings="true" v-model="ignoredOpen" />
+      <transition name="settings-slide">
+      <div v-show="!ignoredOpen" class="settings-content-container">
+      <table style="width:175px" >
         <tr v-for="user in ignoredUsers" :key="user.Username">
           <button
             :style="{ fontSize:`${fontSize * 11 / 14}px` }"
@@ -33,116 +41,139 @@
           Unignore All
         </button></tr>
       </table>
+      </div>
+      </transition>
     </section>
     <section>
-      <h5>Notifications</h5>
-      <h6>Ignored</h6>
-      <table>
-        <tr v-for="channel in channels" :key="channel.name">
-          <td>{{channel.name}}</td>
-          <td>
-            <button
-              style="width:100%"
-              @click="toggleNotificationsEnabled(channel.name)"
-              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="btn settings-button"
-            >
-              {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class='footer'>
-            <button
-              style="width:100%"
-              :disabled="anyNotificationsDisabled"
-              @click="enableAll"
-              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="btn settings-button"
-            >
-              Enable all
-            </button>
-          </td>
-          <td class='footer'>
-            <button
-              style="width:100%"
-              :disabled="anyNotificationsEnabled"
-              @click="disableAll"
-              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="btn settings-button"
-            >
-              Disable all
-            </button>
-          </td>
-        </tr>
-      </table>
-      <h6>Indicator</h6>
-      <p>
-        This will appear in the page title if you have notifications
-      </p>
-      <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
+      <h5 class="heading" >Notifications</h5>
+      <MinimizationTriangle
+        style="display:inline-block"
+        settings="true"
+        v-model="notificationsOpen" />
+      <transition name="settings-slide">
+      <div v-show="!notificationsOpen" class="settings-content-container">
+        <h6>Ignored</h6>
+        <table>
+          <tr v-for="channel in channels" :key="channel.name">
+            <td>{{channel.name}}</td>
+            <td>
+              <button
+                style="width:100%"
+                @click="toggleNotificationsEnabled(channel.name)"
+                :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+                class="btn settings-button"
+              >
+                {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td class='footer'>
+              <button
+                style="width:100%"
+                :disabled="anyNotificationsDisabled"
+                @click="enableAll"
+                :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+                class="btn settings-button"
+              >
+                Enable all
+              </button>
+            </td>
+            <td class='footer'>
+              <button
+                style="width:100%"
+                :disabled="anyNotificationsEnabled"
+                @click="disableAll"
+                :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+                class="btn settings-button"
+              >
+                Disable all
+              </button>
+            </td>
+          </tr>
+        </table>
+        <h6>Indicator</h6>
+        <p>
+          This will appear in the page title if you have notifications
+        </p>
+        <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
+      </div>
+      </transition>
     </section>
     <section>
-      <h5>Username Color</h5>
-      <ColorPicker />
+      <h5 class="heading" >Username Color</h5>
+      <MinimizationTriangle style="display:inline-block" settings="true" v-model="colorOpen" />
+      <transition name="settings-slide">
+      <ColorPicker v-show="!colorOpen" class="settings-content-container" />
+      </transition>
     </section>
     <section>
-      <h5>Toolbar Features</h5>
-      <p>
-        These enable you to send emoticons and formatted text.
-      </p>
-      <table>
-        <tr>
-          <td class="feature-button-container left-side">
-            <button
-              @click="toggleMarkdown"
-              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="btn settings-button feature-button" >
-              {{markdownChatFeatures ? 'Disable' : 'Enable'}} markdown
+      <h5 class="heading" >Toolbar Features</h5>
+      <MinimizationTriangle style="display:inline-block" settings="true" v-model="toolbarOpen" />
+      <transition name="settings-slide">
+      <div v-show="!toolbarOpen" class="settings-content-container">
+        <p>
+          These enable you to send emoticons and formatted text.
+        </p>
+        <table>
+          <tr>
+            <td class="feature-button-container left-side">
+              <button
+                @click="toggleMarkdown"
+                :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+                class="btn settings-button feature-button" >
+                {{markdownChatFeatures ? 'Disable' : 'Enable'}} markdown
+              </button>
+            </td>
+            <td class="feature-button-container">
+              <button
+                @click="toggleEmoticons"
+                :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+                class="btn settings-button feature-button" >
+                {{emoticonChatFeatures ? 'Disable' : 'Enable'}} emoticons
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td class="feature-button-container left-side">
+              <button
+                @click="disableAllChatFeatures"
+                :disabled="!allChatFeatures"
+                :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+                class="btn settings-button feature-button" >
+                Disable all
+              </button>
+            </td>
+            <td class="feature-button-container">
+              <button
+                @click="enableAllChatFeatures"
+                :disabled="allChatFeatures"
+                :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+                style="margin-top:1px;"
+                class="btn settings-button feature-button" >
+                Enable all
             </button>
-          </td>
-          <td class="feature-button-container">
-            <button
-              @click="toggleEmoticons"
-              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="btn settings-button feature-button" >
-              {{emoticonChatFeatures ? 'Disable' : 'Enable'}} emoticons
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="feature-button-container left-side">
-            <button
-              @click="disableAllChatFeatures"
-              :disabled="!allChatFeatures"
-              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              class="btn settings-button feature-button" >
-              Disable all
-            </button>
-          </td>
-          <td class="feature-button-container">
-            <button
-              @click="enableAllChatFeatures"
-              :disabled="allChatFeatures"
-              :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-              style="margin-top:1px;"
-              class="btn settings-button feature-button" >
-              Enable all
-           </button>
-          </td>
-        </tr>
-      </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+      </transition>
     </section>
     <section>
-      <h5>Operator</h5>
-      <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
-      <button
-        @click="$emit('auth')"
-        :style="{ fontSize:`${fontSize * 11 / 14}px` }"
-        class="btn settings-button"
-        v-show="!isOper" >
-          Log in as operator
-      </button>
+      <h5 class="heading" >Operator</h5>
+      <MinimizationTriangle style="display:inline-block" settings="true" v-model="operOpen" />
+      <transition name="settings-slide">
+      <div v-show="!operOpen" class="settings-content-container">
+        <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
+        <button
+          @click="$emit('auth')"
+          :style="{ fontSize:`${fontSize * 11 / 14}px` }"
+          class="btn settings-button"
+          v-show="!isOper" >
+            Log in as operator
+        </button>
+      </div>
+      </transition>
     </section>
   </div>
 </template>
@@ -157,6 +188,7 @@
   import Slideout from './Slideout.vue';
   import { Channel } from '../../store/chat.vuex';
   import ColorPicker from './ColorPicker/ColorPicker.vue';
+  import MinimizationTriangle from '../MinimizationTriangle.vue';
 
   Vue.use(BootstrapVue);
 
@@ -165,9 +197,24 @@
       Username,
       ConnectButton,
       ColorPicker,
+      MinimizationTriangle,
     },
   })
   export default class SlideoutSettings extends Vue {
+    testOpen = true;
+
+    notificationsOpen = true;
+
+    colorOpen = true;
+
+    operOpen = true;
+
+    toolbarOpen = true;
+
+    textSizeOpen = true;
+
+    ignoredOpen = true;
+
     size:string = '14'; // font size
 
     indicator:string = '(!)';
@@ -397,7 +444,7 @@
   color:#f39c12;
 }
 section { /* 'Block' of settings */
-  margin-bottom:15px;
+  margin-bottom:5px;
 }
 h3 {
   width:calc(100% - 23px); /* Accounts for padding on both sides */
@@ -457,5 +504,28 @@ table {
 }
 .left-side {
   padding-left:0;
+}
+.heading {
+  display:inline-block;
+  margin:4px;
+  margin-left:0;
+}
+.minimization-triangle {
+  height:30px;
+  width:30px;
+}
+.settings-slide-enter-active {
+  transition: max-height 0.2s cubic-bezier(1,0,1,0);
+  max-height:1000px;
+}
+.settings-slide-leave-active {
+  transition: max-height 0.2s cubic-bezier(0,1,0,1);
+  max-height:1000px;
+}
+.settings-slide-enter, .settings-slide-leave-to {
+  max-height:0;
+}
+.settings-content-container {
+  overflow:hidden;
 }
 </style>
