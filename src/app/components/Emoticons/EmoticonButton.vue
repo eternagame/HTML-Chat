@@ -24,7 +24,7 @@
     position: relative;
     width:30px;
     height:25px;
-    padding-top:1px;
+    padding-top:2px;
     text-align:center;
   }
   #emoticon-button-container :hover {

@@ -62,5 +62,6 @@
   #action {
     font-size:12px;
     padding-left:1px;
+    vertical-align:text-bottom;
   }
 </style>
