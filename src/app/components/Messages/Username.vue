@@ -1,27 +1,44 @@
 <template>
-  <a
-    v-if="user"
-    target="_blank"
-    class="username"
-    :style="{ color: displayedColor }"
-    :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
-  >
-    {{ user.username }}<slot/>
-  </a>
+  <span>
+    <a
+      v-if="user"
+      target="_blank"
+      class="username"
+      :style="{ color: displayedColor }"
+      :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
+      @mouseover="hovered = true"
+      @mouseout="hovered = false"
+    >
+      {{ user.username }}<slot/>
+    </a>
+    <transition name="fade">
+      <UserTooltip
+        v-if="hovered"
+        :user="user"
+      />
+    </transition>
+  </span>
 </template>
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import User from '@/types/user';
+  import UserTooltip from './UserTooltip.vue';
 
 
-  @Component
+  @Component({
+    components: {
+      UserTooltip,
+    },
+  })
   export default class Username extends Vue {
     @Prop()
     user!: User;
 
     @Prop()
     color?: string;
+
+    hovered = false;
 
     private defaultColor = '#ffffff';
 
@@ -84,5 +101,17 @@
   .username {
     text-decoration: none;
     font-weight: bold;
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter-active {
+    transition-delay: 0.75s;
+  }
+  .fade-leave-active {
+    transition-delay: 0s;
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
   }
 </style>
