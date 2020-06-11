@@ -33,6 +33,9 @@
     </template>
   </DraggableDiv>
 </template>
+<!-- TODO
+- Tooltips with user info
+-->
 <script lang="ts">
   import {
     Vue, Component, Prop, Watch,
@@ -219,7 +222,8 @@
             using ref on a v-for gives an Array of VueComponents.
             It think's its just a normal MessagePane
             */
-            this.$refs.messagepanes[0].scrollDown(); // Scroll down
+            const pane = this.$refs.messagepanes[0];
+            pane.scrollDown(); // Scroll down
           }, 100);
         }, 500);
       }

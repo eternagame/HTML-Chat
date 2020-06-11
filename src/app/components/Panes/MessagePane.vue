@@ -1,6 +1,6 @@
 <template>
   <Pane ref="pane" :visibility="visibility" :data="data">
-    <ul>
+    <ul style="margin-bottom:0; padding-right:10px">
       <UserMessage
         v-for="(message, i) in data.postedMessages"
         :key="i"

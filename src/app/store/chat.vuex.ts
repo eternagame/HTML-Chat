@@ -400,6 +400,7 @@ export default class ChatModule extends VuexModule {
     const parts = str.split(' ');
     const time = parts[0].substring(13, 37);
     const channel = parts[3];
+    // eslint-disable-next-line no-control-regex
     const message = str.substring(str.indexOf(channel) + channel.length + 2).replace(/\u0001/g, '').trim();
     const user = parts[1].substring(1, parts[1].indexOf('@'));
     const username = user.substring(0, user.lastIndexOf('!'));
@@ -595,6 +596,39 @@ export default class ChatModule extends VuexModule {
                 postMessage('Example: `/banlist`');
                 postMessage('You must be an operator to use this command');
                 break;
+              case 'banmask':
+                postMessage(
+                  '`/banmask`: Bans a hostmask. Hostmasks are of the form user!nick@host. To get the user or the nick, use the `user` and `nick` commands.',
+                );
+                postMessage('Usage: `/banmask <channel> <mask>`');
+                postMessage('Example: `/banmask #general ProblematicUserNick!*@*`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'unbanmask':
+                postMessage(
+                  '`/unbanmask`: Unbans a hostmask. Hostmasks are of the form user!nick@host. To get the user or the nick, use the `user` and `nick` commands.',
+                );
+                postMessage('Usage: `/unbanmask <channel> <mask>`');
+                postMessage('Example: `/unbanmask #general ProblematicUserNick!*@*`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'user':
+                postMessage(
+                  '`/user`: Gets the username corresponding to a nick',
+                );
+                postMessage('Usage: `/user <nick>`');
+                postMessage('Example: `/user MysteriousNick^293`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'nicks':
+                postMessage(
+                  '`/nicks`: Gets the nicks for a user.',
+                );
+                postMessage('Usage: `/nicks <user>`');
+                postMessage('Example: `/nicks MysteriousUser`');
+                postMessage('You must be an operator to use this command');
+                break;
+
               case 'notice':
                 postMessage(
                   '`/notice`: Sends a notice to a channel. Sends a notice to all channels if channel argument is *.',
@@ -608,7 +642,7 @@ export default class ChatModule extends VuexModule {
                 postMessage('Available commands: help, me, ignore, ignore-list, unignore, change, emoticon');
                 postMessage('Type `/help <command>` for information on individual commands');
                 postMessage('Example: `/help ignore`');
-                postMessage(` You are ${this.oper ? '' : 'not'} logged in as an operator/moderator. Operators may use the \`/ban\`, \`/unban\`, \`/quiet\`, \`/unquiet\`, \`/notice\`, and \`/kick\` commands`);
+                postMessage(` You are ${this.oper ? '' : 'not'} logged in as an operator/moderator. Operators may use the \`/ban\`, \`/unban\`, \`/quiet\`, \`/unquiet\`, \`/notice\`, \`/banmask\`, \`/unbanmask\`, \`/user\`, \`/nick\`, and \`/kick\` commands`);
                 postMessage(
                   'Additional commands available via LinkBot (see the [wiki](http://eternawiki.org/wiki/index.php5/HELP) for more information)',
                 );
@@ -858,6 +892,57 @@ export default class ChatModule extends VuexModule {
               postMessage('You are not an operator or moderator and do not have permission to post messages');
             }
             break;
+          case 'banmask':
+            if (this.oper) {
+              if (params.length > 1) {
+                this.client?.ban(params.split(' ')[0], params.split(' ')[1]);
+              } else {
+                postMessage('Please include command parameters. Type `/help banmask` for more usage instructions');
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to ban masks');
+            }
+            break;
+          case 'unbanmask':
+            if (this.oper) {
+              if (params.length > 1) {
+                this.client?.unban(params.split(' ')[0], params.split(' ')[1]);
+              } else {
+                postMessage('Please include command parameters. Type `/help unbanmask` for more usage instructions');
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to unban masks');
+            }
+            break;
+          case 'nicks':
+            if (this.oper) {
+              if (params.length > 0) {
+                const nickslist = this.connectedUsers[params.trim()]?.nicks;
+                const withoutDuplicates = Array.from(new Set(nickslist));
+                postMessage(`Nicks for user ${params.trim()}: ${withoutDuplicates.join(', ')}`);
+              } else {
+                postMessage('Please include command parameters. Type `/help nicks` for more usage instructions');
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to view nicks for a user');
+            }
+            break;
+          case 'user':
+            if (this.oper) {
+              if (params.length > 0) {
+                const users = this.connectedUsers;
+                const userlist = Object.keys(users);
+                const nickslist = userlist.filter(e => users[e]?.nicks.includes(params.trim()));
+                postMessage(`Nick ${params.trim()} belongs to user ${nickslist[0]}`);
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to view the user for a nick');
+            }
+            break;
           default:
             postMessage('Invalid command. Type `/help` for more available commands');
             break;
@@ -973,6 +1058,19 @@ export default class ChatModule extends VuexModule {
     Array.from(new Set(this.connectedUsers[User.parseUsername(chan)]?.nicks)).forEach(e => {
       this.sendMessage({ rawMessage: msg, channel: e }); // Send message to all nicks
     });
+  }
+
+  @action()
+  async getUserInfo(arg: { user: User, callback: (data: any | undefined) => any}) {
+    const { uid } = arg.user || { uid: 0 };
+    const xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+      if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+        arg.callback(xmlHttp.responseText);
+      }
+    };
+    xmlHttp.open('GET', `https://eternagame.org/get/?type=my_user&uid=${uid}`, true); // true for asynchronous
+    xmlHttp.send(null);
   }
 
   @action()
