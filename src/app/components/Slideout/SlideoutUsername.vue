@@ -10,7 +10,7 @@
         @click.prevent="openContextMenu"
         v-show="hover && user.username"
       >
-        &vellip;
+        &vellip; <!-- ⋮ -->
       </a>
       <ActionMenu
         ref="contextMenu"
@@ -39,10 +39,10 @@
     @Prop()
     user !: User;
 
-    hover = '';
+    hover = false;
 
     messageFrom(user:User) {
-      return new Message('Reporting user ', '', user);
+      return new Message('Reporting user ', '*', user);
     }
 
     $refs!: {

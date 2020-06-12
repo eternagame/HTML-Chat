@@ -1,4 +1,4 @@
-<template> <!-- Repurposed for chat selector buttons -->
+<template>
   <Button
     :class="{active: isActive}"
     @click="$emit('input');"
@@ -18,7 +18,7 @@
 
 
   @Component
-  export default class TabButton extends Vue {
+  export default class ChatSelectButton extends Vue {
     @Prop()
     name!: string;
 
@@ -77,7 +77,7 @@
     text-align:justify;
     margin-left:5px;
   }
-  .notified {
+  .notified { /* Text color when notified */
     color:#e74c3c;
   }
 

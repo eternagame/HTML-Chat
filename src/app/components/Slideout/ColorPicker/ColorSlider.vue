@@ -35,7 +35,7 @@
 
     get calculateOffset() { // Position of text on slider thumb
       const percent = this.sliderValue / (255); // Slider value as percent
-      // Slider width - thumb width. Means slider can go from 0 to 80 pixels
+      // Range = slider width - thumb width. Means slider can go from 0 to 80 pixels
       const range = (120 - 40);
       const percentPixels = percent * range; //
       return `${percentPixels + 1}px`;
@@ -46,7 +46,7 @@
       this.$emit('sliderChanged', this.sliderValue);
     }
 
-    getGradient() {
+    getGradient() { // Applies color gradient
       return `-webkit-linear-gradient(left,${this.gradientStart},${this.gradientEnd})`;
     }
 

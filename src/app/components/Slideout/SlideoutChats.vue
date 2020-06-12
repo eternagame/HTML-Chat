@@ -1,6 +1,6 @@
 <template>
   <div style="position:relative; overflow-y:auto; height:calc(100% - 40px)">
-    <TabButton
+    <ChatSelectButton
       v-for="({name}, index) in messageTabs"
       :key="name"
       :isActive="activeTab === index"
@@ -11,7 +11,7 @@
       :class="{ notified:isNotified(name), mentioned:isMentioned(name) }"
     >
       <Splitter />
-    </TabButton>
+    </ChatSelectButton>
   </div>
 </template>
 <script lang="ts">
@@ -19,14 +19,14 @@
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
-  import TabButton from '@/components/TabButton.vue';
+  import ChatSelectButton from '@/components/ChatSelectButton.vue';
   import Slideout from './Slideout.vue';
   import Splitter from './Splitter.vue';
 
   @Component({
     components: {
       MinimizationTriangle,
-      TabButton,
+      ChatSelectButton,
       Splitter,
     },
   })
@@ -110,11 +110,6 @@
 
 ::-webkit-scrollbar-thumb {
   background-color:#343a40; /* Make scrollbar visible */
-  border-radius:5px;
-}
-
-::-webkit-scrollbar-corner {
-  background-color:#343a40;
   border-radius:5px;
 }
 </style>

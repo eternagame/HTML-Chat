@@ -100,11 +100,11 @@
       this.$refs.input.alone = this.anyChatFeatures;
     }
 
-    get updateMessage() {
+    get updateMessage() { // New value of input when up arrow is pressed
       return this.$vxm.chat.updateMessage;
     }
 
-    get inputUpdate() {
+    get inputUpdate() { // Whether input should update to the above value
       return this.$vxm.chat.inputUpdate;
     }
 

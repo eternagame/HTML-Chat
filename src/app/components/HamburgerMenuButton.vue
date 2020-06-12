@@ -23,7 +23,7 @@
   }
 </script>
 <style scoped>
-.hamburger {
+.hamburger { /* Normal hamburger icon */
   display:inline-block;
   width:40px;
   height:40px;
@@ -32,12 +32,12 @@
   background-size: 50% 45%;
   background-position: bottom 10px left 11px;
 }
-.notified {
+.notified { /* Notified hamburger icon */
   background-image: url("../assets/hamburger-notification.png");
   background-size: 62.5% 55%;
   background-position:bottom 10px left 11px;
 }
-.mentioned {
+.mentioned { /* Mentioned hamburger icon */
   background-image: url("../assets/hamburger-mention.png") !important;
 }
 </style>

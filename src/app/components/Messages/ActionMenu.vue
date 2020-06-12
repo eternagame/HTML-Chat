@@ -1,5 +1,5 @@
 <template>
-  <VueContext ref="menu" class="action-menu-container">
+  <VueContext ref="menu" class="action-menu-container" @open="opened">
     <li
       style="border-bottom: 1px solid white"
     >
@@ -21,12 +21,12 @@
         Ignore User
       </a>
     </li>
-    <li v-if="oper">
+    <li v-if="oper && !banned">
       <a @click="ban">
         Ban User
       </a>
     </li>
-    <li v-if="oper">
+    <li v-if="oper && banned">
       <a @click="unban">
         Unban User
       </a>
@@ -36,12 +36,12 @@
         Kick User
       </a>
     </li>
-    <li v-if="oper">
+    <li v-if="oper && !quieted">
       <a @click="quiet">
         Quiet User
       </a>
     </li>
-    <li v-if="oper">
+    <li v-if="oper && quieted">
       <a @click="unquiet">
         Unquiet User
       </a>
@@ -120,6 +120,39 @@
     openReportModal(defaults: { report: boolean; ignore: boolean }) {
       this.$vxm.chat.openReportModal({ message: this.message, defaults });
     }
+
+    userBanned() { // Gets user is banned; used to show/hide 'ban' and 'unban' buttons
+      this.$vxm.chat.bans({
+        user: this.message.user,
+        channel: this.message.target,
+        cb: (e) => {
+          if (e) {
+            this.banned = e;
+          }
+        },
+      });
+    }
+
+    userQuieted() { // Gets user is quieted; used to show/hide 'quiet' and 'unquiet' buttons
+      this.$vxm.chat.quiets({
+        user: this.message.user,
+        channel: this.message.target,
+        cb: (e) => {
+          if (e) {
+            this.quieted = e;
+          }
+        },
+      });
+    }
+
+    opened() { // Update ban and quiet status when menu is opened
+      this.userBanned();
+      this.userQuieted();
+    }
+
+    quieted = false;
+
+    banned = false;
   }
 </script>
 

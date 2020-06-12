@@ -30,7 +30,7 @@
       <SlideoutChats
         v-if="chatSelected"
       />
-      <SlideoutUser v-if="userSelected"/>
+      <SlideoutUser v-if="userSelected" />
       <SlideoutSettings v-if="settingsSelected" @auth="$emit('auth')"/>
     </span>
   </div>
@@ -68,10 +68,10 @@
     // For hamburger
     checked = false;
 
-    @Prop()
+    @Prop() // Whether chat is minimized
     minimizedValue !: boolean;
 
-    get tabbing() {
+    get tabbing() { // If the tab key has been pressed - used to conditionally enable focus rings
       return this.$vxm.chat.tabbing;
     }
 
@@ -132,6 +132,16 @@
         // Set current tab (what user is looking at) to read
         this.$vxm.chat.readChannel(this.currentTab);
       }
+    }
+
+    created() {
+      /* Prevents all the text from being highlighted
+      if the slideout is opened and closed too quickly */
+      document.addEventListener('mousedown', (e) => {
+        if (e.detail > 1) {
+          e.preventDefault();
+        }
+      }, false);
     }
   }
 </script>
