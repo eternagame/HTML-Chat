@@ -1,10 +1,11 @@
 <template>
   <DraggableDiv
     id="eterna-chat"
-    style="overflow-y: hidden;"
+    style="overflow-y: hidden; resize:both"
     :style="{animation: animation }"
     :class="{ eternaChatFull: fullSized, eternaChatNormal: !fullSized, minimizedChat: minimized }"
     :enabled="!fullSize"
+    :resize="scroll"
   >
     <template slot="main">
       <slideout style="z-index: 1;" :minimizedValue="!minimized" @auth="showAuth = true"></slideout>
@@ -34,7 +35,7 @@
   </DraggableDiv>
 </template>
 <!-- TODO
-- Tooltips with user info
+- Sizing customization?
 -->
 <script lang="ts">
   import {
@@ -233,6 +234,12 @@
 
   loaded = true;
 
+  scroll() { // When chat is resized, scroll down
+    this.$refs.messagepanes.forEach(i => {
+      i.scrollDown();
+    });
+  }
+
   /**
    * Logs the user in as an operator
    */
@@ -310,6 +317,10 @@
   top: 0px;
   left: 0px;
   transition: width 200ms, height 200ms, margin 1s, position 1s;
+  min-width: 250px; /* Bounds on chat resizing */
+  min-height:400px;
+  max-width: 400px;
+  max-height: 600px;
 }
 
 .eternaChatNormal {
@@ -384,5 +395,22 @@
 }
 .minimizedChat { /* Removes light blue background when chat is minimzed and only shows top bar */
   height:40px;
+}
+::-webkit-resizer { /* Hide the resizer if possible */
+  display:none;
+}
+#eterna-chat::after {
+  background-color:$med-dark-blue; /* Cover up the default icon if there is one */
+  border-top-left-radius: 8px; /* Don't cut into the chat */
+  position:absolute; /* Position over default icon */
+  bottom:5px;
+  right:5px;
+  width:15px;
+  height:15px;
+  content:"";
+  background-image:url("./assets/resizer.png"); /* Show custom resizer */
+  background-repeat:no-repeat;
+  background-size: 100% 100%;
+  pointer-events:none; /* Clicks and drags go down to the resizer */
 }
 </style>
