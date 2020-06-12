@@ -105,10 +105,6 @@ export default class ChatModule extends VuexModule {
 
   operLoginPassword = '';
 
-  banList: Ban[] = [];
-
-  quietList: Ban[] = [];
-
   auth = false; // When oper login modal should show
 
   userToPrivMsg = ''; // User being private messaged
@@ -465,22 +461,33 @@ export default class ChatModule extends VuexModule {
     ) => {
       this.postMessage(new Message(message, channel, user, isAction));
     };
-    let message = rawMessage.trim()
+    let message = rawMessage.trim() // Replaces text emoticons with Unicode emoji
       .replace(':)', '🙂')
       .replace('(:', '🙂')
       .replace('):', '🙁')
       .replace(':(', '🙁');
-    const oldMessage = message;
     message = `${message} [${this.usernameColor}]`; // Message with tags added on
     let isAction = false;
     // No posting as annon or if nothing has been actually posted
-    let notBanned = true;
-    if (this.banList.some(e => e.username.includes(this.currentUser.username))
-      || this.quietList.some(e => e.username.includes(this.currentUser.username))) {
-      notBanned = false;
-    }
     if (this.currentUser.username && message.replace(/\[.*\]\r?$/, '').trim() !== '') {
       let post = true;
+      let banned = false;
+      let quieted = false;
+      this.client?.banlist(channel, (e) => { // Check if user is banned before sending message
+        const bans = e.bans.map(i => new Ban(i.banned, i.channel)); // Make an array of Ban objects
+        // If the user is banned
+        if (bans.some(b => b.username.includes(this.currentUser.username))) {
+          const userBans = bans.filter(b => b.username.includes(this.currentUser.username));
+          if (userBans.some(b => b.username.includes('m;'))) { // If any bans are quiet bans
+            quieted = true;
+            this.onMuted(channel);
+          }
+          if (userBans.some(b => !b.username.includes('m;'))) { // If any bans are NOT quiet bans
+            banned = true;
+            this.onBanned(channel);
+          }
+        }
+      });
       // Chat commands
       if (message.startsWith('/')) {
         message = message.replace(/\[.+\]$/, '');
@@ -836,19 +843,12 @@ export default class ChatModule extends VuexModule {
             break;
           case 'banlist':
             if (this.oper) {
-              this.banList = []; // Resets banlist and quietlist to avoid duplicates
-              this.quietList = [];
               channelNames.forEach((c) => { // For each channel
                 this.client?.channel(c).banlist((e) => {
                   // eslint-disable-next-line dot-notation
                   e.bans.forEach((b) => {
                     // Type is not actualy IrcUser[]; it's an object. This code works
                     const ban = new Ban(b.banned, b.channel);
-                    if (ban.username.includes('m;')) { // If a quiet ban
-                      this.quietList.push(ban); // Add to quiet list
-                    } else { // If not, add to ban list
-                      this.banList.push(ban);
-                    }
                     postMessage(`${ban.username
                       .replace('*!', '') // Remove hostmask formatting
                       .replace('@*', '')
@@ -948,22 +948,12 @@ export default class ChatModule extends VuexModule {
             break;
         }
       }
-      this.client?.channel(channel).banlist(e => { // Update banlist when message sent
-        e.bans.forEach(b => {
-          const ban = new Ban(b.banned, b.channel);
-          if (ban.username.startsWith('m;')) {
-            this.quietList.push(ban);
-          } else {
-            this.banList.push(ban);
-          }
-        });
-      });
       if (post) {
-        if (!this.channels[channel]?.banned && notBanned) {
+        if (!this.channels[channel]?.banned && !banned && !quieted) {
           if (isAction) {
-            this.client!.action(channel, `${message}`);
+              this.client!.action(channel, `${message}`);
           } else {
-            this.client!.say(channel, message);
+              this.client!.say(channel, message);
           }
           const name = User.parseUsername(channel);
           // If it's a private message, send to the username, not the nick
@@ -972,10 +962,9 @@ export default class ChatModule extends VuexModule {
           } else {
             this.postMessage(new Message(message, channel, this.currentUser, isAction));
           }
-        } else if (this.quietList.some(e => e.username.includes(this.currentUser.username))) {
+        } else if (quieted) {
           this.postMessage(new Message("Can't send messages because you are quieted"));
         } else {
-          console.log(message, message.replace(/\[.*\]\r?$/, ''));
           this.postMessage(new Message("Can't send messages because you are banned"));
         } // TODO
       }
@@ -1060,13 +1049,18 @@ export default class ChatModule extends VuexModule {
     });
   }
 
+  /* This code will only work once the chat is put in the website
+  From my observations, the get requests only work coming from eternagame.org
+  Once the chat is moved there, they will go through
+  Until then, it gives an error and anything that relies on it gives a default fallback
+  */
   @action()
   async getUserInfo(arg: { user: User, callback: (data: any | undefined) => any}) {
-    const { uid } = arg.user || { uid: 0 };
+    const { uid } = arg.user || { uid: 0 }; // UID needed for get request
     const xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function () {
+    xmlHttp.onreadystatechange = function cb() {
       if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-        arg.callback(xmlHttp.responseText);
+        arg.callback(xmlHttp.responseText); // Calls callback after response
       }
     };
     xmlHttp.open('GET', `https://eternagame.org/get/?type=my_user&uid=${uid}`, true); // true for asynchronous
@@ -1075,7 +1069,7 @@ export default class ChatModule extends VuexModule {
 
   @action()
   async onNoticeReceived({
-    message, target, tags, time, nick, type,
+    message, target, time, nick, type,
   }: Irc.MessageEventArgs) {
     const user = this.connectedUsers[User.parseUsername(nick)];
     const msg = new Message(message, target, user, false, true);
