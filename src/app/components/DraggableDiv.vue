@@ -52,9 +52,8 @@
         }
       },
       elementDrag(event) {
-        if (!this.disabled) {
+        if (!this.disabled) { // If dragging isn't disabled
           event.preventDefault();
-          this.$refs.draggableContainer.style.transition = 'none !important';
           this.positions.movementX = this.positions.clientX - event.clientX;
           this.positions.movementY = this.positions.clientY - event.clientY;
           this.positions.clientX = event.clientX;

@@ -1,6 +1,6 @@
 <template>
   <div style="overflow: hidden; position: relative;">
-    <v-style>
+    <v-style> <!-- Dynamically add focus ring if tab key is pressed -->
       .scalable-input:focus {
         box-shadow: {{bshadow}};
       }
@@ -72,6 +72,7 @@
       this.$refs.textarea.value = '';
     }
 
+    // Adds and removes border radius on the bottom depending on whether the toolbar/menu is visible
     get radius() {
       if (!this.alone) {
         return '8px';
@@ -83,7 +84,7 @@
       return this.$vxm.settings.fontSize;
     }
 
-    get bshadow() {
+    get bshadow() { // Used to conditionally add focus ring if user has pressed the tab key
       if (this.$vxm.chat.tabbing) {
         2;
       } else {

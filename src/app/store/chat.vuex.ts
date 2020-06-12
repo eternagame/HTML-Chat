@@ -1301,6 +1301,44 @@ export default class ChatModule extends VuexModule {
   }
 
   @action()
+  async bans(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
+    const { username } = arg.user;
+    const { channel, cb } = arg;
+    if (channel === '*') {
+      channelNames.forEach(c => {
+        this.client?.banlist(c, (e) => {
+          const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
+          cb(banmap.some(i => i.username.includes(username) && !i.username.includes('m;')));
+        });
+      });
+    } else {
+      this.client?.banlist(channel, (e) => {
+        const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
+        cb(banmap.some(i => i.username.includes(username) && !i.username.includes('m;')));
+      });
+    }
+  }
+
+  @action()
+  async quiets(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
+    const { username } = arg.user;
+    const { channel, cb } = arg;
+    if (channel === '*') {
+      channelNames.forEach(c => {
+        this.client?.banlist(c, (e) => {
+          const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
+          cb(banmap.some(i => i.username.includes(username) && i.username.includes('m;')));
+        });
+      });
+    } else {
+      this.client?.banlist(channel, (e) => {
+        const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
+        cb(banmap.some(i => i.username.includes(username) && i.username.includes('m;')));
+      });
+    }
+  }
+
+  @action()
   async updateTimer() {
     this.connectionData.currentTimer -= 1;
     if (this.connectionData.currentTimer <= 0) {
