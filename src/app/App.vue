@@ -8,7 +8,11 @@
     :resize="scroll"
   >
     <template slot="main">
-      <slideout style="z-index: 1;" :minimizedValue="!minimized" @auth="showAuth = true"></slideout>
+      <slideout
+        style="z-index: 1;"
+        minimizedValue="!minimized"
+        ref="slideout"
+        @auth="showAuth = true" />
       <transition name="fade">
         <div class="chat-content" v-if="!minimized">
           <MessagePane
@@ -136,6 +140,7 @@
     login: OperLogin,
     privmsgmodal: PrivateMessageModal,
     messagepanes: MessagePane,
+    slideout: Slideout,
   };
 
   get slideoutOpen() {
@@ -273,6 +278,7 @@
       this.$refs.reportDialog.open(payload);
     });
     window.addEventListener('keydown', this.key);
+    window.addEventListener('click', this.close); // Closes slideout when clicked outside
   }
 
   postScreenshot(url:string, puzzleName:string) {
@@ -295,6 +301,17 @@
   slideoutChanged() {
     if (this.slideoutOpen) {
       this.minimization = false;
+    }
+  }
+
+  beforeDestroy() {
+    window.removeEventListener('click', this.close);
+  }
+
+  close(ev: MouseEvent) {
+    if (!this.$refs.slideout.$el.contains(ev.target as Node) // If the click is not in the slideout
+    && this.$el.contains(ev.target as Node)) { // And it is in the chat
+      this.$vxm.chat.slideoutOpen = false; // Close the slideout
     }
   }
   }
