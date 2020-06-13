@@ -34,10 +34,6 @@
     </template>
   </DraggableDiv>
 </template>
-<!-- TODO
-- Ops automatically join #ops-notifications when they log in
-- Users can choose to join #test or #global
--->
 <script lang="ts">
   import {
     Vue, Component, Prop, Watch,
