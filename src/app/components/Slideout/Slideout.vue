@@ -92,6 +92,17 @@
       return this.$vxm.chat.chatChannel;
     }
 
+    get vxmOpen() { // Checks to see if the slideout should be closed (click outside)
+      return this.$vxm.chat.slideoutOpen;
+    }
+
+    @Watch('vxmOpen')
+    close() {
+      if (!this.vxmOpen) { // If it should be closed, do so
+        this.checked = false;
+      }
+    }
+
     get notifications() {
       // If any channels have notifications
       // eslint-disable-next-line max-len
