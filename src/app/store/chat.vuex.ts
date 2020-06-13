@@ -419,6 +419,7 @@ export default class ChatModule extends VuexModule {
       // Iterates through all channels
       channelNames.forEach(e => this.client?.raw(`SAMODE ${e} +o ${i}`));
     });
+    this.joinOpsChannel();
   }
 
   /**
@@ -428,6 +429,11 @@ export default class ChatModule extends VuexModule {
   async operCommand() {
     this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
     setTimeout(this.setChannelOps, 100); // Make sure events happen in order
+  }
+
+  @action()
+  async joinOpsChannel() {
+    this.client?.join('#ops-notifications');
   }
 
   @action()
