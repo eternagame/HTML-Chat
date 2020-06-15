@@ -166,6 +166,10 @@
     padding:0px 5px;
   }
 
+  li > a:focus {
+    background-color: transparent !important;
+  }
+
   li:hover {
     background-color:$blue !important;
   }

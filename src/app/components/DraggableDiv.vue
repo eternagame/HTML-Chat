@@ -64,6 +64,22 @@
         }
       },
       closeDragElement() {
+        /* Chat position is stored relative to the center of the page - this is because
+        of how the site is laid out. It means that the chat won't move if the browser resizes. */
+        if (localStorage) {
+          // Sets new chat position in localStorage when drag is ended
+          let x = this.$refs.draggableContainer.style.left; // Gets current X and Y
+          let y = this.$refs.draggableContainer.style.top;
+          x = x.replace('px', '');
+          y = y.replace('px', '');
+          const point = [Number(x), Number(y)];
+          const midpointX = window.innerWidth / 2; // Gets center
+          const midpointY = window.innerHeight / 2;
+          const midpoint = [midpointX, midpointY];
+          // Gets chat's offset from the center
+          const offset = [midpoint[0] - point[0], midpoint[1] - point[1]];
+          localStorage.position = JSON.stringify(`${offset[0]} ${offset[1]}`); // Save to localStorage
+        }
         document.onmouseup = null;
         document.onmousemove = null;
       },

@@ -57,7 +57,7 @@ class ConnectionData {
 }
 
 // eslint-disable-next-line prefer-const
-let channelNames = ['#general', '#off-topic', '#help', '#labs'];
+let channelNames = ['#general', '#off-topic', '#help', '#labs', '#test'];
 
 export default class ChatModule extends VuexModule {
   toBePosted: Message[] = [];
@@ -116,6 +116,10 @@ export default class ChatModule extends VuexModule {
   inputUpdate = false; // Whether the user has pressed the up arrow and the input should be updated
 
   rawHistoryMessages: string[] = []; // Stores history messages
+
+  initialPosition: [number, number] = [0, 0];
+
+  initialSize: [number, number] = [0, 0];
 
   constructor() {
     super();
@@ -300,6 +304,31 @@ export default class ChatModule extends VuexModule {
         } catch {
           console.error(
             'Encountered an error while parsing the local data of custom emoticons',
+          );
+        }
+      }
+      if (localStorage.position) {
+        try {
+          const data = JSON.parse(localStorage.position);
+          const values = data.split(' '); // Gets X and Y
+          const midpoint = [window.innerWidth / 2, window.innerHeight / 2]; // Gets center
+          const point = [Number(values[0]), Number(values[1])];
+          // Gets position relative to center
+          this.initialPosition = [midpoint[0] - point[0], midpoint[1] - point[1]];
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of chat location',
+          );
+        }
+      }
+      if (localStorage.size) {
+        try {
+          const data = JSON.parse(localStorage.size);
+          const values = data.split(' '); // Gets width and height
+          this.initialSize = [values[0], values[1]];
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of chat size',
           );
         }
       }
@@ -947,6 +976,16 @@ export default class ChatModule extends VuexModule {
             } else {
               this.auth = true;
               postMessage('You are not an operator or moderator and do not have permission to view the user for a nick');
+            }
+            break;
+          case 'changenick':
+            if (this.oper) {
+              if (params.length > 0) {
+                this.client?.changeNick(params);
+              }
+            } else {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to change your nick');
             }
             break;
           default:

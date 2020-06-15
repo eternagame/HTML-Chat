@@ -2,10 +2,15 @@
   <DraggableDiv
     id="eterna-chat"
     style="overflow-y: hidden; resize:both"
-    :style="{animation: animation }"
+    :style="{ 'min-height': minimized ? '40px' : '400px',
+    /* Makes sure minimum height is changed to allow for chat to be minimized*/
+    top: `${initialPosition[1]}px`,
+    left:`${initialPosition[0]}px`,
+    width: `${initialSize[0] || 300}px`,
+    height: `${initialSize[1] || 500}px`}"
     :class="{ eternaChatFull: fullSized, eternaChatNormal: !fullSized, minimizedChat: minimized }"
-    :enabled="!fullSize"
-    :resize="scroll"
+    :enabled="!fullSize /* Disables dragging when chat is fullsize*/"
+    v-resize:debounce="resized"
   >
     <template slot="main">
       <slideout
@@ -36,6 +41,9 @@
       <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
       <OpenWindowButton v-model="fullSize" />
     </template>
+    <template slot="footer">
+      <div id="resize-handle" v-show="!minimized"/>
+    </template>
   </DraggableDiv>
 </template>
 <script lang="ts">
@@ -46,6 +54,7 @@
   import {
     openDB, deleteDB, wrap, unwrap,
   } from 'idb';
+  import resize from 'vue-resize-directive';
   import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
@@ -77,6 +86,9 @@
     OpenWindowButton,
     OperLogin,
     PrivateMessageModal,
+  },
+  directives: {
+    resize,
   },
 })
   export default class App extends Vue {
@@ -142,6 +154,14 @@
     messagepanes: MessagePane,
     slideout: Slideout,
   };
+
+  get initialPosition() {
+    return this.$vxm.chat.initialPosition;
+  }
+
+  get initialSize() {
+    return this.$vxm.chat.initialSize;
+  }
 
   get slideoutOpen() {
     return this.$vxm.chat.slideoutOpen;
@@ -236,12 +256,6 @@
 
   loaded = true;
 
-  scroll() { // When chat is resized, scroll down
-    this.$refs.messagepanes.forEach(i => {
-      i.scrollDown();
-    });
-  }
-
   /**
    * Logs the user in as an operator
    */
@@ -314,6 +328,14 @@
       this.$vxm.chat.slideoutOpen = false; // Close the slideout
     }
   }
+
+  resized() {
+    const w = this.$el.scrollWidth;
+    const h = this.$el.scrollHeight;
+    if (localStorage && (w !== 300 || h !== 500)) {
+      localStorage.size = JSON.stringify(`${w} ${h}`);
+    }
+  }
   }
 </script>
 
@@ -328,11 +350,8 @@
   font-weight: 300;
   background-color: $med-dark-blue;
   position: relative; /* Makes sure everything is placed with respect to it, not to its parent */
-  top: 0px;
-  left: 0px;
   transition: width 200ms, height 200ms, margin 1s, position 1s;
   min-width: 250px; /* Bounds on chat resizing */
-  min-height:400px;
   max-width: 400px;
   max-height: 600px;
 }
@@ -396,24 +415,26 @@
   height: 30px;
 }
 .eternaChatFull { /* Full size chat */
-  width: 90vw; /* Takes up 90% of the viewport*/
-  height: 90vh;
+  width: 90vw !important; /* Takes up 90% of the viewport*/
+  height: 90vh !important;
+  max-width: 90vw !important; /* Overrides resize limits */
+  max-height: 90vh !important;
   margin-right: 5vw; /* Margins take up the rest*/
   margin-left: 5vw;
   margin-top: 5vh;
   margin-bottom: 5vh;
   box-shadow: 0 0 2vw 20vw $dark-blue-transparent; /* Creates blur effect */
-  transition: left 1s, top 1s;
+  transition: all 1s;
   left:0px !important; /* Overrides dragging styles so full size chat isn't cut off */
   top:0px !important;
 }
 .minimizedChat { /* Removes light blue background when chat is minimzed and only shows top bar */
-  height:40px;
+  height:40px !important;
 }
 ::-webkit-resizer { /* Hide the resizer if possible */
   display:none;
 }
-#eterna-chat::after {
+#resize-handle {
   background-color:$med-dark-blue; /* Cover up the default icon if there is one */
   border-top-left-radius: 8px; /* Don't cut into the chat */
   position:absolute; /* Position over default icon */
