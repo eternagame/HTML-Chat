@@ -59,7 +59,7 @@
 
     get uniqueNicks() { // Gets custom nick
       // Returns an array of nicks that aren't in the standard user^connectionid format
-      return this.user.nicks.filter(e => !e.match(/^.+\^\d{3}/));
+      return this.user.nicks.filter(e => !e.match(/^.+\^\d+/));
     }
 
     get displayedColor() {
