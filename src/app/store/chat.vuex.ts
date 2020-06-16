@@ -121,6 +121,8 @@ export default class ChatModule extends VuexModule {
 
   initialSize: [number, number] = [0, 0];
 
+  customNick !: string;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -332,6 +334,15 @@ export default class ChatModule extends VuexModule {
           );
         }
       }
+      if (localStorage.nick) {
+        try {
+          this.customNick = localStorage.nick;
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of custom nick',
+          );
+        }
+      }
     }
 
     if (process.env.VUE_APP_SERVER_URL) {
@@ -386,7 +397,7 @@ export default class ChatModule extends VuexModule {
       })
       .on('nick in use', this.onNickInUse)
       .on('irc error', this.onIrcError)
-      .on('raw', async (e) => {
+      .on('raw', (e) => {
         if (e.from_server) {
           const commandNumber = parseInt(e.line.substring(20, 23), 10);
           if (e.line.match(/^:irc\.eternagame\.org .+\^\d{3} #*.* /)) {
@@ -481,7 +492,10 @@ export default class ChatModule extends VuexModule {
   @action()
   async generateNick() {
     const connectionId = Math.floor(Math.random() * 1000);
-    const nick = `${this.currentUser.username}^${connectionId}`;
+    let nick = `${this.currentUser.username}^${connectionId}`;
+    if (this.customNick) {
+      nick = this.customNick;
+    }
     this.currentUser.nicks.push(nick);
     this.nick = nick;
   }
@@ -530,7 +544,7 @@ export default class ChatModule extends VuexModule {
         let parts = message.match(/^\/([^ ]+)/);
         const command = parts ? parts[1] : '';
         parts = message.match(/^\/\w+ (.+)/);
-        const params = parts ? parts[1] : '';
+        let params = parts ? parts[1] : '';
         const first = params.split(' ')[0];
         const second = params.split(' ')[1];
         switch (command) {
@@ -678,6 +692,14 @@ export default class ChatModule extends VuexModule {
                 postMessage('Usage: `/notice <channel> <message>`');
                 postMessage('Example: `/notice #general Hello, everyone`');
                 postMessage('Example: `/notice * Hello, everyone`');
+                postMessage('You must be an operator to use this command');
+                break;
+              case 'changenick':
+                postMessage(
+                  '`/changenick`: Changes your nickname that others see when you send a message',
+                );
+                postMessage('Usage: `/changenick <newnick>`');
+                postMessage('Example: `/changenick NewNick`');
                 postMessage('You must be an operator to use this command');
                 break;
               default:
@@ -972,6 +994,8 @@ export default class ChatModule extends VuexModule {
                 const userlist = Object.keys(users);
                 const nickslist = userlist.filter(e => users[e]?.nicks.includes(params.trim()));
                 postMessage(`Nick ${params.trim()} belongs to user ${nickslist[0]}`);
+              } else {
+                postMessage('Please include command parameters. Type `/help user` for more usage instructions');
               }
             } else {
               this.auth = true;
@@ -981,7 +1005,15 @@ export default class ChatModule extends VuexModule {
           case 'changenick':
             if (this.oper) {
               if (params.length > 0) {
-                this.client?.changeNick(params);
+                params = params.trim();
+                this.nick = params;
+                this.currentUser.nicks = [params];
+                this.client?.raw(`NICK ${params}`);
+                if (localStorage) {
+                  localStorage.nick = params;
+                }
+              } else {
+                postMessage('Please include command parameters. Type `/help changenick` for more usage instructions');
               }
             } else {
               this.auth = true;
