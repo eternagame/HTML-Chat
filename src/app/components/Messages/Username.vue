@@ -9,6 +9,11 @@
       @mouseover="hovered = true"
       @mouseout="hovered = false"
     >
+      <span
+        class="away-indicator"
+        :title="`${user.username} is away`" >
+        {{ awayIndicator }}
+      </span>
       {{ uniqueNicks[0] || user.username }}<slot/>
     </a>
     <transition name="fade">
@@ -57,9 +62,20 @@
       return c;
     }
 
+    awayIndicator = '';
+
     get uniqueNicks() { // Gets custom nick
       // Returns an array of nicks that aren't in the standard user^connectionid format
       return this.user.nicks.filter(e => !e.match(/^.+\^\d+/));
+    }
+
+    updateIndicator() {
+      this.$vxm.chat.userStatus({
+        user: this.user.username,
+        cb: (b) => {
+          this.awayIndicator = b ? '●' : '';
+        },
+      });
     }
 
     get displayedColor() {
@@ -81,6 +97,10 @@
       }
        // After it's passed all that, return the color; if it somehow fails, return a computed
       return this.color || this.computedColor;
+    }
+
+    created() {
+      this.updateIndicator();
     }
 
     validColor(red:string, green:string, blue:string) {
@@ -118,5 +138,8 @@
   }
   .fade-enter, .fade-leave-to {
     opacity: 0;
+  }
+  .away-indicator {
+    color:yellow;
   }
 </style>

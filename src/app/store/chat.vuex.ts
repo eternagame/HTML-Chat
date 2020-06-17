@@ -494,7 +494,7 @@ export default class ChatModule extends VuexModule {
     const connectionId = Math.floor(Math.random() * 1000);
     let nick = `${this.currentUser.username}^${connectionId}`;
     if (this.customNick) {
-      nick = this.customNick;
+      nick = `${this.customNick}^${connectionId}`;
     }
     this.currentUser.nicks.push(nick);
     this.nick = nick;
@@ -1413,6 +1413,28 @@ export default class ChatModule extends VuexModule {
         cb(banmap.some(i => i.username.includes(username) && i.username.includes('m;')));
       });
     }
+  }
+
+  @action()
+  async userStatus(arg: {user:string, cb: (away: boolean) => void}) {
+    const n = this.connectedUsers[arg.user]!.nicks[0];
+    if (n === undefined) return;
+    this.client?.who(n, (e) => {
+      console.log(e, e.users[0].away);
+      arg.cb(e.users[0].away);
+    });
+  }
+
+  @action()
+  async setAway() {
+    this.client!.user.away = 'away';
+    this.client?.raw('AWAY User is currently away');
+  }
+
+  @action()
+  async setUnaway() {
+    this.client!.user.away = '';
+    this.client?.raw('AWAY');
   }
 
   @action()
