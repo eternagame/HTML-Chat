@@ -8,6 +8,7 @@ const md = new MarkdownIt({
 }).disable('image');
 // Via https://github.com/markdown-it/markdown-it/blob/e6f19eab4204122e85e4a342e0c1c8486ff40c2d/docs/architecture.md
 const defaultRender = md.renderer.rules.link_open
+                      || md.renderer.rules.text
                       || function renderToken(tokens: any, idx: any, options: any,
                         env: any, self: any) {
                         return self.renderToken(tokens, idx, options);
@@ -22,22 +23,31 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
   } else {
     tokens[idx].attrs[aIndex][1] = '_blank'; // replace value of existing attr
   }
-  let result = '';
-  tokens.forEach((t: { content: any; }) => {
-    const { content } = t;
-    // If the link URL is an Eterna screenshot
-    if (content.match(/https:\/\/eternagame.org\/sites\/default\/files\/chat_screens\/\d{6}_\d{10}\.png/)) {
-      result = `<br><a target="_blank" href="${content}"><img src="${content}" style="width:calc(100% - 25px); max-width:750px"></a><br>`;
-      t.content = '';
-    }
-  });
-  if (result !== '' && result !== undefined) {
-    return result;
+
+  const { content } = tokens[idx + 1];
+  // If the text it contains is a screenshot, format it as a link to the screenshot
+  if (content.match(/https:\/\/eternagame.org\/sites\/default\/files\/chat_screens\/\d{6}_\d{10}\.png/)) {
+    return `<a target="_blank" href="${content}">`;
   }
   return defaultRender(tokens, idx, options, env, self);
 
   // pass token to default renderer.
   // return defaultRender(tokens, idx, options, env, self);
+};
+md.renderer.rules.text = function link(tokens, idx, options, env, self) {
+  // If it's a screenshot, format it as an image instead
+  if (tokens[idx].content.match(/https:\/\/eternagame.org\/sites\/default\/files\/chat_screens\/\d{6}_\d{10}\.png/)) {
+    const { content } = tokens[idx];
+    return `<img src="${content}" style="width:calc(100% - 25px); max-width:750px">`;
+  }
+  if (tokens[idx].content.match(/#.+/)) {
+    let { content } = tokens[idx];
+    const channel = tokens[idx].content.match(/#\S+/g);
+    if (!channel) return defaultRender(tokens, idx, options, env, self);
+    content = content.replace(channel[0], `<mark class="channel-link" style="cursor:pointer">${channel[0]}</mark>`);
+    return content;
+  }
+  return defaultRender(tokens, idx, options, env, self);
 };
 
 export default md;

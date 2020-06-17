@@ -1,5 +1,11 @@
 <template>
-  <div class="user-tooltip-container">
+  <div
+    class="user-tooltip-container"
+    ref="container"
+    :style="{
+      top: `${top + 5}px`,
+      left: `${left + 5}px`
+    }">
     <ul>
       <li class="user-tooltip-user">{{user.username}}</li>
       <li class="user-tooltip-rank"><span class="rank">{{rank}}</span></li>
@@ -8,20 +14,36 @@
   </div>
 </template>
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+  import {
+    Component, Prop, Vue, Watch,
+  } from 'vue-property-decorator';
   import User from '@/types/user';
   @Component
   export default class UserTooltip extends Vue {
     @Prop()
     user!: User;
 
+    @Prop()
+    top!: number;
+
+    @Prop()
+    left!: number;
+
     desc = '';
 
     rank = '';
 
-    created() {
-      this.description();
-      this.findRank();
+    $refs !: {
+      container: HTMLDivElement;
+    };
+
+    get parentTop() {
+      return this.$parent;
+    }
+
+    @Watch('parentTop')
+    parentChanged() {
+      console.log(this.parentTop);
     }
 
     description() {
@@ -62,10 +84,14 @@
   @import '~vue-context/src/sass/vue-context';
   .user-tooltip-container {
     color:white;
-    position:absolute;
+    position: fixed;
     background-color:$med-dark-blue;
-    z-index: 5;
-    width:95%;
+    z-index: 1501;
+    overflow: visible;
+    height:auto;
+    top:0px;
+    left:0px;
+    width:300px;
     border-radius:5px;
   }
   li {

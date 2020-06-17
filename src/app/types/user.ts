@@ -7,6 +7,8 @@ export default class User {
 
   username: string;
 
+  away: boolean;
+
   static parseUsername(nick: string) {
     return nick.substr(0, nick.indexOf('^') === -1 ? nick.length : nick.indexOf('^'));
   }
@@ -15,5 +17,6 @@ export default class User {
     this.nicks = [];
     this.uid = uid;
     this.username = username;
+    this.away = false;
   }
 }

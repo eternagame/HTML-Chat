@@ -2,9 +2,13 @@
   <div id="settings-wrapper" :style="{ fontSize:`${fontSize}px` }">
     <section>
       <h5 class="heading" >Text Size</h5>
-      <MinimizationTriangle style="display:inline-block" settings="true" v-model="textSizeOpen" />
+      <MinimizationTriangle
+        style="display:inline-block"
+        settings="true"
+        @input="menusChanged"
+        v-model="openMenus.textSize" />
       <transition name="settings-slide">
-      <div v-show="!textSizeOpen" class="settings-content-container">
+      <div v-show="!openMenus.textSize" class="settings-content-container">
         <input v-model="size" type=number min=10 max=18>
         <p id='font-size-p'>Default is 14</p>
         <p
@@ -17,9 +21,13 @@
     </section>
     <section>
       <h5 class="heading" >Ignored</h5>
-      <MinimizationTriangle style="display:inline-block" settings="true" v-model="ignoredOpen" />
+      <MinimizationTriangle
+        style="display:inline-block"
+        settings="true"
+        @input="menusChanged"
+        v-model="openMenus.ignored" />
       <transition name="settings-slide">
-      <div v-show="!ignoredOpen" class="settings-content-container">
+      <div v-show="!openMenus.ignored" class="settings-content-container">
       <table style="width:175px" >
         <tr v-for="user in ignoredUsers" :key="user.Username">
           <button
@@ -49,9 +57,10 @@
       <MinimizationTriangle
         style="display:inline-block"
         settings="true"
-        v-model="notificationsOpen" />
+        @input="menusChanged"
+        v-model="openMenus.notifications" />
       <transition name="settings-slide">
-      <div v-show="!notificationsOpen" class="settings-content-container">
+      <div v-show="!openMenus.notifications" class="settings-content-container">
         <h6>Ignored</h6>
         <table>
           <tr v-for="channel in channels" :key="channel.name">
@@ -97,21 +106,38 @@
           This will appear in the page title if you have notifications
         </p>
         <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
+        <h6>Keywords</h6>
+        <p>
+          If these keywords are used in the chat, they will trigger notifications
+        </p>
+        <textarea type=text v-model="keywords" style="font-size:1rem; padding:1px;" />
+        <p>
+          If you have multiple keywords, separate them with commas.
+          Your username is automatically a keyword.
+        </p>
       </div>
       </transition>
     </section>
     <section>
       <h5 class="heading" >Username Color</h5>
-      <MinimizationTriangle style="display:inline-block" settings="true" v-model="colorOpen" />
+      <MinimizationTriangle
+        style="display:inline-block"
+        settings="true"
+        @input="menusChanged"
+        v-model="openMenus.color" />
       <transition name="settings-slide">
-      <ColorPicker v-show="!colorOpen" class="settings-content-container" />
+      <ColorPicker v-show="!openMenus.color" class="settings-content-container" />
       </transition>
     </section>
     <section>
       <h5 class="heading" >Toolbar Features</h5>
-      <MinimizationTriangle style="display:inline-block" settings="true" v-model="toolbarOpen" />
+      <MinimizationTriangle
+        style="display:inline-block"
+        settings="true"
+        @input="menusChanged"
+        v-model="openMenus.toolbar" />
       <transition name="settings-slide">
-      <div v-show="!toolbarOpen" class="settings-content-container">
+      <div v-show="!openMenus.toolbar" class="settings-content-container">
         <p>
           These enable you to send emoticons and formatted text.
         </p>
@@ -156,16 +182,48 @@
             </td>
           </tr>
         </table>
+        <h6>Custom emoticons</h6>
+        <table>
+          <tbody>
+          <tr v-for="(emote, index) in customEmoticons" :key="emote">
+            <td>{{emote}}</td>
+            <td>Change to <input :id="index" @input="update" style="width:1rem"></td>
+          </tr>
+          </tbody>
+          <tfoot><tr><td colspan=2 class="warning">{{emoticonErrorMessage}}</td></tr></tfoot>
+        </table>
+      </div>
+      </transition>
+    </section>
+    <section>
+      <li class="settings-section-header">
+      <h5 class="heading">Status</h5>
+      <MinimizationTriangle
+        style="display:inline-block"
+        settings="true"
+        @input="menusChanged"
+        v-model="openMenus.status" />
+      </li>
+      <transition name="settings-slide">
+      <div v-show="!openMenus.status" class="settings-content-container">
+        <p>You are currently marked as {{userStatus ? 'away' : 'online'}}</p>
+        <button class="btn settings-button" @click="changeStatus(!userStatus)">
+          Toggle
+        </button>
       </div>
       </transition>
     </section>
     <section>
       <li class="settings-section-header">
       <h5 class="heading" >Operator</h5>
-      <MinimizationTriangle style="display:inline-block" settings="true" v-model="operOpen" />
+      <MinimizationTriangle
+        style="display:inline-block"
+        settings="true"
+        @input="menusChanged"
+        v-model="openMenus.oper" />
       </li>
       <transition name="settings-slide">
-      <div v-show="!operOpen" class="settings-content-container">
+      <div v-show="!openMenus.oper" class="settings-content-container">
         <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
         <button
           @click="$emit('auth')"
@@ -174,6 +232,8 @@
           v-show="!isOper" >
             Log in as operator
         </button>
+        <h6>Change nick</h6>
+        <input @input="setNick" :value="opernick">
       </div>
       </transition>
     </section>
@@ -203,19 +263,23 @@
     },
   })
   export default class SlideoutSettings extends Vue {
-    testOpen = true;
+    openMenus = {
+      notifications: true,
+      color: true,
+      oper: true,
+      toolbar: true,
+      textSize: true,
+      ignored: true,
+      status: true,
+    };
 
-    notificationsOpen = true;
-
-    colorOpen = true;
-
-    operOpen = true;
-
-    toolbarOpen = true;
-
-    textSizeOpen = true;
-
-    ignoredOpen = true;
+    @Watch('openMenus')
+    menusChanged() {
+      console.log(2);
+      if (localStorage) {
+        localStorage.openMenus = JSON.stringify(this.openMenus);
+      }
+    }
 
     size:string = '14'; // font size
 
@@ -227,8 +291,79 @@
 
     markdownChatFeatures = true;
 
+    keywords = '';
+
+    emoticonErrorMessage = '';
+
+    changeStatus(to:boolean) {
+      this.$vxm.chat.autoUpdateStatus = !to;
+      if (!to) {
+        this.$vxm.chat.setUnaway();
+      } else {
+        this.$vxm.chat.setAway();
+      }
+    }
+
+    get userStatus() {
+      return this.$vxm.chat.userStatus;
+    }
+
+    @Watch('keywords')
+    keywordsChanged() {
+      const keywordsArray = this.keywords.split(/, ?/);
+      if (keywordsArray[0] === '') {
+        return;
+      }
+      if (localStorage) {
+        localStorage.notificationsKeywords = JSON.stringify(keywordsArray);
+      }
+    }
+
+    update(e:Event) {
+      const targ = e.target as HTMLInputElement;
+      const id = Number(targ.id);
+      let { value } = targ;
+      value = value.trim();
+      while ([...value].length > 1) {
+        value = value.substring(0, value.length - 1);
+      }
+      const emoticonRegex = /[^\w\d\p{P}\p{S}]/;
+      if (value.match(emoticonRegex)) {
+        if (this.customEmoticons.some(j => j === value)) {
+          this.emoticonErrorMessage = 'You are using that emoticon in another slot';
+          return;
+        }
+        Vue.set(this.$vxm.chat.customEmoticons, id, value);
+        if (localStorage) {
+          localStorage.customEmoticons = JSON.stringify(this.$vxm.chat.customEmoticons);
+        }
+        this.emoticonErrorMessage = '';
+      } else {
+        this.emoticonErrorMessage = `${value} is not a valid emoticon`;
+      }
+      if (value.trim() === '') {
+        this.emoticonErrorMessage = '';
+      }
+      targ.value = '';
+    }
+
+    validateNick(nick:string) {
+      // eslint-disable-next-line no-useless-escape
+      return nick.match(/^[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*$/i);
+    }
+
+    setNick(e:Event) {
+      const { value } = e.target as HTMLInputElement;
+      if (!this.validateNick(value)) return;
+      this.$vxm.chat.changeNick(value);
+    }
+
     get isOper() {
       return this.$vxm.chat.oper;
+    }
+
+    get customEmoticons() {
+      return this.$vxm.chat.customEmoticons;
     }
 
     // Gets a list of ignored users
@@ -245,6 +380,8 @@
     get visible() {
       return (this.$parent as Slideout).checked;
     }
+
+    opernick = '';
 
     // When tab opened, display stored value if there is one
     created() {
@@ -272,6 +409,19 @@
         this.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
       } else {
         this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
+      }
+      if (localStorage.notificationsKeywords) {
+        this.keywords = JSON.parse(localStorage.notificationsKeywords).join(', ');
+      } else {
+        this.keywords = this.$vxm.chat.notificationsKeywords.join(', ');
+      }
+      if (localStorage.nick) {
+        this.opernick = localStorage.nick;
+      } else {
+        this.opernick = this.$vxm.chat.customNick;
+      }
+      if (localStorage.openMenus) {
+        this.openMenus = JSON.parse(localStorage.openMenus);
       }
     }
 
@@ -520,5 +670,8 @@ table {
 }
 .settings-content-container {
   overflow:hidden;
+}
+.warning {
+  color:$warning;
 }
 </style>

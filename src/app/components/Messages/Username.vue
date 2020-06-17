@@ -6,20 +6,25 @@
       class="username"
       :style="{ color: displayedColor }"
       :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
-      @mouseover="hovered = true"
+      @mouseover="hovered = true /* Shows and hides tooltip */"
       @mouseout="hovered = false"
+      @mousemove="updatecoords"
     >
       <span
         class="away-indicator"
-        :title="`${user.username} is away`" >
-        {{ awayIndicator }}
+        :title="`${user.username} is away`"
+        v-show="away"> <!-- Away indicator -->
+        ●
       </span>
       {{ uniqueNicks[0] || user.username }}<slot/>
     </a>
-    <transition name="fade">
+    <transition name="fade" @after-enter="enter">
       <UserTooltip
+        :top="top"
+        :left="left"
         v-if="hovered"
         :user="user"
+        ref="tooltip"
       />
     </transition>
   </span>
@@ -45,6 +50,15 @@
 
     hovered = false;
 
+    top = 0;
+
+    left = 0;
+
+    updatecoords(e:MouseEvent) {
+      this.top = e.clientY;
+      this.left = e.clientX;
+    }
+
     private defaultColor = '#ffffff';
 
     get computedColor() {
@@ -62,20 +76,22 @@
       return c;
     }
 
-    awayIndicator = '';
-
     get uniqueNicks() { // Gets custom nick
       // Returns an array of nicks that aren't in the standard user^connectionid format
       return this.user.nicks.filter(e => !e.match(/^.+\^\d+/));
     }
 
-    updateIndicator() {
-      this.$vxm.chat.userStatus({
-        user: this.user.username,
-        cb: (b) => {
-          this.awayIndicator = b ? '●' : '';
-        },
-      });
+    enter() {
+      this.$refs.tooltip.findRank();
+      this.$refs.tooltip.description();
+    }
+
+    $refs !: {
+      tooltip:UserTooltip;
+    };
+
+    get away() {
+      return this.user.away;
     }
 
     get displayedColor() {
@@ -97,10 +113,6 @@
       }
        // After it's passed all that, return the color; if it somehow fails, return a computed
       return this.color || this.computedColor;
-    }
-
-    created() {
-      this.updateIndicator();
     }
 
     validColor(red:string, green:string, blue:string) {

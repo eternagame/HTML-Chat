@@ -123,6 +123,10 @@ export default class ChatModule extends VuexModule {
 
   customNick !: string;
 
+  notificationsKeywords!: string[];
+
+  autoUpdateStatus = true;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -343,6 +347,15 @@ export default class ChatModule extends VuexModule {
           );
         }
       }
+      if (localStorage.notificationsKeywords) {
+        try {
+          this.notificationsKeywords = JSON.parse(localStorage.notificationsKeywords);
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of notifications keywords',
+          );
+        }
+      }
     }
 
     if (process.env.VUE_APP_SERVER_URL) {
@@ -356,6 +369,7 @@ export default class ChatModule extends VuexModule {
       console.error("VUE_APP_SSL wasn't found in the .env file!");
     }
     this.initClient();
+    setInterval(this.updateUserStatus, 5000);
   }
 
   @action()
@@ -427,7 +441,7 @@ export default class ChatModule extends VuexModule {
   }
 
   /**
-   * Takes in a raw string from the server and parses it into a history message that it posts
+   * Takes in a raw string from the server and parses it into a history message that it then posts
    * @param raw - The raw string to parse and post to the chat
    */
   @action()
@@ -437,7 +451,10 @@ export default class ChatModule extends VuexModule {
     const time = parts[0].substring(13, 37);
     const channel = parts[3];
     // eslint-disable-next-line no-control-regex
-    const message = str.substring(str.indexOf(channel) + channel.length + 2).replace(/\u0001/g, '').trim();
+    let message = str.substring(str.indexOf(channel) + channel.length + 2).replace(/\u0001/g, '').trim();
+    this.notificationsKeywords.forEach(n => {
+      message = message.replace(n, `<mark>${n}</mark>`);
+    });
     const user = parts[1].substring(1, parts[1].indexOf('@'));
     const username = user.substring(0, user.lastIndexOf('!'));
     const uid = user.substring(user.lastIndexOf('!') + 1);
@@ -544,7 +561,7 @@ export default class ChatModule extends VuexModule {
         let parts = message.match(/^\/([^ ]+)/);
         const command = parts ? parts[1] : '';
         parts = message.match(/^\/\w+ (.+)/);
-        let params = parts ? parts[1] : '';
+        const params = parts ? parts[1] : '';
         const first = params.split(' ')[0];
         const second = params.split(' ')[1];
         switch (command) {
@@ -789,13 +806,21 @@ export default class ChatModule extends VuexModule {
             } else if (parseInt(second, 10) > 3 || parseInt(second, 10) < 1) {
               postMessage('You have three custom emoticon slots. Type `/help emoticon` for more usage instructions');
               break;
-            } else if (
-              (JSON.parse(localStorage.customEmoticons) as string[]).some(e => e === first)) {
-              postMessage('You already have that emoticon in a custom slot');
-              break;
-            } else if (!first.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/)) {
-              postMessage('You may only add emoticons to custom slots');
-              break;
+            } else {
+              let emoticons : string[];
+              if (localStorage.customEmoticons) {
+                emoticons = JSON.parse(localStorage.customEmoticons) as string[];
+              } else {
+                emoticons = this.customEmoticons;
+              }
+              if (emoticons.some(e => e === first)) {
+                postMessage('You already have that emoticon in a custom slot');
+                break;
+              } else if (!first.match(/[^\w\d\p{P}\p{S}]/)) {
+                console.log(first);
+                postMessage('You may only add *emoticons* to custom slots');
+                break;
+              }
             }
             // Changing the array elements with array[index] = newValue isn't reactive
             Vue.set(this.customEmoticons, (parseInt(second, 10) - 1), first);
@@ -1003,22 +1028,16 @@ export default class ChatModule extends VuexModule {
             }
             break;
           case 'changenick':
-            if (this.oper) {
-              if (params.length > 0) {
-                params = params.trim();
-                this.nick = params;
-                this.currentUser.nicks = [params];
-                this.client?.raw(`NICK ${params}`);
-                if (localStorage) {
-                  localStorage.nick = params;
-                }
-              } else {
-                postMessage('Please include command parameters. Type `/help changenick` for more usage instructions');
-              }
-            } else {
+            if (!this.oper) {
               this.auth = true;
               postMessage('You are not an operator or moderator and do not have permission to change your nick');
+              break;
             }
+            if (params.length < 1) {
+              postMessage('Please include command parameters. Type `/help changenick` for more usage instructions');
+              break;
+            }
+            this.changeNick(params);
             break;
           default:
             postMessage('Invalid command. Type `/help` for more available commands');
@@ -1062,6 +1081,27 @@ export default class ChatModule extends VuexModule {
         );
       }
     } else if (channel) this.postMessage(new Message(`${username} has already been ignored`, channel));
+  }
+
+  @action()
+  async changeNick(value:string) {
+    let to = value;
+    if (this.oper) {
+      if (to.length > 0) {
+        to = to.trim();
+        this.nick = to;
+        this.currentUser.nicks = [to];
+        this.client?.raw(`NICK ${to}`);
+        if (localStorage) {
+          localStorage.nick = to;
+        }
+      } else {
+        this.postMessage(new Message('Please include command parameters. Type `/help changenick` for more usage instructions'));
+      }
+    } else {
+      this.auth = true;
+      this.postMessage(new Message('You are not an operator or moderator and do not have permission to change your nick'));
+    }
   }
 
   @action()
@@ -1189,13 +1229,21 @@ export default class ChatModule extends VuexModule {
       if (message.toLowerCase().includes(this.currentUser.username.toLowerCase())) {
         this.mention(channel.name);
       }
+    } else if (
+      (this.slideoutOpen || channel.name !== this.chatChannel)
+      && this.notificationsKeywords.some(e => message.includes(e))) {
+      this.notify(channel.name);
     } else {
       // If the user is in the channel and the slideout is closed
       this.readChannel(channel.name); // Set the channel to read
     }
     const username = User.parseUsername(nick);
+    let msg = message;
+    this.notificationsKeywords.forEach(n => {
+      msg = msg.replace(n, `<mark>${n}</mark>`);
+    });
     const messageObject = new Message(
-      message,
+      msg,
       target,
       this.connectedUsers[username],
       type === 'action',
@@ -1416,25 +1464,34 @@ export default class ChatModule extends VuexModule {
   }
 
   @action()
-  async userStatus(arg: {user:string, cb: (away: boolean) => void}) {
-    const n = this.connectedUsers[arg.user]!.nicks[0];
-    if (n === undefined) return;
-    this.client?.who(n, (e) => {
-      console.log(e, e.users[0].away);
-      arg.cb(e.users[0].away);
+  async updateUserStatus() {
+    this.client?.who('#general', (e) => { // Everyone should be in this channel
+      (e.users as {nick: string, away:boolean}[]).forEach(u => { // For each user
+        const user = User.parseUsername(u.nick); // Get their username
+        if (!this.connectedUsers[user]) return; // If they don't exist, just don't do anything
+        this.connectedUsers[user]!.away = u.away; // Update their status
+      });
     });
   }
 
   @action()
   async setAway() {
     this.client!.user.away = 'away';
+    this.currentUser.away = true;
+    this.connectedUsers[this.currentUser.username]!.away = true;
     this.client?.raw('AWAY User is currently away');
   }
 
   @action()
   async setUnaway() {
     this.client!.user.away = '';
+    this.currentUser.away = false;
+    this.connectedUsers[this.currentUser.username]!.away = false;
     this.client?.raw('AWAY');
+  }
+
+  get userStatus() {
+    return this.connectedUsers[this.currentUser.username]?.away;
   }
 
   @action()
