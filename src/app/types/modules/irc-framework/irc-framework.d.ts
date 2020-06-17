@@ -273,6 +273,7 @@ declare module 'irc-framework' {
     hostname: string;
     ident: string;
     modes: string[]; // any[]
+    away: string;
     nick: string;
   }
   class IrcChannel extends EventEmitter {

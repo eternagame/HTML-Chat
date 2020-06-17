@@ -1,7 +1,8 @@
 <template>
   <div class="user-tooltip-container">
     <ul>
-      <li class="user-tooltip-user">{{user.username}} <span class="rank">{{rank}}</span></li>
+      <li class="user-tooltip-user">{{user.username}}</li>
+      <li class="user-tooltip-rank"><span class="rank">{{rank}}</span></li>
       <li class="description">{{desc}}</li>
     </ul>
   </div>
@@ -35,6 +36,7 @@
           }
         },
       });
+            this.desc = 'This user has not added a description to their profile';
     }
 
     findRank() {
@@ -49,6 +51,7 @@
           }
         },
       });
+      this.rank = 'Unranked';
     }
   }
 </script>
@@ -61,9 +64,8 @@
     color:white;
     position:absolute;
     background-color:$med-dark-blue;
-    min-width:200px;
-    z-index:5;
-    max-width:350px;
+    z-index: 5;
+    width:95%;
     border-radius:5px;
   }
   li {
@@ -78,8 +80,8 @@
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
   }
-  .rank {
-    float:right;
+  .user-tooltip-rank {
+    border-bottom:1px solid white;
   }
   .description {
     border-bottom-right-radius: 5px;

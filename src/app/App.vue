@@ -46,6 +46,18 @@
     </template>
   </DraggableDiv>
 </template>
+<!-- TODO
+- Reconnect button
+  - Style to align with theme
+  - Hide input when visible
+- Cleanup
+  - Comment code
+  - Remove unused imports
+  - Group functions and properties
+- Away status
+  - Allow it to be manually set
+  - Automatically set it after a certain amount of time with no interaction
+-->
 <script lang="ts">
   import {
     Vue, Component, Prop, Watch,
@@ -113,6 +125,8 @@
   fullSize = false;
 
   showAuth = false;
+
+  windowFocused = true;
 
   get showPrivMsgModal() {
     return this.$vxm.chat.privMsgModal;
@@ -293,6 +307,21 @@
     });
     window.addEventListener('keydown', this.key);
     window.addEventListener('click', this.close); // Closes slideout when clicked outside
+    window.addEventListener('focus', () => {
+      this.windowFocused = true;
+    });
+    window.addEventListener('blur', () => {
+      this.windowFocused = false;
+    });
+  }
+
+  @Watch('windowFocused')
+  focusChanged() {
+    if (this.windowFocused) {
+      this.$vxm.chat.setUnaway();
+    } else {
+      this.$vxm.chat.setAway();
+    }
   }
 
   postScreenshot(url:string, puzzleName:string) {
