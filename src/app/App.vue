@@ -54,9 +54,29 @@
   - Comment code
   - Remove unused imports
   - Group functions and properties
+  - Move unnecessary stuff out of chat.vuex
+  - Move code in chat commands to functions
+- Bug fixes
+  - Ensure features and styles are consistent across browsers
+FINISHED
+- Notifications
+  - Keywords
+- Settings
+  - Values need to be stored correctly
+  - Add option to change nick for opers
+  - Make sure emoticons can be changed there
+- Cleanup
+  - Markdown
 - Away status
-  - Allow it to be manually set
   - Automatically set it after a certain amount of time with no interaction
+  - Allow it to be manually set
+  - Don't fetch on demand - rather, update every 5 seconds (or so) and fetch values
+- Bug fixes
+  - Operator name change seems to break sometimes
+  - Optimize away/online status loading
+  - Find a way to limit unnecessary GET requests (tooltips)
+- Miscellaneous
+  - Clicking a channel name in a chat message opens the channel
 -->
 <script lang="ts">
   import {
@@ -266,6 +286,7 @@
       }
     }, 100);
     this.loaded = false;
+    this.startTimers();
   }
 
   loaded = true;
@@ -308,7 +329,9 @@
     window.addEventListener('keydown', this.key);
     window.addEventListener('click', this.close); // Closes slideout when clicked outside
     window.addEventListener('focus', () => {
-      this.windowFocused = true;
+      if (this.$vxm.chat.autoUpdateStatus) {
+        this.windowFocused = true;
+      }
     });
     window.addEventListener('blur', () => {
       this.windowFocused = false;
@@ -322,6 +345,32 @@
     } else {
       this.$vxm.chat.setAway();
     }
+  }
+
+  timeout = 60000;
+
+  timeoutId !: number;
+
+  onInactive() {
+    this.$vxm.chat.setAway();
+  }
+
+  resetInactiveTimer() {
+    window.clearTimeout(this.timeoutId);
+    this.beginInactiveTimer();
+  }
+
+  beginInactiveTimer() {
+    this.timeoutId = setTimeout(this.onInactive, this.timeout);
+  }
+
+  startTimers() {
+    const chat = document.getElementById('eterna-chat');
+    chat?.addEventListener('mousemove', this.resetInactiveTimer, false);
+    chat?.addEventListener('mousedown', this.resetInactiveTimer, false);
+    chat?.addEventListener('keypress', this.resetInactiveTimer, false);
+    chat?.addEventListener('touchmove', this.resetInactiveTimer, false);
+    this.beginInactiveTimer();
   }
 
   postScreenshot(url:string, puzzleName:string) {

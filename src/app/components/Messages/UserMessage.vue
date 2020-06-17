@@ -14,6 +14,7 @@
         >{{ isAction || !message.user.username ? '': ':' }}
         </Username>
         &lrm;<span
+          ref="msg"
           :style="{
             fontStyle:isNotice ? 'italic' : '',
           }"
@@ -74,11 +75,34 @@
 
     get formattedMessage(): string {
       // If there are tags, remove them before the message is seen
-      if (this.messageHasTags(this.message.message)) {
-        const tagsStringPosition = this.message.message.search(/\[(.+,)*.+\]\r?$/);
-        return md.renderInline(this.message.message.substring(0, tagsStringPosition));
+      const msg = this.message.message;
+      if (this.messageHasTags(msg)) {
+        const tagsStringPosition = msg.search(/\[(.+,)*.+\]\r?$/);
+        return md.renderInline(msg.substring(0, tagsStringPosition));
       } // If not, just show the message
-      return md.renderInline(this.message.message);
+      return md.renderInline(msg);
+    }
+
+    mounted() {
+      // Gets all of the channel links from markdown
+     const channelLinks = this.$refs.msg.getElementsByClassName('channel-link');
+     // Spread operators converts HTMLCollectionOf<Element> to HTMLElement[]
+     // Iterates through each channel link
+     [...channelLinks].forEach(l => {
+       // Adds event listener for click
+       l.addEventListener('click', (ev) => {
+         // When channel link is clicked, change channel
+         const channel = l.innerHTML;
+         // Makes sure channel exists
+         if (Object.keys(this.$vxm.chat.channels).includes(channel)) {
+          this.$vxm.chat.chatChannel = channel; // Change the channel name in the header
+          // Find the tab number and set it
+          this.$vxm.chat.tab = Object.keys(this.$vxm.chat.channels).indexOf(channel);
+         } else {
+           console.log(`No such channel ${channel}`);
+         }
+       });
+     });
     }
 
     get formattedTime() {
@@ -108,6 +132,7 @@
 
     $refs!: {
       contextMenu: HTMLFormElement;
+      msg: HTMLSpanElement;
     };
 
     openContextMenu(e: MouseEvent) {
@@ -117,6 +142,9 @@
 </script>
 
 <style lang="scss">
+@import "../../assets/_custom.scss";
+@import "~bootstrap/scss/bootstrap.scss";
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
   a {
     color: #fff;
   }
@@ -173,5 +201,11 @@
     display: block;
     cursor: pointer;
     overflow: visible;
+  }
+
+  mark {
+    background-color:darken($dark-blue, 5%) !important;
+    color:#c0dce7;
+    position:relative;
   }
 </style>
