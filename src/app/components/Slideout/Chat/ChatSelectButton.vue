@@ -14,7 +14,7 @@
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
   import chat from '@/store/chat.vuex';
-  import SlideoutChats from './Slideout/SlideoutChats.vue';
+  import SlideoutChats from './SlideoutChats.vue';
 
 
   @Component

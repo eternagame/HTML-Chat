@@ -18,9 +18,9 @@
   import {
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
-  import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
-  import ChatSelectButton from '@/components/ChatSelectButton.vue';
-  import Slideout from './Slideout.vue';
+  import MinimizationTriangle from '../../MinimizationTriangle.vue';
+  import ChatSelectButton from './ChatSelectButton.vue';
+  import Slideout from '../Slideout.vue';
   import Splitter from './Splitter.vue';
 
   @Component({

@@ -51,6 +51,11 @@
         Private Message User
       </a>
     </li>
+    <li>
+      <a @click="copyMessage">
+        Copy message
+      </a>
+    </li>
   </VueContext>
 </template>
 
@@ -59,9 +64,11 @@
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
   import { VueContext } from 'vue-context';
+  import Clipboard from '@cloudcmd/clipboard';
   import Message from '@/types/message';
   import User from '@/types/user';
 
+  declare function writeText(text:string): void;
 
   @Component({
     components: {
@@ -148,6 +155,11 @@
     opened() { // Update ban and quiet status when menu is opened
       this.userBanned();
       this.userQuieted();
+    }
+
+    copyMessage() {
+      const copyString = `<${this.message.user.username}>${this.message.message}`;
+      Clipboard.writeText(copyString);
     }
 
     quieted = false;

@@ -14,6 +14,7 @@
         @emote="add"
         @md="format"
         @update="$nextTick($refs.pane.updateFooterHeight)"
+        v-show="input"
       >
       <template slot="input">
         <ScalableInput
