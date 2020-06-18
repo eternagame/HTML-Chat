@@ -1,11 +1,14 @@
 <template>
-  <Button
-    :class="{active: selected}"
+  <!-- Centers images -->
+  <center
     @click="$emit('input')"
   >
-    {{ name }}
+    <img
+    :src="require(`@/assets/${name}-icon-${selected ? 'green' : 'white'}.png`)"
+    comment="Use of require means image is actually loaded"
+    >
     <slot />
-  </Button>
+  </center>
 </template>
 
 <script lang="ts">
@@ -18,25 +21,24 @@
     name!: string;
 
     @Prop({ required: true })
-    selected!: string;
+    selected!: boolean;
   }
 </script>
 
 
 <style lang="scss" scoped>
   /* Style the buttons that are used to open the tab content */
-  button {
+  center {
     border: none;
     outline: none;
     cursor: pointer;
     transition: 0.3s;
-    padding: 0.4em 1.25em;
     font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
     font-size: 12px;
     font-weight: bold;
     color: #fff;
-    background-color: rgba(255, 255, 255, 0.07);
     text-transform: capitalize;
-    height:30px;
+    width:40px;
+    display:inline-block;
   }
 </style>

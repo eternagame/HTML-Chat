@@ -27,7 +27,6 @@
   /* Taken from OperLogin and modified */
   import { Component, Vue } from 'vue-property-decorator';
   import Message from '@/types/message';
-  import BanStatus from '../../types/BanStatus';
 
 
   @Component({

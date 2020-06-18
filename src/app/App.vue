@@ -59,9 +59,7 @@
   import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
   import OpenWindowButton from '@/components/OpenWindowButton.vue';
   import DraggableDiv from '@/components/DraggableDiv.vue';
-  import Message from '@/types/message';
   import OperLogin from '@/components/OperLogin.vue';
-  import Ban from '@/types/Ban';
   import PrivateMessageModal from '@/components/Messages/PrivateMessageModal.vue';
 
   Vue.use(BootstrapVue);
@@ -407,8 +405,8 @@
   background-color: $med-dark-blue;
   position: relative; /* Makes sure everything is placed with respect to it, not to its parent */
   transition: width 200ms, height 200ms, margin 1s, position 1s;
-  min-width: 250px; /* Bounds on chat resizing */
-  max-width: 400px;
+  min-width: 350px; /* Bounds on chat resizing */
+  max-width: 450px;
   max-height: 600px;
 }
 .eternaChatNormal {
