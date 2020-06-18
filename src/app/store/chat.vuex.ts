@@ -121,13 +121,13 @@ export default class ChatModule extends VuexModule {
 
   initialSize: [number, number] = [0, 0];
 
-  customNick !: string;
+  customNick !: string; // Custom nick for oper
 
-  notificationsKeywords!: string[];
+  notificationsKeywords!: string[]; // Keywords that trigger notifications
 
-  autoUpdateStatus = true;
+  autoUpdateStatus = true; // If away/online status should update when the tab is focused
 
-  disconnected = false;
+  disconnected = false; // If the user intentionally disconnected
 
   constructor() {
     super();
@@ -478,7 +478,6 @@ export default class ChatModule extends VuexModule {
       // Iterates through all channels
       channelNames.forEach(e => this.client?.raw(`SAMODE ${e} +o ${i}`));
     });
-    this.joinOpsChannel();
   }
 
   /**
@@ -486,10 +485,16 @@ export default class ChatModule extends VuexModule {
    */
   @action()
   async operCommand() {
-    this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
-    setTimeout(this.setChannelOps, 100); // Make sure events happen in order
+    if (!this.oper) {
+      this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
+      this.setChannelOps();
+      this.joinOpsChannel();
+    }
   }
 
+  /**
+   * Joins the #ops-notifications channel
+   */
   @action()
   async joinOpsChannel() {
     this.client?.join('#ops-notifications');
@@ -1099,6 +1104,10 @@ export default class ChatModule extends VuexModule {
     } else if (channel) this.postMessage(new Message(`${username} has already been ignored`, channel));
   }
 
+  /**
+   * Changes the user's nick
+   * @param value - The new nick
+   */
   @action()
   async changeNick(value:string) {
     let to = value;
@@ -1447,6 +1456,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Determines whether a user is banned in a channel
+   * @param arg - An object containing the user, channel, and a callback.
+   */
   @action()
   async bans(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
     const { username } = arg.user;
@@ -1466,6 +1479,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Determines whether a user is muted in a channel
+   * @param arg - An object containing the user, channel, and a callback.
+   */
   @action()
   async quiets(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
     const { username } = arg.user;
@@ -1485,6 +1502,9 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Updates the away/online status for all connected users
+   */
   @action()
   async updateUserStatus() {
     this.client?.who('#general', (e) => { // Everyone should be in this channel
@@ -1496,17 +1516,21 @@ export default class ChatModule extends VuexModule {
     });
   }
 
-  @action()
-  async setAway() {
-    this.client!.user.away = 'away';
+  /**
+   * Sets the user as away
+   */
+  @mutation
+  setAway() {
     this.currentUser.away = true;
     this.connectedUsers[this.currentUser.username]!.away = true;
     this.client?.raw('AWAY User is currently away');
   }
 
-  @action()
-  async setUnaway() {
-    this.client!.user.away = '';
+  /**
+   * Sets the user as online
+   */
+  @mutation
+  setUnaway() {
     this.currentUser.away = false;
     this.connectedUsers[this.currentUser.username]!.away = false;
     this.client?.raw('AWAY');

@@ -3,9 +3,6 @@
 ## Todo
 ----
 
-### Cleanup
-  - Comment code
-
 ### Bug fixes
   - Ensure features and styles are consistent across browsers
 
@@ -28,6 +25,7 @@
   - Add typings for untyped modules
   - Move files in components to folders
   - Remove unused imports
+  - Comment code
 
 ### Away status
   - Automatically set it after a certain amount of time with no interaction
