@@ -249,7 +249,7 @@
   import SlideoutButton from '../SlideoutButton.vue';
   import Slideout from '../Slideout.vue';
   import { Channel } from '@/store/chat.vuex';
-  import ColorPicker from '../ColorPicker/ColorPicker.vue';
+  import ColorPicker from './ColorPicker/ColorPicker.vue';
   import MinimizationTriangle from '../../MinimizationTriangle.vue';
 
   Vue.use(BootstrapVue);

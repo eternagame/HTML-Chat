@@ -1,6 +1,6 @@
 <template>
   <div
-    style="position:relative; width:75%"
+    style="position:relative; width:65%"
     class="slideout-container"
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
@@ -12,21 +12,26 @@
       }
     </v-style>
     <span v-if="checked">
-      <SlideoutButtonChat
-        :selected="chatSelected"
-        @input="activeTab = 0"
-        class='slideout-button'
-      />
-      <SlideoutButtonUsers
-        :selected="userSelected"
-        @input="activeTab = 1"
-        class='slideout-button'
-      />
-      <SlideoutButtonSettings
-        :selected="settingsSelected"
-        @input="activeTab = 2"
-        class='slideout-button'
-      />
+      <span id="slideout-header">
+        <SlideoutButton
+          :selected="chatSelected"
+          name="chat"
+          @input="activeTab = 0"
+          class='slideout-button'
+        />
+        <SlideoutButton
+          name="user"
+          :selected="userSelected"
+          @input="activeTab = 1"
+          class='slideout-button'
+        />
+        <SlideoutButton
+          name="settings"
+          :selected="settingsSelected"
+          @input="activeTab = 2"
+          class='slideout-button'
+        />
+      </span>
       <SlideoutChats
         v-if="chatSelected"
       />
@@ -44,9 +49,6 @@
   import SlideoutUser from './Users/SlideoutUser.vue';
   import SlideoutSettings from './Settings/SlideoutSettings.vue';
   import SlideoutButton from './SlideoutButton.vue';
-  import SlideoutButtonUsers from './Users/SlideoutButtonUsers.vue';
-  import SlideoutButtonChat from './Chat/SlideoutButtonChat.vue';
-  import SlideoutButtonSettings from './Settings/SlideoutButtonSettings.vue';
   import HamburgerMenuButton from './HamburgerMenuButton.vue';
   import { Channel } from '../../store/chat.vuex';
 
@@ -56,9 +58,6 @@
       SlideoutUser,
       SlideoutSettings,
       SlideoutButton,
-      SlideoutButtonSettings,
-      SlideoutButtonChat,
-      SlideoutButtonUsers,
       HamburgerMenuButton,
     },
   })
@@ -176,16 +175,24 @@
   animation: slideBack 0.25s;
 }
 @keyframes slide { /* Opens slideout */
-  from { left:-75%}
+  from { left:-65%}
   to { left:0}
 }
 /* Height does need to be there for the slideout to work. Otherwise it doesn't animate */
 @keyframes slideBack { /* Closes slideout */
   to {height:100%; width:0}
-  from {height:100%; width:75%}
+  from {height:100%; width:65%}
 }
 .tall { /* When slideout is open */
   height:100%;
   animation: slide 0.25s;
+}
+#slideout-header { /* Displays tab buttons */
+  display:inline-flex;
+  align-items: center; /* Centers buttons vertically */
+  height:40px;
+  margin-left:-15px; /* Treats hamburger button distance correctly */
+  width: calc(100% - 30px); /* Makes sure there is room to fill */
+  justify-content: space-evenly; /* Fills the room */
 }
 </style>

@@ -14,7 +14,7 @@
 <style lang="scss" scoped>
   .splitter {
     height:1px;
-    width:90%;
+    width:calc(100% - 10px);
     padding:0px;
     padding-right:5px;
     padding-left:5px;
