@@ -127,6 +127,8 @@ export default class ChatModule extends VuexModule {
 
   autoUpdateStatus = true;
 
+  disconnected = false;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -495,7 +497,11 @@ export default class ChatModule extends VuexModule {
 
   @action()
   async connect() {
+    this.disconnected = false;
     this.client!.connect();
+    (Object.values(this.channels) as Channel[]).forEach(e => { // Removes disconnecting message
+      e.postedMessages = e.postedMessages.filter(m => m.message !== 'Disconnecting...');
+    });
     this.connectionData.currentTimer = 0;
     clearInterval(this.connectionData.timerInterval);
   }
@@ -571,6 +577,11 @@ export default class ChatModule extends VuexModule {
                 postMessage('`/me`: Posts message formatted as an action');
                 postMessage('Usage: `/me <message>`');
                 postMessage('Example: `/me laughs`');
+                break;
+              case 'disconnect':
+                postMessage('`/disconnect`: Disconnects you from the chat');
+                postMessage('Usage: `/disconnect`');
+                postMessage('Example: `/disconnect`');
                 break;
               case 'ignore':
                 postMessage(
@@ -731,8 +742,13 @@ export default class ChatModule extends VuexModule {
             }
             break;
           case 'disconnect':
+            this.onDisconnect(true);
             postMessage('Disconnecting...');
-            this.onDisconnect();
+            setTimeout(() => { // Ensures it doesn't reconnect
+              if (this.connectionData.connected) {
+                this.onDisconnect(true);
+              }
+            }, 1000);
             break;
           case 'spam':
             for (let i = 0; i < 100; i++) {
@@ -1408,20 +1424,26 @@ export default class ChatModule extends VuexModule {
   }
 
   @action()
-  async onDisconnect() {
+  async onDisconnect(stayDisconnected:boolean = false) {
     const data = this.connectionData;
     if (data.currentTimer > 0) return;
     // TODO: What if connect is called and then immidiately a late "onDisconnect" arives?
     data.connected = false;
     data.firstConnection = false;
-    if (data.failedAttempts === 0) {
-      data.failedAttempts += 1;
-      this.connect();
-    } else {
-      data.currentTimer = data.disconnectionTimers[Math.min(data.failedAttempts - 1, 3)];
-      data.failedAttempts += 1;
-      clearInterval(data.timerInterval);
-      data.timerInterval = setInterval(this.updateTimer, 1000);
+    if (!stayDisconnected) { // If the disconnect wasn't intentional
+      if (data.failedAttempts === 0) {
+        data.failedAttempts += 1;
+        this.connect();
+      } else {
+        data.currentTimer = data.disconnectionTimers[Math.min(data.failedAttempts - 1, 3)];
+        data.failedAttempts += 1;
+        clearInterval(data.timerInterval);
+        data.timerInterval = setInterval(this.updateTimer, 1000);
+      }
+    } else { // If it was, disconnect and stay disconnected
+      this.client?.quit();
+      data.timerInterval = 100000000; // Doesn't try to reconnect again
+      this.disconnected = true;
     }
   }
 

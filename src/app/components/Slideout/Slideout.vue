@@ -40,14 +40,14 @@
   import {
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
-  import SlideoutChats from './SlideoutChats.vue';
-  import SlideoutUser from './SlideoutUser.vue';
-  import SlideoutSettings from './SlideoutSettings.vue';
+  import SlideoutChats from './Chat/SlideoutChats.vue';
+  import SlideoutUser from './Users/SlideoutUser.vue';
+  import SlideoutSettings from './Settings/SlideoutSettings.vue';
   import SlideoutButton from './SlideoutButton.vue';
-  import SlideoutButtonUsers from '../SlideoutButtonUsers.vue';
-  import SlideoutButtonChat from '../SlideoutButtonChat.vue';
-  import SlideoutButtonSettings from '../SlideoutButtonSettings.vue';
-  import HamburgerMenuButton from '@/components/HamburgerMenuButton.vue';
+  import SlideoutButtonUsers from './Users/SlideoutButtonUsers.vue';
+  import SlideoutButtonChat from './Chat/SlideoutButtonChat.vue';
+  import SlideoutButtonSettings from './Settings/SlideoutButtonSettings.vue';
+  import HamburgerMenuButton from './HamburgerMenuButton.vue';
   import { Channel } from '../../store/chat.vuex';
 
   @Component({

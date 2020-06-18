@@ -1,7 +1,6 @@
 <template>
   <Button
     :class="{active: selected}"
-    class="slideout-button"
     @click="$emit('input')"
   >
     <slot />
@@ -10,11 +9,11 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
-  import SlideoutButton from './Slideout/SlideoutButton.vue';
+  import SlideoutButton from '../SlideoutButton.vue';
 
 
   @Component
-  export default class SlideoutButtonChat extends SlideoutButton {
+  export default class SlideoutButtonSettings extends SlideoutButton {
     @Prop({ required: true })
     selected!: string;
   }
@@ -31,13 +30,13 @@
     padding: 0.4em 1.25em;
     background-color: black;
     height:40px;
-    background-image: url("../assets/chat-icon-white.png");
+    background-image: url("../../../assets/settings-icon-white.png");
     background-repeat: no-repeat;
-    background-size: 40% 60%;
+    background-size: 40% 40%;
     background-position: center;
     width: 40px;
   }
   button.active { /* When button is selected, use green icon */
-    background-image: url("../assets/chat-icon-green.png");
+    background-image: url("../../../assets/settings-icon-green.png");
   }
 </style>

@@ -72,6 +72,8 @@
     },
   })
   export default class EmoticonBar extends Vue {
+    // Emoticons
+
     get emotesList() { // List of all emotes from defaults and custom
       const defaultEmotes = ['👍', '👎', '🙂', '🙁'];
       return defaultEmotes.concat(this.customEmoticons);
@@ -81,7 +83,11 @@
       return this.$vxm.chat.customEmoticons;
     }
 
+    // Markdown button
+
     markdownCodes = ['bold', 'italics', 'italicsbold', 'strikethrough', 'code', 'link', 'action'];
+
+    // Submenu selection
 
     emoticonsSelected = false;
 
@@ -99,6 +105,8 @@
       this.$emit('update');
     }
 
+    // Click handling
+
     menuButtonClicked(button:string) { // Handles button clicks
       switch (button) {
       case 'X':
@@ -113,6 +121,8 @@
       this.$emit('update');
     }
 
+    // Changing input
+
     add(emote:string) { // Emits event to MessagePane
       this.$emit('emote', emote);
     }
@@ -120,6 +130,8 @@
     format(options:string) { // Emits event to MessagePane
       this.$emit('md', options);
     }
+
+    // Chat features
 
     get emoticonChatFeatures() { // Gets values from settings vuex
       return this.$vxm.settings.emoticonChatFeatures;

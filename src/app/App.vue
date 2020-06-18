@@ -46,47 +46,12 @@
     </template>
   </DraggableDiv>
 </template>
-<!-- TODO
-- Reconnect button
-  - Style to align with theme
-  - Hide input when visible
-- Cleanup
-  - Comment code
-  - Remove unused imports
-  - Group functions and properties
-  - Move unnecessary stuff out of chat.vuex
-  - Move code in chat commands to functions
-- Bug fixes
-  - Ensure features and styles are consistent across browsers
-FINISHED
-- Notifications
-  - Keywords
-- Settings
-  - Values need to be stored correctly
-  - Add option to change nick for opers
-  - Make sure emoticons can be changed there
-- Cleanup
-  - Markdown
-- Away status
-  - Automatically set it after a certain amount of time with no interaction
-  - Allow it to be manually set
-  - Don't fetch on demand - rather, update every 5 seconds (or so) and fetch values
-- Bug fixes
-  - Operator name change seems to break sometimes
-  - Optimize away/online status loading
-  - Find a way to limit unnecessary GET requests (tooltips)
-- Miscellaneous
-  - Clicking a channel name in a chat message opens the channel
--->
 <script lang="ts">
   import {
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
-  import BootstrapVue from 'bootstrap-vue';
-  import {
-    openDB, deleteDB, wrap, unwrap,
-  } from 'idb';
   import resize from 'vue-resize-directive';
+  import BootstrapVue from 'bootstrap-vue';
   import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
@@ -124,33 +89,25 @@ FINISHED
   },
 })
   export default class App extends Vue {
-  @Prop()
-  username!: string;
-
-  @Prop()
-  workbranch!: string;
-
-  get animation() {
-    if (this.loaded) {
-      return 'none';
-    }
-    return 'growFull 1s';
-  }
-
-  @Prop()
-  uid!: string;
+  // Minimization
 
   minimization = false;
 
-  fullSize = false;
+  @Watch('minimized')
+  minimizedChanged() {
+    this.fullSize = false;
+  }
 
-  showAuth = false;
+  get minimized() {
+    return this.minimization;
+  }
 
-  windowFocused = true;
+  // Private messages
 
   get showPrivMsgModal() {
     return this.$vxm.chat.privMsgModal;
   }
+
 
   @Watch('showPrivMsgModal')
   triggerStart() {
@@ -159,8 +116,26 @@ FINISHED
     }
   }
 
-  get isOper() {
-    return this.$vxm.chat.oper;
+  // Full size
+
+  fullSize = false;
+
+  get fullSized() {
+    return this.fullSize;
+  }
+
+
+  @Watch('fullSize')
+  sizeChanged() {
+    if (this.fullSize && this.minimized) {
+      this.fullSize = false;
+    }
+  }
+
+  // Tabs
+
+  get messageTabs() {
+    return Object.values(this.$vxm.chat.channels).map((channel) => channel!);
   }
 
   // For text in top bar
@@ -181,47 +156,13 @@ FINISHED
     return this.$vxm.chat.tab;
   }
 
-  $refs!: {
-    reportDialog: ReportDialog;
-    login: OperLogin,
-    privmsgmodal: PrivateMessageModal,
-    messagepanes: MessagePane,
-    slideout: Slideout,
-  };
+  // Oper
 
-  get initialPosition() {
-    return this.$vxm.chat.initialPosition;
+  get isOper() {
+    return this.$vxm.chat.oper;
   }
 
-  get initialSize() {
-    return this.$vxm.chat.initialSize;
-  }
-
-  get slideoutOpen() {
-    return this.$vxm.chat.slideoutOpen;
-  }
-
-  get messageTabs() {
-    return Object.values(this.$vxm.chat.channels).map((channel) => channel!);
-  }
-
-  get minimized() {
-    return this.minimization;
-  }
-
-  get fullSized() {
-    return this.fullSize;
-  }
-
-  postMessage(rawMessage: string, channel: string) {
-    if (!channel.startsWith('#')) { // If it's a PRIVMSG
-      this.$vxm.chat.postToQuery(`${channel}|${rawMessage}`);
-    } else { // Otherwise
-      this.$vxm.chat.sendMessage({ rawMessage, channel });
-    }
-    // When user sends a message, make sure it doesn't notify itself
-    this.$vxm.chat.readChannel(channel);
-  }
+  showAuth = false;
 
   async operAuthenticate(
     { username, password, remember }: {username: string, password: string, remember: boolean},
@@ -262,6 +203,102 @@ FINISHED
     }
   }
 
+  /**
+   * Logs the user in as an operator
+   */
+  async logInOper() {
+    const pass = localStorage.operPass;
+    const user = localStorage.operUser;
+    if (user && pass) {
+      this.$vxm.chat.operLoginPassword = pass; // Log in
+      this.$vxm.chat.operLoginUser = user;
+      this.$vxm.chat.operCommand();
+      setTimeout(this.operLoginStatus, 150);
+    }
+  }
+
+  // Drag and resize
+
+  get initialPosition() {
+    return this.$vxm.chat.initialPosition;
+  }
+
+  get initialSize() {
+    return this.$vxm.chat.initialSize;
+  }
+
+  resized() {
+    const w = this.$el.scrollWidth;
+    const h = this.$el.scrollHeight;
+    if (localStorage && (w !== 300 || h !== 500)) {
+      localStorage.size = JSON.stringify(`${w} ${h}`);
+    }
+  }
+
+  // Slideout
+
+  get slideoutOpen() {
+    return this.$vxm.chat.slideoutOpen;
+  }
+
+  @Watch('slideoutOpen')
+  slideoutChanged() {
+    if (this.slideoutOpen) {
+      this.minimization = false;
+    }
+  }
+
+  close(ev: MouseEvent) {
+    if (!this.$refs.slideout || !this.$refs.slideout.$el) return;
+    if (!this.$refs.slideout.$el.contains(ev.target as Node) // If the click is not in the slideout
+    && this.$el.contains(ev.target as Node)) { // And it is in the chat
+      this.$vxm.chat.slideoutOpen = false; // Close the slideout
+    }
+  }
+
+  // Status
+
+  windowFocused = true;
+
+
+  @Watch('windowFocused')
+  focusChanged() {
+    if (this.windowFocused) {
+      this.$vxm.chat.setUnaway();
+    } else {
+      this.$vxm.chat.setAway();
+    }
+  }
+
+  // Other
+
+  @Prop()
+  username!: string;
+
+  @Prop()
+  workbranch!: string;
+
+  @Prop()
+  uid!: string;
+
+  $refs!: {
+    reportDialog: ReportDialog;
+    login: OperLogin,
+    privmsgmodal: PrivateMessageModal,
+    messagepanes: MessagePane,
+    slideout: Slideout,
+  };
+
+  postMessage(rawMessage: string, channel: string) {
+    if (!channel.startsWith('#')) { // If it's a PRIVMSG
+      this.$vxm.chat.postToQuery(`${channel}|${rawMessage}`);
+    } else { // Otherwise
+      this.$vxm.chat.sendMessage({ rawMessage, channel });
+    }
+    // When user sends a message, make sure it doesn't notify itself
+    this.$vxm.chat.readChannel(channel);
+  }
+
   mounted() {
     this.$vxm.chat.init({
       username: this.username,
@@ -285,24 +322,7 @@ FINISHED
         }, 500);
       }
     }, 100);
-    this.loaded = false;
     this.startTimers();
-  }
-
-  loaded = true;
-
-  /**
-   * Logs the user in as an operator
-   */
-  async logInOper() {
-    const pass = localStorage.operPass;
-    const user = localStorage.operUser;
-    if (user && pass) {
-      this.$vxm.chat.operLoginPassword = pass; // Log in
-      this.$vxm.chat.operLoginUser = user;
-      this.$vxm.chat.operCommand();
-      setTimeout(this.operLoginStatus, 150);
-    }
   }
 
   key(e:KeyboardEvent) {
@@ -338,14 +358,7 @@ FINISHED
     });
   }
 
-  @Watch('windowFocused')
-  focusChanged() {
-    if (this.windowFocused) {
-      this.$vxm.chat.setUnaway();
-    } else {
-      this.$vxm.chat.setAway();
-    }
-  }
+  // Inactivity timer
 
   timeout = 60000;
 
@@ -373,46 +386,10 @@ FINISHED
     this.beginInactiveTimer();
   }
 
+  // Hooks
+
   postScreenshot(url:string, puzzleName:string) {
     this.postMessage(`${puzzleName} ${url}`, '#help');
-  }
-
-  @Watch('minimized')
-  minimizedChanged() {
-    this.fullSize = false;
-  }
-
-  @Watch('fullSize')
-  sizeChanged() {
-    if (this.fullSize && this.minimized) {
-      this.fullSize = false;
-    }
-  }
-
-  @Watch('slideoutOpen')
-  slideoutChanged() {
-    if (this.slideoutOpen) {
-      this.minimization = false;
-    }
-  }
-
-  beforeDestroy() {
-    window.removeEventListener('click', this.close);
-  }
-
-  close(ev: MouseEvent) {
-    if (!this.$refs.slideout.$el.contains(ev.target as Node) // If the click is not in the slideout
-    && this.$el.contains(ev.target as Node)) { // And it is in the chat
-      this.$vxm.chat.slideoutOpen = false; // Close the slideout
-    }
-  }
-
-  resized() {
-    const w = this.$el.scrollWidth;
-    const h = this.$el.scrollHeight;
-    if (localStorage && (w !== 300 || h !== 500)) {
-      localStorage.size = JSON.stringify(`${w} ${h}`);
-    }
   }
   }
 </script>
@@ -422,6 +399,7 @@ FINISHED
 @import "./assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
+/*** Chat container ***/
 #eterna-chat {
   font-family: "Open Sans", "Open Sans", Arial, Gulim;
   font-size: 14px;
@@ -433,25 +411,38 @@ FINISHED
   max-width: 400px;
   max-height: 600px;
 }
-
 .eternaChatNormal {
   width: $container-width; // Fill in with normal size
   height: $container-height;
 }
-
+.eternaChatFull { /* Full size chat */
+  width: 90vw !important; /* Takes up 90% of the viewport*/
+  height: 90vh !important;
+  max-width: 90vw !important; /* Overrides resize limits */
+  max-height: 90vh !important;
+  margin-right: 5vw; /* Margins take up the rest*/
+  margin-left: 5vw;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+  box-shadow: 0 0 2vw 20vw $dark-blue-transparent; /* Creates blur effect */
+  transition: all 1s;
+  left:0px !important; /* Overrides dragging styles so full size chat isn't cut off */
+  top:0px !important;
+}
+.minimizedChat { /* Removes light blue background when chat is minimzed and only shows top bar */
+  height:40px !important;
+}
 .fade-enter-active,
 .fade-leave-active {
   transform-origin: top center;
   transition: 200ms;
 }
-
 .fade-enter,
 .fade-leave-to {
   transform-origin: top center;
   transform: scaleY(0);
   //Moves everything up without interfering with top bar.
 }
-
 .chat-content {
   border: solid #0405224b 2px;
   border-radius: 15px;
@@ -464,6 +455,8 @@ FINISHED
   background-color: $dark-blue;
   transform-origin: top center;
 }
+
+/*** Header ***/
 .minimizationTriangle {
   // Minimization button
   position: absolute;
@@ -492,23 +485,8 @@ FINISHED
   z-index: 0; // Covered by slideout
   height: 30px;
 }
-.eternaChatFull { /* Full size chat */
-  width: 90vw !important; /* Takes up 90% of the viewport*/
-  height: 90vh !important;
-  max-width: 90vw !important; /* Overrides resize limits */
-  max-height: 90vh !important;
-  margin-right: 5vw; /* Margins take up the rest*/
-  margin-left: 5vw;
-  margin-top: 5vh;
-  margin-bottom: 5vh;
-  box-shadow: 0 0 2vw 20vw $dark-blue-transparent; /* Creates blur effect */
-  transition: all 1s;
-  left:0px !important; /* Overrides dragging styles so full size chat isn't cut off */
-  top:0px !important;
-}
-.minimizedChat { /* Removes light blue background when chat is minimzed and only shows top bar */
-  height:40px !important;
-}
+
+/*** Footer ***/
 ::-webkit-resizer { /* Hide the resizer if possible */
   display:none;
 }

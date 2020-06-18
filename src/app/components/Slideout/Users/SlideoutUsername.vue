@@ -24,10 +24,10 @@
   import {
     Vue, Component, Prop, Watch,
   } from 'vue-property-decorator';
-  import ActionMenu from '../Messages/ActionMenu.vue';
-  import Message from '../../types/message';
+  import ActionMenu from '../../Messages/ActionMenu.vue';
+  import Message from '@/types/message';
   import User from '@/types/user';
-  import Username from '../Messages/Username.vue';
+  import Username from '../../Messages/Username.vue';
 
   @Component({
     components: {

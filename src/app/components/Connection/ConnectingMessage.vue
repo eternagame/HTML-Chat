@@ -1,6 +1,6 @@
 <template>
   <li
-    v-if="!connectionData.connected && !connectionData.firstConnection"
+    v-if="!connectionData.connected && !connectionData.firstConnection && !disconnected"
     id="chat-loading"
     style="list-style-type: none"
   >
@@ -29,6 +29,10 @@
   export default class ConnectingMessage extends Vue {
     get connectionData() {
       return this.$vxm.chat.connectionData;
+    }
+
+    get disconnected() {
+      return this.$vxm.chat.disconnected;
     }
   }
 </script>

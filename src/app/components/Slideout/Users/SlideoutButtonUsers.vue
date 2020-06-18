@@ -9,7 +9,7 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
-  import SlideoutButton from './Slideout/SlideoutButton.vue';
+  import SlideoutButton from '../SlideoutButton.vue';
 
 
   @Component
@@ -30,13 +30,13 @@
     padding: 0.4em 1.25em;
     background-color: black;
     height:40px;
-    background-image: url("../assets/user-icon-white.png");
+    background-image: url("../../../assets/user-icon-white.png");
     background-repeat: no-repeat;
     background-size: 60% 40%;
     background-position: center;
     width: 40px;
   }
   button.active { /* When button is selected, use green icon */
-    background-image: url("../assets/user-icon-green.png");
+    background-image: url("../../../assets/user-icon-green.png");
   }
 </style>

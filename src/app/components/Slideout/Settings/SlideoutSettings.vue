@@ -246,11 +246,11 @@
   import BootstrapVue from 'bootstrap-vue';
   import Username from '@/components/Messages/Username.vue';
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
-  import SlideoutButton from './SlideoutButton.vue';
-  import Slideout from './Slideout.vue';
-  import { Channel } from '../../store/chat.vuex';
-  import ColorPicker from './ColorPicker/ColorPicker.vue';
-  import MinimizationTriangle from '../MinimizationTriangle.vue';
+  import SlideoutButton from '../SlideoutButton.vue';
+  import Slideout from '../Slideout.vue';
+  import { Channel } from '@/store/chat.vuex';
+  import ColorPicker from '../ColorPicker/ColorPicker.vue';
+  import MinimizationTriangle from '../../MinimizationTriangle.vue';
 
   Vue.use(BootstrapVue);
 
@@ -263,6 +263,8 @@
     },
   })
   export default class SlideoutSettings extends Vue {
+    // Menus
+
     openMenus = {
       notifications: true,
       color: true,
@@ -281,149 +283,55 @@
       }
     }
 
+    // Font size
+
     size:string = '14'; // font size
 
+
+    // Updates global font size when input changes
+    @Watch('size')
+    updateFontSize() {
+       // Only update if valid font size
+      if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 18) {
+        this.$vxm.settings.fontSize = parseInt(this.size, 10);
+        localStorage.fontSize = JSON.stringify(this.size);
+      }
+    }
+
+    get fontSize() {
+      const numSize = parseInt(this.size, 10); // Font size as an int
+      if (numSize >= 10 && numSize <= 18) {
+        return numSize;
+      }
+      if (numSize >= 18) {
+        return 18; // If font size greater than 18, set to maximum of 18
+      }
+      if (numSize <= 10) {
+        return 10; // If font size less than 10, set to minimum of 10
+      }
+      return 14; // If nothing else works, make it the default, 14
+    }
+
+    // Indicator
+
     indicator:string = '(!)';
+
+
+    @Watch('indicator')
+    indicatorChanged() {
+      if (localStorage) {
+        localStorage.indicator = JSON.stringify(this.indicator);
+      }
+      this.$vxm.settings.indicator = this.indicator;
+    }
+
+    // Toolbar
 
     allChatFeatures = true;
 
     emoticonChatFeatures = true;
 
     markdownChatFeatures = true;
-
-    keywords = '';
-
-    emoticonErrorMessage = '';
-
-    changeStatus(to:boolean) {
-      this.$vxm.chat.autoUpdateStatus = !to;
-      if (!to) {
-        this.$vxm.chat.setUnaway();
-      } else {
-        this.$vxm.chat.setAway();
-      }
-    }
-
-    get userStatus() {
-      return this.$vxm.chat.userStatus;
-    }
-
-    @Watch('keywords')
-    keywordsChanged() {
-      const keywordsArray = this.keywords.split(/, ?/);
-      if (keywordsArray[0] === '') {
-        return;
-      }
-      if (localStorage) {
-        localStorage.notificationsKeywords = JSON.stringify(keywordsArray);
-      }
-    }
-
-    update(e:Event) {
-      const targ = e.target as HTMLInputElement;
-      const id = Number(targ.id);
-      let { value } = targ;
-      value = value.trim();
-      while ([...value].length > 1) {
-        value = value.substring(0, value.length - 1);
-      }
-      const emoticonRegex = /[^\w\d\p{P}\p{S}]/;
-      if (value.match(emoticonRegex)) {
-        if (this.customEmoticons.some(j => j === value)) {
-          this.emoticonErrorMessage = 'You are using that emoticon in another slot';
-          return;
-        }
-        Vue.set(this.$vxm.chat.customEmoticons, id, value);
-        if (localStorage) {
-          localStorage.customEmoticons = JSON.stringify(this.$vxm.chat.customEmoticons);
-        }
-        this.emoticonErrorMessage = '';
-      } else {
-        this.emoticonErrorMessage = `${value} is not a valid emoticon`;
-      }
-      if (value.trim() === '') {
-        this.emoticonErrorMessage = '';
-      }
-      targ.value = '';
-    }
-
-    validateNick(nick:string) {
-      // eslint-disable-next-line no-useless-escape
-      return nick.match(/^[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*$/i);
-    }
-
-    setNick(e:Event) {
-      const { value } = e.target as HTMLInputElement;
-      if (!this.validateNick(value)) return;
-      this.$vxm.chat.changeNick(value);
-    }
-
-    get isOper() {
-      return this.$vxm.chat.oper;
-    }
-
-    get customEmoticons() {
-      return this.$vxm.chat.customEmoticons;
-    }
-
-    // Gets a list of ignored users
-    get ignoredUsers() {
-      return this.$vxm.chat.ignoredUsers;
-    }
-
-    // If any users are ignored. Uses ignoredUsers.length
-    get anyIgnoredUsers() {
-      return this.ignoredUsers.length > 0;
-    }
-
-    // Whether it is visible. Determined by whether slideout is opened
-    get visible() {
-      return (this.$parent as Slideout).checked;
-    }
-
-    opernick = '';
-
-    // When tab opened, display stored value if there is one
-    created() {
-      if (localStorage.fontSize) {
-        this.size = String(Number(JSON.parse(localStorage.fontSize)));
-      } else {
-        this.size = this.$vxm.settings.fontSize.toString();
-      }
-      if (localStorage.indicator) {
-        this.indicator = JSON.parse(localStorage.indicator);
-      } else {
-        this.indicator = this.$vxm.settings.indicator;
-      }
-      if (localStorage.allChatFeatures) {
-        this.allChatFeatures = JSON.parse(localStorage.allChatFeatures);
-      } else {
-        this.allChatFeatures = this.$vxm.settings.allChatFeatures;
-      }
-      if (localStorage.emoticonChatFeatures) {
-        this.emoticonChatFeatures = JSON.parse(localStorage.emoticonChatFeatures);
-      } else {
-        this.emoticonChatFeatures = this.$vxm.settings.emoticonChatFeatures;
-      }
-      if (localStorage.markdownChatFeatures) {
-        this.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
-      } else {
-        this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
-      }
-      if (localStorage.notificationsKeywords) {
-        this.keywords = JSON.parse(localStorage.notificationsKeywords).join(', ');
-      } else {
-        this.keywords = this.$vxm.chat.notificationsKeywords.join(', ');
-      }
-      if (localStorage.nick) {
-        this.opernick = localStorage.nick;
-      } else {
-        this.opernick = this.$vxm.chat.customNick;
-      }
-      if (localStorage.openMenus) {
-        this.openMenus = JSON.parse(localStorage.openMenus);
-      }
-    }
 
     toggleEmoticons() {
       this.emoticonChatFeatures = !this.emoticonChatFeatures;
@@ -481,38 +389,55 @@
       }
     }
 
-    // Updates global font size when input changes
-    @Watch('size')
-    updateFontSize() {
-       // Only update if valid font size
-      if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 18) {
-        this.$vxm.settings.fontSize = parseInt(this.size, 10);
-        localStorage.fontSize = JSON.stringify(this.size);
+    // Custom emoticons
+
+    update(e:Event) {
+      const targ = e.target as HTMLInputElement;
+      const id = Number(targ.id);
+      let { value } = targ;
+      value = value.trim();
+      while ([...value].length > 1) {
+        value = value.substring(0, value.length - 1);
       }
+      const emoticonRegex = /[^\w\d\p{P}\p{S}]/;
+      if (value.match(emoticonRegex)) {
+        if (this.customEmoticons.some(j => j === value)) {
+          this.emoticonErrorMessage = 'You are using that emoticon in another slot';
+          return;
+        }
+        Vue.set(this.$vxm.chat.customEmoticons, id, value);
+        if (localStorage) {
+          localStorage.customEmoticons = JSON.stringify(this.$vxm.chat.customEmoticons);
+        }
+        this.emoticonErrorMessage = '';
+      } else {
+        this.emoticonErrorMessage = `${value} is not a valid emoticon`;
+      }
+      if (value.trim() === '') {
+        this.emoticonErrorMessage = '';
+      }
+      targ.value = '';
     }
 
-    get fontSize() {
-      const numSize = parseInt(this.size, 10); // Font size as an int
-      if (numSize >= 10 && numSize <= 18) {
-        return numSize;
-      }
-      if (numSize >= 18) {
-        return 18; // If font size greater than 18, set to maximum of 18
-      }
-      if (numSize <= 10) {
-        return 10; // If font size less than 10, set to minimum of 10
-      }
-      return 14; // If nothing else works, make it the default, 14
+    emoticonErrorMessage = '';
+
+    get customEmoticons() {
+      return this.$vxm.chat.customEmoticons;
     }
 
-    // Unignore user on list
-    unignore(user:string) {
-      this.$vxm.chat.unignoreUser(user);
-    }
+    // Notifications
 
-    // Return list of channels
-    get channels() {
-      return this.$vxm.chat.channels;
+    keywords = '';
+
+    @Watch('keywords')
+    keywordsChanged() {
+      const keywordsArray = this.keywords.split(/, ?/);
+      if (keywordsArray[0] === '') {
+        return;
+      }
+      if (localStorage) {
+        localStorage.notificationsKeywords = JSON.stringify(keywordsArray);
+      }
     }
 
     // Toggle whether notifications are enabled for a specific channel
@@ -550,7 +475,7 @@
       });
     }
 
-    // Enables notificaitons for all channels
+    // Enables notifications for all channels
     enableAll() {
       // For each channel
       Object.values(this.channels).forEach(item => {
@@ -572,12 +497,109 @@
       });
     }
 
-    @Watch('indicator')
-    indicatorChanged() {
-      if (localStorage) {
-        localStorage.indicator = JSON.stringify(this.indicator);
+    // Status
+
+    changeStatus(to:boolean) {
+      this.$vxm.chat.autoUpdateStatus = !to;
+      if (!to) {
+        this.$vxm.chat.setUnaway();
+      } else {
+        this.$vxm.chat.setAway();
       }
-      this.$vxm.settings.indicator = this.indicator;
+    }
+
+    get userStatus() {
+      return this.$vxm.chat.userStatus;
+    }
+
+    // Nick change
+
+    validateNick(nick:string) {
+      // eslint-disable-next-line no-useless-escape
+      return nick.match(/^[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*$/i);
+    }
+
+    setNick(e:Event) {
+      const { value } = e.target as HTMLInputElement;
+      if (!this.validateNick(value)) return;
+      this.$vxm.chat.changeNick(value);
+    }
+
+    opernick = '';
+
+    // Ignored
+
+    // Gets a list of ignored users
+    get ignoredUsers() {
+      return this.$vxm.chat.ignoredUsers;
+    }
+
+    // If any users are ignored. Uses ignoredUsers.length
+    get anyIgnoredUsers() {
+      return this.ignoredUsers.length > 0;
+    }
+
+    // Unignore user on list
+    unignore(user:string) {
+      this.$vxm.chat.unignoreUser(user);
+    }
+
+    get isOper() {
+      return this.$vxm.chat.oper;
+    }
+
+    // Other
+
+    // Whether it is visible. Determined by whether slideout is opened
+    get visible() {
+      return (this.$parent as Slideout).checked;
+    }
+
+    // When tab opened, display stored value if there is one
+    created() {
+      if (localStorage.fontSize) {
+        this.size = String(Number(JSON.parse(localStorage.fontSize)));
+      } else {
+        this.size = this.$vxm.settings.fontSize.toString();
+      }
+      if (localStorage.indicator) {
+        this.indicator = JSON.parse(localStorage.indicator);
+      } else {
+        this.indicator = this.$vxm.settings.indicator;
+      }
+      if (localStorage.allChatFeatures) {
+        this.allChatFeatures = JSON.parse(localStorage.allChatFeatures);
+      } else {
+        this.allChatFeatures = this.$vxm.settings.allChatFeatures;
+      }
+      if (localStorage.emoticonChatFeatures) {
+        this.emoticonChatFeatures = JSON.parse(localStorage.emoticonChatFeatures);
+      } else {
+        this.emoticonChatFeatures = this.$vxm.settings.emoticonChatFeatures;
+      }
+      if (localStorage.markdownChatFeatures) {
+        this.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
+      } else {
+        this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
+      }
+      if (localStorage.notificationsKeywords) {
+        this.keywords = JSON.parse(localStorage.notificationsKeywords).join(', ');
+      } else {
+        this.keywords = this.$vxm.chat.notificationsKeywords.join(', ');
+      }
+      if (localStorage.nick) {
+        this.opernick = localStorage.nick;
+      } else {
+        this.opernick = this.$vxm.chat.customNick;
+      }
+      if (localStorage.openMenus) {
+        this.openMenus = JSON.parse(localStorage.openMenus);
+      }
+    }
+
+    // Return list of channels
+    get channels() {
+      return this.$vxm.chat.channels;
     }
   }
 </script>
@@ -585,28 +607,9 @@
 @import "@/assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
+/*** Buttons ***/
 .settings-button {
   background-color:$green;
-}
-#font-size-p { /* 'Default is 14' text */
-  vertical-align: mid;
-  margin-left:2px;
-}
-#font-warning {
-  color:#f39c12;
-}
-section { /* 'Block' of settings */
-  margin-bottom:5px;
-  position: relative;
-}
-h3 {
-  width:calc(100% - 23px); /* Accounts for padding on both sides */
-  text-align:justify;
-}
-input {
-  margin:2px;
-  width:calc(100% - 23px); /* Accounts for padding on both sides */
-  max-width:150px; /* Big screens don't have arbitrarily large input */
 }
 button { /* Unignore user button */
   padding:2px;
@@ -615,15 +618,12 @@ button { /* Unignore user button */
   color:white;
   border:none;
 }
-#settings-wrapper { /* Wrapper div */
-  padding:5px;
-  padding-left:20px;
-  height:calc(100% - 50px);
-  overflow-y:auto;
+.feature-button {
+  float:left;
+  width:95%;
 }
-li { /* Remove bullets */
-  list-style-type: none;
-}
+
+/*** Tables ***/
 td { /* Table cell in notifications settings section */
   padding:4px;
   width:max-content;
@@ -638,17 +638,39 @@ table {
 .feature-button-container {
   padding:2px;
 }
-.feature-button {
-  float:left;
-  width:95%;
+
+/*** Text ***/
+#font-size-p { /* 'Default is 14' text */
+  vertical-align: mid;
+  margin-left:2px;
 }
-.left-side {
-  padding-left:0;
+#font-warning {
+  color:#f39c12;
+}
+h3 {
+  width:calc(100% - 23px); /* Accounts for padding on both sides */
+  text-align:justify;
 }
 .heading {
   display:inline-block;
   margin:4px;
   margin-left:0;
+}
+.warning {
+  color:$warning;
+}
+
+/*** Other ***/
+input {
+  margin:2px;
+  width:calc(100% - 23px); /* Accounts for padding on both sides */
+  max-width:150px; /* Big screens don't have arbitrarily large input */
+}
+li { /* Remove bullets */
+  list-style-type: none;
+}
+.left-side {
+  padding-left:0;
 }
 .minimization-triangle {
   height:30px;
@@ -656,6 +678,18 @@ table {
   position:absolute;
   right:10px;
   top:0px;
+}
+
+/*** Container ***/
+section { /* 'Block' of settings */
+  margin-bottom:5px;
+  position: relative;
+}
+#settings-wrapper { /* Wrapper div */
+  padding:5px;
+  padding-left:20px;
+  height:calc(100% - 50px);
+  overflow-y:auto;
 }
 .settings-slide-enter-active {
   transition: max-height 0.2s cubic-bezier(1,0,1,0);
@@ -670,8 +704,5 @@ table {
 }
 .settings-content-container {
   overflow:hidden;
-}
-.warning {
-  color:$warning;
 }
 </style>
