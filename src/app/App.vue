@@ -64,8 +64,8 @@
 
   Vue.use(BootstrapVue);
 
-  Vue.component('v-style', {
-    render: function c(createElement) {
+  Vue.component('v-style', { // Used to reactively style pseudo-elements
+    render: function c(createElement) { // Basically creates a reactive <style> element
       return createElement('style', this.$slots.default);
     },
   });
@@ -107,7 +107,7 @@
   }
 
 
-  @Watch('showPrivMsgModal')
+  @Watch('showPrivMsgModal') // Shows modal
   triggerStart() {
     if (this.showPrivMsgModal) {
       this.$refs.privmsgmodal.onStart();
@@ -193,7 +193,7 @@
     return this.$vxm.chat.auth;
   }
 
-  @Watch('show') // Show modal
+  @Watch('show') // Show authentification modal
   showAuthentification() {
     if (this.show) {
       this.showAuth = true;
@@ -225,7 +225,7 @@
     return this.$vxm.chat.initialSize;
   }
 
-  resized() {
+  resized() { // When the chat is resized, store the new size
     const w = this.$el.scrollWidth;
     const h = this.$el.scrollHeight;
     if (localStorage && (w !== 300 || h !== 500)) {
@@ -240,7 +240,7 @@
   }
 
   @Watch('slideoutOpen')
-  slideoutChanged() {
+  slideoutChanged() { // Make sure the chat isn't minimized when the slideout opens
     if (this.slideoutOpen) {
       this.minimization = false;
     }
@@ -260,7 +260,7 @@
 
 
   @Watch('windowFocused')
-  focusChanged() {
+  focusChanged() { // Updates status when focus is changed
     if (this.windowFocused) {
       this.$vxm.chat.setUnaway();
     } else {
@@ -346,8 +346,8 @@
     });
     window.addEventListener('keydown', this.key);
     window.addEventListener('click', this.close); // Closes slideout when clicked outside
-    window.addEventListener('focus', () => {
-      if (this.$vxm.chat.autoUpdateStatus) {
+    window.addEventListener('focus', () => { // Updates away/online status when tab is clicked on/off
+      if (this.$vxm.chat.autoUpdateStatus) { // Don't update if user has set themselves as away
         this.windowFocused = true;
       }
     });
@@ -358,7 +358,7 @@
 
   // Inactivity timer
 
-  timeout = 60000;
+  timeout = 60000; // How long a user is inactive before they are marked as away
 
   timeoutId !: number;
 
@@ -366,7 +366,7 @@
     this.$vxm.chat.setAway();
   }
 
-  resetInactiveTimer() {
+  resetInactiveTimer() { // When the user interacts with the chat, reset the timer
     window.clearTimeout(this.timeoutId);
     this.beginInactiveTimer();
   }
@@ -375,8 +375,8 @@
     this.timeoutId = setTimeout(this.onInactive, this.timeout);
   }
 
-  startTimers() {
-    const chat = document.getElementById('eterna-chat');
+  startTimers() { // Begins timers and sets event listeners
+    const chat = document.getElementById('eterna-chat'); // $refs was acting up
     chat?.addEventListener('mousemove', this.resetInactiveTimer, false);
     chat?.addEventListener('mousedown', this.resetInactiveTimer, false);
     chat?.addEventListener('keypress', this.resetInactiveTimer, false);
