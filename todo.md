@@ -3,9 +3,6 @@
 ## Todo
 ----
 
-### Bug fixes
-  - Ensure features and styles are consistent across browsers
-
 ## Finished
 ---
 
@@ -36,6 +33,7 @@
   - Operator name change seems to break sometimes
   - Optimize away/online status loading
   - Find a way to limit unnecessary GET requests (tooltips)
+  - Ensure features and styles are consistent across browsers
 
 ### Miscellaneous
   - Clicking a channel name in a chat message opens the channel

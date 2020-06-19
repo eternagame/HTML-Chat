@@ -109,7 +109,7 @@
     background-color:#7b8a8b;
     appearance: none;
     width:40px;
-    height:px;
+    height:15px;
     border-radius:2px;
   }
   .slider:focus { /* Avoids unwanted outlines */

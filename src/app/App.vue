@@ -1,13 +1,14 @@
 <template>
   <DraggableDiv
     id="eterna-chat"
-    style="overflow-y: hidden; resize:both"
+    style="overflow-y: hidden"
     :style="{ 'min-height': minimized ? '40px' : '400px',
     /* Makes sure minimum height is changed to allow for chat to be minimized*/
     top: `${initialPosition[1]}px`,
     left:`${initialPosition[0]}px`,
     width: `${initialSize[0] || 300}px`,
-    height: `${initialSize[1] || 500}px`}"
+    height: `${initialSize[1] || 500}px`,
+    resize: minimized ? '' : 'both'}"
     :class="{ eternaChatFull: fullSized, eternaChatNormal: !fullSized, minimizedChat: minimized }"
     :enabled="!fullSize /* Disables dragging when chat is fullsize*/"
     v-resize:debounce="resized"
