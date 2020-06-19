@@ -53,6 +53,7 @@
   } from 'vue-property-decorator';
   import resize from 'vue-resize-directive';
   import BootstrapVue from 'bootstrap-vue';
+  import sjcl from 'sjcl';
   import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
@@ -169,7 +170,8 @@
     this.$vxm.chat.operLoginUser = username; // Sets creds used for authentification by chat.vuex
     this.$vxm.chat.operLoginPassword = password;
     if (remember) { // Store values
-      localStorage.operPass = password;
+      // Encrypt password
+      localStorage.operPass = JSON.stringify(sjcl.encrypt('password', password));
       localStorage.operUser = username;
     }
     this.$vxm.chat.operCommand(); // Set all nicks as opers
@@ -206,8 +208,9 @@
    * Logs the user in as an operator
    */
   async logInOper() {
-    const pass = localStorage.operPass;
+    let pass = JSON.parse(localStorage.operPass);
     const user = localStorage.operUser;
+    pass = sjcl.decrypt('password', pass); // Decrypt password
     if (user && pass) {
       this.$vxm.chat.operLoginPassword = pass; // Log in
       this.$vxm.chat.operLoginUser = user;
