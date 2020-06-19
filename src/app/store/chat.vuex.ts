@@ -1525,7 +1525,9 @@ export default class ChatModule extends VuexModule {
    */
   @action()
   async setAway() {
-    this.currentUser.away = true;
+    if (this.currentUser) {
+      this.currentUser.away = true;
+    }
     this.connectedUsers[this.currentUser.username]!.away = true;
     this.client?.raw('AWAY User is currently away');
   }
@@ -1535,7 +1537,9 @@ export default class ChatModule extends VuexModule {
    */
   @action()
   async setUnaway() {
-    this.currentUser.away = false;
+    if (this.currentUser) {
+      this.currentUser.away = false;
+    }
     this.connectedUsers[this.currentUser.username]!.away = false;
     this.client?.raw('AWAY');
   }

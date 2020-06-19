@@ -266,4 +266,17 @@
     color:#c0dce7;
     position:relative;
   }
+  blockquote {
+    font-weight: bolder;
+    display:inline;
+  }
+  blockquote::before {
+    content: "";
+    margin-right:2px;
+    border:none;
+    border-right:5px solid gray;
+    border-radius:5px;
+    width:5px;
+    height:inherit;
+  }
 </style>
