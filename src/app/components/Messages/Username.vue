@@ -84,6 +84,7 @@
     enter() {
       this.$refs.tooltip.findRank();
       this.$refs.tooltip.description();
+      this.$refs.tooltip.specialStatus();
     }
 
     $refs !: {
