@@ -7,9 +7,14 @@
       left: `${left + 5}px`
     }">
     <ul>
-      <li class="user-tooltip-user">{{user.username}}</li>
-      <li class="user-tooltip-rank"><span class="rank">{{rank}}</span></li>
-      <li class="description">{{desc}}</li>
+      <li class="user-tooltip-user">
+        <span style="color:yellow; font-size:1.25em" v-show="user.away">● </span>{{user.username}}
+      </li>
+      <li class="user-tooltip-rank">
+        <span class="rank">{{rank}}</span>
+        <span class="status">{{status}}</span>
+      </li>
+      <li class="description"><span v-html="desc" /></li>
     </ul>
   </div>
 </template>
@@ -51,8 +56,15 @@
         user: this.user,
         callback: (d) => {
           const data = JSON.parse(d);
-          if (d.data !== undefined) {
-            this.desc = d.data.user.profile;
+          if (data.data !== undefined && data.data.user.Profile) {
+            let desc = data.data.user.Profile;
+            if (desc.length > 150) {
+              desc = desc.slice(0, 150)
+                .replace(/<br>/, '')
+                .trim();
+              desc += '...';
+            }
+            this.desc = desc;
           } else {
             this.desc = 'This user has not added a description to their profile';
           }
@@ -61,13 +73,36 @@
             this.desc = 'This user has not added a description to their profile';
     }
 
+    status = '';
+
+    specialStatus() {
+      const statusUsernames: {[key:string]:string[]} = {
+        developer: ['Ahalb'],
+        scientist: [''],
+        staff: ['Ahalb'],
+        moderator: ['Ahalb'],
+      };
+      const status: string[] = [];
+      const name = this.user.username;
+      Object.keys(statusUsernames).forEach(e => {
+        if (statusUsernames[e].includes(name)) {
+          status.push(e);
+        }
+      });
+      if (status.length > 0) {
+        this.status = status.join(', ');
+      } else {
+        this.status = '';
+      }
+    }
+
     findRank() {
       this.$vxm.chat.getUserInfo({
         user: this.user,
         callback: (d) => {
           const data = JSON.parse(d);
-          if (d.data !== undefined) {
-            this.rank = `#${d.data.user.rank}`;
+          if (data.data !== undefined) {
+            this.rank = `#${data.data.user.rank}`;
           } else {
             this.rank = 'Unranked';
           }
@@ -112,5 +147,11 @@
   .description {
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
+  }
+  .status {
+    float:right;
+  }
+  .status::first-letter {
+    text-transform: capitalize;
   }
 </style>

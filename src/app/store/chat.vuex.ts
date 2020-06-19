@@ -1207,7 +1207,7 @@ export default class ChatModule extends VuexModule {
         arg.callback(xmlHttp.responseText); // Calls callback after response
       }
     };
-    xmlHttp.open('GET', `https://eternagame.org/get/?type=my_user&uid=${uid}`, true); // true for asynchronous
+    xmlHttp.open('GET', `https://eternagame.org/get/?type=user&uid=${uid}`, true); // true for asynchronous
     xmlHttp.send(null);
   }
 
