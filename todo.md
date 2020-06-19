@@ -2,7 +2,6 @@
 
 ## Todo
 ----
-Autocomplete for usernames?
 
 ## Finished
 ---
@@ -39,6 +38,7 @@ Autocomplete for usernames?
 ### Miscellaneous
   - Clicking a channel name in a chat message opens the channel
   - Clicking a username brings up the tooltip
+  - Autocomplete for usernames
 
 ### Reconnect button
   - Style to align with theme

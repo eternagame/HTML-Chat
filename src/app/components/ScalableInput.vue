@@ -1,5 +1,5 @@
 <template>
-  <div style="overflow: hidden; position: relative;">
+  <div style="overflow:hidden; position: relative;">
     <v-style> <!-- Dynamically add focus ring if tab key is pressed -->
       .scalable-input:focus {
         box-shadow: {{bshadow}};
@@ -15,7 +15,7 @@
       }"
       class="scalable-input"
       :disabled="disabled"
-      @input="$emit('input', $event.target.value);"
+      @input="$emit('input', $event.target.value); updateAutocomplete($event)"
       ref="textarea"
       @focus="$emit('focused', true)"
       @blur="$emit('focused', false)"
@@ -32,6 +32,7 @@
   import {
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
+  import User from '@/types/user';
   import SendButton from '@/components/SendButton.vue';
 
   @Component({
@@ -218,6 +219,54 @@
     updated() {
       this.updateHeight();
     }
+
+    autocompletedText = '';
+
+    manualIndex: number | null = null;
+
+    updateAutocomplete(code:InputEvent) {
+      // Converts 1-based index to 0-based index
+      const cursor = this.$refs.textarea.selectionStart - 1;
+      const word = this.wordAt(cursor);
+      if (word.startsWith('@')) { // If it's a username
+        if (code.data === null) { // If the user hit backspace
+          const text = this.value;
+          // Replace the autocompleted text with an empty string
+          const idx = text.lastIndexOf(this.autocompletedText);
+          const l = this.autocompletedText.length;
+          // Removes last instance of autompletedText
+          this.value = `${text.slice(0, idx)}${text.slice(0, -idx - l)}`;
+          this.autocompletedText = '';
+          this.manualIndex = cursor - word.length + 1; // Makes sure it won't be autocorrected again
+          return;
+        }
+        const name = word.substring(1);
+        const users = Object.values(this.$vxm.chat.connectedUsers) as User[];
+        const autocompleteUsers = users.filter(e => e.username.startsWith(name));
+        // If there's only one possibility and it should be autocorrected
+        if (autocompleteUsers.length === 1 && cursor - word.length + 1 !== this.manualIndex) {
+          let { username } = autocompleteUsers[0];
+          username = username.replace(name, '');
+          this.insertString(cursor + 1, `${username} `);
+          this.autocompletedText = `${username}`;
+        }
+      }
+      if (!this.value.includes('@')) { // If there aren't any usernames, reset
+        this.manualIndex = null;
+        this.autocompletedText = '';
+      }
+    }
+
+    // Finds the word (not character) at an index
+    wordAt(pos: number) {
+    const str = this.value;
+    const left = str.slice(0, pos + 1).search(/\S+$/);
+    const right = str.slice(pos).search(/\s/);
+    if (right < 0) {
+        return str.slice(left);
+    }
+    return str.slice(left, right + pos);
+}
   }
 </script>
 
