@@ -58,6 +58,11 @@ md.renderer.rules.text = function link(tokens, idx, options, env, self) {
     content = content.replace(user[0], `<mark class="user-link" style="cursor:pointer">${user[0]}</mark>`);
     return content;
   }
+  // Quotes
+  if (tokens[idx].content.match(/^> .+/)) {
+    const { content } = tokens[idx];
+    return `<blockquote>"${content.replace(/> ?/, '')}"</blockquote>`;
+  }
   return defaultRender(tokens, idx, options, env, self);
 };
 
