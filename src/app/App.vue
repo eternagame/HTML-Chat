@@ -387,8 +387,8 @@
 
   // Hooks
 
-  postScreenshot(url:string, puzzleName:string) {
-    this.postMessage(`${puzzleName} ${url}`, '#help');
+  postScreenshot(url:string) {
+    this.postMessage(url, '#help');
   }
   }
 </script>
