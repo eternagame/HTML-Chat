@@ -76,11 +76,15 @@
     status = '';
 
     specialStatus() {
+      /*
+      I need to fill these values in
+      Once roles are set up on the backend, this needs to be replaced anyway
+      */
       const statusUsernames: {[key:string]:string[]} = {
-        developer: ['Ahalb'],
+        developer: [''],
         scientist: [''],
-        staff: ['Ahalb'],
-        moderator: ['Ahalb'],
+        staff: [''],
+        moderator: [''],
       };
       const status: string[] = [];
       const name = this.user.username;
