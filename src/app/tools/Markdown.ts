@@ -40,11 +40,22 @@ md.renderer.rules.text = function link(tokens, idx, options, env, self) {
     const { content } = tokens[idx];
     return `<img src="${content}" style="width:calc(100% - 25px); max-width:750px">`;
   }
+  // If there's a channel, format it and make sure it can be clicked to visit the channel
   if (tokens[idx].content.match(/#.+/)) {
     let { content } = tokens[idx];
     const channel = tokens[idx].content.match(/#\S+/g);
     if (!channel) return defaultRender(tokens, idx, options, env, self);
+    // Wraps channel name in <mark> tags and flags it as a channel name
     content = content.replace(channel[0], `<mark class="channel-link" style="cursor:pointer">${channel[0]}</mark>`);
+    return content;
+  }
+  // If there's a username, format it and make sure it can be clicked to display a tooltip
+  if (tokens[idx].content.match(/@.+/)) {
+    let { content } = tokens[idx];
+    const user = tokens[idx].content.match(/@\S+/g);
+    if (!user) return defaultRender(tokens, idx, options, env, self);
+    // Wraps username in <mark> tags and flags it as a username
+    content = content.replace(user[0], `<mark class="user-link" style="cursor:pointer">${user[0]}</mark>`);
     return content;
   }
   return defaultRender(tokens, idx, options, env, self);
