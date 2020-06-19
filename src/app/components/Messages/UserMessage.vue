@@ -197,6 +197,7 @@
     position: absolute;
     top: -4px;
     right: 15px;
+    margin-right:10px;
     font-size: 20px;
     display: block;
     cursor: pointer;

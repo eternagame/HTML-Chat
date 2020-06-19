@@ -232,8 +232,8 @@
           v-show="!isOper" >
             Log in as operator
         </button>
-        <h6>Change nick</h6>
-        <input @input="setNick" :value="opernick">
+        <h6 v-show="isOper">Change nick</h6>
+        <input v-show="isOper" @input="setNick" :value="opernick">
       </div>
       </transition>
     </section>
@@ -277,7 +277,6 @@
 
     @Watch('openMenus')
     menusChanged() {
-      console.log(2);
       if (localStorage) {
         localStorage.openMenus = JSON.stringify(this.openMenus);
       }
@@ -584,8 +583,10 @@
       }
       if (localStorage.notificationsKeywords) {
         this.keywords = JSON.parse(localStorage.notificationsKeywords).join(', ');
-      } else {
+      } else if (this.$vxm.chat.notificationsKeywords) {
         this.keywords = this.$vxm.chat.notificationsKeywords.join(', ');
+      } else {
+        this.keywords = '';
       }
       if (localStorage.nick) {
         this.opernick = localStorage.nick;

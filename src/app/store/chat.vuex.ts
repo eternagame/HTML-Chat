@@ -454,9 +454,11 @@ export default class ChatModule extends VuexModule {
     const channel = parts[3];
     // eslint-disable-next-line no-control-regex
     let message = str.substring(str.indexOf(channel) + channel.length + 2).replace(/\u0001/g, '').trim();
-    this.notificationsKeywords.forEach(n => {
-      message = message.replace(n, `<mark>${n}</mark>`);
-    });
+    if (this.notificationsKeywords) {
+      this.notificationsKeywords.forEach(n => {
+        message = message.replace(n, `<mark>${n}</mark>`);
+      });
+    }
     const user = parts[1].substring(1, parts[1].indexOf('@'));
     const username = user.substring(0, user.lastIndexOf('!'));
     const uid = user.substring(user.lastIndexOf('!') + 1);
@@ -495,8 +497,8 @@ export default class ChatModule extends VuexModule {
   /**
    * Joins the #ops-notifications channel
    */
-  @action()
-  async joinOpsChannel() {
+  @mutation
+  joinOpsChannel() {
     this.client?.join('#ops-notifications');
   }
 
@@ -1169,8 +1171,8 @@ export default class ChatModule extends VuexModule {
    * @param {string} message - The user and the message to be sent. Takes the form <nick>|<message>
    */
 
-  @action()
-  async postToQuery(message:string) { /* @action() can only take 1 argument */
+  @mutation
+  postToQuery(message:string) { /* @action() can only take 1 argument */
     /* Splits argument into message and channel
     Will only cause issues if people are putting | in their nick */
     const chan = message.substring(0, message.indexOf('|'));
@@ -1264,9 +1266,11 @@ export default class ChatModule extends VuexModule {
     }
     const username = User.parseUsername(nick);
     let msg = message;
-    this.notificationsKeywords.forEach(n => {
-      msg = msg.replace(n, `<mark>${n}</mark>`);
-    });
+    if (this.notificationsKeywords) {
+      this.notificationsKeywords.forEach(n => {
+        msg = msg.replace(n, `<mark>${n}</mark>`);
+      });
+    }
     const messageObject = new Message(
       msg,
       target,
@@ -1338,8 +1342,8 @@ export default class ChatModule extends VuexModule {
    * Bans a user
    * @param user {User} - The user to be banned
    */
-  @action()
-  async ban(user:User) {
+  @mutation
+  ban(user:User) {
     if (this.oper) {
       this.client?.ban(this.chatChannel, `*!${user.username}@*`);
     }
@@ -1349,8 +1353,8 @@ export default class ChatModule extends VuexModule {
    * Kicks a user
    * @param user {User} - The user to be kicked
    */
-  @action()
-  async kick(user:User) {
+  @mutation
+  kick(user:User) {
     if (this.oper) {
       this.connectedUsers[user.username]?.nicks.forEach((e) => {
         this.client?.raw(`KICK ${this.chatChannel} ${e}`);
@@ -1362,8 +1366,8 @@ export default class ChatModule extends VuexModule {
    * Quiets a user
    * @param user {User} - The user to be quieted
    */
-  @action()
-  async quiet(user:User) {
+  @mutation
+  quiet(user:User) {
     if (this.oper) {
       this.client?.raw(`MODE ${this.chatChannel} +b m;*!${user.username}@*`);
     }
@@ -1373,8 +1377,8 @@ export default class ChatModule extends VuexModule {
    * Unquiets a user
    * @param user {User} - The user to be unquieted
    */
-  @action()
-  async unquiet(user:User) {
+  @mutation
+  unquiet(user:User) {
     if (this.oper) {
       this.client?.raw(`MODE ${this.chatChannel} -b m;*!${user.username}@*`);
     }
@@ -1384,8 +1388,8 @@ export default class ChatModule extends VuexModule {
    * Unbans a user
    * @param user {User} - The user to be unbanned
    */
-  @action()
-  async unban(user:User) {
+  @mutation
+  unban(user:User) {
     if (this.oper) {
       this.client?.unban(this.chatChannel, `*!${user.username}@*`);
     }
@@ -1505,8 +1509,8 @@ export default class ChatModule extends VuexModule {
   /**
    * Updates the away/online status for all connected users
    */
-  @action()
-  async updateUserStatus() {
+  @mutation
+  updateUserStatus() {
     this.client?.who('#general', (e) => { // Everyone should be in this channel
       (e.users as {nick: string, away:boolean}[]).forEach(u => { // For each user
         const user = User.parseUsername(u.nick); // Get their username
@@ -1519,8 +1523,8 @@ export default class ChatModule extends VuexModule {
   /**
    * Sets the user as away
    */
-  @mutation
-  setAway() {
+  @action()
+  async setAway() {
     this.currentUser.away = true;
     this.connectedUsers[this.currentUser.username]!.away = true;
     this.client?.raw('AWAY User is currently away');
@@ -1529,8 +1533,8 @@ export default class ChatModule extends VuexModule {
   /**
    * Sets the user as online
    */
-  @mutation
-  setUnaway() {
+  @action()
+  async setUnaway() {
     this.currentUser.away = false;
     this.connectedUsers[this.currentUser.username]!.away = false;
     this.client?.raw('AWAY');
