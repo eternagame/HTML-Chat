@@ -152,6 +152,13 @@
           this.tooltipX = ev.clientX;
           this.tooltipY = ev.clientY;
         });
+        // Opens player profile on click
+        l.addEventListener('click', () => {
+          const username = l.innerHTML.substring(1);
+          const user = this.$vxm.chat.connectedUsers[username];
+          if (!user) return;
+          window.open(`https://${this.$vxm.chat.workbranch}/web/player/${user.uid}/`);
+        });
       });
     }
 
