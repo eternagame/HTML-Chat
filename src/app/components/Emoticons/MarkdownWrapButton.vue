@@ -1,13 +1,6 @@
 <template>
   <button id='md-wrap-button-container' class='md-button' @click="clicked">
-    <strong class="text" v-if="typeIs('bold')">B</strong>
-    <em class="text" v-if="typeIs('italics')">T</em>
-    <span class="text" id="s" v-if="typeIs('strikethrough')">S</span>
-    <code class="text" v-if="typeIs('code')">C</code>
-    <u class="text" v-if="typeIs('link')">L</u>
-    <strong class="text" id="action" v-if="typeIs('action')"><em>me</em></strong>
-    <span class="text" v-if="typeIs('question')">?</span>
-    <em class="text" v-if="typeIs('italicsbold')"><strong>E</strong></em>
+    <span class="text" :style="style">{{buttonLetter}}</span>
   </button>
 </template>
 <script lang='ts'>
@@ -18,7 +11,32 @@
     type !: string;
 
     typeIs(type:string) {
-      return this.type === type;
+      return this.type.includes(type);
+    }
+
+    get buttonLetter() {
+      switch (this.type) {
+        case 'italics': return 'T';
+        case 'action': return 'me';
+        case 'question': return '?';
+        case 'italicsbold': return 'E';
+        case 'quote': return '""';
+        default: return this.type.substring(0, 1).toUpperCase();
+      }
+    }
+
+    get style() {
+      const bold = this.typeIs('bold') || this.typeIs('action');
+      const italics = this.typeIs('italics') || this.typeIs('action');
+      const strikethrough = this.typeIs('strikethrough');
+      const code = this.typeIs('code');
+      const link = this.typeIs('link');
+      return {
+        'font-weight': bold ? 'bold' : '',
+        'font-style': italics ? 'italic' : '',
+        'text-decoration': `${strikethrough ? 'line-through' : ''} ${link ? 'underline' : ''}`,
+        'font-family': code ? 'monospace' : '',
+      };
     }
 
     clicked() {

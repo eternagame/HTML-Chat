@@ -208,14 +208,16 @@
    * Logs the user in as an operator
    */
   async logInOper() {
-    let pass = JSON.parse(localStorage.operPass);
-    const user = localStorage.operUser;
-    pass = sjcl.decrypt('password', pass); // Decrypt password
-    if (user && pass) {
-      this.$vxm.chat.operLoginPassword = pass; // Log in
-      this.$vxm.chat.operLoginUser = user;
-      this.$vxm.chat.operCommand();
-      setTimeout(this.operLoginStatus, 150);
+    if (localStorage && localStorage.operUser && localStorage.operPass) {
+      let pass = JSON.parse(localStorage.operPass);
+      const user = localStorage.operUser;
+      pass = sjcl.decrypt('password', pass); // Decrypt password
+      if (user && pass) {
+        this.$vxm.chat.operLoginPassword = pass; // Log in
+        this.$vxm.chat.operLoginUser = user;
+        this.$vxm.chat.operCommand();
+        setTimeout(this.operLoginStatus, 150);
+      }
     }
   }
 

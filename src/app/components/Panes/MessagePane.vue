@@ -144,6 +144,7 @@
         case 'code': this.$refs.input.wrapOrInsert('`', true); break;
         case 'link': this.$refs.input.insertLink(); break;
         case 'action': this.$refs.input.insertString(0, '/me '); break;
+        case 'quote': this.$refs.input.insertString(0, '> '); break;
         case 'question': this.$emit('postMessage', '/help'); break;
         default: break;
       }
