@@ -28,4 +28,7 @@
     height: 34px;
     width: 35px;
   }
+  .open-window:hover {
+    cursor: pointer;
+  }
 </style>

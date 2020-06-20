@@ -279,4 +279,7 @@
     width:5px;
     height:inherit;
   }
+  mark:hover {
+    color:white;
+  }
 </style>
