@@ -132,6 +132,7 @@
       this.$emit('postMessage', this.newMessage);
       this.newMessage = '';
       this.$refs.input.$refs.textarea.value = '';
+      this.scrollDown();
     }
 
     format(options:string) {
@@ -168,6 +169,7 @@
         this.$refs.input.value = '';
         this.newMessage = '';
         e.preventDefault();
+        this.scrollDown();
       }
     }
 

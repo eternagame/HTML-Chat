@@ -62,11 +62,7 @@
     private defaultColor = '#ffffff';
 
     get computedColor() {
-      let numUid = parseInt(this.user.uid, 10);
-      /* Temporary, for compatibility with current chat */
-      if (!numUid) { // If uid isn't present, check the end of the username
-        numUid = parseInt(this.user.username.substring(this.user.username.lastIndexOf('_') + 1), 10);
-      }
+      const numUid = parseInt(this.user.uid, 10);
       if (!numUid && numUid !== 0) {
         return '#ffffff';
       }
