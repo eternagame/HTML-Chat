@@ -54,4 +54,8 @@
     -webkit-transform: rotate(90deg);
     transition: transform 0.2s;
   }
+
+  .minimization-triangle:hover {
+    cursor: pointer;
+  }
 </style>

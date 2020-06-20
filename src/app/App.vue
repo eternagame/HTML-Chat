@@ -508,4 +508,7 @@
   background-size: 100% 100%;
   pointer-events:none; /* Clicks and drags go down to the resizer */
 }
+.resize-handle:hover {
+  cursor:se-resize;
+}
 </style>
