@@ -1528,7 +1528,9 @@ export default class ChatModule extends VuexModule {
     if (this.currentUser) {
       this.currentUser.away = true;
     }
-    this.connectedUsers[this.currentUser.username]!.away = true;
+    if (this.connectedUsers[this.currentUser.username]) {
+      this.connectedUsers[this.currentUser.username]!.away = true;
+    }
     this.client?.raw('AWAY User is currently away');
   }
 
@@ -1540,7 +1542,9 @@ export default class ChatModule extends VuexModule {
     if (this.currentUser) {
       this.currentUser.away = false;
     }
-    this.connectedUsers[this.currentUser.username]!.away = false;
+    if (this.connectedUsers[this.currentUser.username]) {
+      this.connectedUsers[this.currentUser.username]!.away = false;
+    }
     this.client?.raw('AWAY');
   }
 

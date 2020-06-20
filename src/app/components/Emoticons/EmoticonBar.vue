@@ -85,7 +85,7 @@
 
     // Markdown button
 
-    markdownCodes = ['bold', 'italics', 'italicsbold', 'strikethrough', 'code', 'link', 'action'];
+    markdownCodes = ['bold', 'italics', 'italicsbold', 'strikethrough', 'code', 'link', 'action', 'quote'];
 
     // Submenu selection
 

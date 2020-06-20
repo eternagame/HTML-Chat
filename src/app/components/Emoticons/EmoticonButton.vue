@@ -27,7 +27,7 @@
     padding-top:2px;
     text-align:center;
   }
-  #emoticon-button-container :hover {
+  #emoticon-button-container:hover {
     background-color: #21508c;
   }
   #emoticon-text-container {
