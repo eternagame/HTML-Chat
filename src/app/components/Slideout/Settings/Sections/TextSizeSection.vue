@@ -1,0 +1,71 @@
+<template>
+  <SettingsSection title="Text Size" >
+      <input v-model="size" type=number min=10 max=18>
+        <p id='font-size-p'>Default is 14</p>
+        <p
+          id='font-warning'
+          v-show="size < 10 || size > 18" >
+          Font size must be a number, greater than 10, and less than 18
+        </p>
+    </SettingsSection>
+</template>
+<script lang="ts">
+  import {
+    Component, Watch, Prop, Vue,
+  } from 'vue-property-decorator';
+  import SettingsSection from '../SettingsSection.vue';
+
+  @Component({
+    components: {
+      SettingsSection,
+    },
+  })
+  export default class TextSizeSection extends Vue {
+    size:string = '14'; // font size
+
+    // Updates global font size when input changes
+    @Watch('size')
+    updateFontSize() {
+       // Only update if valid font size
+      if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 18) {
+        this.$vxm.settings.fontSize = parseInt(this.size, 10);
+        localStorage.fontSize = JSON.stringify(this.size);
+      }
+    }
+
+    get fontSize() {
+      const numSize = parseInt(this.size, 10); // Font size as an int
+      if (numSize >= 10 && numSize <= 18) {
+        return numSize;
+      }
+      if (numSize >= 18) {
+        return 18; // If font size greater than 18, set to maximum of 18
+      }
+      if (numSize <= 10) {
+        return 10; // If font size less than 10, set to minimum of 10
+      }
+      return 14; // If nothing else works, make it the default, 14
+    }
+
+    created() {
+      if (localStorage.fontSize) {
+        this.size = String(Number(JSON.parse(localStorage.fontSize)));
+      } else {
+        this.size = this.$vxm.settings.fontSize.toString();
+      }
+    }
+  }
+</script>
+<style scoped>
+#font-size-p { /* 'Default is 14' text */
+  margin-left:2px;
+}
+#font-warning {
+  color:#f39c12;
+}
+input {
+  margin:2px;
+  width:calc(100% - 23px); /* Accounts for padding on both sides */
+  max-width:150px; /* Big screens don't have arbitrarily large input */
+}
+</style>
