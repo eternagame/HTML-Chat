@@ -1,6 +1,10 @@
 <template>
   <button id='md-wrap-button-container' class='md-button' @click="clicked">
-    <span class="text" :style="style">{{buttonLetter}}</span>
+    <span
+      class="text"
+      :id="typeIs('strikethrough') ? 's' : ''"
+      :style="style">{{buttonLetter}}
+    </span>
   </button>
 </template>
 <script lang='ts'>
@@ -10,7 +14,7 @@
     @Prop()
     type !: string;
 
-    typeIs(type:string) {
+    typeIs(type:string):boolean {
       return this.type.includes(type);
     }
 
@@ -74,12 +78,6 @@
 
   #s:before,
   #s:after {
-    content: "\00a0\00a0";
-  }
-
-  #action {
-    font-size:12px;
-    padding-left:1px;
-    vertical-align:text-bottom;
+    content: "-";
   }
 </style>
