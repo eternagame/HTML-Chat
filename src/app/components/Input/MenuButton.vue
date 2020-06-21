@@ -9,6 +9,11 @@
     @click="$emit('button', name)"
   >
     {{name}}
+    <v-style>
+      .menu-button:focus {
+        outline: {{ tabbing ? '' : 'none'}} !important;
+      }
+    </v-style>
   </button>
 </template>
 <script lang='ts'>
@@ -22,6 +27,10 @@
 
     @Prop()
     styles!: string;
+
+    get tabbing() {
+      return this.$vxm.chat.tabbing;
+    }
   }
 </script>
 <style scoped>

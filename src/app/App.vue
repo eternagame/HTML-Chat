@@ -58,8 +58,8 @@
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
   import MessagePane from '@/components/Panes/MessagePane.vue';
-  import MinimizationTriangle from '@/components/MinimizationTriangle.vue';
-  import OpenWindowButton from '@/components/OpenWindowButton.vue';
+  import MinimizationTriangle from '@/components/Header/MinimizationTriangle.vue';
+  import OpenWindowButton from '@/components/Header/OpenWindowButton.vue';
   import DraggableDiv from '@/components/DraggableDiv.vue';
   import OperLogin from '@/components/OperLogin.vue';
   import PrivateMessageModal from '@/components/Messages/PrivateMessageModal.vue';
@@ -129,6 +129,10 @@
   sizeChanged() {
     if (this.fullSize && this.minimized) {
       this.fullSize = false;
+    }
+    if (this.fullSize === false) {
+      // Scrolls down when the chat is brought back to normal size
+      this.$refs.messagepanes[this.activeTab].onContentChanged();
     }
   }
 
@@ -397,8 +401,6 @@
   }
   }
 </script>
-
-
 <style lang="scss" scoped>
 @import "./assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";
