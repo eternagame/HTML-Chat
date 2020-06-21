@@ -8,7 +8,7 @@
       :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
       @mouseover="hovered = true /* Shows and hides tooltip */"
       @mouseout="hovered = false"
-      @mousemove="updatecoords"
+      @mousemove="updateTooltipCoordinates"
     >
       <span
         class="away-indicator"
@@ -54,7 +54,7 @@
 
     left = 0;
 
-    updatecoords(e:MouseEvent) {
+    updateTooltipCoordinates(e:MouseEvent) {
       this.top = e.clientY;
       this.left = e.clientX;
     }

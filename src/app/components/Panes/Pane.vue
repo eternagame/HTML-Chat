@@ -74,9 +74,6 @@
         this.$nextTick(() => {
           this.container!.scrollTop = this.container!.scrollHeight;
         });
-        console.log('autoscroll');
-      } else {
-        console.log('not autoscroll');
       }
     }
 

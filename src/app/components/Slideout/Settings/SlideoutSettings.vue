@@ -1,33 +1,15 @@
 <template>
   <div id="settings-wrapper" :style="{ fontSize:`${fontSize}px` }">
-    <section>
-      <h5 class="heading" >Text Size</h5>
-      <MinimizationTriangle
-        style="display:inline-block"
-        settings="true"
-        @input="menusChanged"
-        v-model="openMenus.textSize" />
-      <transition name="settings-slide">
-      <div v-show="!openMenus.textSize" class="settings-content-container">
-        <input v-model="size" type=number min=10 max=18>
+    <SettingsSection title="Text Size" >
+      <input v-model="size" type=number min=10 max=18>
         <p id='font-size-p'>Default is 14</p>
         <p
           id='font-warning'
           v-show="size < 10 || size > 18" >
           Font size must be a number, greater than 10, and less than 18
         </p>
-      </div>
-      </transition>
-    </section>
-    <section>
-      <h5 class="heading" >Ignored</h5>
-      <MinimizationTriangle
-        style="display:inline-block"
-        settings="true"
-        @input="menusChanged"
-        v-model="openMenus.ignored" />
-      <transition name="settings-slide">
-      <div v-show="!openMenus.ignored" class="settings-content-container">
+    </SettingsSection>
+    <SettingsSection title="Ignored" >
       <table style="width:175px" >
         <tr v-for="user in ignoredUsers" :key="user.Username">
           <button
@@ -49,19 +31,9 @@
           Unignore All
         </button></tr>
       </table>
-      </div>
-      </transition>
-    </section>
-    <section>
-      <h5 class="heading" >Notifications</h5>
-      <MinimizationTriangle
-        style="display:inline-block"
-        settings="true"
-        @input="menusChanged"
-        v-model="openMenus.notifications" />
-      <transition name="settings-slide">
-      <div v-show="!openMenus.notifications" class="settings-content-container">
-        <h6>Ignored</h6>
+    </SettingsSection>
+    <SettingsSection title="Notifications" >
+      <h6>Ignored</h6>
         <table>
           <tr v-for="channel in channels" :key="channel.name">
             <td>{{channel.name}}</td>
@@ -115,30 +87,12 @@
           If you have multiple keywords, separate them with commas.
           Your username is automatically a keyword.
         </p>
-      </div>
-      </transition>
-    </section>
-    <section>
-      <h5 class="heading" >Username Color</h5>
-      <MinimizationTriangle
-        style="display:inline-block"
-        settings="true"
-        @input="menusChanged"
-        v-model="openMenus.color" />
-      <transition name="settings-slide">
-      <ColorPicker v-show="!openMenus.color" class="settings-content-container" />
-      </transition>
-    </section>
-    <section>
-      <h5 class="heading" >Toolbar Features</h5>
-      <MinimizationTriangle
-        style="display:inline-block"
-        settings="true"
-        @input="menusChanged"
-        v-model="openMenus.toolbar" />
-      <transition name="settings-slide">
-      <div v-show="!openMenus.toolbar" class="settings-content-container">
-        <p>
+    </SettingsSection>
+    <SettingsSection title="Username Color" >
+      <ColorPicker/>
+    </SettingsSection>
+    <SettingsSection title="Toolbar Features" >
+       <p>
           These enable you to send emoticons and formatted text.
         </p>
         <table>
@@ -192,39 +146,15 @@
           </tbody>
           <tfoot><tr><td colspan=2 class="warning">{{emoticonErrorMessage}}</td></tr></tfoot>
         </table>
-      </div>
-      </transition>
-    </section>
-    <section>
-      <li class="settings-section-header">
-      <h5 class="heading">Status</h5>
-      <MinimizationTriangle
-        style="display:inline-block"
-        settings="true"
-        @input="menusChanged"
-        v-model="openMenus.status" />
-      </li>
-      <transition name="settings-slide">
-      <div v-show="!openMenus.status" class="settings-content-container">
-        <p>You are currently marked as {{userStatus ? 'away' : 'online'}}</p>
-        <button class="btn settings-button" @click="changeStatus(!userStatus)">
-          Toggle
-        </button>
-      </div>
-      </transition>
-    </section>
-    <section>
-      <li class="settings-section-header">
-      <h5 class="heading" >Operator</h5>
-      <MinimizationTriangle
-        style="display:inline-block"
-        settings="true"
-        @input="menusChanged"
-        v-model="openMenus.oper" />
-      </li>
-      <transition name="settings-slide">
-      <div v-show="!openMenus.oper" class="settings-content-container">
-        <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
+    </SettingsSection>
+    <SettingsSection title="Status" >
+      <p>You are currently marked as {{userStatus ? 'away' : 'online'}}</p>
+      <button class="btn settings-button" @click="changeStatus(!userStatus)">
+        Toggle
+      </button>
+    </SettingsSection>
+    <SettingsSection title="Operator" >
+      <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
         <button
           @click="$emit('auth')"
           :style="{ fontSize:`${fontSize * 11 / 14}px` }"
@@ -234,9 +164,7 @@
         </button>
         <h6 v-show="isOper">Change nick</h6>
         <input v-show="isOper" @input="setNick" :value="opernick">
-      </div>
-      </transition>
-    </section>
+    </SettingsSection>
   </div>
 </template>
 <script lang="ts">
@@ -251,6 +179,7 @@
   import { Channel } from '@/store/chat.vuex';
   import ColorPicker from './ColorPicker/ColorPicker.vue';
   import MinimizationTriangle from '../../MinimizationTriangle.vue';
+  import SettingsSection from './SettingsSection.vue';
 
   Vue.use(BootstrapVue);
 
@@ -260,6 +189,7 @@
       ConnectButton,
       ColorPicker,
       MinimizationTriangle,
+      SettingsSection,
     },
   })
   export default class SlideoutSettings extends Vue {
