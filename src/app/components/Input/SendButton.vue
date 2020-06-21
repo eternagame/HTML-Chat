@@ -4,6 +4,11 @@
     :class="{animated: animationValue}"
     @click="sendMessage"
   >
+    <v-style>
+      .send-button:focus {
+        outline: {{ $vxm.chat.tabbing ? '' : 'none'}} !important;
+      }
+    </v-style>
   </button>
 </template>
 
@@ -26,7 +31,7 @@
   .send-button {
     background-color:rgba(0,0,0,0);
     border:none;
-    background-image: url("../assets/send-button.png");
+    background-image: url("../../assets/send-button.png");
     background-repeat: no-repeat;
     background-size: 60% 60%;
     background-position: center;

@@ -41,11 +41,11 @@
     Component, Prop, Watch, Vue,
   } from 'vue-property-decorator';
   import { mapState } from 'vuex';
-  import EmoticonBar from '@/components/Emoticons/EmoticonBar.vue';
+  import EmoticonBar from '@/components/Input/EmoticonBar.vue';
   import UserMessage from '../Messages/UserMessage.vue';
   import Pane from './Pane.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
-  import ScalableInput from '@/components/ScalableInput.vue';
+  import ScalableInput from '@/components/Input/ScalableInput.vue';
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
   import BanStatus from '@/types/BanStatus';
   import Message from '@/types/message';
@@ -64,6 +64,15 @@
   export default class MessagesPane extends Vue {
     @Prop({ required: true })
     data!: Channel;
+
+    get messages() {
+      return this.data.postedMessages;
+    }
+
+    @Watch('messages')
+    messageAdded() {
+      this.onContentChanged();
+    }
 
     @Prop({ required: true })
     visibility!: boolean;

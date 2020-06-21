@@ -21,7 +21,7 @@
 
 <style lang="scss" scoped>
   .open-window {
-    background-image: url("../assets/open-window.png");
+    background-image: url("../../assets/open-window.png");
     background-repeat: no-repeat;
     background-size: 60% 60%;
     background-position: center;

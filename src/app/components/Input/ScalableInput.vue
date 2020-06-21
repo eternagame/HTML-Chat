@@ -33,7 +33,7 @@
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
   import User from '@/types/user';
-  import SendButton from '@/components/SendButton.vue';
+  import SendButton from './SendButton.vue';
 
   @Component({
     components: {

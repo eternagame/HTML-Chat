@@ -20,7 +20,7 @@
   import {
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
-  import MinimizationTriangle from '../../MinimizationTriangle.vue';
+  import MinimizationTriangle from '@/components/Header/MinimizationTriangle.vue';
 
   @Component({
     components: {

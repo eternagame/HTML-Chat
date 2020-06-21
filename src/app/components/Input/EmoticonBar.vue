@@ -59,7 +59,7 @@
   } from 'vue-property-decorator';
   import EmoticonButton from './EmoticonButton.vue';
   import ExpandButton from './ExpandButton.vue';
-  import SendButton from '../SendButton.vue';
+  import SendButton from './SendButton.vue';
   import MarkdownWrapButton from './MarkdownWrapButton.vue';
   import MenuButton from './MenuButton.vue';
   @Component({
