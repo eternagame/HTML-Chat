@@ -39,6 +39,7 @@
   - Clicking a channel name in a chat message opens the channel
   - Clicking a username brings up the tooltip
   - Autocomplete for usernames
+  - Scroll down button for new messages you've missed when scrolling up
 
 ### Reconnect button
   - Style to align with theme

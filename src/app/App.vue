@@ -385,6 +385,9 @@
       this.$vxm.chat.updateMessage = recent || '';
       this.$vxm.chat.inputUpdate = true;
     }
+    if (e.code === 'ArrowDown') {
+      this.$vxm.chat.testReason({ reason: 'test', username: 'Ahalb' });
+    }
   }
 
   created() {
