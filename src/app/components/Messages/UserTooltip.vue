@@ -9,6 +9,7 @@
     <ul>
       <li class="user-tooltip-user">
         <span style="color:yellow; font-size:1.25em" v-show="user.away">● </span>{{user.username}}
+        <span class="user-profile" v-show="profileImage !== ''"><img :src="profileImage"></span>
       </li>
       <li class="user-tooltip-rank">
         <span class="rank">{{rank}}</span>
@@ -37,6 +38,8 @@
     desc = '';
 
     rank = '';
+
+    profileImage = '';
 
     $refs !: {
       container: HTMLDivElement;
@@ -114,6 +117,20 @@
       });
       this.rank = 'Unranked';
     }
+
+    getProfile() {
+      this.$vxm.chat.getUserInfo({
+        user: this.user,
+        callback: (d) => {
+          const data = JSON.parse(d);
+          if (data.data !== undefined) {
+            this.profileImage = `https://eternagame.org/${data.data.user.picture}`;
+          } else {
+            this.profileImage = '';
+          }
+        },
+      });
+    }
   }
 </script>
 <style scoped lang="scss">
@@ -130,7 +147,7 @@
     height:auto;
     top:0px;
     left:0px;
-    width:300px;
+    width:250px;
     border-radius:5px;
   }
   li {
@@ -157,5 +174,11 @@
   }
   .status::first-letter {
     text-transform: capitalize;
+  }
+  .user-profile {
+    float:right;
+  }
+  img {
+    height: 1.5rem;
   }
 </style>
