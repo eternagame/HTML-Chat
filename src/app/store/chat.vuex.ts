@@ -129,6 +129,8 @@ export default class ChatModule extends VuexModule {
 
   autoUpdateStatus = true; // If away/online status should update when the tab is focused
 
+  focused = false;
+
   disconnected = false; // If the user intentionally disconnected
 
   constructor() {
@@ -1312,7 +1314,9 @@ export default class ChatModule extends VuexModule {
       return;
     }
     // Notifications should come in if slideout is open, user is in a different channel, or both
-    if ((this.slideoutOpen || channel.name !== this.chatChannel) && channel.notificationsEnabled) {
+    if (
+      (this.slideoutOpen || channel.name !== this.chatChannel || !this.focused)
+      && channel.notificationsEnabled) {
       // Notify the channel
       this.notify(channel.name);
       if (message.toLowerCase().includes(this.currentUser.username.toLowerCase())) {
