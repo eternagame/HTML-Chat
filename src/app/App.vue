@@ -385,9 +385,6 @@
       this.$vxm.chat.updateMessage = recent || '';
       this.$vxm.chat.inputUpdate = true;
     }
-    if (e.code === 'ArrowDown') {
-      this.$vxm.chat.testReason({ reason: 'test', username: 'Ahalb' });
-    }
   }
 
   created() {
@@ -400,9 +397,12 @@
       if (this.$vxm.chat.autoUpdateStatus) { // Don't update if user has set themselves as away
         this.windowFocused = true;
       }
+      this.$vxm.chat.focused = true;
+      this.$vxm.chat.readChannel(this.currentTab);
     });
     window.addEventListener('blur', () => {
       this.windowFocused = false;
+      this.$vxm.chat.focused = false;
     });
   }
 
