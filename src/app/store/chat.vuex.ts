@@ -876,6 +876,17 @@ export default class ChatModule extends VuexModule {
               } else { // Otherwise, just ban them from the one channel
                 this.client?.ban(params.split(' ')[0], `*!${params.split(' ')[1]}@*`);
               }
+              if (params.split(' ')[2]) {
+                const user = this.connectedUsers[params.split(' ')[1]];
+                const reason = params.substring(params.indexOf(params.split(' ')[2]));
+                if (user && user.nicks) {
+                  const nick = user.nicks[0];
+                  this.giveReason({
+                    reason,
+                    nick,
+                  });
+                }
+              }
             } else {
               this.auth = true; // If not an oper, present the modal to log in
               postMessage('You are not an operator or moderator and do not have permission to ban users.');
@@ -914,6 +925,17 @@ export default class ChatModule extends VuexModule {
                   } else { // Otherwise, kick from the one channel
                     this.client?.raw(`KICK ${params.split(' ')[0]} ${e}`);
                   }
+                  if (params.split(' ')[2]) {
+                    const user = this.connectedUsers[params.split(' ')[1]];
+                    const reason = params.substring(params.indexOf(params.split(' ')[2]));
+                    if (user && user.nicks) {
+                      const nick = user.nicks[0];
+                      this.giveReason({
+                        reason,
+                        nick,
+                      });
+                    }
+                  }
                 });
               }
             } else { // Same thing for all oper commands
@@ -930,6 +952,17 @@ export default class ChatModule extends VuexModule {
                   });
                 } else {
                   this.client?.raw(`MODE ${params.split(' ')[0]} +b m;*!${params.split(' ')[1]}@*`);
+                }
+                if (params.split(' ')[2]) {
+                  const user = this.connectedUsers[params.split(' ')[1]];
+                  const reason = params.substring(params.indexOf(params.split(' ')[2]));
+                  if (user && user.nicks) {
+                    const nick = user.nicks[0];
+                    this.giveReason({
+                      reason,
+                      nick,
+                    });
+                  }
                 }
               } else {
                 postMessage('Please include command parameters. Type `/help quiet` for more usage instructions');
@@ -1073,6 +1106,19 @@ export default class ChatModule extends VuexModule {
             }
             this.changeNick(params);
             break;
+          case 'execute': {
+            if (!this.oper) {
+              this.auth = true;
+              postMessage('You are not an operator or moderator and do not have permission to execute commands');
+              break;
+            }
+            if (params.length < 1) {
+              postMessage('Please include command parameters. Type `/help execute` for more usage instructions');
+              break;
+            }
+            this.client?.raw(params);
+            break;
+          }
           default:
             postMessage('Invalid command. Type `/help` for more available commands');
             break;
@@ -1099,6 +1145,11 @@ export default class ChatModule extends VuexModule {
         } // TODO
       }
     }
+  }
+
+  @action()
+  async giveReason({ reason, nick }: {reason: string, nick: string}) {
+    this.client?.say(nick, reason);
   }
 
   @action()

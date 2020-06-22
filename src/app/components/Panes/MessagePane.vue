@@ -1,5 +1,5 @@
 <template>
-  <Pane ref="pane" :visibility="visibility" :data="data">
+  <Pane ref="pane" :visibility="visibility" :data="data" @autoscroll="this.autoscroll">
     <ul style="margin-bottom:0; padding-right:10px">
       <UserMessage
         v-for="(message, i) in data.postedMessages"
@@ -8,6 +8,7 @@
         :style="{fontSize:fontSize}"
       />
       <ConnectingMessage/>
+      <UnreadMessageBanner v-show="unreads > 0" @click.native="scrollDown" :messages="unreads" />
     </ul>
     <template v-slot:footer>
       <EmoticonBar
@@ -50,6 +51,7 @@
   import BanStatus from '@/types/BanStatus';
   import Message from '@/types/message';
   import { Channel } from '@/store/chat.vuex';
+  import UnreadMessageBanner from './UnreadMessageBanner.vue';
 
   @Component({
     components: {
@@ -59,6 +61,7 @@
       ScalableInput,
       ConnectButton,
       EmoticonBar,
+      UnreadMessageBanner,
     },
   })
   export default class MessagesPane extends Vue {
@@ -69,9 +72,25 @@
       return this.data.postedMessages;
     }
 
+    unreads = 0;
+
     @Watch('messages')
     messageAdded() {
       this.onContentChanged();
+      if (!this.autoScroll) {
+        this.unreads += 1;
+      } else {
+        this.unreads = 0;
+      }
+    }
+
+    autoScroll = true;
+
+    autoscroll(to:boolean) {
+      this.autoScroll = to;
+      if (to) {
+        this.unreads = 0;
+      }
     }
 
     @Prop({ required: true })

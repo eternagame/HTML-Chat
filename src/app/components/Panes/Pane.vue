@@ -60,7 +60,11 @@
         this.$forceUpdate();
         if (container.scrollTop > actualScrollHeight - 50) {
           this.autoScroll = true;
-        } else this.autoScroll = false;
+          this.$emit('autoscroll', true);
+        } else {
+          this.autoScroll = false;
+          this.$emit('autoscroll', false);
+        }
       }
     }
 
