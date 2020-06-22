@@ -119,6 +119,8 @@ export default class ChatModule extends VuexModule {
 
   initialPosition: [number, number] = [0, 0];
 
+  inGamePosition: [string, number, string, number] = ['l', 0, 't', 0];
+
   initialSize: [number, number] = [0, 0];
 
   customNick !: string; // Custom nick for oper
@@ -326,6 +328,15 @@ export default class ChatModule extends VuexModule {
         } catch {
           console.error(
             'Encountered an error while parsing the local data of chat location',
+          );
+        }
+      }
+      if (localStorage.gamePosition) {
+        try {
+          this.inGamePosition = JSON.parse(localStorage.gamePosition);
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of in-game chat location',
           );
         }
       }

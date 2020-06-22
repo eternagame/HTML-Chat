@@ -2,16 +2,11 @@
   <DraggableDiv
     id="eterna-chat"
     style="overflow-y: hidden"
-    :style="{ 'min-height': minimized ? '40px' : '400px',
-    /* Makes sure minimum height is changed to allow for chat to be minimized*/
-    top: `${initialPosition[1]}px`,
-    left:`${initialPosition[0]}px`,
-    width: `${initialSize[0] || 300}px`,
-    height: `${initialSize[1] || 500}px`,
-    resize: minimized ? '' : 'both'}"
+    :style="chatStyle"
     :class="{ eternaChatFull: fullSized, eternaChatNormal: !fullSized, minimizedChat: minimized }"
     :enabled="!fullSize /* Disables dragging when chat is fullsize*/"
     v-resize:debounce="resized"
+    :inGame="inGame"
   >
     <template slot="main">
       <slideout
@@ -100,6 +95,13 @@
 
   get minimized() {
     return this.minimization;
+  }
+
+  get minimizedStyle() {
+    return {
+      'min-height': this.minimized ? '40px' : '400px',
+      resize: this.minimized ? '' : 'both',
+    };
   }
 
   // Private messages
@@ -227,6 +229,38 @@
 
   // Drag and resize
 
+  get gamePosition() {
+    return this.$vxm.chat.inGamePosition;
+  }
+
+  get positionStyle() {
+    const style: { [key:string]: string} = {};
+    if (this.inGame) {
+      console.log(this.gamePosition);
+      if (this.gamePosition[0] === 'l') {
+        style.left = `${this.gamePosition[1]}px`;
+      } else {
+        style.right = `${this.gamePosition[1]}px`;
+      }
+      if (this.gamePosition[2] === 't') {
+        style.top = `${this.gamePosition[3]}px`;
+      } else {
+        style.bottom = `${this.gamePosition[3]}px`;
+      }
+    } else {
+      style.left = `${this.initialPosition[0]}px`;
+      style.top = `${this.initialPosition[1]}px`;
+    }
+    return style;
+  }
+
+  get sizeStyle() {
+    return {
+      width: `${this.initialSize[0] || 300}px`,
+      height: `${this.initialSize[1] || 500}px`,
+    };
+  }
+
   get initialPosition() {
     return this.$vxm.chat.initialPosition;
   }
@@ -288,6 +322,9 @@
 
   @Prop()
   uid!: string;
+
+  @Prop()
+  inGame !: boolean;
 
   $refs!: {
     reportDialog: ReportDialog;
@@ -366,6 +403,10 @@
     });
   }
 
+  get chatStyle() {
+    return Object.assign(Object.assign(this.positionStyle, this.sizeStyle), this.minimizedStyle);
+  }
+
   // Inactivity timer
 
   timeout = 60000; // How long a user is inactive before they are marked as away
@@ -411,7 +452,7 @@
   font-size: 14px;
   font-weight: 300;
   background-color: $med-dark-blue;
-  position: relative; /* Makes sure everything is placed with respect to it, not to its parent */
+  position: absolute; /* Makes sure everything is placed with respect to it, not to its parent */
   transition: width 200ms, height 200ms, margin 1s, position 1s;
   min-width: 350px; /* Bounds on chat resizing */
   max-width: 450px;

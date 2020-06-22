@@ -4,7 +4,12 @@
     style="height:100%; overflow-y:hidden;"
   >
     <login v-if="!logged" @login="login"/>
-    <chat-app v-if="logged" :username="username" :uid="uid" workbranch="eternagame.org" />
+    <chat-app
+      v-if="logged"
+      :username="username"
+      :uid="uid"
+      workbranch="eternagame.org"
+      :inGame="false" />
   </div>
 </template>
 
