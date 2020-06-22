@@ -6,7 +6,7 @@
       class="username"
       :style="{ color: displayedColor }"
       :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
-      @mouseover="hovered = true /* Shows and hides tooltip */"
+      @mouseover="hovered = true; updateTooltipCoordinates() /* Shows and hides tooltip */"
       @mouseout="hovered = false"
       @mousemove="updateTooltipCoordinates"
     >
@@ -81,6 +81,7 @@
       this.$refs.tooltip.findRank();
       this.$refs.tooltip.description();
       this.$refs.tooltip.specialStatus();
+      this.$refs.tooltip.getProfile();
     }
 
     $refs !: {

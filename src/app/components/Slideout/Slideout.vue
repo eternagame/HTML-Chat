@@ -11,7 +11,7 @@
         outline: {{tabbing ? 'solid white 1px' : 'none !important'}};
       }
     </v-style>
-    <span v-if="checked">
+    <span v-show="checked">
       <span id="slideout-header">
         <SlideoutButton
           :selected="chatSelected"
