@@ -5,6 +5,7 @@
         v-for="(message, i) in data.postedMessages"
         :key="i"
         :message="message"
+        :messageIndex="i"
         :style="{fontSize:fontSize}"
       />
       <ConnectingMessage/>

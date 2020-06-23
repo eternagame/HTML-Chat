@@ -10,10 +10,11 @@
           :user="message.user"
           :color="usernameColor"
           :is-action="isAction"
-          v-if="!isNotice"
+          v-if="!isNotice && !sameUserAsPrevious"
         >{{ isAction || !message.user.username ? '': ':' }}
         </Username>
-        &lrm;<span
+        &lrm;
+        <span
           ref="msg"
           :style="{
             fontStyle:isNotice ? 'italic' : '',
@@ -57,7 +58,7 @@
   import md from '@/tools/Markdown';
   import UserTooltip from './UserTooltip.vue';
   import LinkModal from '@/components/LinkModal.vue';
-
+  import { Channel } from '@/store/chat.vuex';
 
   @Component({
     components: {
@@ -90,17 +91,10 @@
 
     get formattedMessage(): string {
       // If there are tags, remove them before the message is seen
-      const msg = this.message.message;
+      let msg = this.message.message;
       if (this.messageHasTags(msg)) {
         const tagsStringPosition = msg.search(/\[#(.+,)*.+\]\r?$/);
-        let markdown = md.renderInline(msg.substring(0, tagsStringPosition));
-        [...markdown.matchAll(/#\S+\s/g)].forEach(e => {
-          markdown = markdown.replace(e[0].trim(), `<mark class="channel-link">${e[0].trim()}</mark>`);
-        });
-        [...markdown.matchAll(/@\S+\s/g)].forEach(e => {
-          markdown = markdown.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
-        });
-        return markdown;
+        msg = msg.substring(0, tagsStringPosition);
       } // If not, just show the message
       let markdown = md.renderInline(msg);
       [...markdown.matchAll(/#\S+\s/g)].forEach(e => {
@@ -108,6 +102,9 @@
       });
       [...markdown.matchAll(/@\S+\s/g)].forEach(e => {
         markdown = markdown.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
+      });
+      [...markdown.matchAll(/>https?:\/\/eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
+        markdown = markdown.replace(e[0].trim(), `><img class="screenshot" src="${e[0].trim().substring(1)}">`);
       });
       return markdown;
     }
@@ -222,6 +219,18 @@
       return message.match(/\[#(.+,)*.+\]\r?$/);
     }
 
+    @Prop()
+    messageIndex !: number;
+
+    get sameUserAsPrevious() {
+      const channelName = this.message.target;
+      const channel = this.$vxm.chat.channels[channelName];
+      const { username } = this.message.user;
+      if (!channel || !channel.postedMessages[this.messageIndex - 1]) return false;
+      const previousMessage = channel.postedMessages[this.messageIndex - 1];
+      return username === previousMessage.user.username;
+    }
+
     $refs!: {
       contextMenu: HTMLFormElement;
       msg: HTMLSpanElement;
@@ -305,5 +314,10 @@
   }
   mark:hover {
     color:white;
+  }
+
+  .screenshot {
+    width:80%;
+    max-width:500px;
   }
 </style>
