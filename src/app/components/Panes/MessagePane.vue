@@ -17,6 +17,7 @@
         @update="$nextTick($refs.pane.updateFooterHeight)"
         v-show="input"
         :inputValue="newMessage"
+        :selection="selection"
       >
       <template slot="input">
         <ScalableInput
@@ -28,6 +29,7 @@
           @updateHeight="$nextTick($refs.pane.updateFooterHeight)"
           ref="input"
           @focused="updateFocus"
+          @select="selection = $event"
         />
       </template>
       </EmoticonBar>
@@ -93,6 +95,8 @@
         this.unreads = 0;
       }
     }
+
+    selection: number[] = [];
 
     @Prop({ required: true })
     visibility!: boolean;

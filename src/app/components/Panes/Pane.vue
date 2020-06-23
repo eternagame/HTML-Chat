@@ -55,6 +55,7 @@
 
     scrollHandle(evt: any) {
       const { container } = this;
+      if (!container) return;
       const actualScrollHeight = container.scrollHeight - this.container.clientHeight;
       if (evt.type === 'ps-scroll-y') {
         this.$forceUpdate();
@@ -83,6 +84,7 @@
 
     @Watch('visibility')
     updateFooterHeight() {
+      if (!this.$refs || !this.$refs.footer) return;
       this.footerHeight = this.$refs.footer.clientHeight;
       this.onContentChanged();
     }

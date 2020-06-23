@@ -156,11 +156,15 @@
     @Prop()
     inputValue = '';
 
+    @Prop()
+    selection !: number[];
+
     get inputHTML() {
-      if (this.$parent as MessagePane) {
-        (this.$parent as MessagePane).updateFooterHeight();
+      let value = this.inputValue;
+      if (this.selection !== [0, 0] && this.selection[1] - this.selection[0] > 0) {
+        value = value.slice(this.selection[0], this.selection[1]);
       }
-      return md.renderInline(this.inputValue);
+      return md.renderInline(value);
     }
 
     // Chat features

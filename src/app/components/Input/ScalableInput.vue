@@ -19,6 +19,8 @@
       ref="textarea"
       @focus="$emit('focused', true)"
       @blur="$emit('focused', false)"
+      @select="updateSelection"
+      @click="deselect"
     />
     <SendButton @send="send"/>
     <div
@@ -168,8 +170,8 @@
       const newText = `${text.slice(0, startPosition)}${inside}${text.slice(startPosition, endPosition)}${inside}${text.slice(endPosition)}`;
       this.value = newText;
       this.$refs.textarea.value = newText;
-      this.$refs.textarea.setSelectionRange( // Moves cursor after selection
-        endPosition + inside.length / 2 + 1,
+      this.$refs.textarea.setSelectionRange( // Reselects previously selected text
+        startPosition + inside.length / 2 + 1,
         endPosition + inside.length / 2 + 1,
       );
     }
@@ -204,6 +206,7 @@
     }
 
     updateHeight() {
+      if (!this.$refs || !this.$refs.hiddenDiv) return;
       const { hiddenDiv } = this.$refs;
       hiddenDiv.textContent = this.value;
       if (this.height !== this.$refs.hiddenDiv.clientHeight) {
@@ -260,14 +263,33 @@
 
     // Finds the word (not character) at an index
     wordAt(pos: number) {
-    const str = this.value;
-    const left = str.slice(0, pos + 1).search(/\S+$/);
-    const right = str.slice(pos).search(/\s/);
-    if (right < 0) {
+      const str = this.value;
+      const left = str.slice(0, pos + 1).search(/\S+$/);
+      const right = str.slice(pos).search(/\s/);
+      if (right < 0) {
         return str.slice(left);
+      }
+      return str.slice(left, right + pos);
     }
-    return str.slice(left, right + pos);
-}
+
+    updateSelection() {
+      if (!this.$refs || !this.$refs.textarea) return;
+      const { textarea } = this.$refs;
+      this.$emit('select', [textarea.selectionStart, textarea.selectionEnd]);
+      this.selected = true; // Set selected
+      // Avoids deselecting when a click is detected at the end of a selection
+      setTimeout(() => { this.selected = false; }, 0);
+    }
+
+    selected = false;
+
+    deselect() {
+      // If the click isn't the end of the selection
+      if (!this.selected) {
+        // Deselect so the preview shows the entire string
+        this.$emit('select', [0, 0]);
+      }
+    }
   }
 </script>
 
@@ -300,8 +322,9 @@
     visibility: hidden;
     white-space: pre-wrap;
     word-wrap: break-word;
-    border: 1px solid;
-    padding-right:0px;
+    border: none;
+    padding-right:50px; /* Makes sure height updates when it should */
+    width: calc(100% - 2px);
   }
   .send-button { /* Send message button */
     position: absolute;
