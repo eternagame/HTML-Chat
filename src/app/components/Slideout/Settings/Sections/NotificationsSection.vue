@@ -54,6 +54,10 @@
           If you have multiple keywords, separate them with commas.
           Your username is automatically a keyword.
         </p>
+        <h6>Desktop Notifications</h6>
+        <button class="btn settings-button" @click="handleDesktopNotificationClick">
+          {{this.desktopNotifications ? 'Disable' : 'Enable'}}
+        </button>
   </SettingsSection>
 </template>
 <script lang="ts">
@@ -146,6 +150,31 @@
 
     indicator:string = '(!)';
 
+    desktopNotifications = false;
+
+    handleDesktopNotificationClick() {
+      if (this.desktopNotifications) {
+        this.desktopNotifications = false;
+        this.$vxm.chat.desktopNotifications = false;
+        localStorage.desktopNotifications = JSON.stringify(false);
+      } else {
+        this.requestDesktopNotifications();
+      }
+    }
+
+    requestDesktopNotifications() {
+      Notification.requestPermission(((result) => {
+        if (result === 'granted') {
+          this.desktopNotifications = true;
+          this.$vxm.chat.desktopNotifications = true;
+          localStorage.desktopNotifications = JSON.stringify(true);
+        } else {
+          this.desktopNotifications = false;
+          this.$vxm.chat.desktopNotifications = false;
+          localStorage.desktopNotifications = JSON.stringify(false);
+        }
+      }));
+    }
 
     @Watch('indicator')
     indicatorChanged() {
@@ -167,6 +196,10 @@
         this.indicator = JSON.parse(localStorage.indicator);
       } else {
         this.indicator = this.$vxm.settings.indicator;
+      }
+      if (localStorage.desktopNotifications) {
+        this.desktopNotifications = JSON.parse(localStorage.desktopNotifications);
+        this.$vxm.chat.desktopNotifications = this.desktopNotifications;
       }
     }
   }

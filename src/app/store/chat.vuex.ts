@@ -133,6 +133,8 @@ export default class ChatModule extends VuexModule {
 
   disconnected = false; // If the user intentionally disconnected
 
+  desktopNotifications = false;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -198,6 +200,13 @@ export default class ChatModule extends VuexModule {
     if (trueChannel) {
       // Turning on notifications for that channel
       trueChannel.notifications = true;
+      if (this.desktopNotifications) {
+        const msg = trueChannel.postedMessages[trueChannel.postedMessages.length - 1];
+        const notification = new Notification(`New message in ${channel}`, {
+          body: `${msg.user.username}: ${msg.message}`,
+          tag: `new-message-${msg.target}`,
+        });
+      }
     }
   }
 
