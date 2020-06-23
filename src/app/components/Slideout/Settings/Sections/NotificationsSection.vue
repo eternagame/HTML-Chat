@@ -5,39 +5,12 @@
           <tr v-for="channel in channels" :key="channel.name">
             <td>{{channel.name}}</td>
             <td>
-              <button
-                style="width:100%"
-                @click="toggleNotificationsEnabled(channel.name)"
-                :style="{ fontSize:`${11 / 14}rem` }"
-                class="btn settings-button"
-              >
-                {{channel['notificationsEnabled'] === true ? 'Disable' : 'Enable'}}
-              </button>
+              <SettingsSwitch v-model="channel.notificationsEnabled"
+              @input="updateNotifications(channel.name)" />
             </td>
           </tr>
           <tr>
-            <td class='footer'>
-              <button
-                style="width:100%"
-                :disabled="anyNotificationsDisabled"
-                @click="enableAll"
-                :style="{ fontSize:`${11 / 14}rem` }"
-                class="btn settings-button"
-              >
-                Enable all
-              </button>
-            </td>
-            <td class='footer'>
-              <button
-                style="width:100%"
-                :disabled="anyNotificationsEnabled"
-                @click="disableAll"
-                :style="{ fontSize:`${11 / 14}rem` }"
-                class="btn settings-button"
-              >
-                Disable all
-              </button>
-            </td>
+            <td colspan=2><SettingsEnableDisable :value="allEnabled" @input="updateAll" /></td>
           </tr>
         </table>
         <h6>Indicator</h6>
@@ -55,9 +28,7 @@
           Your username is automatically a keyword.
         </p>
         <h6>Desktop Notifications</h6>
-        <button class="btn settings-button" @click="handleDesktopNotificationClick">
-          {{this.desktopNotifications ? 'Disable' : 'Enable'}}
-        </button>
+        <SettingsSwitch v-model="desktopNotifications" />
   </SettingsSection>
 </template>
 <script lang="ts">
@@ -65,11 +36,15 @@
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
   import SettingsSection from '../SettingsSection.vue';
+  import SettingsSwitch from '../SettingsSwitch.vue';
+  import SettingsEnableDisable from '../SettingsEnableDisable.vue';
   import { Channel } from '@/store/chat.vuex';
 
   @Component({
     components: {
       SettingsSection,
+      SettingsSwitch,
+      SettingsEnableDisable,
     },
   })
   export default class NotificationsSection extends Vue {
@@ -87,10 +62,9 @@
     }
 
     // Toggle whether notifications are enabled for a specific channel
-    toggleNotificationsEnabled(channel:string) {
+    updateNotifications(channel:string) {
       const trueChannel = this.$vxm.chat.channels[channel];
       if (trueChannel) {
-        trueChannel.notificationsEnabled = !trueChannel.notificationsEnabled;
         if (!trueChannel.notificationsEnabled) {
           trueChannel.notifications = false;
         }
@@ -101,45 +75,16 @@
       }
     }
 
-    // If any notifications are enabled
-    get anyNotificationsEnabled() {
-      // Iterates through each channel and checks if notifications are enabled
-      return !Object.values(this.channels).some(item => {
-        // Making sure nothing is undefined and gets value from channel
-        const { notificationsEnabled } = item as Channel;
-        return notificationsEnabled;
-      });
+    get allEnabled() {
+      const channels = Object.values(this.$vxm.chat.channels);
+      if (channels.every(e => e!.notificationsEnabled)) return true;
+      if (channels.every(e => !e!.notificationsEnabled)) return false;
+      return null;
     }
 
-    // If any notifications are disabled
-    get anyNotificationsDisabled() {
-      // Again, iterating through each channel
-      return !Object.values(this.channels).some(item => {
-        // Making sure nothing is undefined and gets value from channel
-        const { notificationsEnabled } = item as Channel;
-        return !notificationsEnabled;
-      });
-    }
-
-    // Enables notifications for all channels
-    enableAll() {
-      // For each channel
-      Object.values(this.channels).forEach(item => {
-        // If notifications aren't enabled, toggle their value. If they are, leave them alone
-        if (!(item as Channel).notificationsEnabled) {
-          this.toggleNotificationsEnabled((item as Channel).name);
-        }
-      });
-    }
-
-    // Disables notifications for all channels
-    disableAll() {
-      // For each channel
-      Object.values(this.channels).forEach(item => {
-        // If notifications are enabled, toggle their value. If they aren't, leave them alone
-        if ((item as Channel).notificationsEnabled) {
-          this.toggleNotificationsEnabled((item as Channel).name);
-        }
+    updateAll(to: boolean) {
+      Object.values(this.$vxm.chat.channels).forEach(e => {
+        e!.notificationsEnabled = to;
       });
     }
 
@@ -152,13 +97,13 @@
 
     desktopNotifications = false;
 
-    handleDesktopNotificationClick() {
+    @Watch('desktopNotifications')
+    desktopNotificationsChanged() {
       if (this.desktopNotifications) {
-        this.desktopNotifications = false;
+        this.requestDesktopNotifications();
+      } else {
         this.$vxm.chat.desktopNotifications = false;
         localStorage.desktopNotifications = JSON.stringify(false);
-      } else {
-        this.requestDesktopNotifications();
       }
     }
 
@@ -224,5 +169,8 @@ table {
 }
 .feature-button-container {
   padding:2px;
+}
+input {
+  margin-bottom:10px;
 }
 </style>

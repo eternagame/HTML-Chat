@@ -1,26 +1,27 @@
 <template>
   <SettingsSection title="Ignored" >
-      <table style="width:175px" >
-        <tr v-for="user in ignoredUsers" :key="user.Username">
+      <ul style="margin-bottom: 0">
+        <li v-for="user in ignoredUsers" :key="user">
+          <span style="vertical-align: sub">{{user}}</span>
           <button
             :style="{ fontSize:`${11 / 14}rem` }"
-            style="right:0; width:150px;"
             class='unignore-user btn settings-button'
             v-on:click="unignore(user)" >
-            Unignore {{user}}
+            Unignore
           </button>
-        </tr>
-        <tr v-show="!anyIgnoredUsers">No users ignored</tr>
-        <tr><button
+        </li>
+        <li v-show="!anyIgnoredUsers">No users ignored</li>
+        <li v-show="anyIgnoredUsers" class="height-normal">
+          <button
           :style="{ fontSize:`${11 / 14}rem` }"
-          style="margin-top:5px; width:150px"
-          class='unignore-user btn settings-button'
+          style="width:100%"
+          class='btn settings-button'
           v-on:click="unignore('*')"
-          v-show="anyIgnoredUsers"
-        >
+          >
           Unignore All
-        </button></tr>
-      </table>
+          </button>
+        </li>
+      </ul>
     </SettingsSection>
 </template>
 <script lang="ts">
@@ -39,7 +40,6 @@
       return this.$vxm.chat.ignoredUsers;
     }
 
-    // If any users are ignored. Uses ignoredUsers.length
     get anyIgnoredUsers() {
       return this.ignoredUsers.length > 0;
     }
@@ -56,5 +56,16 @@
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
 .settings-button {
   background-color:$green;
+  display: inline-block;
+}
+li {
+  width:calc(100% - 40px);
+  height:36px;
+}
+.unignore-user {
+  float:right;
+}
+.height-normal {
+  height:auto;
 }
 </style>
