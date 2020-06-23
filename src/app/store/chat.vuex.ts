@@ -469,7 +469,7 @@ export default class ChatModule extends VuexModule {
     let message = str.substring(str.indexOf(channel) + channel.length + 2).replace(/\u0001/g, '').trim();
     if (this.notificationsKeywords) {
       this.notificationsKeywords.forEach(n => {
-        message = message.replace(n, `<mark>${n}</mark>`);
+        message = message.replace(` ${n}`, ` **${n}**`);
       });
     }
     const user = parts[1].substring(1, parts[1].indexOf('@'));
@@ -1225,6 +1225,7 @@ export default class ChatModule extends VuexModule {
       this.postMessage(
         new Message(`You have been kicked from chat${params.message ? ` - ${params.message}` : ''}`),
       );
+      this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channel?.name));
     } else {
       this.removeUser(username);
     }
@@ -1334,7 +1335,7 @@ export default class ChatModule extends VuexModule {
     let msg = message;
     if (this.notificationsKeywords) {
       this.notificationsKeywords.forEach(n => {
-        msg = msg.replace(n, `**${n}**`);
+        msg = msg.replace(` ${n}`, ` **${n}**`);
       });
     }
     const messageObject = new Message(
@@ -1477,6 +1478,7 @@ export default class ChatModule extends VuexModule {
     if (!channel) return;
     if (!channel.banned) {
       this.postMessage(new Message('You have been banned', channelName));
+      this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channelName));
     }
     channel.banned = BanStatus.BAN_STATUS_BANNED;
     Object.values(this.channels).forEach((c) => {
@@ -1490,6 +1492,7 @@ export default class ChatModule extends VuexModule {
     if (!channel) return;
     if (!channel.banned) {
       this.postMessage(new Message('You have been muted', channelName));
+      this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channelName));
     }
     channel.banned = BanStatus.BAN_STATUS_QUIET;
   }
