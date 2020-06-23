@@ -44,6 +44,7 @@
         :message="message"
       />
     </div>
+    <LinkModal ref="linkModal"/>
   </li>
 </template>
 
@@ -55,6 +56,7 @@
   import ActionMenu from './ActionMenu.vue';
   import md from '@/tools/Markdown';
   import UserTooltip from './UserTooltip.vue';
+  import LinkModal from '@/components/LinkModal.vue';
 
 
   @Component({
@@ -62,6 +64,7 @@
       Username,
       UserTooltip,
       ActionMenu,
+      LinkModal,
     },
   })
   export default class UserMessage extends Vue {
@@ -161,6 +164,18 @@
           window.open(`https://${this.$vxm.chat.workbranch}/web/player/${user.uid}/`);
         });
       });
+      const usernames = Object.keys(this.$vxm.chat.connectedUsers);
+      [...this.$el.getElementsByTagName('a')]
+        .filter(e => e.href !== e.innerText)
+        .filter(e => !usernames.includes(e.innerText.replace('●', '').trim().replace(':', '').trim()))
+        .forEach(e => {
+        e.addEventListener('click', ev => {
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+          if (e.href.trim() !== '') this.$refs.linkModal.url = e.href;
+          this.$refs.linkModal.openModal = true;
+        });
+      });
     }
 
     tooltipX = 0;
@@ -198,6 +213,7 @@
       contextMenu: HTMLFormElement;
       msg: HTMLSpanElement;
       clickTooltip: UserTooltip;
+      linkModal: LinkModal;
     };
 
     openContextMenu(e: MouseEvent) {
@@ -273,19 +289,6 @@
     background-color:darken($dark-blue, 5%) !important;
     color:#c0dce7;
     position:relative;
-  }
-  blockquote {
-    font-weight: bolder;
-    display:inline;
-  }
-  blockquote::before {
-    content: "";
-    margin-right:2px;
-    border:none;
-    border-right:5px solid gray;
-    border-radius:5px;
-    width:5px;
-    height:inherit;
   }
   mark:hover {
     color:white;
