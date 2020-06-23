@@ -561,7 +561,7 @@ export default class ChatModule extends VuexModule {
     message = `${message} [${this.usernameColor}]`; // Message with tags added on
     let isAction = false;
     // No posting as annon or if nothing has been actually posted
-    if (this.currentUser.username && message.replace(/\[.*\]\r?$/, '').trim() !== '') {
+    if (this.currentUser.username && message.replace(/\[#.*\]\r?$/, '').trim() !== '') {
       let post = true;
       let banned = false;
       let quieted = false;
@@ -1334,7 +1334,7 @@ export default class ChatModule extends VuexModule {
     let msg = message;
     if (this.notificationsKeywords) {
       this.notificationsKeywords.forEach(n => {
-        msg = msg.replace(n, `<mark>${n}</mark>`);
+        msg = msg.replace(n, `**${n}**`);
       });
     }
     const messageObject = new Message(

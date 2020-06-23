@@ -16,6 +16,7 @@
         @md="format"
         @update="$nextTick($refs.pane.updateFooterHeight)"
         v-show="input"
+        :inputValue="newMessage"
       >
       <template slot="input">
         <ScalableInput
@@ -64,7 +65,7 @@
       UnreadMessageBanner,
     },
   })
-  export default class MessagesPane extends Vue {
+  export default class MessagePane extends Vue {
     @Prop({ required: true })
     data!: Channel;
 

@@ -1,6 +1,8 @@
 <template>
   <div id='menu-container'>
-    <div id='submenu' v-show='(emoticonsSelected || markdownSelected) && anyChatFeatures'>
+    <div
+      id='submenu'
+      v-show='(emoticonsSelected || markdownSelected || previewSelected) && anyChatFeatures'>
       <div id='emoticon-submenu' v-show="emoticonsSelected" >
         <EmoticonButton
           v-for="emoticon in emotesList"
@@ -17,6 +19,9 @@
           class="border-right"
           @md="format"
         />
+      </div>
+      <div id='preview-submenu' v-show="previewSelected">
+        <div v-html="inputHTML" id="preview-content"/>
       </div>
       <MenuButton
         id="close"
@@ -36,13 +41,19 @@
         id="emoticonSelect"
         name="👍"
         styles=""
-        @button="select(false);"
+        @button="select('emoticon');"
       />
       <MenuButton
         id="markdownSelect"
         name="A"
         styles="bold italics underline"
-        @button="select(true);"
+        @button="select('markdown');"
+      />
+      <MenuButton
+        id="previewSelect"
+        name="P"
+        styles=""
+        @button="select('preview');"
       />
       <MenuButton
         name="?"
@@ -62,6 +73,8 @@
   import SendButton from './SendButton.vue';
   import MarkdownWrapButton from './MarkdownWrapButton.vue';
   import MenuButton from './MenuButton.vue';
+  import md from '@/tools/Markdown';
+  import MessagePane from '../Panes/MessagePane.vue';
   @Component({
     components: {
       SendButton,
@@ -93,14 +106,22 @@
 
     markdownSelected = false;
 
+    previewSelected = false;
+
     /* Opens emoticon or markdown submenu depending on which button was pressed */
-    select(markdown:boolean) {
-      if (markdown) {
+    select(menu:string) {
+      if (menu === 'markdown') {
         this.markdownSelected = true;
         this.emoticonsSelected = false;
-      } else {
+        this.previewSelected = false;
+      } else if (menu === 'emoticon') {
         this.markdownSelected = false;
         this.emoticonsSelected = true;
+        this.previewSelected = false;
+      } else if (menu === 'preview') {
+        this.markdownSelected = false;
+        this.emoticonsSelected = false;
+        this.previewSelected = true;
       }
       this.$emit('update');
     }
@@ -112,6 +133,7 @@
       case 'X':
         this.markdownSelected = false;
         this.emoticonsSelected = false;
+        this.previewSelected = false;
         break;
       case '?':
         this.$emit('md', 'question');
@@ -131,6 +153,16 @@
       this.$emit('md', options);
     }
 
+    @Prop()
+    inputValue = '';
+
+    get inputHTML() {
+      if (this.$parent as MessagePane) {
+        (this.$parent as MessagePane).updateFooterHeight();
+      }
+      return md.renderInline(this.inputValue);
+    }
+
     // Chat features
 
     get emoticonChatFeatures() { // Gets values from settings vuex
@@ -140,6 +172,10 @@
     get markdownChatFeatures() {
       return this.$vxm.settings.markdownChatFeatures;
     }
+
+    /* get previewChatFeatures() {
+      return this.$vxm.settings.markdownChatFeatures;
+    } */
 
     get anyChatFeatures() {
       return this.emoticonChatFeatures || this.markdownChatFeatures;
@@ -178,5 +214,9 @@
 .menu-container {
   background-color:#043468;
   color:white;
+}
+#preview-submenu {
+  display:inline-block;
+  width:calc(100% - 30px) !important;
 }
 </style>

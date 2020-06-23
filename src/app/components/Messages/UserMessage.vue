@@ -89,8 +89,9 @@
       // If there are tags, remove them before the message is seen
       const msg = this.message.message;
       if (this.messageHasTags(msg)) {
-        const tagsStringPosition = msg.search(/\[(.+,)*.+\]\r?$/);
-        return md.renderInline(msg.substring(0, tagsStringPosition));
+        const tagsStringPosition = msg.search(/\[#(.+,)*.+\]\r?$/);
+        const markdown = md.renderInline(msg.substring(0, tagsStringPosition));
+        return markdown;
       } // If not, just show the message
       return md.renderInline(msg);
     }
