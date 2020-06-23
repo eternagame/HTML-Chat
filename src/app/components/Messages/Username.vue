@@ -6,7 +6,7 @@
       class="username"
       :style="{ color: displayedColor }"
       :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
-      @mouseover="hovered = true; updateTooltipCoordinates() /* Shows and hides tooltip */"
+      @mouseover="hovered = true; updateTooltipCoordinates($event) /* Shows and hides tooltip */"
       @mouseout="hovered = false"
       @mousemove="updateTooltipCoordinates"
     >
