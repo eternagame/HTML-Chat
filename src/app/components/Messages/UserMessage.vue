@@ -93,10 +93,23 @@
       const msg = this.message.message;
       if (this.messageHasTags(msg)) {
         const tagsStringPosition = msg.search(/\[#(.+,)*.+\]\r?$/);
-        const markdown = md.renderInline(msg.substring(0, tagsStringPosition));
+        let markdown = md.renderInline(msg.substring(0, tagsStringPosition));
+        [...markdown.matchAll(/#\S+\s/g)].forEach(e => {
+          markdown = markdown.replace(e[0].trim(), `<mark class="channel-link">${e[0].trim()}</mark>`);
+        });
+        [...markdown.matchAll(/@\S+\s/g)].forEach(e => {
+          markdown = markdown.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
+        });
         return markdown;
       } // If not, just show the message
-      return md.renderInline(msg);
+      let markdown = md.renderInline(msg);
+      [...markdown.matchAll(/#\S+\s/g)].forEach(e => {
+        markdown = markdown.replace(e[0].trim(), `<mark class="channel-link">${e[0].trim()}</mark>`);
+      });
+      [...markdown.matchAll(/@\S+\s/g)].forEach(e => {
+        markdown = markdown.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
+      });
+      return markdown;
     }
 
     mounted() {
@@ -195,7 +208,7 @@
     }
 
     parseMessageTags(message:string) { // Gets tags as array from message
-      const tagsStringPosition = message.search(/\[(.+,)*.+\]\r?$/); // Searches for [...,...] at end of message
+      const tagsStringPosition = message.search(/\[#(.+,)*.+\]\r?$/); // Searches for [...,...] at end of message
       let tagsString = message.substring(tagsStringPosition); // Gets tags as a string
       if (tagsString.includes('\r')) { // In history messages, message ends with \r
         tagsString = tagsString.substring(1, tagsString.length - 2); // Removes bracket
@@ -206,7 +219,7 @@
     }
 
     messageHasTags(message:string) { // If a message has any tags
-      return message.match(/\[(.+,)*.+\]\r?$/);
+      return message.match(/\[#(.+,)*.+\]\r?$/);
     }
 
     $refs!: {
