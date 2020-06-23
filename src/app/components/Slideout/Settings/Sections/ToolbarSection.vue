@@ -3,39 +3,16 @@
     <p>These enable you to send emoticons and formatted text.</p>
     <table>
       <tr>
-        <td class="feature-button-container left-side">
-          <button
-            @click="toggleMarkdown"
-            :style="{ fontSize: `${11 / 14}rem` }"
-            class="btn settings-button feature-button"
-          >{{ markdownChatFeatures ? "Disable" : "Enable" }} markdown</button>
-        </td>
-        <td class="feature-button-container">
-          <button
-            @click="toggleEmoticons"
-            :style="{ fontSize: `${11 / 14}rem` }"
-            class="btn settings-button feature-button"
-          >{{ emoticonChatFeatures ? "Disable" : "Enable" }} emoticons</button>
-        </td>
+        <td class="left-side">Emoticons</td>
+        <td><SettingsSwitch v-model="emoticonChatFeatures" /></td>
       </tr>
       <tr>
-        <td class="feature-button-container left-side">
-          <button
-            @click="disableAllChatFeatures"
-            :disabled="!allChatFeatures"
-            :style="{ fontSize: `${11 / 14}rem` }"
-            class="btn settings-button feature-button"
-          >Disable all</button>
-        </td>
-        <td class="feature-button-container">
-          <button
-            @click="enableAllChatFeatures"
-            :disabled="allChatFeatures"
-            :style="{ fontSize: `${11 / 14}rem` }"
-            style="margin-top:1px;"
-            class="btn settings-button feature-button"
-          >Enable all</button>
-        </td>
+        <td class="left-side">Markdown</td>
+        <td><SettingsSwitch v-model="markdownChatFeatures" /></td>
+      </tr>
+      <tr>
+        <td class="left-side">All</td>
+        <td><SettingsEnableDisable :value="allChatFeatures" @input="allChatFeaturesChanged" /></td>
       </tr>
     </table>
 
@@ -63,134 +40,95 @@
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
   import SettingsSection from '../SettingsSection.vue';
+  import SettingsSwitch from '../SettingsSwitch.vue';
+  import SettingsEnableDisable from '../SettingsEnableDisable.vue';
 
 @Component({
   components: {
     SettingsSection,
+    SettingsSwitch,
+    SettingsEnableDisable,
   },
 })
   export default class ToolbarSection extends Vue {
-  allChatFeatures = true;
+    get allChatFeatures() {
+      if (this.emoticonChatFeatures && this.markdownChatFeatures) return true;
+      if (!this.emoticonChatFeatures && !this.markdownChatFeatures) return false;
+      return null;
+    }
+
+    allChatFeaturesChanged(to:boolean) {
+      this.emoticonChatFeatures = to;
+      this.markdownChatFeatures = to;
+    }
 
   emoticonChatFeatures = true;
 
+  @Watch('emoticonChatFeatures')
+  emoticonChatFeaturesChanged() {
+    localStorage.emoticonChatFeatures = JSON.stringify(this.emoticonChatFeatures);
+    this.$vxm.settings.emoticonChatFeatures = this.emoticonChatFeatures;
+  }
+
   markdownChatFeatures = true;
 
-  toggleEmoticons() {
-    this.emoticonChatFeatures = !this.emoticonChatFeatures;
-    if (this.emoticonChatFeatures && this.markdownChatFeatures) {
-      this.allChatFeatures = this.emoticonChatFeatures;
-      this.$vxm.settings.allChatFeatures = this.allChatFeatures;
-      localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
-    }
-    if (!this.emoticonChatFeatures && !this.markdownChatFeatures) {
-      this.allChatFeatures = this.emoticonChatFeatures;
-      this.$vxm.settings.allChatFeatures = this.allChatFeatures;
-      localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
-    }
-    this.$vxm.settings.emoticonChatFeatures = this.emoticonChatFeatures;
-    localStorage.emoticonChatFeatures = JSON.stringify(
-      this.emoticonChatFeatures,
-    );
-  }
-
-  toggleMarkdown() {
-    this.markdownChatFeatures = !this.markdownChatFeatures;
-    if (this.emoticonChatFeatures && this.markdownChatFeatures) {
-      this.allChatFeatures = this.markdownChatFeatures;
-      this.$vxm.settings.allChatFeatures = this.allChatFeatures;
-      localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
-    }
-    if (!this.emoticonChatFeatures && !this.markdownChatFeatures) {
-      this.allChatFeatures = this.markdownChatFeatures;
-      this.$vxm.settings.allChatFeatures = this.allChatFeatures;
-      localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
-    }
+  @Watch('markdownChatFeatures')
+  markdownChatFeaturesChanged() {
+    localStorage.markdownChatFeatures = JSON.stringify(this.markdownChatFeatures);
     this.$vxm.settings.markdownChatFeatures = this.markdownChatFeatures;
-    localStorage.markdownChatFeatures = JSON.stringify(
-      this.markdownChatFeatures,
-    );
   }
 
-  toggleAllChatFeatures() {
-    this.allChatFeatures = !this.allChatFeatures;
-    this.emoticonChatFeatures = this.allChatFeatures;
-    this.markdownChatFeatures = this.allChatFeatures;
-    this.$vxm.settings.allChatFeatures = this.allChatFeatures;
-    localStorage.allChatFeatures = JSON.stringify(this.allChatFeatures);
-    this.$vxm.settings.emoticonChatFeatures = this.allChatFeatures;
-    localStorage.emoticonChatFeatures = JSON.stringify(this.allChatFeatures);
-    this.$vxm.settings.markdownChatFeatures = this.allChatFeatures;
-    localStorage.markdownChatFeatures = JSON.stringify(this.allChatFeatures);
-  }
 
-  enableAllChatFeatures() {
-    if (!this.allChatFeatures) {
-      this.toggleAllChatFeatures();
-    }
-  }
+    // Custom emoticons
 
-  disableAllChatFeatures() {
-    if (this.allChatFeatures) {
-      this.toggleAllChatFeatures();
-    }
-  }
-
-  // Custom emoticons
-
-  update(e: Event) {
-    const targ = e.target as HTMLInputElement;
-    const id = Number(targ.id);
-    let { value } = targ;
-    value = value.trim();
-    while ([...value].length > 1) {
-      value = value.substring(0, value.length - 1);
-    }
-    const emoticonRegex = /[^\w\d\p{P}\p{S}]/;
-    if (value.match(emoticonRegex)) {
-      if (this.customEmoticons.some(j => j === value)) {
-        this.emoticonErrorMessage = 'You are using that emoticon in another slot';
-        return;
+    update(e: Event) {
+      const targ = e.target as HTMLInputElement;
+      const id = Number(targ.id);
+      let { value } = targ;
+      value = value.trim();
+      while ([...value].length > 1) {
+        value = value.substring(0, value.length - 1);
       }
-      Vue.set(this.$vxm.chat.customEmoticons, id, value);
-      if (localStorage) {
-        localStorage.customEmoticons = JSON.stringify(
-          this.$vxm.chat.customEmoticons,
-        );
+      const emoticonRegex = /[^\w\d\p{P}\p{S}]/;
+      if (value.match(emoticonRegex)) {
+        if (this.customEmoticons.some(j => j === value)) {
+          this.emoticonErrorMessage = 'You are using that emoticon in another slot';
+          return;
+        }
+        Vue.set(this.$vxm.chat.customEmoticons, id, value);
+        if (localStorage) {
+          localStorage.customEmoticons = JSON.stringify(
+            this.$vxm.chat.customEmoticons,
+          );
+        }
+        this.emoticonErrorMessage = '';
+      } else {
+        this.emoticonErrorMessage = `${value} is not a valid emoticon`;
       }
-      this.emoticonErrorMessage = '';
-    } else {
-      this.emoticonErrorMessage = `${value} is not a valid emoticon`;
+      if (value.trim() === '') {
+        this.emoticonErrorMessage = '';
+      }
+      targ.value = '';
     }
-    if (value.trim() === '') {
-      this.emoticonErrorMessage = '';
-    }
-    targ.value = '';
-  }
 
   emoticonErrorMessage = '';
 
-  get customEmoticons() {
-    return this.$vxm.chat.customEmoticons;
-  }
+    get customEmoticons() {
+      return this.$vxm.chat.customEmoticons;
+    }
 
-  created() {
-    if (localStorage.allChatFeatures) {
-      this.allChatFeatures = JSON.parse(localStorage.allChatFeatures);
-    } else {
-      this.allChatFeatures = this.$vxm.settings.allChatFeatures;
+    created() {
+      if (localStorage.emoticonChatFeatures) {
+        this.emoticonChatFeatures = JSON.parse(localStorage.emoticonChatFeatures);
+      } else {
+        this.emoticonChatFeatures = this.$vxm.settings.emoticonChatFeatures;
+      }
+      if (localStorage.markdownChatFeatures) {
+        this.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
+      } else {
+        this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
+      }
     }
-    if (localStorage.emoticonChatFeatures) {
-      this.emoticonChatFeatures = JSON.parse(localStorage.emoticonChatFeatures);
-    } else {
-      this.emoticonChatFeatures = this.$vxm.settings.emoticonChatFeatures;
-    }
-    if (localStorage.markdownChatFeatures) {
-      this.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
-    } else {
-      this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
-    }
-  }
   }
 </script>
 <style lang="scss" scoped>
@@ -201,7 +139,7 @@
   background-color: $green;
 }
 .left-side {
-  padding-left: 0;
+  vertical-align: baseline;
 }
 .feature-button-container {
   padding: 2px;

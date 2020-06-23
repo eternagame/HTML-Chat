@@ -1,9 +1,12 @@
 <template>
   <SettingsSection title="Status" >
     <p>You are currently marked as {{userStatus ? 'away' : 'online'}}</p>
-      <button class="btn settings-button" @click="changeStatus(!userStatus)">
-        Toggle
-      </button>
+    <SettingsEnableDisable
+      :value="!userStatus"
+      @input="changeStatus"
+      onText="ONLINE"
+      offText="AWAY"
+      :width="125"/>
   </SettingsSection>
 </template>
 <script lang="ts">
@@ -11,16 +14,18 @@
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
   import SettingsSection from '../SettingsSection.vue';
+  import SettingsEnableDisable from '../SettingsEnableDisable.vue';
 
   @Component({
     components: {
       SettingsSection,
+      SettingsEnableDisable,
     },
   })
   export default class StatusSection extends Vue {
     changeStatus(to:boolean) {
-      this.$vxm.chat.autoUpdateStatus = !to;
-      if (!to) {
+      this.$vxm.chat.autoUpdateStatus = to;
+      if (to) {
         this.$vxm.chat.setUnaway();
       } else {
         this.$vxm.chat.setAway();
