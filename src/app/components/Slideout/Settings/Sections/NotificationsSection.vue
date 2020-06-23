@@ -3,7 +3,7 @@
     <h6>Ignored</h6>
         <table>
           <tr v-for="channel in channels" :key="channel.name">
-            <td>{{channel.name}}</td>
+            <td style="vertical-align:baseline">{{channel.name}}</td>
             <td>
               <SettingsSwitch v-model="channel.notificationsEnabled"
               @input="updateNotifications(channel.name)" />
