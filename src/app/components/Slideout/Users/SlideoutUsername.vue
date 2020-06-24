@@ -3,12 +3,15 @@
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <Username :user="user" />
+    <Username :user="user"
+      @focus="hover = true" />
       <div style="overflow:hidden">
       <a
         class="chat-message-options"
         @click.prevent="openContextMenu"
         v-show="hover && user.username"
+        @blur="hover = false"
+        tabindex=0
       >
         &vellip; <!-- ⋮ -->
       </a>
@@ -56,7 +59,6 @@
 </script>
 <style scoped>
   .chat-message-options {
-    user-select: none;
     position: absolute;
     top: -4px;
     right:0px;
@@ -64,6 +66,10 @@
     display: block;
     cursor: pointer;
     overflow: visible;
+  }
+  .chat-message-options:focus {
+    outline: 1px dotted #212121;
+    outline: 5px auto -webkit-focus-ring-color;
   }
   li {
     position:relative;

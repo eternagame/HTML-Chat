@@ -1,9 +1,16 @@
 <template>
-  <span
+  <button
     class="hamburger"
     @click="$emit('input', !value)"
     :class="{notified:notification, mentioned:mention}"
-  />
+  >
+    <v-style>
+      button:focus {
+        border: {{$vxm.chat.tabbing ? '' : 'none !important'}};
+        outline: {{$vxm.chat.tabbing ? '' : 'none !important'}};
+      }
+    </v-style>
+  </button>
 </template>
 
 <script lang="ts">
@@ -31,6 +38,8 @@
   background-repeat: no-repeat;
   background-size: 50% 45%;
   background-position: bottom 10px left 11px;
+  background-color: transparent;
+  border: none;
 }
 .notified { /* Notified hamburger icon */
   background-image: url("../../assets/hamburger-notification.png");

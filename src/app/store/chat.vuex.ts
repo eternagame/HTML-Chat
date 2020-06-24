@@ -1245,15 +1245,13 @@ export default class ChatModule extends VuexModule {
    * @param {string} message - The user and the message to be sent. Takes the form <nick>|<message>
    */
 
-  @mutation
-  postToQuery(message:string) { /* @action() can only take 1 argument */
+  @action()
+  async postToQuery({ message, channel }: { message:string, channel:string}) {
     /* Splits argument into message and channel
     Will only cause issues if people are putting | in their nick */
-    const chan = message.substring(0, message.indexOf('|'));
-    const msg = message.substring(message.indexOf('|') + 1);
-    if (this.channels[User.parseUsername(chan)] === undefined) {
-      Vue.set(this.channels, User.parseUsername(chan), {
-        name: User.parseUsername(chan),
+    if (this.channels[User.parseUsername(channel)] === undefined) {
+      Vue.set(this.channels, User.parseUsername(channel), {
+        name: User.parseUsername(channel),
         maxHistoryMessages: 50,
         notifications: false,
         notificationsEnabled: true,
@@ -1262,8 +1260,8 @@ export default class ChatModule extends VuexModule {
       });
     }
     // Converting from array to set to array removes duplicates
-    Array.from(new Set(this.connectedUsers[User.parseUsername(chan)]?.nicks)).forEach(e => {
-      this.sendMessage({ rawMessage: msg, channel: e }); // Send message to all nicks
+    Array.from(new Set(this.connectedUsers[User.parseUsername(channel)]?.nicks)).forEach(e => {
+      this.sendMessage({ rawMessage: message, channel: e }); // Send message to all nicks
     });
   }
 

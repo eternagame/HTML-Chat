@@ -48,8 +48,9 @@
     text-transform: none;
     display:block;
     width: 100%;
-    height:min-content;
+    height:90px;
     margin:0px;
+    position: relative;
   }
 
   /* Change background color of buttons on hover */
