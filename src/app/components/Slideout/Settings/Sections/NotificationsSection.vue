@@ -20,11 +20,11 @@
         </ul>
         <li>
           <span
-            style="vertical-align:baseline"
-            aria-label="Appears in the page title if you have notifications">
+            style="vertical-align:baseline; display: inline-block"
+            aria-label="Appears in the page title if you have notifications" >
             Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
           </span>
-          <span class="switch">
+          <span style="float: right; width: 40%">
             <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
           </span>
         </li>
@@ -39,7 +39,7 @@
         </li>
         <li>
           <span
-            style="vertical-align:baseline"
+            style="vertical-align:baseline; display: inline-block;"
             aria-label="Keywords that trigger notifications.
             If you have multiple keywords, separate them with commas.
             Your username is automatically a keyword.">
@@ -47,7 +47,7 @@
             <SettingsTooltip text="If you have multiple keywords, separate them with commas.
             Your username is automatically a keyword." />
           </span>
-          <span class="switch">
+          <span style="float: right; width: 40%">
             <input type=text v-model="keywords" style="font-size:1rem; padding:1px;">
           </span>
         </li>
@@ -192,6 +192,8 @@ li {
 input {
   margin-bottom:10px;
   height:100%;
+  width: 100%;
+  float: right;
 }
 .switch {
   float:right;

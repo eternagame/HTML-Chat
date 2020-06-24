@@ -1585,13 +1585,19 @@ export default class ChatModule extends VuexModule {
   /**
    * Updates the away/online status for all connected users
    */
-  @mutation
-  updateUserStatus() {
-    this.client?.who('#general', (e) => { // Everyone should be in this channel
-      (e.users as {nick: string, away:boolean}[]).forEach(u => { // For each user
-        const user = User.parseUsername(u.nick); // Get their username
-        if (!this.connectedUsers[user]) return; // If they don't exist, just don't do anything
-        this.connectedUsers[user]!.away = u.away; // Update their status
+  @action()
+  async updateUserStatus() {
+    const usersByNick = Object.values(this.connectedUsers).map(e => e!.nicks[0]);
+    usersByNick.forEach(e => {
+      this.client?.whois(e, (i) => {
+        const username = User.parseUsername(e);
+        if (i.away) {
+          this.connectedUsers[username]!.away = true;
+          this.connectedUsers[username]!.awayReason = i.away;
+        } else {
+          this.connectedUsers[username]!.away = false;
+          this.connectedUsers[username]!.awayReason = '';
+        }
       });
     });
   }
@@ -1600,14 +1606,14 @@ export default class ChatModule extends VuexModule {
    * Sets the user as away
    */
   @action()
-  async setAway() {
+  async setAway(reason: string = 'User is currently away') {
     if (this.currentUser) {
       this.currentUser.away = true;
     }
     if (this.connectedUsers[this.currentUser.username]) {
       this.connectedUsers[this.currentUser.username]!.away = true;
     }
-    this.client?.raw('AWAY User is currently away');
+    this.client?.raw(`AWAY ${reason}`);
   }
 
   /**

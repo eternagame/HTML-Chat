@@ -21,4 +21,6 @@ export default class SettingsModule extends VuexModule {
   markdownChatFeatures = true;
 
   previewChatFeatures = true;
+
+  awayReason = '';
 }

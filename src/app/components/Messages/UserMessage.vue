@@ -143,9 +143,7 @@
             they could fail because the tooltip doesn't exist yet */
             this.$nextTick(() => {
               // Updates tooltip information
-              this.$refs.clickTooltip.findRank();
-              this.$refs.clickTooltip.description();
-              this.$refs.clickTooltip.specialStatus();
+              this.$refs.clickTooltip.fillProfile();
             });
           } else {
             console.log(`No such user ${user}`);

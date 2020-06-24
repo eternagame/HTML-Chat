@@ -14,7 +14,7 @@
       </span>
     </li>
     <li>
-      <span v-show="isOper" style="vertical-align: sub">Change nick</span>
+      <span v-show="isOper" style="vertical-align: sub">Nick</span>
       <span style="float: right">
         <input v-show="isOper" @input="setNick" :value="opernick">
       </span>

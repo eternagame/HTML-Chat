@@ -14,7 +14,7 @@
     >
       <span
         class="away-indicator"
-        :title="`${user.username} is away`"
+        :title="`${user.username} is away (${user.awayReason || 'No reason given'})`"
         v-show="away"> <!-- Away indicator -->
         ●
       </span>
@@ -80,10 +80,7 @@
     }
 
     enter() {
-      this.$refs.tooltip.findRank();
-      this.$refs.tooltip.description();
-      this.$refs.tooltip.specialStatus();
-      this.$refs.tooltip.getProfile();
+      this.$refs.tooltip.fillProfile();
     }
 
     $refs !: {
