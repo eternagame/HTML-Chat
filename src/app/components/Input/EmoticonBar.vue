@@ -3,7 +3,7 @@
     <div
       id='submenu'
       v-show='(emoticonsSelected || markdownSelected || previewSelected) && anyChatFeatures'>
-      <div id='emoticon-submenu' v-show="emoticonsSelected" >
+      <div id='emoticon-submenu' v-show="emoticonsSelected && emoticonChatFeatures" >
         <EmoticonButton
           v-for="emoticon in emotesList"
           :key="emoticon"
@@ -11,7 +11,7 @@
           class="border-right"
           @emote='add' />
       </div>
-      <div id='markdown-submenu' v-show="markdownSelected">
+      <div id='markdown-submenu' v-show="markdownSelected && markdownChatFeatures">
         <MarkdownWrapButton
           v-for="item in markdownCodes"
           :key="item"
@@ -20,7 +20,7 @@
           @md="format"
         />
       </div>
-      <div id='preview-submenu' v-show="previewSelected">
+      <div id='preview-submenu' v-show="previewSelected && previewChatFeatures">
         <div v-html="inputHTML" id="preview-content"/>
       </div>
       <MenuButton
@@ -39,18 +39,21 @@
       v-if="anyChatFeatures" >
       <MenuButton
         id="emoticonSelect"
+        v-if="emoticonChatFeatures"
         name="👍"
         styles=""
         @button="select('emoticon');"
       />
       <MenuButton
         id="markdownSelect"
+        v-if="markdownChatFeatures"
         name="A"
         styles="bold italics underline"
         @button="select('markdown');"
       />
       <MenuButton
         id="previewSelect"
+        v-if="previewChatFeatures"
         name="P"
         styles=""
         @button="select('preview');"
@@ -177,12 +180,14 @@
       return this.$vxm.settings.markdownChatFeatures;
     }
 
-    /* get previewChatFeatures() {
-      return this.$vxm.settings.markdownChatFeatures;
-    } */
+    get previewChatFeatures() {
+      return this.$vxm.settings.previewChatFeatures;
+    }
 
     get anyChatFeatures() {
-      return this.emoticonChatFeatures || this.markdownChatFeatures;
+      return this.emoticonChatFeatures
+        || this.markdownChatFeatures
+        || this.previewChatFeatures;
     }
   }
 </script>

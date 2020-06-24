@@ -1,12 +1,15 @@
 <template>
   <SettingsSection title="Text Size" >
       <input v-model="size" type=number min=10 max=18>
-        <p id='font-size-p'>Default is 14</p>
-        <p
-          id='font-warning'
-          v-show="size < 10 || size > 18" >
-          Font size must be a number, greater than 10, and less than 18
-        </p>
+      <p
+        id='font-warning'
+        v-show="size < 10 || size > 18" >
+        Font size must be a number between 10 and 18
+      </p>
+      <SettingsTooltip
+        text="Must be a number between 10 and 18. Default is 14"
+        style="vertical-align:middle"
+      />
     </SettingsSection>
 </template>
 <script lang="ts">
@@ -14,10 +17,12 @@
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
   import SettingsSection from '../SettingsSection.vue';
+  import SettingsTooltip from '../SettingsTooltip.vue';
 
   @Component({
     components: {
       SettingsSection,
+      SettingsTooltip,
     },
   })
   export default class TextSizeSection extends Vue {

@@ -1,6 +1,6 @@
 <template>
   <div
-    style="position:relative; width:65%"
+    style="position:relative; width:70%"
     class="slideout-container"
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
@@ -175,13 +175,13 @@
   animation: slideBack 0.25s;
 }
 @keyframes slide { /* Opens slideout */
-  from { left:-65%}
+  from { left:-70%}
   to { left:0}
 }
 /* Height does need to be there for the slideout to work. Otherwise it doesn't animate */
 @keyframes slideBack { /* Closes slideout */
   to {height:100%; width:0}
-  from {height:100%; width:65%}
+  from {height:100%; width:70%}
 }
 .tall { /* When slideout is open */
   height:100%;

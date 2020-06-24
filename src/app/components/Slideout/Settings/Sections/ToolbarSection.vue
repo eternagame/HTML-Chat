@@ -1,6 +1,5 @@
 <template>
   <SettingsSection title="Toolbar Features">
-    <p>These enable you to send emoticons and formatted text.</p>
     <table>
       <tr>
         <td class="left-side">Emoticons</td>
@@ -11,28 +10,27 @@
         <td><SettingsSwitch v-model="markdownChatFeatures" /></td>
       </tr>
       <tr>
+        <td class="left-side">Preview</td>
+        <td><SettingsSwitch v-model="previewChatFeatures" /></td>
+      </tr>
+      <tr>
         <td class="left-side">All</td>
         <td><SettingsEnableDisable :value="allChatFeatures" @input="allChatFeaturesChanged" /></td>
       </tr>
     </table>
-
-    <h6>Custom emoticons</h6>
-    <table>
-      <tbody>
-        <tr v-for="(emote, index) in customEmoticons" :key="emote">
-          <td>{{ emote }}</td>
-          <td>
-            Change to
-            <input :id="index" @input="update" style="width:1rem" />
-          </td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2" class="warning">{{ emoticonErrorMessage }}</td>
-        </tr>
-      </tfoot>
-    </table>
+    <ul style="margin-top:5px" v-if="$vxm.settings.emoticonChatFeatures">
+      <li>Custom emoticons</li>
+      <li v-for="(emote, index) in customEmoticons" :key="emote">
+        <span>{{ emote }}</span>
+        <span style="float:right">
+          Change to
+          <input :id="index" @input="update" style="width:1rem; vertical-align:mid; height:1rem;" />
+        </span>
+      </li>
+      <li v-show="emoticonErrorMessage && emoticonErrorMessage !== ''">
+        <span class="warning">{{ emoticonErrorMessage }}</span>
+      </li>
+    </ul>
   </SettingsSection>
 </template>
 <script lang="ts">
@@ -52,31 +50,44 @@
 })
   export default class ToolbarSection extends Vue {
     get allChatFeatures() {
-      if (this.emoticonChatFeatures && this.markdownChatFeatures) return true;
-      if (!this.emoticonChatFeatures && !this.markdownChatFeatures) return false;
+      if (this.emoticonChatFeatures
+        && this.markdownChatFeatures
+        && this.previewChatFeatures) return true;
+      if (!this.emoticonChatFeatures
+        && !this.markdownChatFeatures
+        && !this.previewChatFeatures) return false;
       return null;
     }
 
     allChatFeaturesChanged(to:boolean) {
       this.emoticonChatFeatures = to;
       this.markdownChatFeatures = to;
+      this.previewChatFeatures = to;
     }
 
-  emoticonChatFeatures = true;
+    emoticonChatFeatures = true;
 
-  @Watch('emoticonChatFeatures')
-  emoticonChatFeaturesChanged() {
-    localStorage.emoticonChatFeatures = JSON.stringify(this.emoticonChatFeatures);
-    this.$vxm.settings.emoticonChatFeatures = this.emoticonChatFeatures;
-  }
+    @Watch('emoticonChatFeatures')
+    emoticonChatFeaturesChanged() {
+      localStorage.emoticonChatFeatures = JSON.stringify(this.emoticonChatFeatures);
+      this.$vxm.settings.emoticonChatFeatures = this.emoticonChatFeatures;
+    }
 
-  markdownChatFeatures = true;
+    markdownChatFeatures = true;
 
-  @Watch('markdownChatFeatures')
-  markdownChatFeaturesChanged() {
-    localStorage.markdownChatFeatures = JSON.stringify(this.markdownChatFeatures);
-    this.$vxm.settings.markdownChatFeatures = this.markdownChatFeatures;
-  }
+    @Watch('markdownChatFeatures')
+    markdownChatFeaturesChanged() {
+      localStorage.markdownChatFeatures = JSON.stringify(this.markdownChatFeatures);
+      this.$vxm.settings.markdownChatFeatures = this.markdownChatFeatures;
+    }
+
+    previewChatFeatures = true;
+
+    @Watch('previewChatFeatures')
+    previewChatFeaturesChanged() {
+      localStorage.previewChatFeatures = JSON.stringify(this.previewChatFeatures);
+      this.$vxm.settings.previewChatFeatures = this.previewChatFeatures;
+    }
 
 
     // Custom emoticons
@@ -139,7 +150,7 @@
   background-color: $green;
 }
 .left-side {
-  vertical-align: baseline;
+  vertical-align: sub;
 }
 .feature-button-container {
   padding: 2px;
@@ -150,5 +161,8 @@
 }
 .warning {
   color: $warning;
+}
+li {
+  width: calc(100% - 40px)
 }
 </style>

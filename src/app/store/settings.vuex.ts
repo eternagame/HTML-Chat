@@ -19,4 +19,6 @@ export default class SettingsModule extends VuexModule {
   emoticonChatFeatures = true;
 
   markdownChatFeatures = true;
+
+  previewChatFeatures = true;
 }

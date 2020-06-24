@@ -1,34 +1,44 @@
 <template>
   <SettingsSection title="Notifications" >
-    <h6>Ignored</h6>
-        <table>
-          <tr v-for="channel in channels" :key="channel.name">
-            <td style="vertical-align:baseline">{{channel.name}}</td>
-            <td>
-              <SettingsSwitch v-model="channel.notificationsEnabled"
+        <ul>
+          <li v-for="channel in channels" :key="channel.name">
+            <span style="vertical-align:baseline">{{channel.name}}</span>
+            <span class="switch">
+              <SettingsSwitch v-model="$vxm.chat.channels[channel.name].notificationsEnabled"
               @input="updateNotifications(channel.name)" />
-            </td>
-          </tr>
-          <tr>
-            <td colspan=2><SettingsEnableDisable :value="allEnabled" @input="updateAll" /></td>
-          </tr>
-        </table>
-        <h6>Indicator</h6>
-        <p>
-          This will appear in the page title if you have notifications
-        </p>
-        <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
-        <h6>Keywords</h6>
-        <p>
-          If these keywords are used in the chat, they will trigger notifications
-        </p>
-        <textarea type=text v-model="keywords" style="font-size:1rem; padding:1px;" />
-        <p>
-          If you have multiple keywords, separate them with commas.
-          Your username is automatically a keyword.
-        </p>
-        <h6>Desktop Notifications</h6>
-        <SettingsSwitch v-model="desktopNotifications" />
+            </span>
+          </li>
+          <li>
+            <span style="vertical-align:baseline">All</span>
+            <span class="switch">
+              <SettingsEnableDisable :value="allEnabled" @input="updateAll" />
+            </span>
+          </li>
+        </ul>
+        <li>
+          <span style="vertical-align:baseline">
+            Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
+          </span>
+          <span class="switch">
+            <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
+          </span>
+        </li>
+        <li>
+          <span style="vertical-align:baseline; display:inline-block">Desktop Notifications</span>
+         <span class="switch" style="vertical-align: baseline">
+           <SettingsSwitch v-model="desktopNotifications" />
+          </span>
+        </li>
+        <li>
+          <span style="vertical-align:baseline">
+            Keywords
+            <SettingsTooltip text="If you have multiple keywords, separate them with commas.
+            Your username is automatically a keyword." />
+          </span>
+          <span class="switch">
+            <input type=text v-model="keywords" style="font-size:1rem; padding:1px;">
+          </span>
+        </li>
   </SettingsSection>
 </template>
 <script lang="ts">
@@ -38,6 +48,7 @@
   import SettingsSection from '../SettingsSection.vue';
   import SettingsSwitch from '../SettingsSwitch.vue';
   import SettingsEnableDisable from '../SettingsEnableDisable.vue';
+  import SettingsTooltip from '../SettingsTooltip.vue';
   import { Channel } from '@/store/chat.vuex';
 
   @Component({
@@ -45,6 +56,7 @@
       SettingsSection,
       SettingsSwitch,
       SettingsEnableDisable,
+      SettingsTooltip,
     },
   })
   export default class NotificationsSection extends Vue {
@@ -156,21 +168,20 @@
 .settings-button {
   background-color:$green;
 }
-td { /* Table cell in notifications settings section */
-  padding:4px;
-  width:max-content;
-}
-.footer { /* Enable and disable notifications buttons */
-  border:none;
-}
-table {
-  margin-top:2px;
-  margin-bottom:2px;
+li {
+  width: calc(100% - 40px);
+  height:1.5rem;
+  margin-bottom:10px;
+  list-style-type: none;
 }
 .feature-button-container {
   padding:2px;
 }
 input {
   margin-bottom:10px;
+  height:100%;
+}
+.switch {
+  float:right;
 }
 </style>
