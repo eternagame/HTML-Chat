@@ -6,15 +6,17 @@
     <Username :user="user"
       @focus="hover = true" />
       <div style="overflow:hidden">
-      <a
+      <button
         class="chat-message-options"
+        ref="chatOptions"
         @click.prevent="openContextMenu"
         v-show="hover && user.username"
         @blur="hover = false"
+        @keypress.enter.prevent="openContextMenuWithKey"
         tabindex=0
       >
         &vellip; <!-- ⋮ -->
-      </a>
+      </button>
       <ActionMenu
         ref="contextMenu"
         :message="messageFrom(user)"
@@ -50,10 +52,20 @@
 
     $refs!: {
       contextMenu: HTMLFormElement;
+      chatOptions: HTMLButtonElement;
     };
 
     openContextMenu(e: MouseEvent) {
       setTimeout(() => this.$refs.contextMenu.open(e));
+    }
+
+    openContextMenuWithKey(e: KeyboardEvent) {
+      const rect = (e.target as Element).getBoundingClientRect();
+      const event = new MouseEvent('click', {
+        clientX: rect.x,
+        clientY: rect.y,
+      });
+      setTimeout(() => this.$refs.contextMenu.open(event));
     }
   }
 </script>
@@ -66,6 +78,8 @@
     display: block;
     cursor: pointer;
     overflow: visible;
+    background-color: transparent;
+    border: none;
   }
   .chat-message-options:focus {
     outline: 1px dotted #212121;

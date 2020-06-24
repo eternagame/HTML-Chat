@@ -121,7 +121,7 @@ export default class ChatModule extends VuexModule {
 
   inGamePosition: [string, number, string, number] = ['l', 0, 't', 0];
 
-  initialSize: [number, number] = [0, 0];
+  initialSize: [number, number] = [400, 500];
 
   customNick !: string; // Custom nick for oper
 

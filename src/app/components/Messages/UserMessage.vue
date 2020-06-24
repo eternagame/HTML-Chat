@@ -37,6 +37,7 @@
       <button
         class="chat-message-options"
         @click.prevent="openContextMenu"
+        @keypress.enter.prevent="openContextMenuWithKey"
         v-show="hover && message.user.username"
         tabindex=0
         @blur="hover = false"
@@ -235,6 +236,15 @@
 
     openContextMenu(e: MouseEvent) {
       setTimeout(() => this.$refs.contextMenu.open(e));
+    }
+
+    openContextMenuWithKey(e: KeyboardEvent) {
+      const rect = (e.target as Element).getBoundingClientRect();
+      const event = new MouseEvent('click', {
+        clientX: rect.x,
+        clientY: rect.y,
+      });
+      setTimeout(() => this.$refs.contextMenu.open(event));
     }
   }
 </script>
