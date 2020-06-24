@@ -28,4 +28,31 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
   // pass token to default renderer.
   // return defaultRender(tokens, idx, options, env, self);
 };
+md.renderer.rules.text = (tokens, idx, options, env, self) => {
+  let { content } = tokens[idx];
+  if (content.match(/^> ?/)) {
+    content = `<blockquote>${content.replace(/^> ?/, '')}</blockquote>`;
+  }
+  // Detects instances of :: or : indicating fonts
+  [...content.matchAll(/:+[^:]+:+/g)].forEach(e => {
+    if (e[0].startsWith('::')) { // If it's :: (cursive), remove the colons and wrap it in a styled <span>
+      content = content.replace(e[0], `<span class="cursive">${e[0].slice(2, -2)}</span>`);
+    } else { // Otherwise, it's : (serif), remove the colons and wrap it in a styled <span>
+      content = content.replace(e[0], `<span class="serif">${e[0].slice(1, -1)} </span>`);
+    }
+  });
+  [...content.matchAll(/\|[^|]+\|/g)].forEach(e => {
+    content = content.replace(e[0], `<span class="highlight">&nbsp;${e[0].slice(1, -1)}&nbsp;</span>`);
+  });
+  [...content.matchAll(/#\S+\s/g)].forEach(e => {
+    content = content.replace(e[0].trim(), `<mark class="channel-link">${e[0].trim()}</mark>`);
+  });
+  [...content.matchAll(/@\S+\s/g)].forEach(e => {
+    content = content.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
+  });
+  [...content.matchAll(/>https?:\/\/eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
+    content = content.replace(e[0].trim(), `><img class="screenshot" src="${e[0].trim().substring(1)}">`);
+  });
+  return content;
+};
 export default md;

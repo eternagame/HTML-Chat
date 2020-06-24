@@ -18,10 +18,11 @@
           :type="item"
           class="border-right"
           @md="format"
+          style="flex: 0 0 auto"
         />
       </div>
       <div id='preview-submenu' v-show="previewSelected && previewChatFeatures">
-        <div v-html="inputHTML" id="preview-content"/>
+        <span v-html="inputHTML" id="preview-content"/>
       </div>
       <MenuButton
         id="close"
@@ -101,7 +102,7 @@
 
     // Markdown button
 
-    markdownCodes = ['bold', 'italics', 'italicsbold', 'strikethrough', 'code', 'link', 'action', 'quote'];
+    markdownCodes = ['bold', 'italics', 'italicsbold', 'strikethrough', 'code', 'link', 'action', 'quote', 'serif', 'cursive', 'highlight'];
 
     // Submenu selection
 
@@ -208,6 +209,7 @@
   overflow:hidden; /* Prevents awkward scrolling and overflow */
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  position: relative;
 }
 #strike { /* Strikethrough isn't cut off */
   padding:2px;
@@ -223,9 +225,12 @@
   height:25px;
   overflow:hidden; /* Prevents awkward scrolling and overflow */
   margin-bottom:3px;
+  position: relative;
 }
 .other-menu-button {
-  float:right; /* Menu buttons floated to the right */
+  right: 0; /* Menu buttons floated to the right */
+  position: absolute;
+  top:0;
 }
 .menu-container {
   background-color:#043468;
@@ -234,5 +239,42 @@
 #preview-submenu {
   display:inline-block;
   width:calc(100% - 30px) !important;
+}
+#markdown-submenu {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  display: flex;
+  width: calc(100% - 25px);
+  height:25px;
+}
+::-webkit-scrollbar-track {
+  height: 0;
+  width: 0;
+  display:none;
+}
+::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  display:none;
+}
+::-moz-scrollbar {
+  height: 0;
+  width: 0;
+  display:none;
+}
+::-moz-scrollbar-track {
+  height: 0;
+  width: 0;
+  display:none;
+}
+::-webkit-scrollbar-thumb {
+  height: 0;
+  width: 0;
+  display:none;
+}
+::-moz-scrollbar-thumb {
+  height: 0;
+  width: 0;
+  display:none;
 }
 </style>

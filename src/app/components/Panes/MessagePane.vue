@@ -181,6 +181,9 @@
         case 'action': this.$refs.input.insertString(0, '/me '); break;
         case 'quote': this.$refs.input.insertString(0, '> '); break;
         case 'question': this.$emit('postMessage', '/help'); break;
+        case 'cursive': this.$refs.input.wrapOrInsert('::', true); break;
+        case 'serif': this.$refs.input.wrapOrInsert(':', true); break;
+        case 'highlight': this.$refs.input.wrapOrInsert('|', true); break;
         default: break;
       }
     }
