@@ -1,25 +1,21 @@
 <template>
-  <div class="message panel">
-    <div class="trans-panel rounded-10">
-      <form>
-        <div id="user">To: {{username}}</div>
-        <textarea type="text" id="msg" name="msg" ref="ta" v-model="msg"/>
-        <div
-          class="green-button"
-          style="width: 90%; left: 50%; transform: translateX(-50%); margin-top:10px"
-          @click="send"
-        >
-        Continue
-        </div>
-        <div
-          class="green-button"
-          style="width: 90%; left: 50%; transform: translateX(-50%); margin-top:10px;"
-          @click="cancel"
-        >
-          Cancel
-        </div>
-      </form>
-    </div>
+  <div class="message panel" tabindex="0">
+    <span id="user">To: {{username}}</span>
+    <textarea type="text" id="msg" name="msg" ref="ta" v-model="msg"/>
+    <button
+      class="btn"
+      style="width: 100%; left: 50%; margin-top:5px"
+      @click="send"
+    >
+      Continue
+    </button>
+    <button
+      class="btn"
+      style="width: 100%; left: 50%; margin-top:10px;"
+      @click="cancel"
+    >
+      Cancel
+    </button>
   </div>
 </template>
 
@@ -49,11 +45,7 @@
     };
 
     send() {
-      console.log(`Sending message ${this.msg} to username ${this.username} from modal`);
-      Array.from(new Set(this.$vxm.chat.connectedUsers[this.username]?.nicks)).forEach(n => {
-        console.log(`Posting message ${this.msg} to nick ${n} to query`);
-        this.$vxm.chat.postToQuery(`${n}|${this.msg}`);
-      });
+      this.$vxm.chat.postToQuery({ message: this.msg, channel: this.username });
       this.$vxm.chat.privMsgModal = false;
     }
 
@@ -64,6 +56,9 @@
 </script>
 
 <style lang="scss">
+  @import "@/assets/_custom.scss";
+  @import "~bootstrap/scss/bootstrap.scss";
+  @import '~bootstrap-vue/dist/bootstrap-vue.css';
   .message {
     position: absolute;
     left: 50%;
@@ -85,8 +80,11 @@
     margin-bottom:5px;
   }
 
-  .blue-button,
-  .green-button {
-    padding: 4px 7px !important;
+  .btn {
+    background-color: $green;
+  }
+
+  button:focus {
+    border: 2px solid white;
   }
 </style>
