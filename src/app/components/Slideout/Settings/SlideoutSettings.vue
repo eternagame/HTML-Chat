@@ -6,7 +6,7 @@
     <UsernameColorSection />
     <ToolbarSection />
     <StatusSection />
-    <OperSection />
+    <OperSection @auth="$emit('auth')" />
   </div>
 </template>
 <script lang="ts">
