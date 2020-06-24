@@ -4,11 +4,11 @@
       <span style="vertical-align: middle">You are {{userStatus ? 'away' : 'online'}}</span>
       <span style="float:right">
         <SettingsEnableDisable
-            :value="!userStatus"
-            @input="changeStatus"
-            onText="ONLINE"
-            offText="AWAY"
-            :width="140"/>
+          :value="!userStatus"
+          @input="changeStatus"
+          onText="ONLINE"
+          offText="AWAY"
+          :width="140"/>
       </span>
     </li>
   </SettingsSection>

@@ -1,12 +1,12 @@
 <template>
   <!-- Centers images -->
-  <button @click="$emit('input')">
+  <button @click="$emit('input')" :aria-label="`Open the ${name} tab of the slideout`">
     <center
     @click="$emit('input')"
   >
     <img
+    :alt="`${this.selected ? 'Selected' : 'Unselected'} ${name} tab image`"
     :src="require(`@/assets/${name}-icon-${selected ? 'green' : 'white'}.png`)"
-    comment="Use of require means image is actually loaded"
     >
     <slot />
   </center>

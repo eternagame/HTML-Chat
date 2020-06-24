@@ -3,7 +3,7 @@
     <div class="trans-panel rounded-10" v-show="showsMessage">
       <p> {{message}}</p>
       <div
-          class="green-button"
+          class="btn"
           style="width: 90%; left: 50%; transform: translateX(-50%); margin-top:10px"
           @click="showsMessage = false; $emit('cancel')"
         >
@@ -14,33 +14,33 @@
       <form>
         <table>
           <tr>
-            <td><span for="username">User:</span></td>
-            <td><input type="text" id="username" v-model="username"/></td>
+            <td><label for="username">User:</label></td>
+            <td><input name="username" type="text" id="username" v-model="username"/></td>
           </tr>
           <tr>
-            <td><span for="password">Password:</span></td>
-            <td><input type="password" id="password" v-model="password"/></td>
+            <td><label for="password">Password:</label></td>
+            <td><input name="password" type="password" id="password" v-model="password"/></td>
           </tr>
           <tr>
-            <td><span for="remember">Remember:</span></td>
-            <td><input type="checkbox" id="remember" v-model="remember"/></td>
+            <td><label for="remember">Remember:</label></td>
+            <td><input type="checkbox" name="remember" id="remember" v-model="remember"/></td>
           </tr>
         </table>
         <p v-show="authFailed">Username or password incorrect</p>
-        <div
+        <button
           class="btn login-button"
           style="width: 100%; left: 50%; margin-top:10px"
           @click="$emit('login', { password, username, remember })"
         >
         Continue
-        </div>
-        <div
+        </button>
+        <button
           class="btn login-button"
           style="width: 100%; left: 50%; margin-top:10px;"
           @click="$emit('cancel')"
         >
           Cancel
-        </div>
+        </button>
       </form>
     </div>
   </div>

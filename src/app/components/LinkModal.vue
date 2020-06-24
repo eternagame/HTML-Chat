@@ -1,28 +1,22 @@
 <template>
   <div class="link panel" v-if="openModal">
-    <div class="trans-panel rounded-10">
-      <form>
-        <table>
-          <tr>
-            <td>This link goes to <a target="_blank" :href="url">{{url}}</a>.</td>
-          </tr>
-        </table>
-        <div
-          class="btn link-button"
-          style="width: 100%; left: 50%; margin-top:10px"
-          @click="openModal = false"
-        >
-        <a :href="url" target="_blank">Continue</a>
-        </div>
-        <div
-          class="btn link-button"
-          style="width: 100%; left: 50%; margin-top:10px;"
-          @click="openModal = false;"
-        >
-          Cancel
-        </div>
-      </form>
-    </div>
+    <p>This link goes to <a target="_blank" :href="url">{{url}}</a>.</p>
+    <button
+      aria-label="Click to travel to the link you clicked on"
+      class="btn link-button"
+      style="width: 100%; left: 50%; margin-top:10px"
+      @click="openModal = false"
+    >
+    <a :href="url" target="_blank">Continue</a>
+    </button>
+    <button
+      aria-label="Click to return to the chat; this cancels opening the link"
+      class="btn link-button"
+      style="width: 100%; left: 50%; margin-top:10px;"
+      @click="openModal = false;"
+    >
+      Cancel
+    </button>
   </div>
 </template>
 

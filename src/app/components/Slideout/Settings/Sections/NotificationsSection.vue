@@ -1,14 +1,17 @@
 <template>
   <SettingsSection title="Notifications" >
-        <ul>
-          <li v-for="channel in channels" :key="channel.name">
+        <ul aria-label="Enable or disable notifications for channels">
+          <li
+            v-for="channel in channels"
+            :key="channel.name"
+            :aria-label="`Notifications for ${channel.name}`" >
             <span style="vertical-align:baseline">{{channel.name}}</span>
             <span class="switch">
               <SettingsSwitch v-model="$vxm.chat.channels[channel.name].notificationsEnabled"
               @input="updateNotifications(channel.name)" />
             </span>
           </li>
-          <li>
+          <li aria-label="Notifications for all channels">
             <span style="vertical-align:baseline">All</span>
             <span class="switch">
               <SettingsEnableDisable :value="allEnabled" @input="updateAll" />
@@ -16,7 +19,9 @@
           </li>
         </ul>
         <li>
-          <span style="vertical-align:baseline">
+          <span
+            style="vertical-align:baseline"
+            aria-label="Appears in the page title if you have notifications">
             Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
           </span>
           <span class="switch">
@@ -25,12 +30,19 @@
         </li>
         <li>
           <span style="vertical-align:baseline; display:inline-block">Desktop Notifications</span>
-         <span class="switch" style="vertical-align: baseline">
+          <span
+            class="switch"
+            style="vertical-align: baseline"
+            aria-label="Whether notifications should be sent directly to your computer">
            <SettingsSwitch v-model="desktopNotifications" />
           </span>
         </li>
         <li>
-          <span style="vertical-align:baseline">
+          <span
+            style="vertical-align:baseline"
+            aria-label="Keywords that trigger notifications.
+            If you have multiple keywords, separate them with commas.
+            Your username is automatically a keyword.">
             Keywords
             <SettingsTooltip text="If you have multiple keywords, separate them with commas.
             Your username is automatically a keyword." />

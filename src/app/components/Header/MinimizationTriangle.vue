@@ -1,5 +1,6 @@
 <template>
   <button
+    :aria-label="label"
     class="minimization-triangle"
     style="float: right;"
     :class="{'flipped': value && !settings,
@@ -27,6 +28,10 @@
 
     @Prop()
     settings !: boolean;
+
+    get label() {
+      return `Click to ${this.value ? 'show' : 'hide'} content${this.settings ? ' in settings' : ''}.`;
+    }
   }
 </script>
 
