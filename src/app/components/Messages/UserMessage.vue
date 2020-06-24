@@ -10,6 +10,7 @@
           :user="message.user"
           :color="usernameColor"
           :is-action="isAction"
+          @focus="hover = true"
           v-if="!isNotice && !sameUserAsPrevious"
         >{{ isAction || !message.user.username ? '': ':' }}
         </Username>
@@ -33,13 +34,15 @@
       <span v-if="!isNotice" class="message-time">[{{formattedTime}}]</span>
     </div>
     <div style="overflow:hidden">
-      <a
+      <button
         class="chat-message-options"
         @click.prevent="openContextMenu"
         v-show="hover && message.user.username"
+        tabindex=0
+        @blur="hover = false"
       >
         &vellip;
-      </a>
+      </button>
       <ActionMenu
         ref="contextMenu"
         :message="message"
@@ -178,6 +181,7 @@
       [...this.$el.getElementsByTagName('a')]
         .filter(e => e.href !== e.innerText)
         .filter(e => !usernames.includes(e.innerText.replace('●', '').trim().replace(':', '').trim()))
+        .filter(e => ![...e.classList].includes('chat-message-options'))
         .forEach(e => {
         e.addEventListener('click', ev => {
           ev.preventDefault();
@@ -296,7 +300,6 @@
   }
 
   .chat-message-options {
-    user-select: none;
     position: absolute;
     top: -4px;
     right: 15px;
@@ -305,6 +308,14 @@
     display: block;
     cursor: pointer;
     overflow: visible;
+    background-color: transparent;
+    color: white;
+    border: none;
+  }
+
+  .chat-message-options:focus {
+    outline: 1px dotted #212121;
+    outline: 5px auto -webkit-focus-ring-color;
   }
 
   mark {

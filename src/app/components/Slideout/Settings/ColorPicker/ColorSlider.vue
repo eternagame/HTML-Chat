@@ -6,10 +6,11 @@
       type=range min=0 max=255
       :style='{ background:getGradient()}'
       :name="colorID">
-    <p
+    <span
       class="value-thumb"
       :style="{ left: calculateOffset}"
-    >{{sliderValue}}</p>
+    >{{sliderValue}}</span>
+    <input type=number v-model="sliderValue" class="slider-input-number">
   </div>
 </template>
 <script lang='ts'>
@@ -81,7 +82,7 @@
     height:20px;
     margin:8px;
     margin-left:0;
-    width:120px;
+    width:180px;
     padding:0;
     overflow:hidden;
   }
@@ -112,9 +113,9 @@
     height:15px;
     border-radius:2px;
   }
-  .slider:focus { /* Avoids unwanted outlines */
+  .slider:focus {
     outline:none;
-    border:none;
+    border:1px solid black;
   }
   /* Overlays that show the value of the slider on top of the draggable part of the slider */
   .value-thumb {
@@ -129,5 +130,13 @@
     font-size: 14px !important;
     height:20px;
     top: 0px;
+  }
+  .slider-input-number {
+    display: inline-block;
+    position: absolute;
+    width: 3rem;
+    height: 100%;
+    top: 0px;
+    right: 0;
   }
 </style>

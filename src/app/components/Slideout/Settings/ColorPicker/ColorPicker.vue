@@ -22,7 +22,7 @@
       colorID="blue"
       ref="blue" />
       <div id='swatch-container'>
-        <div
+        <button
           v-for="color in defaultColors"
           :key="color"
           class="swatch"
@@ -166,6 +166,7 @@
     width:25px;
     height:15px;
     margin:5px;
+    border: none;
   }
   #swatch-container { /* Container for swatches */
     display: grid;

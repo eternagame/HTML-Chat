@@ -1,12 +1,19 @@
 <template>
-  <div
+  <button
     class="minimization-triangle"
     style="float: right;"
     :class="{'flipped': value && !settings,
     'settings-flipped': value && settings,
     'settings':settings}"
     @click="$emit('input', !value)"
-  />
+  >
+    <v-style>
+      button:focus {
+        border: {{$vxm.chat.tabbing ? '' : 'none !important'}};
+        outline: {{$vxm.chat.tabbing ? '' : 'none !important'}};
+      }
+    </v-style>
+  </button>
 </template>
 
 <script lang="ts">
@@ -35,6 +42,8 @@
     transform: rotate(0deg);
     -webkit-transform: rotate(0deg);
     transition: transform 0.2s;
+    background-color: transparent;
+    border: none;
   }
 
   .minimization-triangle.settings-flipped {

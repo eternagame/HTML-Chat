@@ -48,6 +48,10 @@ button {
   border:none;
   transition: color 0.4s;
 }
+button:focus {
+  outline: 0px solid;
+  border: $gray-600 2px solid;
+}
 #disable {
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;

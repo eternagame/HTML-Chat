@@ -44,7 +44,7 @@
   background-color: $gray-500;
   -webkit-transition: .4s;
   transition: .4s;
-  border-radius:34px;
+  border-radius:35px;
 }
 
 .slider:before {
@@ -68,5 +68,12 @@ input:checked + .slider:before {
   -webkit-transform: translateX(16px);
   -ms-transform: translateX(16px);
   transform: translateX(16px);
+}
+input:focus:checked + .slider {
+  outline: $green 1px solid;
+}
+
+input:focus:not(:checked) + .slider {
+  outline: $gray-500 1px solid;
 }
 </style>

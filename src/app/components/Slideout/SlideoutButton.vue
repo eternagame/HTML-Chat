@@ -1,6 +1,7 @@
 <template>
   <!-- Centers images -->
-  <center
+  <button @click="$emit('input')">
+    <center
     @click="$emit('input')"
   >
     <img
@@ -9,6 +10,7 @@
     >
     <slot />
   </center>
+  </button>
 </template>
 
 <script lang="ts">
@@ -40,5 +42,9 @@
     text-transform: capitalize;
     width:40px;
     display:inline-block;
+  }
+  button {
+    background-color:transparent;
+    border:none;
   }
 </style>

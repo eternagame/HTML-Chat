@@ -336,7 +336,7 @@
 
   postMessage(rawMessage: string, channel: string) {
     if (!channel.startsWith('#')) { // If it's a PRIVMSG
-      this.$vxm.chat.postToQuery(`${channel}|${rawMessage}`);
+      this.$vxm.chat.postToQuery({ message: rawMessage, channel });
     } else { // Otherwise
       this.$vxm.chat.sendMessage({ rawMessage, channel });
     }

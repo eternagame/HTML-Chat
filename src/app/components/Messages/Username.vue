@@ -4,6 +4,8 @@
       v-if="user"
       target="_blank"
       class="username"
+      @focus="$emit('focus')"
+      @blur="$emit('blur')"
       :style="{ color: displayedColor }"
       :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
       @mouseover="hovered = true; updateTooltipCoordinates($event) /* Shows and hides tooltip */"
@@ -136,6 +138,10 @@
   .username {
     text-decoration: none;
     font-weight: bold;
+  }
+  .username:focus {
+    outline: 1px dotted #212121;
+    outline: 5px auto -webkit-focus-ring-color;
   }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;

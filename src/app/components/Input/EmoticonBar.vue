@@ -167,7 +167,9 @@
       if (this.selection !== [0, 0] && this.selection[1] - this.selection[0] > 0) {
         value = value.slice(this.selection[0], this.selection[1]);
       }
-      return md.renderInline(value);
+      const markdown = md.renderInline(value);
+      if (markdown === '') return 'Type some text to see a preview';
+      return markdown;
     }
 
     // Chat features
@@ -188,6 +190,11 @@
       return this.emoticonChatFeatures
         || this.markdownChatFeatures
         || this.previewChatFeatures;
+    }
+
+    @Watch('anyChatFeatures')
+    updateToolbarHeight() {
+      this.$emit('update');
     }
   }
 </script>

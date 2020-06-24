@@ -1,10 +1,16 @@
 <template>
-  <div
+  <button
     class="open-window"
     style="float: right;"
     @click="$emit('input', !value)"
-  >
-  </div>
+   >
+   <v-style>
+      button:focus {
+        border: {{$vxm.chat.tabbing ? '' : 'none !important'}};
+        outline: {{$vxm.chat.tabbing ? '' : 'none !important'}};
+      }
+    </v-style>
+  </button>
 </template>
 
 <script lang="ts">
@@ -27,6 +33,8 @@
     background-position: center;
     height: 34px;
     width: 35px;
+    background-color: transparent;
+    border: none;
   }
   .open-window:hover {
     cursor: pointer;
