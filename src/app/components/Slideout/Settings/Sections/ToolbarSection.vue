@@ -1,25 +1,40 @@
 <template>
   <SettingsSection title="Toolbar Features">
-    <table>
-      <tr>
-        <td class="left-side">Emoticons</td>
-        <td><SettingsSwitch v-model="emoticonChatFeatures" /></td>
-      </tr>
-      <tr>
-        <td class="left-side">Markdown</td>
-        <td><SettingsSwitch v-model="markdownChatFeatures" /></td>
-      </tr>
-      <tr>
-        <td class="left-side">Preview</td>
-        <td><SettingsSwitch v-model="previewChatFeatures" /></td>
-      </tr>
-      <tr>
-        <td class="left-side">All</td>
-        <td><SettingsEnableDisable :value="allChatFeatures" @input="allChatFeaturesChanged" /></td>
-      </tr>
-    </table>
-    <ul style="margin-top:5px" v-if="$vxm.settings.emoticonChatFeatures">
-      <li>Custom emoticons</li>
+    <ul>
+      <li>
+        <span class="left-side">
+          Emoticons
+          <SettingsTooltip text="Whether the emoticons menu in the toolbar is visible" />
+        </span>
+        <span style="float: right"><SettingsSwitch v-model="emoticonChatFeatures" /></span>
+      </li>
+      <li>
+        <span class="left-side">
+          Markdown
+          <SettingsTooltip text="Whether the markdown menu in the toolbar is visible" />
+        </span>
+        <span style="float: right"><SettingsSwitch v-model="markdownChatFeatures" /></span>
+      </li>
+      <li>
+        <span class="left-side">
+          Preview
+          <SettingsTooltip text="Whether the markdown preview menu in the toolbar is visible" />
+        </span>
+        <span style="float: right"><SettingsSwitch v-model="previewChatFeatures" /></span>
+      </li>
+      <li>
+        <span class="left-side">All</span>
+        <span style="float: right">
+          <SettingsEnableDisable :value="allChatFeatures" @input="allChatFeaturesChanged" />
+        </span>
+      </li>
+    </ul>
+    <ul style="margin-top:10px" v-if="$vxm.settings.emoticonChatFeatures">
+      <li>
+        Custom emoticons
+        <SettingsTooltip text="Which emoticons appear in your three custom slots
+        in the emoticon menu in the toolbar" />
+      </li>
       <li v-for="(emote, index) in customEmoticons" :key="emote">
         <span>{{ emote }}</span>
         <span style="float:right">
@@ -40,12 +55,14 @@
   import SettingsSection from '../SettingsSection.vue';
   import SettingsSwitch from '../SettingsSwitch.vue';
   import SettingsEnableDisable from '../SettingsEnableDisable.vue';
+  import SettingsTooltip from '../SettingsTooltip.vue';
 
 @Component({
   components: {
     SettingsSection,
     SettingsSwitch,
     SettingsEnableDisable,
+    SettingsTooltip,
   },
 })
   export default class ToolbarSection extends Vue {
@@ -163,6 +180,7 @@
   color: $warning;
 }
 li {
-  width: calc(100% - 40px)
+  width: calc(100% - 40px);
+  margin-bottom: 10px;
 }
 </style>
