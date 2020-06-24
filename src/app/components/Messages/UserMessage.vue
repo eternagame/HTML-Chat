@@ -99,16 +99,7 @@
         const tagsStringPosition = msg.search(/\[#(.+,)*.+\]\r?$/);
         msg = msg.substring(0, tagsStringPosition);
       } // If not, just show the message
-      let markdown = md.renderInline(msg);
-      [...markdown.matchAll(/#\S+\s/g)].forEach(e => {
-        markdown = markdown.replace(e[0].trim(), `<mark class="channel-link">${e[0].trim()}</mark>`);
-      });
-      [...markdown.matchAll(/@\S+\s/g)].forEach(e => {
-        markdown = markdown.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
-      });
-      [...markdown.matchAll(/>https?:\/\/eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
-        markdown = markdown.replace(e[0].trim(), `><img class="screenshot" src="${e[0].trim().substring(1)}">`);
-      });
+      const markdown = md.renderInline(msg);
       return markdown;
     }
 
@@ -330,5 +321,28 @@
   .screenshot {
     width:80%;
     max-width:500px;
+  }
+  .cursive {
+    font-family: cursive;
+  }
+  .serif {
+    font-family: serif;
+  }
+  .highlight {
+    background-color: yellow;
+    color: black;
+  }
+  blockquote {
+    display: inline;
+    border-left: 5px solid gray;
+    padding-left: 2px;
+    quotes: "“" "”" "‘" "’";
+  }
+  blockquote:before {
+    margin-left:2px;
+    content: open-quote;
+  }
+  blockquote:after {
+    content: close-quote;
   }
 </style>

@@ -2,6 +2,7 @@
   <button id='md-wrap-button-container' class='md-button' @click="clicked">
     <span
       class="text"
+      :class="classes"
       :id="typeIs('strikethrough') ? 's' : ''"
       :style="style">{{buttonLetter}}
     </span>
@@ -25,6 +26,8 @@
         case 'question': return '?';
         case 'italicsbold': return 'E';
         case 'quote': return '""';
+        case 'serif': return 'F';
+        case 'cursive': return 'F';
         default: return this.type.substring(0, 1).toUpperCase();
       }
     }
@@ -35,13 +38,26 @@
       const strikethrough = this.typeIs('strikethrough');
       const code = this.typeIs('code');
       const link = this.typeIs('link');
+      const cursive = this.typeIs('cursive');
+      const serif = this.typeIs('serif');
+      const highlight = this.typeIs('highlight');
+      let font;
+      if (code) font = 'monospace';
+      if (cursive) font = 'cursive';
+      if (serif) font = 'serif';
       return {
         'font-weight': bold ? 'bold' : '',
         'font-style': italics ? 'italic' : '',
         'text-decoration': `${strikethrough ? 'line-through' : ''} ${link ? 'underline' : ''}`,
-        'font-family': code ? 'monospace' : '',
+        'font-family': font,
       };
     }
+
+    get classes() {
+        return {
+          highlight: this.typeIs('highlight'),
+        };
+      }
 
     clicked() {
       this.$emit('md', this.type);
@@ -79,5 +95,13 @@
   #s:before,
   #s:after {
     content: "-";
+  }
+  .highlight {
+    display: inline-flex;
+    align-items: center;
+    background-color:yellow;
+    color: black;
+    vertical-align: baseline;
+    height: 18px;
   }
 </style>
