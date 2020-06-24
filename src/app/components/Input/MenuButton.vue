@@ -11,7 +11,7 @@
     {{name}}
     <v-style>
       .menu-button:focus {
-        outline: {{ tabbing ? '' : 'none'}} !important;
+        outline: {{ tabbing ? '' : 'none !important'}};
       }
     </v-style>
   </button>
