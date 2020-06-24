@@ -1,7 +1,12 @@
 <template>
-  <div class="link panel" v-if="openModal">
-    <p>This link goes to <a target="_blank" :href="url">{{url}}</a>.</p>
+  <div class="link panel" v-if="openModal" tabindex=0>
+    <p
+      tabindex=0
+    >
+      This link goes to <a target="_blank" :href="url">{{url}}</a>.
+    </p>
     <button
+      tabindex=0
       aria-label="Click to travel to the link you clicked on"
       class="btn link-button"
       style="width: 100%; left: 50%; margin-top:10px"
@@ -10,6 +15,7 @@
     <a :href="url" target="_blank">Continue</a>
     </button>
     <button
+      tabindex=0
       aria-label="Click to return to the chat; this cancels opening the link"
       class="btn link-button"
       style="width: 100%; left: 50%; margin-top:10px;"
@@ -22,7 +28,9 @@
 
 <script lang="ts">
   import BootstrapVue from 'bootstrap-vue';
-  import { Component, Vue, Prop } from 'vue-property-decorator';
+  import {
+    Component, Vue, Prop, Watch,
+  } from 'vue-property-decorator';
 
   Vue.use(BootstrapVue);
 
@@ -49,10 +57,6 @@
     z-index:3;
   }
 
-  td {
-    padding: 2px;
-  }
-
   .link-button {
     color:white;
     background-color:$green !important;
@@ -60,5 +64,8 @@
 
   .link-button > a:hover {
     text-decoration: none;
+  }
+  .link-button:focus {
+    outline: 2px solid white;
   }
 </style>

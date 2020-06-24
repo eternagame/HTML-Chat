@@ -91,4 +91,8 @@
     color:white;
     background-color:$green;
   }
+
+  .login-button:focus {
+    border: 2px solid white;
+  }
 </style>
