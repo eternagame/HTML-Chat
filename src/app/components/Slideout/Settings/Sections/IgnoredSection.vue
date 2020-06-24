@@ -1,11 +1,12 @@
 <template>
   <SettingsSection title="Ignored" >
-      <ul style="margin-bottom: 0">
+      <ul style="margin-bottom: 0" aria-label="List of ignored users">
         <li v-for="user in ignoredUsers" :key="user">
           <span style="vertical-align: sub">{{user}}</span>
           <button
             :style="{ fontSize:`${11 / 14}rem` }"
             class='unignore-user btn settings-button'
+            :aria-label="`Ignore user ${user}`"
             v-on:click="unignore(user)" >
             Unignore
           </button>
@@ -13,6 +14,7 @@
         <li v-show="!anyIgnoredUsers">No users ignored</li>
         <li v-show="anyIgnoredUsers" class="height-normal">
           <button
+          aria-label="Unignore all users"
           :style="{ fontSize:`${11 / 14}rem` }"
           style="width:100%"
           class='btn settings-button'

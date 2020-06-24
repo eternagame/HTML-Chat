@@ -3,6 +3,7 @@
     class="hamburger"
     @click="$emit('input', !value)"
     :class="{notified:notification, mentioned:mention}"
+    :aria-label="`Click to ${this.value ? 'close' : 'open'} the slideout`"
   >
     <v-style>
       button:focus {

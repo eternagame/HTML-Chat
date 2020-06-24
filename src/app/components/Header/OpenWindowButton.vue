@@ -3,6 +3,7 @@
     class="open-window"
     style="float: right;"
     @click="$emit('input', !value)"
+    :aria-label="`Click to make the chat ${value ? 'fullscreen' : 'normal size'}`"
    >
    <v-style>
       button:focus {

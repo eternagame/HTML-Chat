@@ -1,9 +1,10 @@
 <template>
   <SettingsSection title="Operator" >
-    <li>
+    <li aria-label="Whether you are a chat moderator/operator">
       <span>You are {{isOper ? '' : 'not'}} an operator</span>
       <span style="float: right">
         <button
+          aria-label="Log in as an operator"
           @click="$emit('auth')"
           :style="{ fontSize:`${11 / 14}rem` }"
           class="btn settings-button"

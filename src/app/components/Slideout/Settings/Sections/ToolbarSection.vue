@@ -1,21 +1,21 @@
 <template>
   <SettingsSection title="Toolbar Features">
-    <ul>
-      <li>
+    <ul aria-label="Which features are enabled in the toolbar">
+      <li aria-label="Whether emoticons are enabled in the toolbar">
         <span class="left-side">
           Emoticons
           <SettingsTooltip text="Whether the emoticons menu in the toolbar is visible" />
         </span>
         <span style="float: right"><SettingsSwitch v-model="emoticonChatFeatures" /></span>
       </li>
-      <li>
+      <li aria-label="Whether markdown is enabled in the toolbar">
         <span class="left-side">
           Markdown
           <SettingsTooltip text="Whether the markdown menu in the toolbar is visible" />
         </span>
         <span style="float: right"><SettingsSwitch v-model="markdownChatFeatures" /></span>
       </li>
-      <li>
+      <li aria-label="Whether the preview is enabled in the toolbar">
         <span class="left-side">
           Preview
           <SettingsTooltip text="Whether the markdown preview menu in the toolbar is visible" />
@@ -29,17 +29,25 @@
         </span>
       </li>
     </ul>
-    <ul style="margin-top:10px" v-if="$vxm.settings.emoticonChatFeatures">
+    <ul style="margin-top:10px" v-if="$vxm.settings.emoticonChatFeatures"
+      aria-label="Change custom emoticons that appear in the toolbar">
       <li>
         Custom emoticons
         <SettingsTooltip text="Which emoticons appear in your three custom slots
         in the emoticon menu in the toolbar" />
       </li>
-      <li v-for="(emote, index) in customEmoticons" :key="emote">
+      <li
+        v-for="(emote, index) in customEmoticons"
+        :key="emote"
+        :aria-label="`Change emote in slot ${index}`">
         <span>{{ emote }}</span>
         <span style="float:right">
-          Change to
-          <input :id="index" @input="update" style="width:1rem; vertical-align:mid; height:1rem;" />
+          <label :for="index">Change to</label>
+          <input
+            :name="index"
+            :id="index"
+            @input="update"
+            style="width:1rem; vertical-align:mid; height:1rem;" />
         </span>
       </li>
       <li v-show="emoticonErrorMessage && emoticonErrorMessage !== ''">

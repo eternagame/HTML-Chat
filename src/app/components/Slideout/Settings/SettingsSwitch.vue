@@ -1,5 +1,9 @@
 <template>
-  <label class="switch">
+  <label
+    class="switch"
+    @keypress.enter="$emit('input', !$event.target.checked)"
+    :aria-label="label"
+    >
     <input type="checkbox" :checked="value" @change="$emit('input', $event.target.checked)">
     <span class="slider round" />
   </label>
@@ -11,6 +15,10 @@
   export default class SettingsSwitch extends Vue {
     @Prop()
     value !: boolean;
+
+    get label() {
+      return `Switch that is ${this.value ? 'on' : 'off'}`;
+    }
   }
 </script>
 <style lang="scss" scoped>

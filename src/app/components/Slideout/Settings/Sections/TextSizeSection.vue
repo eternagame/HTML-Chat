@@ -1,6 +1,6 @@
 <template>
   <SettingsSection title="Text Size" >
-      <input v-model="size" type=number min=10 max=18>
+      <input v-model="size" type=number min=10 max=18 aria-label="Change the size of the text">
       <p
         id='font-warning'
         v-show="size < 10 || size > 18" >

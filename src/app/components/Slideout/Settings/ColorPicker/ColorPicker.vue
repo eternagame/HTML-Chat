@@ -1,6 +1,7 @@
 <template>
   <div id='picker'>
     <ColorSlider
+      aria-label="Color slider for red"
       id='red'
       gradientStart="#300"
       gradientEnd="#c00"
@@ -8,6 +9,7 @@
       colorID="red"
       ref="red" />
     <ColorSlider
+      aria-label="Color slider for green"
       id='green'
       gradientStart='#030'
       gradientEnd='#0c0'
@@ -15,6 +17,7 @@
       colorID="green"
       ref="green" />
     <ColorSlider
+      aria-label="Color slider for blue"
       id='blue'
       gradientStart='#003'
       gradientEnd='#00c'

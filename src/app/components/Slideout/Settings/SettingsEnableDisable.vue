@@ -1,5 +1,5 @@
 <template>
-  <label class="switch" :style="{ width: `${width || 80}px` }">
+  <label class="switch" :style="{ width: `${width || 80}px` }" :aria-label="label">
     <button @click="$emit('input', false)" :disabled="value === false" id="disable">
       {{offText || 'OFF'}}
     </button>
@@ -24,6 +24,10 @@
 
     @Prop()
     width !: number;
+
+    get label() {
+      return `Three state switch in state ${this.value === true ? (this.onText || 'on') : (this.offText || 'off') || 'neither'}; possible states ${this.onText || 'on'}, ${this.offText || 'off'}, and neither`;
+    }
   }
 </script>
 <style lang="scss" scoped>

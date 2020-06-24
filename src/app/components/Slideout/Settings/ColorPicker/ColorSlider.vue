@@ -1,6 +1,7 @@
 <template>
   <div class='color-slider-container'>
     <input
+      aria-label="Slider to control a color value"
       class="slider"
       v-model="sliderValue"
       type=range min=0 max=255
