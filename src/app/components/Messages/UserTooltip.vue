@@ -35,9 +35,9 @@
     @Prop()
     left!: number;
 
-    desc = '';
+    desc = 'This user has not added a description to their profile';
 
-    rank = '';
+    rank = 'Unranked';
 
     profileImage = '';
 
@@ -54,31 +54,36 @@
       console.log(this.parentTop);
     }
 
-    description() {
+    fillProfile() {
       this.$vxm.chat.getUserInfo({
         user: this.user,
         callback: (d) => {
           const data = JSON.parse(d);
-          if (data.data !== undefined && data.data.user.Profile) {
-            let desc = data.data.user.Profile;
-            if (desc.length > 150) {
-              desc = desc.slice(0, 150)
-                .replace(/<br>/, '')
-                .trim();
-              desc += '...';
+          console.log(data);
+          if (data.data !== undefined) {
+            if (data.data.user.Profile) {
+              console.log('it exists');
+              let desc = data.data.user.Profile;
+              if (desc.length > 150) {
+                desc = desc.slice(0, 150)
+                  .replace(/<br>/, '')
+                  .trim();
+                desc += '...';
+                console.log('it got trimmed');
+              }
+              this.desc = desc;
+              console.log('Set desc');
             }
-            this.desc = desc;
-          } else {
-            this.desc = 'This user has not added a description to their profile';
+            if (data.data.user.rank) {
+              this.rank = `#${data.data.user.rank}`;
+            }
+            if (data.data.user.picture) {
+              this.profileImage = `https://eternagame.org/${data.data.user.picture}`;
+            }
           }
         },
       });
-            this.desc = 'This user has not added a description to their profile';
-    }
 
-    status = '';
-
-    specialStatus() {
       /*
       I need to fill these values in
       Once roles are set up on the backend, this needs to be replaced anyway
@@ -98,39 +103,10 @@
       });
       if (status.length > 0) {
         this.status = status.join(', ');
-      } else {
-        this.status = '';
       }
     }
 
-    findRank() {
-      this.$vxm.chat.getUserInfo({
-        user: this.user,
-        callback: (d) => {
-          const data = JSON.parse(d);
-          if (data.data !== undefined) {
-            this.rank = `#${data.data.user.rank}`;
-          } else {
-            this.rank = 'Unranked';
-          }
-        },
-      });
-      this.rank = 'Unranked';
-    }
-
-    getProfile() {
-      this.$vxm.chat.getUserInfo({
-        user: this.user,
-        callback: (d) => {
-          const data = JSON.parse(d);
-          if (data.data !== undefined) {
-            this.profileImage = `https://eternagame.org/${data.data.user.picture}`;
-          } else {
-            this.profileImage = '';
-          }
-        },
-      });
-    }
+    status = '';
   }
 </script>
 <style scoped lang="scss">

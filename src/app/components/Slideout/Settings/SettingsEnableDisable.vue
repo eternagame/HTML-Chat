@@ -51,6 +51,7 @@ button {
   position:absolute;
   border:none;
   transition: color 0.4s;
+  font-size: 14px;
 }
 button:focus {
   outline: 0px solid;
