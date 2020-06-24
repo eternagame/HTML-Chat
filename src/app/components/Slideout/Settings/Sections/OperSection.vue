@@ -1,15 +1,23 @@
 <template>
   <SettingsSection title="Operator" >
-    <p>You are {{isOper ? '' : 'not'}} logged in as an operator</p>
+    <li>
+      <span>You are {{isOper ? '' : 'not'}} an operator</span>
+      <span style="float: right">
         <button
           @click="$emit('auth')"
           :style="{ fontSize:`${11 / 14}rem` }"
           class="btn settings-button"
           v-show="!isOper" >
-            Log in as operator
+            Log in
         </button>
-        <h6 v-show="isOper">Change nick</h6>
+      </span>
+    </li>
+    <li>
+      <span v-show="isOper" style="vertical-align: sub">Change nick</span>
+      <span style="float: right">
         <input v-show="isOper" @input="setNick" :value="opernick">
+      </span>
+    </li>
   </SettingsSection>
 </template>
 <script lang="ts">
@@ -59,7 +67,11 @@
 }
 input {
   margin:2px;
-  width:calc(100% - 23px); /* Accounts for padding on both sides */
   max-width:150px; /* Big screens don't have arbitrarily large input */
+}
+li {
+  width: calc(100% - 40px);
+  list-style-type: none;
+  margin-bottom: 10px;
 }
 </style>

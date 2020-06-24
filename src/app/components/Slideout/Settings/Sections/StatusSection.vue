@@ -1,12 +1,16 @@
 <template>
   <SettingsSection title="Status" >
-    <p>You are currently marked as {{userStatus ? 'away' : 'online'}}</p>
-    <SettingsEnableDisable
-      :value="!userStatus"
-      @input="changeStatus"
-      onText="ONLINE"
-      offText="AWAY"
-      :width="125"/>
+    <li>
+      <span style="vertical-align: middle">You are {{userStatus ? 'away' : 'online'}}</span>
+      <span style="float:right">
+        <SettingsEnableDisable
+            :value="!userStatus"
+            @input="changeStatus"
+            onText="ONLINE"
+            offText="AWAY"
+            :width="140"/>
+      </span>
+    </li>
   </SettingsSection>
 </template>
 <script lang="ts">
@@ -43,5 +47,9 @@
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
 .settings-button {
   background-color:$green;
+}
+li {
+  list-style-type: none;
+  width: calc(100% - 40px);
 }
 </style>

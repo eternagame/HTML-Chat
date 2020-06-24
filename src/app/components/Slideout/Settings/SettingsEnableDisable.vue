@@ -1,5 +1,5 @@
 <template>
-  <label class="switch" :style="{ width: `${width || 64}px` }">
+  <label class="switch" :style="{ width: `${width || 80}px` }">
     <button @click="$emit('input', false)" :disabled="value === false" id="disable">
       {{offText || 'OFF'}}
     </button>
@@ -33,8 +33,7 @@
 .switch {
   position: relative;
   display: inline-block;
-  width: 64px;
-  height: 20px;
+  height: 1rem;
   vertical-align: middle;
 }
 button {
@@ -44,19 +43,22 @@ button {
   top:0;
   bottom:0;
   width:50%;
-  height:20px;
+  height:24px;
   position:absolute;
-  text-align:center;
   border:none;
   transition: color 0.4s;
 }
 #disable {
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
+  text-align:center;
+  padding:0;
 }
 #enable {
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   left:50%;
+  text-align: center;
+  padding:0;
 }
 </style>
