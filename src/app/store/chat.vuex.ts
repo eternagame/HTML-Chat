@@ -519,8 +519,8 @@ export default class ChatModule extends VuexModule {
   /**
    * Joins the #ops-notifications channel
    */
-  @mutation
-  joinOpsChannel() {
+  @action()
+  async joinOpsChannel() {
     this.client?.join('#ops-notifications');
   }
 
@@ -1227,12 +1227,13 @@ export default class ChatModule extends VuexModule {
 
   @action()
   async userKicked(params: Irc.KickEventArgs) {
+    console.log(params);
     const username = User.parseUsername(params.nick);
     if (username === this.currentUser.username) {
       const channel = this.channels[params.channel];
       if (channel) channel.banned = BanStatus.BAN_STATUS_BANNED;
       this.postMessage(
-        new Message(`You have been kicked from chat${params.message ? ` - ${params.message}` : ''}`),
+        new Message(`You have been kicked from chat${params.message ? ` - ${params.message}` : ''}`, channel?.name),
       );
       this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channel?.name));
     } else {
