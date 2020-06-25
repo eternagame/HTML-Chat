@@ -21,8 +21,8 @@
           style="flex: 0 0 auto"
           draggable
           @dragstart.native="drag($event, index, item)"
-          @dragover.native.prevent
           @drop.native.prevent
+          @dragover.native.prevent
           @dragenter.native.prevent="dragOver($event, index, item)"
         />
       </div>
@@ -219,7 +219,13 @@
       Vue.set(this.markdownCodes, this.dragged, dropItem);
       Vue.set(this.markdownCodes, item, draggedItem);
       this.dragged = item;
-      console.log(ev.offsetX, ev.offsetY);
+      localStorage.markdownButtons = JSON.stringify(this.markdownCodes);
+    }
+
+    created() {
+      if (localStorage.markdownButtons) {
+        this.markdownCodes = JSON.parse(localStorage.markdownButtons);
+      }
     }
   }
 </script>
