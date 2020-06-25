@@ -11,14 +11,19 @@
           class="border-right"
           @emote='add' />
       </div>
-      <div id='markdown-submenu' v-show="markdownSelected && markdownChatFeatures">
+      <div id='markdown-submenu' v-show="markdownSelected && markdownChatFeatures" >
         <MarkdownWrapButton
-          v-for="item in markdownCodes"
+          v-for="(item, index) in markdownCodes"
           :key="item"
           :type="item"
           class="border-right"
           @md="format"
           style="flex: 0 0 auto"
+          draggable
+          @dragstart.native="drag($event, index, item)"
+          @dragover.native.prevent
+          @drop.native.prevent
+          @dragenter.native.prevent="dragOver($event, index, item)"
         />
       </div>
       <div id='preview-submenu' v-show="previewSelected && previewChatFeatures">
@@ -196,6 +201,25 @@
     @Watch('anyChatFeatures')
     updateToolbarHeight() {
       this.$emit('update');
+    }
+
+    drag(ev: DragEvent, item: number, name: string) {
+      this.dragged = item;
+      this.draggedName = name;
+    }
+
+    dragged = -1;
+
+    draggedName = '';
+
+    dragOver(ev: DragEvent, item: number, name: string) {
+      if (this.dragged === -1 || name === this.draggedName) return;
+      const draggedItem = this.markdownCodes[this.dragged];
+      const dropItem = this.markdownCodes[item];
+      Vue.set(this.markdownCodes, this.dragged, dropItem);
+      Vue.set(this.markdownCodes, item, draggedItem);
+      this.dragged = item;
+      console.log(ev.offsetX, ev.offsetY);
     }
   }
 </script>
