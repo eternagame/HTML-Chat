@@ -50,8 +50,9 @@ md.renderer.rules.text = (tokens, idx, options, env, self) => {
   [...content.matchAll(/@\S+\s/g)].forEach(e => {
     content = content.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
   });
-  [...content.matchAll(/>https?:\/\/eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
-    content = content.replace(e[0].trim(), `><img class="screenshot" src="${e[0].trim().substring(1)}">`);
+  [...content.matchAll(/https?:\/\/eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
+    console.log(2);
+    content = content.replace(e[0].trim(), `<img class="screenshot" src="${e[0].trim()}">`);
   });
   return content;
 };
