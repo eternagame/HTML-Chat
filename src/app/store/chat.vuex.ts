@@ -600,8 +600,7 @@ export default class ChatModule extends VuexModule {
         const command = parts ? parts[1] : '';
         parts = message.match(/^\/\w+ (.+)/);
         const params = parts ? parts[1] : '';
-        const first = params.split(' ')[0];
-        const second = params.split(' ')[1];
+        const parameters = params.split(' ');
         switch (command) {
           case 'help':
             switch (params) {
@@ -907,12 +906,12 @@ export default class ChatModule extends VuexModule {
             }
             break;
           case 'emoticon':
-            if (!first || !second) { // Parameter check
+            if (!parameters[0] || !parameters[1]) { // Parameter check
               postMessage(
                 'Please include command parameters. Type `/help emoticon` for more usage instructions',
               );
               break;
-            } else if (parseInt(second, 10) > 3 || parseInt(second, 10) < 1) {
+            } else if (parseInt(parameters[1], 10) > 3 || parseInt(parameters[1], 10) < 1) {
               postMessage('You have three custom emoticon slots. Type `/help emoticon` for more usage instructions');
               break;
             } else {
@@ -922,37 +921,37 @@ export default class ChatModule extends VuexModule {
               } else {
                 emoticons = this.customEmoticons;
               }
-              if (emoticons.some(e => e === first)) {
+              if (emoticons.some(e => e === parameters[0])) {
                 postMessage('You already have that emoticon in a custom slot');
                 break;
-              } else if (!first.match(/[^\w\d\p{P}\p{S}]/)) {
+              } else if (!parameters[0].match(/[^\w\d\p{P}\p{S}]/)) {
                 postMessage('You may only add *emoticons* to custom slots');
                 break;
               }
             }
             // Changing the array elements with array[index] = newValue isn't reactive
-            Vue.set(this.customEmoticons, (parseInt(second, 10) - 1), first);
+            Vue.set(this.customEmoticons, (parseInt(parameters[1], 10) - 1), parameters[0]);
             localStorage.customEmoticons = JSON.stringify(this.customEmoticons);
             break;
           case 'emoticon-list':
             postMessage(`Your custom emoticons are ${this.customEmoticons[0]} (slot 1), ${this.customEmoticons[1]} (slot 2), and ${this.customEmoticons[2]} (slot 3).`);
             break;
           case 'ban':
-            if (params.split(' ').length < 2) {
+            if (parameters.length < 2) {
               postMessage('Please include command parameters. Type `/help ban` for more usage instructions');
               break;
             }
             if (this.oper) {
-              if (params.split(' ')[0] === '*') { // If ban should be in all channels
+              if (parameters[0] === '*') { // If ban should be in all channels
                 channelNames.forEach(c => { // For each channel
-                  this.client?.ban(c, `*!${params.split(' ')[1]}@*`); // Ban the user's username
+                  this.client?.ban(c, `*!${parameters[1]}@*`); // Ban the user's username
                 });
               } else { // Otherwise, just ban them from the one channel
-                this.client?.ban(params.split(' ')[0], `*!${params.split(' ')[1]}@*`);
+                this.client?.ban(parameters[0], `*!${parameters[1]}@*`);
               }
-              if (params.split(' ')[2]) {
-                const user = this.connectedUsers[params.split(' ')[1]];
-                const reason = params.substring(params.indexOf(params.split(' ')[2]));
+              if (parameters[2]) {
+                const user = this.connectedUsers[parameters[1]];
+                const reason = params.substring(params.indexOf(parameters[2]));
                 if (user && user.nicks) {
                   const nick = user.nicks[0];
                   this.giveReason({
@@ -967,17 +966,17 @@ export default class ChatModule extends VuexModule {
             }
             break;
           case 'unban': // Exact same as ban, just replacing 'ban' with 'unban'
-            if (params.split(' ').length < 2) {
+            if (parameters.length < 2) {
               postMessage('Please include command parameters. Type `/help unban` for more usage instructions');
               break;
             }
             if (this.oper) {
-              if (params.split(' ')[0] === '*') {
+              if (parameters[0] === '*') {
                 channelNames.forEach(c => {
-                  this.client?.unban(c, `*!${params.split(' ')[1]}@*`);
+                  this.client?.unban(c, `*!${parameters[1]}@*`);
                 });
               } else {
-                this.client?.unban(params.split(' ')[0], `*!${params.split(' ')[1]}@*`);
+                this.client?.unban(parameters[0], `*!${parameters[1]}@*`);
               }
             } else {
               this.auth = true;
@@ -985,23 +984,23 @@ export default class ChatModule extends VuexModule {
             }
             break;
           case 'kick':
-            if (params.split(' ').length < 2) {
+            if (parameters.length < 2) {
               postMessage('Please include command parameters. Type `/help kick` for more usage instructions');
               break;
             }
             if (this.oper) {
-              if (params.split(' ').length >= 2) {
-                this.connectedUsers[params.split(' ')[1]]?.nicks.forEach((e) => { // Kicks each nick
-                  if (params.split(' ')[0] === '*') {
+              if (parameters.length >= 2) {
+                this.connectedUsers[parameters[1]]?.nicks.forEach((e) => { // Kicks each nick
+                  if (parameters[0] === '*') {
                     channelNames.forEach(c => { // If user should be kicked from all channels
                       this.client?.raw(`KICK ${c} ${e}`);
                     });
                   } else { // Otherwise, kick from the one channel
-                    this.client?.raw(`KICK ${params.split(' ')[0]} ${e}`);
+                    this.client?.raw(`KICK ${parameters[0]} ${e}`);
                   }
-                  if (params.split(' ')[2]) {
-                    const user = this.connectedUsers[params.split(' ')[1]];
-                    const reason = params.substring(params.indexOf(params.split(' ')[2]));
+                  if (parameters[2]) {
+                    const user = this.connectedUsers[parameters[1]];
+                    const reason = params.substring(params.indexOf(parameters[2]));
                     if (user && user.nicks) {
                       const nick = user.nicks[0];
                       this.giveReason({
@@ -1019,17 +1018,17 @@ export default class ChatModule extends VuexModule {
             break;
           case 'quiet':
             if (this.oper) {
-              if (params.split(' ').length >= 2) {
-                if (params.split(' ')[0] === '*') {
+              if (parameters.length >= 2) {
+                if (parameters[0] === '*') {
                   channelNames.forEach(c => { // If user should be quieted in all channels
-                    this.client?.raw(`MODE ${c} +b m;*!${params.split(' ')[1]}@*`);
+                    this.client?.raw(`MODE ${c} +b m;*!${parameters[1]}@*`);
                   });
                 } else {
-                  this.client?.raw(`MODE ${params.split(' ')[0]} +b m;*!${params.split(' ')[1]}@*`);
+                  this.client?.raw(`MODE ${parameters[0]} +b m;*!${parameters[1]}@*`);
                 }
-                if (params.split(' ')[2]) {
-                  const user = this.connectedUsers[params.split(' ')[1]];
-                  const reason = params.substring(params.indexOf(params.split(' ')[2]));
+                if (parameters[2]) {
+                  const user = this.connectedUsers[parameters[1]];
+                  const reason = params.substring(params.indexOf(parameters[2]));
                   if (user && user.nicks) {
                     const nick = user.nicks[0];
                     this.giveReason({
@@ -1048,13 +1047,13 @@ export default class ChatModule extends VuexModule {
             break;
           case 'unquiet': // Same as quiet, but 'quiet' is replaced with 'unquiet' and '+b' with '-b'
             if (this.oper) {
-              if (params.split(' ').length >= 2) {
-                if (params.split(' ')[0] === '*') {
+              if (parameters.length >= 2) {
+                if (parameters[0] === '*') {
                   channelNames.forEach(c => {
-                    this.client?.raw(`MODE ${c} -b m;*!${params.split(' ')[1]}@*`);
+                    this.client?.raw(`MODE ${c} -b m;*!${parameters[1]}@*`);
                   });
                 } else {
-                  this.client?.raw(`MODE ${params.split(' ')[0]} -b m;*!${params.split(' ')[1]}@*`);
+                  this.client?.raw(`MODE ${parameters[0]} -b m;*!${parameters[1]}@*`);
                 }
               } else {
                 postMessage('Please include command parameters. Type `/help unquiet` for more usage instructions');
@@ -1087,13 +1086,13 @@ export default class ChatModule extends VuexModule {
             break;
           case 'notice':
             if (this.oper) {
-              if (params.split(' ').length > 1) {
-                if (params.split(' ')[0] === '*') {
+              if (parameters.length > 1) {
+                if (parameters[0] === '*') {
                   channelNames.forEach(c => {
                     const msg = message
                       .replace('/notice', '')
                       .replace(/ \[#[a-f0-9]{6}\]$/, '')
-                      .replace(params.split(' ')[0], '')
+                      .replace(parameters[0], '')
                       .trim();
                     this.client?.notice(c, msg);
                     this.postMessage(new Message(msg, c, this.currentUser, false, true));
@@ -1102,10 +1101,10 @@ export default class ChatModule extends VuexModule {
                   const msg = message
                     .replace('/notice', '')
                     .replace(/ \[#[a-f0-9]{6}\]$/, '')
-                    .replace(params.split(' ')[0], '')
+                    .replace(parameters[0], '')
                     .trim();
-                  this.client?.notice(params.split(' ')[0], msg);
-                  this.postMessage(new Message(msg, params.split(' ')[0], this.currentUser, false, true));
+                  this.client?.notice(parameters[0], msg);
+                  this.postMessage(new Message(msg, parameters[0], this.currentUser, false, true));
                 }
               } else {
                 postMessage('Please include command parameters. Type `/help notice` for more usage instructions');
@@ -1118,7 +1117,7 @@ export default class ChatModule extends VuexModule {
           case 'banmask':
             if (this.oper) {
               if (params.length > 1) {
-                this.client?.ban(params.split(' ')[0], params.split(' ')[1]);
+                this.client?.ban(parameters[0], parameters[1]);
               } else {
                 postMessage('Please include command parameters. Type `/help banmask` for more usage instructions');
               }
@@ -1130,7 +1129,7 @@ export default class ChatModule extends VuexModule {
           case 'unbanmask':
             if (this.oper) {
               if (params.length > 1) {
-                this.client?.unban(params.split(' ')[0], params.split(' ')[1]);
+                this.client?.unban(parameters[0], parameters[1]);
               } else {
                 postMessage('Please include command parameters. Type `/help unbanmask` for more usage instructions');
               }
@@ -1219,7 +1218,7 @@ export default class ChatModule extends VuexModule {
               const colors = params.split(',').map(e => parseInt(e.trim(), 10).toString(16));
               this.usernameColor = `#${colors.join()}`;
             } else {
-              console.log('invalid');
+              postMessage('Invalid color. Colors can be in hex, RGB, or text format. Type `/help color` for more usage instructions.');
             }
             break;
           case 'toolbar':
@@ -1227,14 +1226,14 @@ export default class ChatModule extends VuexModule {
               postMessage('Please include command parameters. Type `/help toolbar` for more usage instructions');
               break;
             }
-            switch (params.split(' ')[0]) {
+            switch (parameters[0]) {
               case 'emoticons':
               case 'emoticon':
-                (this.$store as FullStore).rootState.$_settings.emoticonChatFeatures = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/)); break;
+                (this.$store as FullStore).rootState.$_settings.emoticonChatFeatures = Boolean(parameters[1].match(/(true)|(yes)|(on)/)); break;
               case 'markdown':
-                (this.$store as FullStore).rootState.$_settings.markdownChatFeatures = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/)); break;
+                (this.$store as FullStore).rootState.$_settings.markdownChatFeatures = Boolean(parameters[1].match(/(true)|(yes)|(on)/)); break;
               case 'preview':
-                (this.$store as FullStore).rootState.$_settings.previewChatFeatures = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/)); break;
+                (this.$store as FullStore).rootState.$_settings.previewChatFeatures = Boolean(parameters[1].match(/(true)|(yes)|(on)/)); break;
               default: break;
             }
             break;
@@ -1249,9 +1248,9 @@ export default class ChatModule extends VuexModule {
             if (!params) {
               postMessage(`Notifications are disabled for ${Object.keys(this.ignoredChannels).filter(e => !this.ignoredChannels[e]).join(', ') || 'no channels'}`);
             } else {
-              this.ignoredChannels[params.split(' ')[0]] = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/));
-              if (!this.channels[params.split(' ')[0]]) break;
-              this.channels[params.split(' ')[0]]!.notificationsEnabled = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/));
+              this.ignoredChannels[parameters[0]] = Boolean(parameters[1].match(/(true)|(yes)|(on)/));
+              if (!this.channels[parameters[0]]) break;
+              this.channels[parameters[0]]!.notificationsEnabled = Boolean(parameters[1].match(/(true)|(yes)|(on)/));
             }
             break;
           case 'keywords':
@@ -1259,14 +1258,12 @@ export default class ChatModule extends VuexModule {
               postMessage(`Your notifications keywords are ${this.notificationsKeywords.join(', ') || 'not set'}`);
               break;
             }
-            if (params.split(' ')[0] === 'add') {
-              console.log(`Adding ${params.split(' ')[1]}`);
-              this.notificationsKeywords.push(params.split(' ')[1]);
-            } else if (params.split(' ')[0] === 'remove') {
-              console.log(`Removing ${params.split(' ')[1]}`);
-              this.notificationsKeywords = this.notificationsKeywords.filter(e => e !== params.split(' ')[1]);
+            if (parameters[0] === 'add') {
+              this.notificationsKeywords.push(parameters[1]);
+            } else if (parameters[0] === 'remove') {
+              // eslint-disable-next-line max-len
+              this.notificationsKeywords = this.notificationsKeywords.filter(e => e !== parameters[1]);
             } else {
-              console.log(`Setting ${params.split(/, ?/)}`);
               this.notificationsKeywords = params.split(/, ?/);
             }
             break;
@@ -1433,6 +1430,19 @@ export default class ChatModule extends VuexModule {
       }
     };
     xmlHttp.open('GET', `https://eternagame.org/get/?type=user&uid=${uid}`, true); // true for asynchronous
+    xmlHttp.send(null);
+  }
+
+  @action()
+  async getPuzzleInfo(arg: { pid: number, callback: (data: any | undefined) => any}) {
+    const { pid } = arg || { pid: 0 }; // UID needed for get request
+    const xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function cb() {
+      if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+        arg.callback(xmlHttp.responseText); // Calls callback after response
+      }
+    };
+    xmlHttp.open('GET', `https://eternagame.org/get/?type=puzzle&nid=${pid}`, true); // true for asynchronous
     xmlHttp.send(null);
   }
 

@@ -51,8 +51,10 @@ md.renderer.rules.text = (tokens, idx, options, env, self) => {
     content = content.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
   });
   [...content.matchAll(/https?:\/\/eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
-    console.log(2);
     content = content.replace(e[0].trim(), `<img class="screenshot" src="${e[0].trim()}">`);
+  });
+  [...content.matchAll(/https?:\/\/eterna(game|dev)\.org\/puzzles\/\d+/g)].forEach(e => {
+    content = content.replace(e[0].trim(), `<mark class="puzzle-link"><a href="${e[0].trim()}">${e[0].trim()}</a></mark>`);
   });
   return content;
 };

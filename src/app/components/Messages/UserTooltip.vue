@@ -45,15 +45,6 @@
       container: HTMLDivElement;
     };
 
-    get parentTop() {
-      return this.$parent;
-    }
-
-    @Watch('parentTop')
-    parentChanged() {
-      console.log(this.parentTop);
-    }
-
     fillProfile() {
       this.$vxm.chat.getUserInfo({
         user: this.user,
@@ -62,17 +53,14 @@
           console.log(data);
           if (data.data !== undefined) {
             if (data.data.user.Profile) {
-              console.log('it exists');
               let desc = data.data.user.Profile;
               if (desc.length > 150) {
                 desc = desc.slice(0, 150)
                   .replace(/<br>/, '')
                   .trim();
                 desc += '...';
-                console.log('it got trimmed');
               }
               this.desc = desc;
-              console.log('Set desc');
             }
             if (data.data.user.rank) {
               this.rank = `#${data.data.user.rank}`;
@@ -85,14 +73,14 @@
       });
 
       /*
-      I need to fill these values in
-      Once roles are set up on the backend, this needs to be replaced anyway
+      These are currently taken from the Discord/Slack roles
+      Eventually, this will be replaced with an API call
       */
       const statusUsernames: {[key:string]:string[]} = {
-        developer: [''],
-        scientist: [''],
-        staff: [''],
-        moderator: [''],
+        developer: ['LFP6', 'Ahalb', 'ElNando888', 'jnicol', 'MasterStormer', ''],
+        scientist: ['rhiju', 'dosoonkim'],
+        staff: ['LFP6', 'Omei', 'rhiju'],
+        moderator: ['Hoglahoo', 'LFP6', 'Omei'],
       };
       const status: string[] = [];
       const name = this.user.username;
