@@ -40,15 +40,15 @@
         v-for="(emote, index) in customEmoticons"
         :key="emote"
         :aria-label="`Change emote in slot ${index}`">
-        <span>{{ emote }}</span>
-        <span style="float:right">
-          <label :for="index">Change to</label>
+          {{ emote}}
+          <span style="float: right">
+          <label :for="index">Replace with</label>
           <input
             :name="index"
             :id="index"
             @input="update"
-            style="width:1rem; vertical-align:mid; height:1rem;" />
-        </span>
+            style="width:1rem; position: relative; bottom: 2px; height:1rem; margin-left: 5px" />
+          </span>
       </li>
       <li v-show="emoticonErrorMessage && emoticonErrorMessage !== ''">
         <span class="warning">{{ emoticonErrorMessage }}</span>
