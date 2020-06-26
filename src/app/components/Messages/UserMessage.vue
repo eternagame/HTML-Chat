@@ -24,11 +24,17 @@
       </span>
       <UserTooltip
         v-if="tooltipVisible"
-        v-show="tooltipVisible"
         :user="clickedUser"
         ref="clickTooltip"
         :top="tooltipY"
         :left="tooltipX"
+      />
+      <PuzzleTooltip
+        v-if="puzzleTooltipVisible"
+        :pid="pid"
+        ref="puzzleTooltip"
+        :top="puzzleTooltipY"
+        :left="puzzleTooltipX"
       />
       &lrm;
       <span v-if="!isNotice" class="message-time">[{{formattedTime}}]</span>
@@ -63,6 +69,7 @@
   import UserTooltip from './UserTooltip.vue';
   import LinkModal from '@/components/LinkModal.vue';
   import { Channel } from '@/store/chat.vuex';
+  import PuzzleTooltip from './PuzzleTooltip.vue';
 
   @Component({
     components: {
@@ -70,6 +77,7 @@
       UserTooltip,
       ActionMenu,
       LinkModal,
+      PuzzleTooltip,
     },
   })
   export default class UserMessage extends Vue {
@@ -85,6 +93,8 @@
     }
 
     clickedUser!: User;
+
+    pid !: number;
 
     @Prop()
     private message!: Message;
@@ -167,6 +177,37 @@
           window.open(`https://${this.$vxm.chat.workbranch}/web/player/${user.uid}/`);
         });
       });
+      // Gets puzzle links from markdown
+      const puzzleLinks = this.$refs.msg.getElementsByClassName('puzzle-link');
+      // Spread operators converts HTMLCollectionOf<Element> to HTMLElement[]
+      // Iterates through each channel link
+      [...puzzleLinks].forEach(l => {
+        // Adds event listener for hover
+        l.addEventListener('mouseenter', (ev) => {
+          const url = (l as HTMLElement).innerText;
+          const matches = url.match(/\d+$/);
+          this.pid = parseInt((matches ? matches[0] : '0'), 10);
+          this.puzzleTooltipVisible = true; // Make it visible
+            /* Ensures information is loaded after the tooltip exists
+            The tooltip uses v-if (to limit GET requests)
+            If the functions are called right away,
+            they could fail because the tooltip doesn't exist yet */
+            this.$nextTick(() => {
+              // Updates tooltip information
+              this.$refs.puzzleTooltip.fill();
+          });
+        });
+        // Hide the tooltip not hovered over
+        l.addEventListener('mouseleave', (ev) => {
+          this.puzzleTooltipVisible = false;
+        });
+        // When the mouse is moved, update the tooltip position
+        l.addEventListener('mousemove', (e: Event) => {
+          const ev = e as MouseEvent;
+          this.puzzleTooltipX = ev.clientX;
+          this.puzzleTooltipY = ev.clientY;
+        });
+      });
       const usernames = Object.keys(this.$vxm.chat.connectedUsers);
       [...this.$el.getElementsByTagName('a')]
         .filter(e => e.href !== e.innerText)
@@ -187,6 +228,12 @@
     tooltipY = 0;
 
     tooltipVisible = false;
+
+    puzzleTooltipX = 0;
+
+    puzzleTooltipY = 0;
+
+    puzzleTooltipVisible = false;
 
     get formattedTime() {
       return this.message.time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
@@ -230,6 +277,7 @@
       msg: HTMLSpanElement;
       clickTooltip: UserTooltip;
       linkModal: LinkModal;
+      puzzleTooltip: PuzzleTooltip;
     };
 
     openContextMenu(e: MouseEvent) {

@@ -236,7 +236,6 @@
   get positionStyle() {
     const style: { [key:string]: string} = {};
     if (this.inGame) {
-      console.log(this.gamePosition);
       if (this.gamePosition[0] === 'l') {
         style.left = `${this.gamePosition[1]}px`;
       } else {
