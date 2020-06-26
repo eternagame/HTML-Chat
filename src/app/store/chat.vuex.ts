@@ -1,7 +1,9 @@
-import { ActionTree, MutationTree, CommitOptions } from 'vuex';
+import {
+  ActionTree, MutationTree, CommitOptions, Store,
+} from 'vuex';
 import * as Irc from 'irc-framework';
 import {
-  createModule, mutation, action, extractVuexModule,
+  createModule, mutation, action, extractVuexModule, createProxy,
 } from 'vuex-class-component';
 import toBool from 'to-bool';
 import Vue from 'vue';
@@ -12,6 +14,7 @@ import Connection from '@/tools/websocket';
 import BanStatus from '@/types/BanStatus';
 import User from '@/types/user';
 import Ban from '@/types/Ban';
+import SettingsModule from './settings.vuex';
 
 // For polyfill
 declare type BroadcastMessage = {
@@ -570,7 +573,7 @@ export default class ChatModule extends VuexModule {
     message = `${message} [${this.usernameColor}]`; // Message with tags added on
     let isAction = false;
     // No posting as annon or if nothing has been actually posted
-    if (this.currentUser.username && message.replace(/\[#.*\]\r?$/, '').trim() !== '') {
+    if (this.currentUser.username && message.replace(/ \[#.*\]\r?$/, '').trim() !== '') {
       let post = true;
       let banned = false;
       let quieted = false;
@@ -591,7 +594,7 @@ export default class ChatModule extends VuexModule {
       });
       // Chat commands
       if (message.startsWith('/')) {
-        message = message.replace(/\[.+\]$/, '');
+        message = message.replace(/ \[.+\]$/, '');
         post = false;
         let parts = message.match(/^\/([^ ]+)/);
         const command = parts ? parts[1] : '';
@@ -656,13 +659,74 @@ export default class ChatModule extends VuexModule {
                 postMessage('Usage: `/emoticon-list`');
                 postMessage('Example: `/emoticon-list`');
                 break;
+              case 'indicator':
+                postMessage(
+                  '`/indicator`: Changes the notifications indicator that appears in the page title when you have notifications',
+                );
+                postMessage('Usage: `/indicator <indicator>`');
+                postMessage('Example: `/indicator (!)`');
+                break;
+              case 'size':
+                postMessage(
+                  '`/size`: Lists the emoticons in the 3 custom emoticon slots',
+                );
+                postMessage('size: `/size <fontsize>`');
+                postMessage('size: `/size` 14');
+                break;
+              case 'keywords':
+                postMessage(
+                  '`/keywords`: Modifies or lists the keywords that trigger notifications. If no arguments are given, a list of keywords is returned. If the first command is add or remove, the second argument is added to or removed from the keywords list. If the first command is neither, the list of keywords is overwritten with the list provided as the second argument.',
+                );
+                postMessage('Usage: `/keywords [command] [keyword]`');
+                postMessage('Example: `/keywords`');
+                postMessage('Example: `/keywords add keyword1`');
+                postMessage('Example: `/keywords keyword1, keyword2`');
+                break;
+              case 'notifications':
+                postMessage(
+                  '`notifications`: Modifies whether notifications are enabled in a channel or lists current notifications settings. If arguments not given, a list of notifications settings is returned.',
+                );
+                postMessage('Usage: `/notifications [channel] [enabled]`');
+                postMessage('Example: `/notifications #off-topic off`');
+                postMessage('Usage: `/notifications`');
+                break;
+              case 'color':
+                postMessage(
+                  '`/color`: Changes the color of your username. The color argument can be a hex, RGB, or text value.',
+                );
+                postMessage('Usage: `/color <color`');
+                postMessage('Example: `/color red`');
+                postMessage('Example: `/color #00ff00');
+                postMessage('Example: `/color 0, 0, 255`');
+                break;
+              case 'away':
+                postMessage(
+                  '`/away`: Sets your status as away. If a reason is not given, a default reason is used.',
+                );
+                postMessage('Usage: `/away [reason]`');
+                postMessage('Example: `/away Lunch`');
+                break;
+              case 'unaway':
+                postMessage(
+                  '`/unaway`: Sets your status as online',
+                );
+                postMessage('Usage: `/unaway`');
+                postMessage('Example: `/unaway`');
+                break;
+              case 'toolbar':
+                postMessage(
+                  '`/toolbar`: Enables or disables a menu in the toolbar.',
+                );
+                postMessage('Usage: `/toolbar <menu> <enabled>`');
+                postMessage('Example: `/toolbar markdown off`');
+                break;
               case 'ban':
                 postMessage(
                   '`/ban`: Bans a user from a channel. Bans user from all channels if channel argument is *.',
                 );
-                postMessage('Usage: `/ban <channel> <username>`');
+                postMessage('Usage: `/ban <channel> <username> [reason]`');
                 postMessage('Example: `/ban #general ProblematicUser`');
-                postMessage('Example: `/ban * ProblematicUser`');
+                postMessage('Example: `/ban * ProblematicUser You were banned for being problematic`');
                 postMessage('You must be an operator to use this command');
                 break;
               case 'unban':
@@ -760,7 +824,7 @@ export default class ChatModule extends VuexModule {
                 postMessage('You must be an operator to use this command');
                 break;
               default:
-                postMessage('Available commands: help, me, ignore, ignore-list, unignore, change, emoticon');
+                postMessage('Available commands: help, me, ignore, ignore-list, unignore, change, emoticon, emoticon-list, disconnect, toolbar, indicator, notifications, size, color, away, unaway, keywords');
                 postMessage('Type `/help <command>` for information on individual commands');
                 postMessage('Example: `/help ignore`');
                 postMessage(` You are ${this.oper ? '' : 'not'} logged in as an operator/moderator. Operators may use the \`/ban\`, \`/unban\`, \`/quiet\`, \`/unquiet\`, \`/notice\`, \`/banmask\`, \`/unbanmask\`, \`/user\`, \`/nick\`, and \`/kick\` commands`);
@@ -862,7 +926,6 @@ export default class ChatModule extends VuexModule {
                 postMessage('You already have that emoticon in a custom slot');
                 break;
               } else if (!first.match(/[^\w\d\p{P}\p{S}]/)) {
-                console.log(first);
                 postMessage('You may only add *emoticons* to custom slots');
                 break;
               }
@@ -1130,6 +1193,96 @@ export default class ChatModule extends VuexModule {
             this.client?.raw(params);
             break;
           }
+          case 'unaway' || 'online': this.setUnaway(); this.autoUpdateStatus = true; break;
+          case 'away':
+            this.setAway(params);
+            this.autoUpdateStatus = false;
+            break;
+          case 'color':
+            if (!params) {
+              postMessage('Please include command parameters. Type `/help color` for more usage instructions');
+              break;
+            }
+            if (params.match(/#[a-f0-9]{6}/)) {
+              this.usernameColor = params;
+            } else if (params.match(/(red)|(blue)|(green)|(purple)|(yellow)|(orange)/)) {
+              switch (params) {
+                case 'red': this.usernameColor = '#ff0000'; break;
+                case 'orange': this.usernameColor = '#ff8800'; break;
+                case 'yellow': this.usernameColor = '#ffff00'; break;
+                case 'blue': this.usernameColor = '#0096ff'; break;
+                case 'green': this.usernameColor = '#00ff00'; break;
+                case 'purple': this.usernameColor = '#ff00ff'; break;
+                default: break;
+              }
+            } else if (params.match(/(\s?\d+,){2}\s?\d+/)) {
+              const colors = params.split(',').map(e => parseInt(e.trim(), 10).toString(16));
+              this.usernameColor = `#${colors.join()}`;
+            } else {
+              console.log('invalid');
+            }
+            break;
+          case 'toolbar':
+            if (!params.includes(' ')) {
+              postMessage('Please include command parameters. Type `/help toolbar` for more usage instructions');
+              break;
+            }
+            switch (params.split(' ')[0]) {
+              case 'emoticons':
+              case 'emoticon':
+                (this.$store as FullStore).rootState.$_settings.emoticonChatFeatures = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/)); break;
+              case 'markdown':
+                (this.$store as FullStore).rootState.$_settings.markdownChatFeatures = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/)); break;
+              case 'preview':
+                (this.$store as FullStore).rootState.$_settings.previewChatFeatures = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/)); break;
+              default: break;
+            }
+            break;
+          case 'indicator':
+            if (!params) {
+              postMessage('Please include command parameters. Type `/help indicator` for more usage instructions');
+              break;
+            }
+            (this.$store as FullStore).rootState.$_settings.indicator = params;
+            break;
+          case 'notifications':
+            if (!params) {
+              postMessage(`Notifications are disabled for ${Object.keys(this.ignoredChannels).filter(e => !this.ignoredChannels[e]).join(', ') || 'no channels'}`);
+            } else {
+              this.ignoredChannels[params.split(' ')[0]] = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/));
+              if (!this.channels[params.split(' ')[0]]) break;
+              this.channels[params.split(' ')[0]]!.notificationsEnabled = Boolean(params.split(' ')[1].match(/(true)|(yes)|(on)/));
+            }
+            break;
+          case 'keywords':
+            if (!params) {
+              postMessage(`Your notifications keywords are ${this.notificationsKeywords.join(', ') || 'not set'}`);
+              break;
+            }
+            if (params.split(' ')[0] === 'add') {
+              console.log(`Adding ${params.split(' ')[1]}`);
+              this.notificationsKeywords.push(params.split(' ')[1]);
+            } else if (params.split(' ')[0] === 'remove') {
+              console.log(`Removing ${params.split(' ')[1]}`);
+              this.notificationsKeywords = this.notificationsKeywords.filter(e => e !== params.split(' ')[1]);
+            } else {
+              console.log(`Setting ${params.split(/, ?/)}`);
+              this.notificationsKeywords = params.split(/, ?/);
+            }
+            break;
+          case 'textsize':
+          case 'fontsize':
+          case 'size':
+            if (!params) {
+              postMessage('Please include command parameters. Type `/help size` for more usage instructions');
+              break;
+            }
+            if (!parseInt(params, 10) || parseInt(params, 10) > 18 || parseInt(params, 10) < 10) {
+              postMessage('Invalid value. Type `/help size` for  usage instructions');
+              break;
+            }
+            (this.$store as FullStore).rootState.$_settings.fontSize = parseInt(params, 10);
+            break;
           default:
             postMessage('Invalid command. Type `/help` for more available commands');
             break;
@@ -1227,7 +1380,6 @@ export default class ChatModule extends VuexModule {
 
   @action()
   async userKicked(params: Irc.KickEventArgs) {
-    console.log(params);
     const username = User.parseUsername(params.nick);
     if (username === this.currentUser.username) {
       const channel = this.channels[params.channel];
@@ -1610,6 +1762,7 @@ export default class ChatModule extends VuexModule {
   async setAway(reason: string = 'User is currently away') {
     if (this.currentUser) {
       this.currentUser.away = true;
+      this.currentUser.awayReason = reason;
     }
     if (this.connectedUsers[this.currentUser.username]) {
       this.connectedUsers[this.currentUser.username]!.away = true;
@@ -1642,6 +1795,14 @@ export default class ChatModule extends VuexModule {
       this.connect();
     }
   }
+}
+
+// Makes sure TypeScript recognizes the rootState property
+class FullStore extends Store<any> {
+  rootState !: {
+    $_settings: SettingsModule,
+    $_chat: ChatModule,
+  };
 }
 
 export { Channel };

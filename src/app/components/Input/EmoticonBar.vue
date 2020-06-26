@@ -226,6 +226,15 @@
       if (localStorage.markdownButtons) {
         this.markdownCodes = JSON.parse(localStorage.markdownButtons);
       }
+      if (localStorage.emoticonChatFeatures) {
+        this.$vxm.settings.emoticonChatFeatures = JSON.parse(localStorage.emoticonChatFeatures);
+      }
+      if (localStorage.markdownChatFeatures) {
+        this.$vxm.settings.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
+      }
+      if (localStorage.previewChatFeatures) {
+        this.$vxm.settings.previewChatFeatures = JSON.parse(localStorage.previewChatFeatures);
+      }
     }
   }
 </script>
