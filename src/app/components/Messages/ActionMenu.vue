@@ -12,49 +12,59 @@
       </a>
     </li>
     <li>
-      <a @click="openReportModal({report: true, ignore: false})">
+      <button @click="openReportModal({report: true, ignore: false})">
         Report User / Message
-      </a>
+      </button>
     </li>
     <li>
-      <a @click="openReportModal({report: false, ignore: true})">
+      <button @click="openReportModal({report: false, ignore: true})">
         Ignore User
-      </a>
+      </button>
     </li>
     <li v-if="oper && !banned">
-      <a @click="ban">
+      <button @click="ban">
         Ban User
-      </a>
+      </button>
     </li>
     <li v-if="oper && banned">
-      <a @click="unban">
+      <button @click="unban">
         Unban User
-      </a>
+      </button>
     </li>
     <li v-if="oper">
-      <a @click="kick">
+      <button @click="kick">
         Kick User
-      </a>
+      </button>
     </li>
     <li v-if="oper && !quieted">
-      <a @click="quiet">
+      <button @click="quiet">
         Quiet User
-      </a>
+      </button>
     </li>
     <li v-if="oper && quieted">
-      <a @click="unquiet">
+      <button @click="unquiet">
         Unquiet User
-      </a>
+      </button>
     </li>
     <li>
-      <a @click="privmsg">
+      <button @click="privmsg">
         Private Message User
-      </a>
+      </button>
     </li>
     <li>
-      <a @click="copyMessage">
+      <button @click="copyMessage">
         Copy message
-      </a>
+      </button>
+    </li>
+    <li v-if="!pinned">
+      <button @click.once="pin">
+        Pin message
+      </button>
+    </li>
+    <li v-if="pinned">
+      <button @click="unpin">
+        Unpin message
+      </button>
     </li>
   </VueContext>
 </template>
@@ -112,12 +122,37 @@
       this.$vxm.chat.privMsgModal = true;
     }
 
+    pin() {
+      this.$vxm.chat.addPinnedMessage(this.message);
+      const localPins = [];
+      if (localStorage.pins) {
+        localPins.push(...JSON.parse(localStorage.pins) as Message[]);
+      }
+      localPins.push(this.message);
+      localStorage.pins = JSON.stringify(localPins);
+    }
+
+    unpin() {
+      this.$vxm.chat.removePin(this.message);
+      let localPins = [];
+      if (localStorage.pins) {
+        localPins.push(...JSON.parse(localStorage.pins) as Message[]);
+      }
+      localPins = localPins.filter(e => e.message !== this.message.message
+          && e.user !== this.message.user);
+      localStorage.pins = JSON.stringify(localPins);
+    }
+
     get oper() {
       return this.$vxm.chat.oper;
     }
 
     get profileUrl(): string {
       return `http://${this.$vxm.chat.workbranch}/web/player/${this.user.uid}/`;
+    }
+
+    get pinned() {
+      return this.message.pinnned;
     }
 
     open(event: MouseEvent) {
@@ -178,7 +213,7 @@
     padding:0px 5px;
   }
 
-  li > a:focus {
+  li > a:focus, li > button:focus {
     background-color: transparent !important;
   }
 
@@ -195,12 +230,18 @@
     outline:none;
   }
 
-  li > a {
+  li > a, li > button {
     cursor: pointer;
     color:white !important;
   }
 
-  a:hover {
+  a:hover, button:hover {
     background: transparent !important;
+  }
+
+  button {
+    border: none;
+    background-color: transparent;
+    display: inline;
   }
 </style>

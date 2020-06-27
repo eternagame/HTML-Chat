@@ -21,8 +21,9 @@
       @blur="$emit('focused', false)"
       @select="updateSelection"
       @click="deselect"
+      aria-label="Send message text input"
     />
-    <SendButton @send="send"/>
+    <SendButton @send="send" aria-label="Send"/>
     <div
       ref="hiddenDiv"
       class="scalable-input-hidden"

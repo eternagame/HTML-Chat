@@ -138,6 +138,8 @@ export default class ChatModule extends VuexModule {
 
   desktopNotifications = false;
 
+  showPinned = false;
+
   constructor() {
     super();
     channelNames.forEach((channelName) => {
@@ -427,6 +429,7 @@ export default class ChatModule extends VuexModule {
         Object.values(this.channels).forEach((c) => {
           const channel = client.channel(c!.name);
           channel.join();
+          console.log(`Joined channel ${c!.name}`);
 
           channel.updateUsers(() => {
             channel.users.forEach((user) => this.addUser({ nick: user.nick, uid: user.ident }));
@@ -477,6 +480,32 @@ export default class ChatModule extends VuexModule {
     this.rawHistoryMessages.filter(e => e.split(' ')[3] === channel).forEach(e => {
       this.processAndPost(e);
     });
+    const pins = [];
+    if (localStorage.pins) {
+      pins.push(...JSON.parse(localStorage.pins) as Message[]);
+    }
+    pins.filter(e => e.target === channel).forEach(e => {
+      this.addPinnedMessage(e);
+    });
+  }
+
+  @action()
+  async addPinnedMessage(message: Message) {
+    const msg = message;
+    msg.pinnned = true;
+    let messages = this.channels[message.target]!.postedMessages;
+    if (messages.includes(message)) return;
+    this.postMessage(msg);
+    messages = messages.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    this.channels[message.target]!.postedMessages = messages;
+  }
+
+  @action()
+  async removePin(message: Message) {
+    const messages = this.channels[message.target]?.postedMessages;
+    if (!messages) return;
+    messages.find(e => e === message)!.pinnned = false;
+    this.channels[message.target]!.postedMessages = messages;
   }
 
   /**
@@ -528,6 +557,7 @@ export default class ChatModule extends VuexModule {
       this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
       this.setChannelOps();
       this.joinOpsChannel();
+      console.log('Logging in as operator');
     }
   }
 
@@ -1851,6 +1881,7 @@ export default class ChatModule extends VuexModule {
     }
     joinedChannels.push(name);
     localStorage.joinedChannels = JSON.stringify(joinedChannels);
+    console.log(`Joined channel ${name}`);
   }
 
   @action()
@@ -1860,10 +1891,11 @@ export default class ChatModule extends VuexModule {
     joined = joined.filter(i => i !== name);
     localStorage.joinedChannels = JSON.stringify(joined);
     this.client?.part(name);
+    console.log(`Left channel ${name}`);
   }
 }
 
-// Makes sure TypeScript recognizes the rootState property
+// Makes sure TypeScript recognizes the rootState property so settings store is accesible from here
 class FullStore extends Store<any> {
   rootState !: {
     $_settings: SettingsModule,

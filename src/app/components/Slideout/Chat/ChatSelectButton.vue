@@ -3,6 +3,7 @@
     class="chat-select"
     :class="{active: isActive}"
     @click="$emit('input');"
+    :aria-label="`Open the ${name.substring(1)} channel`"
   >
     <p class='channel-name'>{{ name }}</p>
     <p class='channel-description'>{{ description }}</p>

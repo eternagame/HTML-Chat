@@ -2,7 +2,10 @@
   <div class="add-chat-container">
     <button @click="addChat">+</button>
     <span class="input-container">
-      #<input @keypress.enter="addChat(); chatName = ''" v-model="chatName"
+      #<input
+        @keypress.enter="addChat(); chatName = ''"
+        v-model="chatName"
+        aria-label="Add a channel"
     ></span>
   </div>
 </template>

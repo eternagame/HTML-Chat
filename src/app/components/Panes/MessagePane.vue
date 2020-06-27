@@ -2,7 +2,7 @@
   <Pane ref="pane" :visibility="visibility" :data="data" @autoscroll="this.autoscroll">
     <ul style="margin-bottom:0; padding-right:10px">
       <UserMessage
-        v-for="(message, i) in data.postedMessages"
+        v-for="(message, i) in displayedMessages"
         :key="i"
         :message="message"
         :messageIndex="i"
@@ -74,6 +74,13 @@
 
     get messages() {
       return this.data.postedMessages;
+    }
+
+    get displayedMessages() {
+      if (this.$vxm.chat.showPinned) {
+        return this.messages.filter(e => e.pinnned);
+      }
+      return this.messages;
     }
 
     unreads = 0;
