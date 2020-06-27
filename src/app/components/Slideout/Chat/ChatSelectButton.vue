@@ -33,10 +33,7 @@
 
     close(e: Event) {
       e.stopImmediatePropagation();
-      Vue.delete(this.$vxm.chat.channels, this.name);
-      let joined: string[] = JSON.parse(localStorage.joinedChannels || this.name);
-      joined = joined.filter(i => i !== this.name);
-      localStorage.joinedChannels = JSON.stringify(joined);
+      this.$vxm.chat.leaveChannel(this.name);
     }
 
     get joined() {

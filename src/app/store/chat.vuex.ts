@@ -910,10 +910,10 @@ export default class ChatModule extends VuexModule {
              If the number is -1, the name was invalid. It gives an error message and a channel list
              If the number was not -1, the name worked. It sets the tab to the channel.
             */
-            if ((channelNames.slice() as [string]).indexOf(`#${params}`.replace('##', '#')) === -1) {
-              postMessage(`Channel name invalid. Channels are ${channelNames.join(', ')}`);
+            if ((Object.keys(this.channels).slice() as [string]).indexOf(`#${params}`.replace('##', '#')) === -1) {
+              postMessage(`Channel name invalid. Channels are ${Object.keys(this.channels).join(', ')}`);
             } else {
-              this.tab = (channelNames.slice() as [string]).indexOf(`#${params}`.replace('##', '#'));
+              this.tab = (Object.keys(this.channels).slice() as [string]).indexOf(`#${params}`.replace('##', '#'));
               this.chatChannel = params;
             }
             break;
@@ -1291,6 +1291,20 @@ export default class ChatModule extends VuexModule {
               break;
             }
             (this.$store as FullStore).rootState.$_settings.fontSize = parseInt(params, 10);
+            break;
+          case 'join':
+            if (!params) {
+              postMessage('Please include command parameters. Type `/help join` for more usage instructions');
+              break;
+            }
+            this.joinChannel(`#${params}`.replace('##', '#'));
+            break;
+          case 'leave':
+            if (!params) {
+              postMessage('Please include command parameters. Type `/help leave` for more usage instructions');
+              break;
+            }
+            this.leaveChannel(`#${params}`.replace('##', '#'));
             break;
           default:
             postMessage('Invalid command. Type `/help` for more available commands');
@@ -1831,6 +1845,21 @@ export default class ChatModule extends VuexModule {
       banned: BanStatus.BAN_STATUS_NORMAL,
     });
     this.client?.join(name);
+    let joinedChannels = [];
+    if (localStorage.joinedChannels) {
+      joinedChannels = JSON.parse(localStorage.joinedChannels);
+    }
+    joinedChannels.push(name);
+    localStorage.joinedChannels = JSON.stringify(joinedChannels);
+  }
+
+  @action()
+  async leaveChannel(name: string) {
+    Vue.delete(this.channels, name);
+    let joined: string[] = JSON.parse(localStorage.joinedChannels || name);
+    joined = joined.filter(i => i !== name);
+    localStorage.joinedChannels = JSON.stringify(joined);
+    this.client?.part(name);
   }
 }
 

@@ -26,12 +26,6 @@
       this.$nextTick(() => {
         this.$parent.$el.scrollTop = this.$parent.$el.scrollHeight;
       });
-      let joinedChannels = [];
-      if (localStorage.joinedChannels) {
-        joinedChannels = JSON.parse(localStorage.joinedChannels);
-      }
-      joinedChannels.push(name);
-      localStorage.joinedChannels = JSON.stringify(joinedChannels);
     }
   }
 </script>
