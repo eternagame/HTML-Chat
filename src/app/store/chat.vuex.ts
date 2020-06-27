@@ -383,6 +383,18 @@ export default class ChatModule extends VuexModule {
           );
         }
       }
+      if (localStorage.joinedChannels) {
+        try {
+          const joinedChannels: string[] = JSON.parse(localStorage.joinedChannels);
+          joinedChannels.forEach(e => {
+            this.joinChannel(e);
+          });
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of joined channels',
+          );
+        }
+      }
     }
 
     if (process.env.VUE_APP_SERVER_URL) {
@@ -1804,6 +1816,21 @@ export default class ChatModule extends VuexModule {
     if (this.connectionData.currentTimer <= 0) {
       this.connect();
     }
+  }
+
+  @action()
+  async joinChannel(name: string) {
+    if (Object.keys(this.channels).includes(name)) return;
+    Vue.set(this.channels, name, {
+      name,
+      notificationsEnabled: true,
+      notifications: false,
+      postedMessages: [],
+      maxHistoryMessages: 50,
+      mentioned: false,
+      banned: BanStatus.BAN_STATUS_NORMAL,
+    });
+    this.client?.join(name);
   }
 }
 

@@ -1,10 +1,12 @@
 <template>
   <Button
+    class="chat-select"
     :class="{active: isActive}"
     @click="$emit('input');"
   >
     <p class='channel-name'>{{ name }}</p>
     <p class='channel-description'>{{ description }}</p>
+    <button class="channel-close" @click="close" v-show="joined">X</button>
     <slot />
   </Button>
 </template>
@@ -28,13 +30,25 @@
     get isActive() {
       return this.$vxm.chat.chatChannel.includes(this.name);
     }
+
+    close(e: Event) {
+      e.stopImmediatePropagation();
+      Vue.delete(this.$vxm.chat.channels, this.name);
+      let joined: string[] = JSON.parse(localStorage.joinedChannels || this.name);
+      joined = joined.filter(i => i !== this.name);
+      localStorage.joinedChannels = JSON.stringify(joined);
+    }
+
+    get joined() {
+      return JSON.parse(localStorage.joinedChannels || '').includes(this.name);
+    }
   }
 </script>
 
 
 <style lang="scss" scoped>
   /* Style the buttons that are used to open the tab content */
-  button {
+  .chat-select {
     border: none;
     outline: none;
     cursor: pointer;
@@ -84,5 +98,23 @@
 
   .mentioned {
     color:orange !important; /* Overrides notification styles */
+  }
+
+  .chat-select:hover > .channel-close {
+    background-color: #e74c3c;
+    color: white;
+    position: absolute;
+    right: 25px;
+    border: none;
+    height: 100%;
+    top: -1px;
+    width: 20px;
+    display: inline-block;
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .channel-close {
+    display: none;
   }
 </style>

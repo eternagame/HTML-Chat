@@ -12,6 +12,8 @@
     >
       <Splitter />
     </ChatSelectButton>
+    <Splitter />
+    <AddChatButton />
   </div>
 </template>
 <script lang="ts">
@@ -21,15 +23,17 @@
   import ChatSelectButton from './ChatSelectButton.vue';
   import Slideout from '../Slideout.vue';
   import Splitter from './Splitter.vue';
+  import AddChatButton from './AddChatButton.vue';
 
   @Component({
     components: {
       ChatSelectButton,
       Splitter,
+      AddChatButton,
     },
   })
   export default class SlideoutChats extends Vue {
-    activeTab = 6; // If any real channel index (or unset), causes weird bug. This fixes it
+    activeTab = 100; // If any real channel index (or unset), causes weird bug. This fixes it
 
     channelDescriptions: {[channel:string]:string} = {
     '#general': 'General chat',
