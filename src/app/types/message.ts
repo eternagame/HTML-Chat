@@ -15,6 +15,8 @@ class Message {
 
   time!: Date;
 
+  pinnned = false;
+
   constructor(message: string, target = '*', user: User = User.annonymous, isAction: boolean = false, isNotice: boolean = false, tags: {[key: string] : string} = {}) {
     this.message = message;
     this.target = target;

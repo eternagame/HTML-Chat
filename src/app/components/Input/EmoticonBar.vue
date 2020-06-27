@@ -9,6 +9,7 @@
           :key="emoticon"
           :emoticon='emoticon'
           class="border-right"
+          :aria-label="`Add a ${emoticon} emoticon to the input text`"
           @emote='add' />
       </div>
       <div id='markdown-submenu' v-show="markdownSelected && markdownChatFeatures" >
@@ -24,6 +25,7 @@
           @drop.native.prevent
           @dragover.native.prevent
           @dragenter.native.prevent="dragOver($event, index, item)"
+          :aria-label="`Format the input text (${item})`"
         />
       </div>
       <div id='preview-submenu' v-show="previewSelected && previewChatFeatures">
@@ -44,6 +46,7 @@
       id='emoticon-bar-container'
       v-if="anyChatFeatures" >
       <MenuButton
+        aria-label="Open emoticon toolbar"
         id="emoticonSelect"
         v-if="emoticonChatFeatures"
         name="👍"
@@ -51,6 +54,7 @@
         @button="select('emoticon');"
       />
       <MenuButton
+        aria-label="Open markdown toolbar"
         id="markdownSelect"
         v-if="markdownChatFeatures"
         name="A"
@@ -58,6 +62,7 @@
         @button="select('markdown');"
       />
       <MenuButton
+        aria-label="Open preview toolbar"
         id="previewSelect"
         v-if="previewChatFeatures"
         name="P"
@@ -69,6 +74,7 @@
         class="other-menu-button"
         styles=""
         @button="menuButtonClicked"
+        aria-label="Help"
       />
     </div>
   </div>

@@ -11,10 +11,10 @@
           :color="usernameColor"
           :is-action="isAction"
           @focus="hover = true"
-          v-if="!isNotice && !sameUserAsPrevious"
+          v-if="!isNotice && (!sameUserAsPrevious || isAction)"
         >{{ isAction || !message.user.username ? '': ':' }}
         </Username>
-        &lrm;
+        &nbsp;
         <span
           ref="msg"
           :style="{

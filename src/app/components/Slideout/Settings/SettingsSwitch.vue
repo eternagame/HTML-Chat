@@ -4,6 +4,15 @@
     @keypress.enter="$emit('input', !$event.target.checked)"
     :aria-label="label"
     >
+    <v-style>
+      input:focus:checked + .slider {
+        outline: {{$vxm.chat.tabbing ? 'green 1px solid' : ''}};
+      }
+
+      input:focus:not(:checked) + .slider {
+        outline: {{$vxm.chat.tabbing ? 'gray 1px solid' : '' }};
+      }
+    </v-style>
     <input type="checkbox" :checked="value" @change="$emit('input', $event.target.checked)">
     <span class="slider round" />
   </label>
@@ -76,12 +85,5 @@ input:checked + .slider:before {
   -webkit-transform: translateX(16px);
   -ms-transform: translateX(16px);
   transform: translateX(16px);
-}
-input:focus:checked + .slider {
-  outline: $green 1px solid;
-}
-
-input:focus:not(:checked) + .slider {
-  outline: $gray-500 1px solid;
 }
 </style>

@@ -36,6 +36,7 @@
       <div id="current-tab">{{ currentTab }}</div>
       <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
       <OpenWindowButton v-model="fullSize" />
+      <PinButton v-model="$vxm.chat.showPinned" />
     </template>
     <template slot="footer">
       <div id="resize-handle" v-show="!minimized"/>
@@ -58,6 +59,7 @@
   import DraggableDiv from '@/components/DraggableDiv.vue';
   import OperLogin from '@/components/OperLogin.vue';
   import PrivateMessageModal from '@/components/Messages/PrivateMessageModal.vue';
+  import PinButton from '@/components/Header/PinButton.vue';
 
   Vue.use(BootstrapVue);
 
@@ -78,6 +80,7 @@
     OpenWindowButton,
     OperLogin,
     PrivateMessageModal,
+    PinButton,
   },
   directives: {
     resize,
@@ -518,7 +521,14 @@
   position: absolute;
   top: 0px;
   margin-top: 2.5px;
-  right: 39px;
+  right: 40px;
+}
+.pin-button {
+  //Link that opens chat in new window
+  position: absolute;
+  top: 0px;
+  margin-top: 2.5px;
+  right: 75px;
 }
 #current-tab {
   //Text on the top bar that says which chat channel the user is in

@@ -1,5 +1,5 @@
 <template>
-  <div class="splitter"></div> <!--- Just a filled-in div --->
+  <div class="splitter" /> <!--- Just a filled-in div --->
 </template>
 
 <script lang="ts">

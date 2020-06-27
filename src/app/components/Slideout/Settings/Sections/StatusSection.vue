@@ -25,6 +25,19 @@
       </span>
     </li>
     <li>
+      <span>Automatically Update
+        <SettingsTooltip
+          title="Whether your status will update when you leave or come back to the tab"
+        />
+      </span>
+      <span style="float: right">
+        <SettingsSwitch
+          v-model="$vxm.chat.autoUpdateStatus"
+          aria-label="Whether your status will update when you leave or come back to the tab"
+        />
+      </span>
+    </li>
+    <li>
       <span
         aria-label="When others see the away indicator, they will see the reason you are away"
       >
@@ -46,20 +59,22 @@
   import SettingsSection from '../SettingsSection.vue';
   import SettingsEnableDisable from '../SettingsEnableDisable.vue';
   import SettingsTooltip from '../SettingsTooltip.vue';
+  import SettingsSwitch from '../SettingsSwitch.vue';
 
   @Component({
     components: {
       SettingsSection,
       SettingsEnableDisable,
       SettingsTooltip,
+      SettingsSwitch,
     },
   })
   export default class StatusSection extends Vue {
     changeStatus(to:boolean) {
-      this.$vxm.chat.autoUpdateStatus = to;
       if (to) {
         this.$vxm.chat.setUnaway();
       } else {
+        this.$vxm.chat.autoUpdateStatus = false;
         this.$vxm.chat.setAway(this.reason);
       }
     }
