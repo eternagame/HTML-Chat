@@ -50,7 +50,6 @@
         user: this.user,
         callback: (d) => {
           const data = JSON.parse(d);
-          console.log(data);
           if (data.data !== undefined) {
             if (data.data.user.Profile) {
               let desc = data.data.user.Profile;
