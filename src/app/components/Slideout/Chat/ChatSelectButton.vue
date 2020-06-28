@@ -48,7 +48,6 @@
   /* Style the buttons that are used to open the tab content */
   .chat-select {
     border: none;
-    outline: none;
     cursor: pointer;
     transition: 0.3s;
     padding: 0.4em 1.25em;
