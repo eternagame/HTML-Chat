@@ -38,9 +38,6 @@ md.renderer.rules.text = (tokens, idx, options, env, self) => {
       content = content.replace(e[0], `<span class="serif">${e[0].slice(1, -1)} </span>`);
     }
   });
-  [...content.matchAll(/\|[^|]+\|/g)].forEach(e => {
-    content = content.replace(e[0], `<span class="highlight">&nbsp;${e[0].slice(1, -1)}&nbsp;</span>`);
-  });
   [...content.matchAll(/#\S+\s/g)].forEach(e => {
     content = content.replace(e[0].trim(), `<mark class="channel-link">${e[0].trim()}</mark>`);
   });
@@ -52,6 +49,9 @@ md.renderer.rules.text = (tokens, idx, options, env, self) => {
   });
   [...content.matchAll(/https?:\/\/eterna(game|dev)\.org\/puzzles\/\d+/g)].forEach(e => {
     content = content.replace(e[0].trim(), `<mark class="puzzle-link"><a href="${e[0].trim()}">${e[0].trim()}</a></mark>`);
+  });
+  [...content.matchAll(/\|[^|]+\|/g)].forEach(e => {
+    content = content.replace(e[0], `<span class="highlight">${e[0].slice(1, -1)}</span>`);
   });
   if (content.match(/^> ?/)) {
     content = `<blockquote>${content.replace(/^> ?/, '')}</blockquote>`;
