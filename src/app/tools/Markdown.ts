@@ -30,9 +30,6 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
 };
 md.renderer.rules.text = (tokens, idx, options, env, self) => {
   let { content } = tokens[idx];
-  if (content.match(/^> ?/)) {
-    content = `<blockquote>${content.replace(/^> ?/, '')}</blockquote>`;
-  }
   // Detects instances of :: or : indicating fonts
   [...content.matchAll(/:+[^:]+:+/g)].forEach(e => {
     if (e[0].startsWith('::')) { // If it's :: (cursive), remove the colons and wrap it in a styled <span>
@@ -56,6 +53,9 @@ md.renderer.rules.text = (tokens, idx, options, env, self) => {
   [...content.matchAll(/https?:\/\/eterna(game|dev)\.org\/puzzles\/\d+/g)].forEach(e => {
     content = content.replace(e[0].trim(), `<mark class="puzzle-link"><a href="${e[0].trim()}">${e[0].trim()}</a></mark>`);
   });
+  if (content.match(/^> ?/)) {
+    content = `<blockquote>${content.replace(/^> ?/, '')}</blockquote>`;
+  }
   return content;
 };
 export default md;
