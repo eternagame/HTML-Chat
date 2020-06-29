@@ -225,21 +225,24 @@
       Vue.set(this.markdownCodes, this.dragged, dropItem);
       Vue.set(this.markdownCodes, item, draggedItem);
       this.dragged = item;
-      localStorage.markdownButtons = JSON.stringify(this.markdownCodes);
+      localStorage.chat_markdownButtons = JSON.stringify(this.markdownCodes);
     }
 
     created() {
-      if (localStorage.markdownButtons) {
-        this.markdownCodes = JSON.parse(localStorage.markdownButtons);
+      if (localStorage.chat_markdownButtons) {
+        this.markdownCodes = JSON.parse(localStorage.chat_markdownButtons);
       }
-      if (localStorage.emoticonChatFeatures) {
-        this.$vxm.settings.emoticonChatFeatures = JSON.parse(localStorage.emoticonChatFeatures);
+      if (localStorage.chat_emoticonChatFeatures) {
+        this.$vxm.settings.emoticonChatFeatures = JSON.parse(localStorage
+          .chat_emoticonChatFeatures);
       }
-      if (localStorage.markdownChatFeatures) {
-        this.$vxm.settings.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
+      if (localStorage.chat_markdownChatFeatures) {
+        this.$vxm.settings.markdownChatFeatures = JSON.parse(localStorage
+          .chat_markdownChatFeatures);
       }
-      if (localStorage.previewChatFeatures) {
-        this.$vxm.settings.previewChatFeatures = JSON.parse(localStorage.previewChatFeatures);
+      if (localStorage.chat_previewChatFeatures) {
+        this.$vxm.settings.previewChatFeatures = JSON.parse(localStorage
+          .chat_previewChatFeatures);
       }
     }
   }

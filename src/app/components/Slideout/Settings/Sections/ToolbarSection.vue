@@ -94,7 +94,7 @@
 
     @Watch('emoticonChatFeatures')
     emoticonChatFeaturesChanged() {
-      localStorage.emoticonChatFeatures = JSON.stringify(this.emoticonChatFeatures);
+      localStorage.chat_emoticonChatFeatures = JSON.stringify(this.emoticonChatFeatures);
       this.$vxm.settings.emoticonChatFeatures = this.emoticonChatFeatures;
     }
 
@@ -102,7 +102,7 @@
 
     @Watch('markdownChatFeatures')
     markdownChatFeaturesChanged() {
-      localStorage.markdownChatFeatures = JSON.stringify(this.markdownChatFeatures);
+      localStorage.chat_markdownChatFeatures = JSON.stringify(this.markdownChatFeatures);
       this.$vxm.settings.markdownChatFeatures = this.markdownChatFeatures;
     }
 
@@ -110,7 +110,7 @@
 
     @Watch('previewChatFeatures')
     previewChatFeaturesChanged() {
-      localStorage.previewChatFeatures = JSON.stringify(this.previewChatFeatures);
+      localStorage.chat_previewChatFeatures = JSON.stringify(this.previewChatFeatures);
       this.$vxm.settings.previewChatFeatures = this.previewChatFeatures;
     }
 
@@ -133,7 +133,7 @@
         }
         Vue.set(this.$vxm.chat.customEmoticons, id, value);
         if (localStorage) {
-          localStorage.customEmoticons = JSON.stringify(
+          localStorage.chat_customEmoticons = JSON.stringify(
             this.$vxm.chat.customEmoticons,
           );
         }
@@ -154,13 +154,13 @@
     }
 
     created() {
-      if (localStorage.emoticonChatFeatures) {
-        this.emoticonChatFeatures = JSON.parse(localStorage.emoticonChatFeatures);
+      if (localStorage.chat_emoticonChatFeatures) {
+        this.emoticonChatFeatures = JSON.parse(localStorage.chat_emoticonChatFeatures);
       } else {
         this.emoticonChatFeatures = this.$vxm.settings.emoticonChatFeatures;
       }
-      if (localStorage.markdownChatFeatures) {
-        this.markdownChatFeatures = JSON.parse(localStorage.markdownChatFeatures);
+      if (localStorage.chat_markdownChatFeatures) {
+        this.markdownChatFeatures = JSON.parse(localStorage.chat_markdownChatFeatures);
       } else {
         this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
       }

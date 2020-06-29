@@ -51,8 +51,8 @@
     }
 
     created() {
-      if (localStorage.nick) {
-        this.opernick = localStorage.nick;
+      if (localStorage.chat_nick) {
+        this.opernick = localStorage.chat_nick;
       } else {
         this.opernick = this.$vxm.chat.customNick;
       }

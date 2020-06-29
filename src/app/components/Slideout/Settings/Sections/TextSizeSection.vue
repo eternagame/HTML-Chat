@@ -34,7 +34,7 @@
        // Only update if valid font size
       if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 18) {
         this.$vxm.settings.fontSize = parseInt(this.size, 10);
-        localStorage.fontSize = JSON.stringify(this.size);
+        localStorage.chat_fontSize = JSON.stringify(this.size);
       }
     }
 
@@ -53,8 +53,8 @@
     }
 
     created() {
-      if (localStorage.fontSize) {
-        this.size = String(Number(JSON.parse(localStorage.fontSize)));
+      if (localStorage.chat_fontSize) {
+        this.size = String(Number(JSON.parse(localStorage.chat_fontSize)));
       } else {
         this.size = this.$vxm.settings.fontSize.toString();
       }

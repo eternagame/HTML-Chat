@@ -77,7 +77,7 @@
         this.$vxm.chat.usernameColor = `#${this.colorToHexValue(this.red)}${this.colorToHexValue(this.green)}${this.colorToHexValue(this.blue)}`;
           // Set value to localStorage if available
           if (localStorage) {
-            localStorage.usernameColor = this.$vxm.chat.usernameColor;
+            localStorage.chat_usernameColor = this.$vxm.chat.usernameColor;
           }
         }
       // Sets color of preview test
@@ -136,8 +136,8 @@
     created() {
       let color;
       // If value saved in localStorage, use that
-      if (localStorage.usernameColor) {
-        color = localStorage.usernameColor;
+      if (localStorage.chat_usernameColor) {
+        color = localStorage.chat_usernameColor;
       } else if (this.$vxm.chat.usernameColor !== '' && this.$vxm.chat.usernameColor !== undefined) {
         // If value not in localStorage, check vuex
         color = this.$vxm.chat.usernameColor;

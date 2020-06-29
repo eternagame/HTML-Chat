@@ -55,8 +55,8 @@
     // Gets value from localStorage, parent, or vuex when created
     created() {
         let color;
-        if (localStorage.usernameColor) {
-          color = localStorage.usernameColor;
+        if (localStorage.chat_usernameColor) {
+          color = localStorage.chat_usernameColor;
         } else if (this.$vxm.chat.usernameColor !== '' && this.$vxm.chat.usernameColor !== undefined) {
           color = this.$vxm.chat.usernameColor;
         } else {

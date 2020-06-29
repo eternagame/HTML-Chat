@@ -38,7 +38,11 @@
     }
 
     get joined() {
-      return JSON.parse(localStorage.joinedChannels || '').includes(this.name);
+      let joined = [];
+      if (localStorage.chat_joinedChannels) {
+        joined = JSON.parse(localStorage.chat_joinedChannels);
+      }
+      return joined.includes(this.name);
     }
   }
 </script>
