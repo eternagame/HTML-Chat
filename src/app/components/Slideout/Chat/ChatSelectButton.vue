@@ -53,7 +53,6 @@
   .chat-select {
     border: none;
     cursor: pointer;
-    transition: 0.3s;
     padding: 0.4em 1.25em;
     font-family: "Open Sans","Century Gothic", "Didact Gothic", Arial, sans-serif;
     font-size: 12px;
@@ -66,6 +65,7 @@
     height:90px;
     margin:0px;
     position: relative;
+    transition: all 0.2s !important;
   }
 
   /* Change background color of buttons on hover */
@@ -73,11 +73,11 @@
     background-color: rgba(255, 255, 255, 0.13);
   }
 
-  button.active {
-    border-left: solid #4A90E2 10px; //Selected rectangle to the side is just left border
+  button.active{
+    border-left: solid #4A90E2 10px !important; //Selected rectangle to the side is just left border
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
-    padding-left:5px;
+    padding-left: 5px;
   }
 
   .channel-name { /* Name of chat channel */
@@ -117,5 +117,16 @@
 
   .channel-close {
     display: none;
+  }
+
+  .chat-select:after {
+    content: "";
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    height: 2px;
+    border-bottom: 1px solid gray;
+    bottom: calc(-0.4em - 1px);
+    position: relative;
   }
 </style>

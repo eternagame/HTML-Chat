@@ -68,6 +68,7 @@
 }
 input {
   margin:2px;
+  font-size: 0.85rem;
   max-width:150px; /* Big screens don't have arbitrarily large input */
 }
 li {

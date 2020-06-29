@@ -112,4 +112,7 @@ li {
   width: calc(100% - 40px);
   margin-bottom: 10px;
 }
+input {
+  font-size: 0.85rem;
+}
 </style>
