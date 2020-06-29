@@ -1232,6 +1232,8 @@ export default class ChatModule extends VuexModule {
             this.changeNick(params);
             break;
           case 'execute': {
+            /* Allows operators to send a command over websockets
+            This means if they need to do something not added yet, they can */
             if (!this.oper) {
               this.auth = true;
               postMessage('You are not an operator or moderator and do not have permission to execute commands');
@@ -1254,9 +1256,9 @@ export default class ChatModule extends VuexModule {
               postMessage('Please include command parameters. Type `/help color` for more usage instructions');
               break;
             }
-            if (params.match(/#[a-f0-9]{6}/)) {
+            if (params.match(/#[a-f0-9]{6}/)) { // If it's a hex
               this.usernameColor = params;
-            } else if (params.match(/(red)|(blue)|(green)|(purple)|(yellow)|(orange)/)) {
+            } else if (params.match(/(red)|(blue)|(green)|(purple)|(yellow)|(orange)/)) { // If an explicit color
               switch (params) {
                 case 'red': this.usernameColor = '#ff0000'; break;
                 case 'orange': this.usernameColor = '#ff8800'; break;
@@ -1266,10 +1268,11 @@ export default class ChatModule extends VuexModule {
                 case 'purple': this.usernameColor = '#ff00ff'; break;
                 default: break;
               }
-            } else if (params.match(/(\s?\d+,){2}\s?\d+/)) {
+            } else if (params.match(/(\s?\d+,){2}\s?\d+/)) { // If RGB
+              // Converts RGB strings to decimals to hex strings
               const colors = params.split(',').map(e => parseInt(e.trim(), 10).toString(16));
               this.usernameColor = `#${colors.join()}`;
-            } else {
+            } else { // Otherwise, it's invalud
               postMessage('Invalid color. Colors can be in hex, RGB, or text format. Type `/help color` for more usage instructions.');
             }
             break;
@@ -1281,6 +1284,7 @@ export default class ChatModule extends VuexModule {
             switch (parameters[0]) {
               case 'emoticons':
               case 'emoticon':
+                // It's messy, I know, but it's the only way to communicate between stores
                 (this.$store as FullStore).rootState.$_settings.emoticonChatFeatures = Boolean(parameters[1].match(/(true)|(yes)|(on)/)); break;
               case 'markdown':
                 (this.$store as FullStore).rootState.$_settings.markdownChatFeatures = Boolean(parameters[1].match(/(true)|(yes)|(on)/)); break;
@@ -1310,12 +1314,12 @@ export default class ChatModule extends VuexModule {
               postMessage(`Your notifications keywords are ${this.notificationsKeywords.join(', ') || 'not set'}`);
               break;
             }
-            if (parameters[0] === 'add') {
+            if (parameters[0] === 'add') { // If adding or removing, add or remove the second parameter
               this.notificationsKeywords.push(parameters[1]);
             } else if (parameters[0] === 'remove') {
-              // eslint-disable-next-line max-len
-              this.notificationsKeywords = this.notificationsKeywords.filter(e => e !== parameters[1]);
-            } else {
+              this.notificationsKeywords = this.notificationsKeywords
+                .filter(e => e !== parameters[1]);
+            } else { // Otherwise, overwrite the keywords with the argument
               this.notificationsKeywords = params.split(/, ?/);
             }
             break;
@@ -1326,6 +1330,7 @@ export default class ChatModule extends VuexModule {
               postMessage('Please include command parameters. Type `/help size` for more usage instructions');
               break;
             }
+            // If it's not a number, less than 10, or greater than 18, throw an error
             if (!parseInt(params, 10) || parseInt(params, 10) > 18 || parseInt(params, 10) < 10) {
               postMessage('Invalid value. Type `/help size` for  usage instructions');
               break;
@@ -1337,6 +1342,7 @@ export default class ChatModule extends VuexModule {
               postMessage('Please include command parameters. Type `/help join` for more usage instructions');
               break;
             }
+            // This joins a channel regardless of whether the name is prefixed with a #
             this.joinChannel(`#${params}`.replace('##', '#'));
             break;
           case 'leave':
@@ -1365,7 +1371,7 @@ export default class ChatModule extends VuexModule {
             banned = true;
             this.onBanned(channel);
           }
-        }
+        } // If they aren't banned, continue and send the message
         if (post) {
           if (!this.channels[channel]?.banned && !banned && !quieted) {
             if (isAction) {
@@ -1390,6 +1396,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Gives a reason for a ban
+   * @param param0 - An object containing the reason for the ban and the nick to send it to
+   */
   @action()
   async giveReason({ reason, nick }: {reason: string, nick: string}) {
     this.client?.say(nick, reason);
@@ -1474,14 +1484,14 @@ export default class ChatModule extends VuexModule {
 
   /**
    * Sends a message to a private channel
-   * @param {string} message - The user and the message to be sent. Takes the form <nick>|<message>
+   * @param param0 - An object containing the message and the channel (user) to send it to
    */
-
   @action()
   async postToQuery({ message, channel }: { message:string, channel:string}) {
     /* Splits argument into message and channel
     Will only cause issues if people are putting | in their nick */
     if (this.channels[User.parseUsername(channel)] === undefined) {
+      // If the channel doesn't exist, make a new one
       Vue.set(this.channels, User.parseUsername(channel), {
         name: User.parseUsername(channel),
         maxHistoryMessages: 50,
@@ -1493,15 +1503,11 @@ export default class ChatModule extends VuexModule {
     }
     // Converting from array to set to array removes duplicates
     Array.from(new Set(this.connectedUsers[User.parseUsername(channel)]?.nicks)).forEach(e => {
-      this.sendMessage({ rawMessage: message, channel: e }); // Send message to all nicks
+      // Sends message to all nicks so each tab receives the message
+      this.sendMessage({ rawMessage: message, channel: e });
     });
   }
 
-  /* This code will only work once the chat is put in the website
-  From my observations, the get requests only work coming from eternagame.org
-  Once the chat is moved there, they will go through
-  Until then, it gives an error and anything that relies on it gives a default fallback
-  */
   @action()
   async getUserInfo(arg: { user: User, callback: (data: any | undefined) => any}) {
     const { uid } = arg.user || { uid: 0 }; // UID needed for get request
@@ -1511,7 +1517,7 @@ export default class ChatModule extends VuexModule {
         arg.callback(xmlHttp.responseText); // Calls callback after response
       }
     };
-    xmlHttp.open('GET', `https://eternagame.org/get/?type=user&uid=${uid}`, true); // true for asynchronous
+    xmlHttp.open('GET', `https://eternagame.org/get/?type=user&uid=${uid}`, true);
     xmlHttp.send(null);
   }
 
@@ -1524,7 +1530,7 @@ export default class ChatModule extends VuexModule {
         arg.callback(xmlHttp.responseText); // Calls callback after response
       }
     };
-    xmlHttp.open('GET', `https://eternagame.org/get/?type=puzzle&nid=${pid}`, true); // true for asynchronous
+    xmlHttp.open('GET', `https://eternagame.org/get/?type=puzzle&nid=${pid}`, true);
     xmlHttp.send(null);
   }
 
@@ -1544,10 +1550,10 @@ export default class ChatModule extends VuexModule {
     message, nick, tags, time, type, target,
   }: Irc.MessageEventArgs) {
     let channel = this.channels[target];
-    // If it's a PRIVMSG
+    // If it's a private message
     if (this.currentUser.username.includes(User.parseUsername(target)) && nick) {
-      if (!this.channels[User.parseUsername(nick)]) { // If the channel doesn't exist yet
-        // Vue.set is reactive
+      if (!this.channels[User.parseUsername(nick)]) { // If the channel doesn't exist yet, create it
+        // Vue.set is reactive, channels[key] is not
         Vue.set(this.channels, User.parseUsername(nick), {
           name: User.parseUsername(nick),
           maxHistoryMessages: 50,
@@ -1566,7 +1572,12 @@ export default class ChatModule extends VuexModule {
     if (!channel) {
       return;
     }
-    // Notifications should come in if slideout is open, user is in a different channel, or both
+    /* Notifications should come in if
+      - The slideout is open
+      - OR the user is in a different channel
+      - OR the window isn't focused
+      - AND notifications are enabled for the channel
+    */
     if (
       (this.slideoutOpen || channel.name !== this.chatChannel || !this.focused)
       && channel.notificationsEnabled) {
@@ -1585,9 +1596,9 @@ export default class ChatModule extends VuexModule {
     }
     const username = User.parseUsername(nick);
     let msg = message;
-    if (this.notificationsKeywords) {
+    if (this.notificationsKeywords) { // Bolds keywords
       this.notificationsKeywords.forEach(n => {
-        msg = msg.replace(` ${n}`, ` **${n}**`);
+        msg = msg.replace(` ${n}`, `**|${n}|**`);
       });
     }
     const messageObject = new Message(
@@ -1611,6 +1622,7 @@ export default class ChatModule extends VuexModule {
         }
       }
     }
+    // If the channel has no messages, make sure history is loaded before the new message comes in
     if (channel.postedMessages.length === 0) {
       this.loadMessagesForChannel(channel.name);
     }
@@ -1661,8 +1673,8 @@ export default class ChatModule extends VuexModule {
    * Bans a user
    * @param user {User} - The user to be banned
    */
-  @mutation
-  ban(user:User) {
+  @action()
+  async ban(user:User) {
     if (this.oper) {
       this.client?.ban(this.chatChannel, `*!${user.username}@*`);
     }
@@ -1672,8 +1684,8 @@ export default class ChatModule extends VuexModule {
    * Kicks a user
    * @param user {User} - The user to be kicked
    */
-  @mutation
-  kick(user:User) {
+  @action()
+  async kick(user:User) {
     if (this.oper) {
       this.connectedUsers[user.username]?.nicks.forEach((e) => {
         this.client?.raw(`KICK ${this.chatChannel} ${e}`);
@@ -1685,8 +1697,8 @@ export default class ChatModule extends VuexModule {
    * Quiets a user
    * @param user {User} - The user to be quieted
    */
-  @mutation
-  quiet(user:User) {
+  @action()
+  async quiet(user:User) {
     if (this.oper) {
       this.client?.raw(`MODE ${this.chatChannel} +b m;*!${user.username}@*`);
     }
@@ -1696,8 +1708,8 @@ export default class ChatModule extends VuexModule {
    * Unquiets a user
    * @param user {User} - The user to be unquieted
    */
-  @mutation
-  unquiet(user:User) {
+  @action()
+  async unquiet(user:User) {
     if (this.oper) {
       this.client?.raw(`MODE ${this.chatChannel} -b m;*!${user.username}@*`);
     }
@@ -1707,8 +1719,8 @@ export default class ChatModule extends VuexModule {
    * Unbans a user
    * @param user {User} - The user to be unbanned
    */
-  @mutation
-  unban(user:User) {
+  @action()
+  async unban(user:User) {
     if (this.oper) {
       this.client?.unban(this.chatChannel, `*!${user.username}@*`);
     }
@@ -1733,7 +1745,8 @@ export default class ChatModule extends VuexModule {
       this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channelName));
     }
     channel.banned = BanStatus.BAN_STATUS_BANNED;
-    // Not sure why user is banned in all channels - just leaving it here in case it needs to stay
+    /* Not sure why user is set as banned in all channels
+    - just leaving it here in case it needs to stay */
     /* Object.values(this.channels).forEach((c) => {
       if (c) c.banned = BanStatus.BAN_STATUS_BANNED;
     }); */
@@ -1835,6 +1848,7 @@ export default class ChatModule extends VuexModule {
   async updateUserStatus() {
     const usersByNick = Object.values(this.connectedUsers).map(e => e!.nicks[0]);
     usersByNick.forEach(e => {
+      // WHOIS returns away status - WHO does not
       this.client?.whois(e, (i) => {
         const username = User.parseUsername(e);
         if (i.away) {
