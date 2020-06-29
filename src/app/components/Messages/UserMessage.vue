@@ -210,9 +210,11 @@
       });
       const usernames = Object.keys(this.$vxm.chat.connectedUsers);
       [...this.$el.getElementsByTagName('a')]
-        .filter(e => e.href !== e.innerText)
-        .filter(e => !usernames.includes(e.innerText.replace('●', '').trim().replace(':', '').trim()))
-        .filter(e => ![...e.classList].includes('chat-message-options'))
+        .filter(e => e.href !== e.innerText) // If the text doesn't match the href
+        .filter(e => !usernames.includes(e.innerText.replace('●', '').trim().replace(':', '').trim())) // Don't flag usernames
+        .filter(e => ![...e.classList].includes('chat-message-options')) // Or context menu
+        .filter(e => ![...e.classList].includes('user-link')) // Or user tooltips
+        .filter(e => ![...e.classList].includes('image-link')) // Or inline images
         .forEach(e => {
         e.addEventListener('click', ev => {
           ev.preventDefault();
