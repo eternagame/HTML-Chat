@@ -32,9 +32,9 @@
     uid!: string;
 
     created() {
-      if (localStorage.username) {
-        this.username = localStorage.username;
-        this.uid = localStorage.uid;
+      if (localStorage.chat_username) {
+        this.username = localStorage.chat_username;
+        this.uid = localStorage.chat_uid;
         this.logged = true;
       }
     }
@@ -44,8 +44,8 @@
       this.uid = uid;
       this.logged = true;
       if (remember) {
-        localStorage.username = username;
-        localStorage.uid = uid;
+        localStorage.chat_username = username;
+        localStorage.chat_uid = uid;
       }
     }
   }

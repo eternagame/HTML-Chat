@@ -81,7 +81,7 @@
         return;
       }
       if (localStorage) {
-        localStorage.notificationsKeywords = JSON.stringify(keywordsArray);
+        localStorage.chat_notificationsKeywords = JSON.stringify(keywordsArray);
       }
     }
 
@@ -95,7 +95,7 @@
       }
       this.$vxm.chat.ignoredChannels[channel] = (trueChannel as Channel).notificationsEnabled;
       if (localStorage && this.$vxm.chat.ignoredChannels) {
-        localStorage.ignoredChannels = JSON.stringify(this.$vxm.chat.ignoredChannels);
+        localStorage.chat_ignoredChannels = JSON.stringify(this.$vxm.chat.ignoredChannels);
       }
     }
 
@@ -127,7 +127,7 @@
         this.requestDesktopNotifications();
       } else {
         this.$vxm.chat.desktopNotifications = false;
-        localStorage.desktopNotifications = JSON.stringify(false);
+        localStorage.chat_desktopNotifications = JSON.stringify(false);
       }
     }
 
@@ -136,11 +136,11 @@
         if (result === 'granted') {
           this.desktopNotifications = true;
           this.$vxm.chat.desktopNotifications = true;
-          localStorage.desktopNotifications = JSON.stringify(true);
+          localStorage.chat_desktopNotifications = JSON.stringify(true);
         } else {
           this.desktopNotifications = false;
           this.$vxm.chat.desktopNotifications = false;
-          localStorage.desktopNotifications = JSON.stringify(false);
+          localStorage.chat_desktopNotifications = JSON.stringify(false);
         }
       }));
     }
@@ -148,26 +148,26 @@
     @Watch('indicator')
     indicatorChanged() {
       if (localStorage) {
-        localStorage.indicator = JSON.stringify(this.indicator);
+        localStorage.chat_indicator = JSON.stringify(this.indicator);
       }
       this.$vxm.settings.indicator = this.indicator;
     }
 
     created() {
-      if (localStorage.notificationsKeywords) {
-        this.keywords = JSON.parse(localStorage.notificationsKeywords).join(', ');
+      if (localStorage.chat_notificationsKeywords) {
+        this.keywords = JSON.parse(localStorage.chat_notificationsKeywords).join(', ');
       } else if (this.$vxm.chat.notificationsKeywords) {
         this.keywords = this.$vxm.chat.notificationsKeywords.join(', ');
       } else {
         this.keywords = '';
       }
-      if (localStorage.indicator) {
-        this.indicator = JSON.parse(localStorage.indicator);
+      if (localStorage.chat_indicator) {
+        this.indicator = JSON.parse(localStorage.chat_indicator);
       } else {
         this.indicator = this.$vxm.settings.indicator;
       }
-      if (localStorage.desktopNotifications) {
-        this.desktopNotifications = JSON.parse(localStorage.desktopNotifications);
+      if (localStorage.chat_desktopNotifications) {
+        this.desktopNotifications = JSON.parse(localStorage.chat_desktopNotifications);
         this.$vxm.chat.desktopNotifications = this.desktopNotifications;
       }
     }

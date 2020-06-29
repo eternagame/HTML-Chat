@@ -86,8 +86,8 @@
     reason = '';
 
     created() {
-      if (localStorage.awayReason) {
-        this.reason = localStorage.awayReason;
+      if (localStorage.chat_awayReason) {
+        this.reason = localStorage.chat_awayReason;
       } else {
         this.reason = this.$vxm.settings.awayReason;
       }
@@ -95,7 +95,7 @@
 
     @Watch('reason')
     updateReason() {
-      localStorage.awayReason = this.reason;
+      localStorage.chat_awayReason = this.reason;
       this.$vxm.settings.awayReason = this.reason;
     }
   }

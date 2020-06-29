@@ -91,7 +91,7 @@
               // Gets offset from bottom
               offset2 = windowSize[1] - chatPosition[1] - chatSize[1];
             }
-            localStorage.gamePosition = JSON.stringify([side, offset, side2, offset2]);
+            localStorage.chat_gamePosition = JSON.stringify([side, offset, side2, offset2]);
           } else {
             // Sets new chat position in localStorage when drag is ended
             let x = this.$refs.draggableContainer.style.left; // Gets current X and Y
@@ -104,7 +104,7 @@
             const midpoint = [midpointX, midpointY];
             // Gets chat's offset from the center
             const offset = [midpoint[0] - point[0], midpoint[1] - point[1]];
-            localStorage.position = JSON.stringify(`${offset[0]} ${offset[1]}`); // Save to localStorage
+            localStorage.chat_position = JSON.stringify(`${offset[0]} ${offset[1]}`); // Save to localStorage
           }
         }
         document.onmouseup = null;

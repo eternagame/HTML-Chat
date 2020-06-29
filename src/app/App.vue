@@ -180,8 +180,8 @@
     this.$vxm.chat.operLoginPassword = password;
     if (remember) { // Store values
       // Encrypt password
-      localStorage.operPass = JSON.stringify(sjcl.encrypt('password', password));
-      localStorage.operUser = username;
+      localStorage.chat_operPass = JSON.stringify(sjcl.encrypt('password', password));
+      localStorage.chat_operUser = username;
     }
     this.$vxm.chat.operCommand(); // Set all nicks as opers
     setTimeout(this.operLoginStatus, 200); // A precaution so messages are received properly
@@ -217,9 +217,9 @@
    * Logs the user in as an operator
    */
   async logInOper() {
-    if (localStorage && localStorage.operUser && localStorage.operPass) {
-      let pass = JSON.parse(localStorage.operPass);
-      const user = localStorage.operUser;
+    if (localStorage && localStorage.chat_operUser && localStorage.chat_operPass) {
+      let pass = JSON.parse(localStorage.chat_operPass);
+      const user = localStorage.chat_operUser;
       pass = sjcl.decrypt('password', pass); // Decrypt password
       if (user && pass) {
         this.$vxm.chat.operLoginPassword = pass; // Log in
@@ -275,7 +275,7 @@
     const w = this.$el.scrollWidth;
     const h = this.$el.scrollHeight;
     if (localStorage && (w !== 300 || h !== 500)) {
-      localStorage.size = JSON.stringify(`${w} ${h}`);
+      localStorage.chat_size = JSON.stringify(`${w} ${h}`);
     }
   }
 

@@ -34,8 +34,8 @@
     title !: string;
 
     mounted() {
-      if (localStorage && localStorage.openMenus) {
-        const menus = JSON.parse(localStorage.openMenus);
+      if (localStorage && localStorage.chat_openMenus) {
+        const menus = JSON.parse(localStorage.chat_openMenus);
         if (menus[this.title] !== undefined) {
           this.open = menus[this.title];
         }
@@ -48,11 +48,11 @@
       const { title } = this;
       if (localStorage) {
         let menus: any = {};
-        if (localStorage.openMenus) { // If the object exists, modify it
-          menus = JSON.parse(localStorage.openMenus);
+        if (localStorage.chat_openMenus) { // If the object exists, modify it
+          menus = JSON.parse(localStorage.chat_openMenus);
         }
         menus[title] = newValue;
-        localStorage.openMenus = JSON.stringify(menus); // Update localStorage
+        localStorage.chat_openMenus = JSON.stringify(menus); // Update localStorage
       }
     }
   }

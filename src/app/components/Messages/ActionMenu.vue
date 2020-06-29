@@ -125,22 +125,22 @@
     pin() {
       this.$vxm.chat.addPinnedMessage(this.message);
       const localPins = [];
-      if (localStorage.pins) {
-        localPins.push(...JSON.parse(localStorage.pins) as Message[]);
+      if (localStorage.chat_pins) {
+        localPins.push(...JSON.parse(localStorage.chat_pins) as Message[]);
       }
       localPins.push(this.message);
-      localStorage.pins = JSON.stringify(localPins);
+      localStorage.chat_pins = JSON.stringify(localPins);
     }
 
     unpin() {
       this.$vxm.chat.removePin(this.message);
       let localPins = [];
-      if (localStorage.pins) {
-        localPins.push(...JSON.parse(localStorage.pins) as Message[]);
+      if (localStorage.chat_pins) {
+        localPins.push(...JSON.parse(localStorage.chat_pins) as Message[]);
       }
       localPins = localPins.filter(e => e.message !== this.message.message
           && e.user !== this.message.user);
-      localStorage.pins = JSON.stringify(localPins);
+      localStorage.chat_pins = JSON.stringify(localPins);
     }
 
     get oper() {

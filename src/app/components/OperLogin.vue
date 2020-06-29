@@ -2,13 +2,13 @@
   <div class="login panel">
     <div class="trans-panel rounded-10" v-show="showsMessage">
       <p> {{message}}</p>
-      <div
+      <button
           class="btn"
-          style="width: 90%; left: 50%; transform: translateX(-50%); margin-top:10px"
+          style="width: 100%; left: 50%; margin-top:10px"
           @click="showsMessage = false; $emit('cancel')"
         >
         Continue
-      </div>
+      </button>
     </div>
     <div class="trans-panel rounded-10" v-show="!showsMessage">
       <table>

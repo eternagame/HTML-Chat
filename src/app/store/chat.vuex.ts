@@ -286,7 +286,7 @@ export default class ChatModule extends VuexModule {
       this.ignoredUsers.splice(this.ignoredUsers.indexOf(username), 1);
     }
     if (username === '*') this.ignoredUsers = [];
-    localStorage.ignoredUsers = JSON.stringify(this.ignoredUsers);
+    localStorage.chat_ignoredUsers = JSON.stringify(this.ignoredUsers);
   }
 
   @action()
@@ -295,19 +295,19 @@ export default class ChatModule extends VuexModule {
     this.workbranch = workbranch;
 
     if (localStorage) {
-      if (localStorage.ignoredUsers) {
+      if (localStorage.chat_ignoredUsers) {
         try {
-          this.ignoredUsers = JSON.parse(localStorage.ignoredUsers);
+          this.ignoredUsers = JSON.parse(localStorage.chat_ignoredUsers);
         } catch {
           console.error('Encountered an error while parsing the local data of ignored users');
         }
       }
-      if (localStorage.ignoredChannels) {
+      if (localStorage.chat_ignoredChannels) {
         try {
-          const ignored = JSON.parse(localStorage.ignoredChannels);
+          const ignored = JSON.parse(localStorage.chat_ignoredChannels);
           Object.values(this.channels).forEach((e) => {
-            const eAsChannel = e as Channel;
-            eAsChannel.notificationsEnabled = ignored[eAsChannel.name];
+            const channel = e as Channel;
+            channel.notificationsEnabled = ignored[channel.name];
           });
         } catch {
           console.error(
@@ -315,27 +315,27 @@ export default class ChatModule extends VuexModule {
           );
         }
       }
-      if (localStorage.usernameColor) {
+      if (localStorage.chat_usernameColor) {
         try {
-          this.usernameColor = localStorage.usernameColor;
+          this.usernameColor = localStorage.chat_usernameColor;
         } catch {
           console.error(
             'Encountered an error while parsing the local data of username color',
           );
         }
       }
-      if (localStorage.customEmoticons) {
+      if (localStorage.chat_customEmoticons) {
         try {
-          this.customEmoticons = JSON.parse(localStorage.customEmoticons);
+          this.customEmoticons = JSON.parse(localStorage.chat_customEmoticons);
         } catch {
           console.error(
             'Encountered an error while parsing the local data of custom emoticons',
           );
         }
       }
-      if (localStorage.position) {
+      if (localStorage.chat_position) {
         try {
-          const data = JSON.parse(localStorage.position);
+          const data = JSON.parse(localStorage.chat_position);
           const values = data.split(' '); // Gets X and Y
           const midpoint = [window.innerWidth / 2, window.innerHeight / 2]; // Gets center
           const point = [Number(values[0]), Number(values[1])];
@@ -347,18 +347,18 @@ export default class ChatModule extends VuexModule {
           );
         }
       }
-      if (localStorage.gamePosition) {
+      if (localStorage.chat_gamePosition) {
         try {
-          this.inGamePosition = JSON.parse(localStorage.gamePosition);
+          this.inGamePosition = JSON.parse(localStorage.chat_gamePosition);
         } catch {
           console.error(
             'Encountered an error while parsing the local data of in-game chat location',
           );
         }
       }
-      if (localStorage.size) {
+      if (localStorage.chat_size) {
         try {
-          const data = JSON.parse(localStorage.size);
+          const data = JSON.parse(localStorage.chat_size);
           const values = data.split(' '); // Gets width and height
           this.initialSize = [values[0], values[1]];
         } catch {
@@ -367,27 +367,27 @@ export default class ChatModule extends VuexModule {
           );
         }
       }
-      if (localStorage.nick) {
+      if (localStorage.chat_nick) {
         try {
-          this.customNick = localStorage.nick;
+          this.customNick = localStorage.chat_nick;
         } catch {
           console.error(
             'Encountered an error while parsing the local data of custom nick',
           );
         }
       }
-      if (localStorage.notificationsKeywords) {
+      if (localStorage.chat_notificationsKeywords) {
         try {
-          this.notificationsKeywords = JSON.parse(localStorage.notificationsKeywords);
+          this.notificationsKeywords = JSON.parse(localStorage.chat_notificationsKeywords);
         } catch {
           console.error(
             'Encountered an error while parsing the local data of notifications keywords',
           );
         }
       }
-      if (localStorage.joinedChannels) {
+      if (localStorage.chat_joinedChannels) {
         try {
-          const joinedChannels: string[] = JSON.parse(localStorage.joinedChannels);
+          const joinedChannels: string[] = JSON.parse(localStorage.chat_joinedChannels);
           joinedChannels.forEach(e => {
             this.joinChannel(e);
           });
@@ -485,8 +485,8 @@ export default class ChatModule extends VuexModule {
       this.processAndPost(e);
     });
     const pins = [];
-    if (localStorage.pins) {
-      pins.push(...JSON.parse(localStorage.pins) as Message[]);
+    if (localStorage.chat_pins) {
+      pins.push(...JSON.parse(localStorage.chat_pins) as Message[]);
     }
     pins.filter(e => e.target === channel).forEach(e => {
       this.addPinnedMessage(e);
@@ -968,8 +968,8 @@ export default class ChatModule extends VuexModule {
               break;
             } else {
               let emoticons : string[];
-              if (localStorage.customEmoticons) {
-                emoticons = JSON.parse(localStorage.customEmoticons) as string[];
+              if (localStorage.chat_customEmoticons) {
+                emoticons = JSON.parse(localStorage.chat_customEmoticons) as string[];
               } else {
                 emoticons = this.customEmoticons;
               }
@@ -983,7 +983,7 @@ export default class ChatModule extends VuexModule {
             }
             // Changing the array elements with array[index] = newValue isn't reactive
             Vue.set(this.customEmoticons, (parseInt(parameters[1], 10) - 1), parameters[0]);
-            localStorage.customEmoticons = JSON.stringify(this.customEmoticons);
+            localStorage.chat_customEmoticons = JSON.stringify(this.customEmoticons);
             break;
           case 'emoticon-list':
             postMessage(`Your custom emoticons are ${this.customEmoticons[0]} (slot 1), ${this.customEmoticons[1]} (slot 2), and ${this.customEmoticons[2]} (slot 3).`);
@@ -1409,7 +1409,7 @@ export default class ChatModule extends VuexModule {
   async ignoreUser({ username, channel }: { username: string; channel?: string }) {
     if (!this.ignoredUsers.includes(username)) {
       this.ignoredUsers.push(username);
-      localStorage.ignoredUsers = JSON.stringify(this.ignoredUsers);
+      localStorage.chat_ignoredUsers = JSON.stringify(this.ignoredUsers);
       if (channel) {
         this.postMessage(
           new Message(
@@ -1435,7 +1435,7 @@ export default class ChatModule extends VuexModule {
         this.currentUser.nicks = [to];
         this.client?.raw(`NICK ${to}`);
         if (localStorage) {
-          localStorage.nick = to;
+          localStorage.chat_nick = to;
         }
       } else {
         this.postMessage(new Message('Please include command parameters. Type `/help changenick` for more usage instructions'));
@@ -1921,11 +1921,11 @@ export default class ChatModule extends VuexModule {
     });
     this.client?.join(name);
     let joinedChannels = [];
-    if (localStorage.joinedChannels) {
-      joinedChannels = JSON.parse(localStorage.joinedChannels);
+    if (localStorage.chat_joinedChannels) {
+      joinedChannels = JSON.parse(localStorage.chat_joinedChannels);
     }
     joinedChannels.push(name);
-    localStorage.joinedChannels = JSON.stringify(joinedChannels);
+    localStorage.chat_joinedChannels = JSON.stringify(joinedChannels);
     console.log(`Joined channel ${name}`);
   }
 
