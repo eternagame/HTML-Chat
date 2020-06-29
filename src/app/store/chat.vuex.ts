@@ -458,6 +458,10 @@ export default class ChatModule extends VuexModule {
           const commandNumber = parseInt(e.line.substring(20, 23), 10);
           if (e.line.match(/^:irc\.eternagame\.org .+\^\d{3} #*.* /)) {
             switch (commandNumber) { // Might be useful in the future
+              case 482:
+                if (!this.oper) this.operCommand();
+                this.setChannelOps();
+                break;
               default: break;
             }
           }
@@ -489,6 +493,10 @@ export default class ChatModule extends VuexModule {
     });
   }
 
+  /**
+   * Pins a message
+   * @param message - The message to be pinned
+   */
   @action()
   async addPinnedMessage(message: Message) {
     const msg = message;
@@ -500,6 +508,10 @@ export default class ChatModule extends VuexModule {
     this.channels[message.target]!.postedMessages = messages;
   }
 
+  /**
+   * Unpins a message
+   * @param message - The message to unpin
+   */
   @action()
   async removePin(message: Message) {
     const messages = this.channels[message.target]?.postedMessages;
@@ -543,6 +555,7 @@ export default class ChatModule extends VuexModule {
     // Converting the array to a set and then back removes duplicates
     // Iterates through to make sure each nick for the user has proper permissions
     Array.from(new Set(this.connectedUsers[this.currentUser.username]?.nicks)).forEach(i => {
+      console.log(i);
       // Iterates through all channels
       channelNames.forEach(e => this.client?.raw(`SAMODE ${e} +o ${i}`));
     });
@@ -578,6 +591,18 @@ export default class ChatModule extends VuexModule {
     });
     this.connectionData.currentTimer = 0;
     clearInterval(this.connectionData.timerInterval);
+    // Check bans on connect
+    Object.keys(this.channels).forEach(e => {
+      this.bans({
+        user: this.currentUser,
+        channel: e,
+        cb: (b) => {
+          if (b) {
+            this.onBanned(e);
+          }
+        },
+      });
+    });
   }
 
   @action()
@@ -619,21 +644,6 @@ export default class ChatModule extends VuexModule {
       let post = true;
       let banned = false;
       let quieted = false;
-      this.client?.banlist(channel, (e) => { // Check if user is banned before sending message
-        const bans = e.bans.map(i => new Ban(i.banned, i.channel)); // Make an array of Ban objects
-        // If the user is banned
-        if (bans.some(b => b.username.includes(this.currentUser.username))) {
-          const userBans = bans.filter(b => b.username.includes(this.currentUser.username));
-          if (userBans.some(b => b.username.includes('m;'))) { // If any bans are quiet bans
-            quieted = true;
-            this.onMuted(channel);
-          }
-          if (userBans.some(b => !b.username.includes('m;'))) { // If any bans are NOT quiet bans
-            banned = true;
-            this.onBanned(channel);
-          }
-        }
-      });
       // Chat commands
       if (message.startsWith('/')) {
         message = message.replace(/ \[.+\]$/, '');
@@ -1341,26 +1351,42 @@ export default class ChatModule extends VuexModule {
             break;
         }
       }
-      if (post) {
-        if (!this.channels[channel]?.banned && !banned && !quieted) {
-          if (isAction) {
-              this.client!.action(channel, `${message}`);
-          } else {
-              this.client!.say(channel, message);
+
+      this.client?.banlist(channel, (e) => { // Check if user is banned before sending message
+        const bans = e.bans.map(i => new Ban(i.banned, i.channel)); // Make an array of Ban objects
+        // If the user is banned
+        if (bans.some(b => b.username.includes(this.currentUser.username))) {
+          const userBans = bans.filter(b => b.username.includes(this.currentUser.username));
+          if (userBans.some(b => b.username.includes('m;'))) { // If any bans are quiet bans
+            quieted = true;
+            this.onMuted(channel);
           }
-          const name = User.parseUsername(channel);
-          // If it's a private message, send to the username, not the nick
-          if (this.connectedUsers[User.parseUsername(channel)]?.nicks.includes(channel)) {
-            this.postMessage(new Message(message, name, this.currentUser, isAction));
-          } else {
-            this.postMessage(new Message(message, channel, this.currentUser, isAction));
+          if (userBans.some(b => !b.username.includes('m;'))) { // If any bans are NOT quiet bans
+            banned = true;
+            this.onBanned(channel);
           }
-        } else if (quieted) {
-          this.postMessage(new Message("Can't send messages because you are quieted"));
-        } else {
-          this.postMessage(new Message("Can't send messages because you are banned"));
-        } // TODO
-      }
+        }
+        if (post) {
+          if (!this.channels[channel]?.banned && !banned && !quieted) {
+            if (isAction) {
+                this.client!.action(channel, `${message}`);
+            } else {
+                this.client!.say(channel, message);
+            }
+            const name = User.parseUsername(channel);
+            // If it's a private message, send to the username, not the nick
+            if (this.connectedUsers[User.parseUsername(channel)]?.nicks.includes(channel)) {
+              this.postMessage(new Message(message, name, this.currentUser, isAction));
+            } else {
+              this.postMessage(new Message(message, channel, this.currentUser, isAction));
+            }
+          } else if (quieted) {
+            this.postMessage(new Message("Can't send messages because you are quieted"));
+          } else {
+            this.postMessage(new Message("Can't send messages because you are banned"));
+          } // TODO
+        }
+      });
     }
   }
 
@@ -1707,9 +1733,10 @@ export default class ChatModule extends VuexModule {
       this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channelName));
     }
     channel.banned = BanStatus.BAN_STATUS_BANNED;
-    Object.values(this.channels).forEach((c) => {
+    // Not sure why user is banned in all channels - just leaving it here in case it needs to stay
+    /* Object.values(this.channels).forEach((c) => {
       if (c) c.banned = BanStatus.BAN_STATUS_BANNED;
-    });
+    }); */
   }
 
   @action()
@@ -1862,6 +1889,10 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Joins a channel
+   * @param name - The channel to join
+   */
   @action()
   async joinChannel(name: string) {
     if (Object.keys(this.channels).includes(name)) return;
@@ -1884,6 +1915,10 @@ export default class ChatModule extends VuexModule {
     console.log(`Joined channel ${name}`);
   }
 
+  /**
+   * Leaves a joined channel
+   * @param name - The channel to be left
+   */
   @action()
   async leaveChannel(name: string) {
     Vue.delete(this.channels, name);
