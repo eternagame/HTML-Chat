@@ -6,13 +6,11 @@
       :isActive="activeTab === index"
       :name="name"
       :description="channelDescription(name)"
-      @input="activeTab = index"
+      @input="setTab(index)"
       v-on:click="update"
       :class="{ notified:isNotified(name), mentioned:isMentioned(name) }"
     >
-      <Splitter />
     </ChatSelectButton>
-    <Splitter />
     <AddChatButton />
   </div>
 </template>
@@ -22,13 +20,11 @@
   } from 'vue-property-decorator';
   import ChatSelectButton from './ChatSelectButton.vue';
   import Slideout from '../Slideout.vue';
-  import Splitter from './Splitter.vue';
   import AddChatButton from './AddChatButton.vue';
 
   @Component({
     components: {
       ChatSelectButton,
-      Splitter,
       AddChatButton,
     },
   })
@@ -101,6 +97,14 @@
       }
       // If it doesn't exist, return false (default)
       return false;
+    }
+
+    setTab(index: number) {
+      if (this.activeTab !== index) {
+        this.activeTab = index;
+      } else {
+        (this.$parent as Slideout).checked = false;
+      }
     }
   }
 </script>

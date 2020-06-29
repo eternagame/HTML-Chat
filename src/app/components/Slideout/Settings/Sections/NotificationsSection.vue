@@ -25,7 +25,7 @@
             Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
           </span>
           <span style="float: right; width: 40%">
-            <input type=text v-model="indicator" style="font-size:1rem; padding:1px;">
+            <input type=text v-model="indicator" style="padding:1px;">
           </span>
         </li>
         <li>
@@ -48,7 +48,7 @@
             Your username is automatically a keyword." />
           </span>
           <span style="float: right; width: 40%">
-            <input type=text v-model="keywords" style="font-size:1rem; padding:1px;">
+            <input type=text v-model="keywords" style="padding:1px;">
           </span>
         </li>
   </SettingsSection>
@@ -190,10 +190,9 @@ li {
   padding:2px;
 }
 input {
-  margin-bottom:10px;
   height:100%;
   width: 100%;
-  float: right;
+  font-size: 0.85rem;
 }
 .switch {
   float:right;

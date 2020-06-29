@@ -137,7 +137,9 @@
     }
     if (this.fullSize === false) {
       // Scrolls down when the chat is brought back to normal size
+      if (this.$refs.messagepanes && this.$refs.messagepanes[this.activeTab]) {
       this.$refs.messagepanes[this.activeTab].onContentChanged();
+      }
     }
   }
 
@@ -364,7 +366,9 @@
             It think's its just a normal MessagePane
             */
             const pane = this.$refs.messagepanes[0];
-            pane.scrollDown(); // Scroll down
+            if (pane) {
+              pane.scrollDown();
+            }
           }, 100);
         }, 500);
       }

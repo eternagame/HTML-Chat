@@ -63,8 +63,7 @@
   }
   .input-container {
     height: 30px;
-    width: calc(100% - 50px);
-    margin-right: 10px;
+    width: calc(100% - 40px);
     display: inline-block;
     font-size: 20px;
     vertical-align: baseline;
