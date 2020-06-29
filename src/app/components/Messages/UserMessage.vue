@@ -185,7 +185,7 @@
         // Adds event listener for hover
         l.addEventListener('mouseenter', (ev) => {
           const url = (l as HTMLElement).innerText;
-          const matches = url.match(/\d+$/);
+          const matches = url.match(/\d+\/?$/);
           this.pid = parseInt((matches ? matches[0] : '0'), 10);
           this.puzzleTooltipVisible = true; // Make it visible
             /* Ensures information is loaded after the tooltip exists
@@ -236,7 +236,7 @@
     puzzleTooltipVisible = false;
 
     get formattedTime() {
-      return this.message.time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      return new Date(this.message.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
     }
 
     get usernameColor() {
@@ -372,6 +372,7 @@
   }
   mark:hover {
     color:white;
+    cursor: pointer;
   }
 
   .screenshot {

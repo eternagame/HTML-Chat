@@ -6,17 +6,12 @@
       top: `${top + 5}px`,
       left: `${left + 5}px`
     }">
-    <ul>
-      <li class="puzzle-tooltip-puzzle">
-        {{puzzleName}}
-        <span class="puzzle-user">{{username}}</span>
-      </li>
-      <li class="puzzle-tooltip-puzzle2">
-        <span class="three">{{solved}} solvers</span>
-        <span class="four" style="float:right">{{reward}}$</span>
-      </li>
-      <li class="description"><span v-html="desc" /></li>
-    </ul>
+      <span class="puzzle-name puzzle">{{puzzleName}}</span>
+      <span class="puzzle-user puzzle">{{username}}</span>
+      <span class="puzzle-solvers puzzle">{{solved}} solvers</span>
+      <span class="puzzle-reward puzzle">{{reward}}$</span>
+      <span class="puzzle-comments puzzle">{{comments}} comments</span>
+      <span class="puzzle-description puzzle" v-html="desc" />
   </div>
 </template>
 <script lang="ts">
@@ -44,6 +39,8 @@
 
     username = 'Anonymous';
 
+    comments = 'No';
+
     solved = 0;
 
     reward = 100;
@@ -55,10 +52,18 @@
           const data = JSON.parse(d).data.puzzle;
           if (!data) return;
           this.puzzleName = data.title;
-          this.desc = data.body;
+          let desc = data.body;
+          if (desc.length > 150) {
+            desc = desc.slice(0, 147)
+              .trim();
+            desc += '&hellip;';
+          }
+          this.desc = desc;
           this.solved = parseInt(data['num-cleared'], 10);
           this.reward = parseInt(data.reward, 10);
           this.username = data.username;
+          const { comments } = JSON.parse(d).data;
+          this.comments = comments.length > 0 ? comments.length : 'No';
         },
       });
     }
@@ -73,34 +78,35 @@
     color:white;
     position: fixed;
     background-color:$med-dark-blue;
-    z-index: 1501;
+    z-index: 2;
     overflow: visible;
     height:auto;
     top:0px;
     left:0px;
-    width:250px;
+    min-width:250px;
+    max-width: 350px;
     border-radius:5px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
   }
-  li {
-    padding:5px;
-    list-style-type: none;
+  .puzzle {
+    flex-basis: 50%;
+    flex-grow: 1;
+    flex-shrink: 0;
+    border-bottom: white solid 1px;
+    padding: 5px;
   }
-  ul {
-    border-radius: 5px;
+  .puzzle-name, .puzzle-description {
+    flex-basis: 100%;
   }
-  .puzzle-tooltip-puzzle {
-    border-bottom:1px solid white;
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
+  .puzzle-user, .puzzle-reward {
+    text-align: left;
   }
-  .puzzle-tooltip-puzzle2 {
-    border-bottom:1px solid white;
+  .puzzle-solvers, .puzzle-comments {
+    text-align: right;
   }
-  .description {
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-  }
-  .puzzle-user {
-    float:right;
+  .puzzle-description {
+    border: none;
   }
 </style>
