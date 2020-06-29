@@ -47,8 +47,8 @@ md.renderer.rules.text = (tokens, idx, options, env, self) => {
   [...content.matchAll(/https?:\/\/eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
     content = content.replace(e[0].trim(), `<a href="${e[0].trim()}" target="_blank"><img class="screenshot" src="${e[0].trim()}"></a>`);
   });
-  [...content.matchAll(/https?:\/\/eterna(game|dev)\.org\/puzzles\/\d+/g)].forEach(e => {
-    content = content.replace(e[0].trim(), `<mark class="puzzle-link"><a href="${e[0].trim()}">${e[0].trim()}</a></mark>`);
+  [...content.matchAll(/https?:\/\/eternagame\.org\/(game\/)?puzzles?\/\d+\/?/g)].forEach(e => {
+    content = content.replace(e[0], `<mark class="puzzle-link">${e[0]}</mark>`);
   });
   [...content.matchAll(/\|[^|]+\|/g)].forEach(e => {
     content = content.replace(e[0], `<span class="highlight">${e[0].slice(1, -1)}</span>`);

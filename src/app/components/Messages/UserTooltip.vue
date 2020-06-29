@@ -6,17 +6,13 @@
       top: `${top + 5}px`,
       left: `${left + 5}px`
     }">
-    <ul>
-      <li class="user-tooltip-user">
+      <span class="user-name user">
         <span style="color:yellow; font-size:1.25em" v-show="user.away">● </span>{{user.username}}
-        <span class="user-profile" v-show="profileImage !== ''"><img :src="profileImage"></span>
-      </li>
-      <li class="user-tooltip-rank">
-        <span class="rank">{{rank}}</span>
-        <span class="status">{{status}}</span>
-      </li>
-      <li class="description"><span v-html="desc" /></li>
-    </ul>
+      </span>
+      <span class="user-profile user"><img :src="profileImage"></span>
+      <span class="user-rank user">{{rank}}</span>
+      <span class="user-status user">{{status}}</span>
+      <span class="user-description user" v-html="desc" />
   </div>
 </template>
 <script lang="ts">
@@ -54,10 +50,9 @@
             if (data.data.user.Profile) {
               let desc = data.data.user.Profile;
               if (desc.length > 150) {
-                desc = desc.slice(0, 150)
-                  .replace(/<br>/, '')
+                desc = desc.slice(0, 147)
                   .trim();
-                desc += '...';
+                desc += '&hellip;';
               }
               this.desc = desc;
             }
@@ -112,34 +107,23 @@
     left:0px;
     width:250px;
     border-radius:5px;
+    display: flex;
+    flex-flow: row wrap;
   }
-  li {
-    padding:5px;
-    list-style-type: none;
+  .user {
+    flex: 0 1 50%;
+    padding: 5px;
+    border-bottom: 1px solid white;
   }
-  ul {
-    border-radius: 5px;
-  }
-  .user-tooltip-user {
-    border-bottom:1px solid white;
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-  }
-  .user-tooltip-rank {
-    border-bottom:1px solid white;
-  }
-  .description {
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-  }
-  .status {
-    float:right;
-  }
-  .status::first-letter {
+  .user-status::first-letter {
     text-transform: capitalize;
   }
-  .user-profile {
-    float:right;
+  .user-profile, .user-status {
+    text-align:right;
+  }
+  .user-description {
+    flex-basis: 100%;
+    border: none;
   }
   img {
     height: 1.5rem;
