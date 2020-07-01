@@ -21,6 +21,7 @@
       @blur="$emit('focused', false)"
       @select="updateSelection"
       @click="deselect"
+      @keypress="onKeyPress"
       aria-label="Send message text input"
     />
     <SendButton @send="send" aria-label="Send"/>
@@ -144,8 +145,8 @@
 
     validURL(str:string) { // Used for hyperlink detection
       const pattern = new RegExp('^(https?:\\/\\/)?' // protocol
-    + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
-    + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
+    + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain
+    + '((\\d{1,3}\\.){3}\\d{1,3}))' // IP
     + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
     + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
     + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
@@ -202,8 +203,22 @@
       textarea: HTMLTextAreaElement;
     };
 
+    timer !: number;
+
+    timeout = 5000;
+
+    stopTyping() {
+      if (this.$vxm.chat.channels['#off-topic']?.typing.includes(this.$vxm.chat.username)) {
+        this.$vxm.chat.stopTyping(this.$vxm.chat.chatChannel);
+      }
+    }
+
     onKeyPress(event: any) {
-      this.$emit('keypress', event);
+      if (!this.$vxm.chat.channels['#off-topic']?.typing.includes(this.$vxm.chat.username)) {
+        this.$vxm.chat.type(this.$vxm.chat.chatChannel);
+      }
+      clearTimeout(this.timer);
+      this.timer = setTimeout(this.stopTyping, this.timeout);
     }
 
     updateHeight() {
@@ -219,6 +234,7 @@
     mounted() {
       window.addEventListener('resize', this.updateHeight);
       this.$nextTick(this.updateHeight);
+      this.timer = setTimeout(this.stopTyping, this.timeout);
     }
 
     updated() {
