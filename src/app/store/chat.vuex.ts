@@ -32,7 +32,8 @@ interface Channel {
   maxHistoryMessages: number;
   notifications: boolean;
   notificationsEnabled: boolean;
-  mentioned: boolean,
+  mentioned: boolean;
+  typing: string[];
 }
 
 class ConnectionData {
@@ -68,6 +69,13 @@ export default class ChatModule extends VuexModule {
   currentUser!: User;
 
   nick!: string;
+
+  get username() {
+    if (this.currentUser) {
+      return this.currentUser.username;
+    }
+    return '';
+  }
 
   connectionData = new ConnectionData();
 
@@ -151,6 +159,7 @@ export default class ChatModule extends VuexModule {
         notifications: false,
         mentioned: false,
         notificationsEnabled: true,
+        typing: [],
       };
     });
     // Creates channel through which everything is sent
@@ -603,6 +612,25 @@ export default class ChatModule extends VuexModule {
         },
       });
     });
+  }
+
+  @action()
+  async type(channel: string) {
+    // Safeguard to make sure this doesn't go in a channel with others while I test
+    if (channel === '#general' || channel === '#help' || channel === '#labs') return;
+    if (this.channels[channel]?.typing.includes(this.username)) return;
+    this.client?.action(channel, 'is typing...');
+    this.channels[channel]?.typing.push(this.username);
+  }
+
+
+  @action()
+  async stopTyping(channel: string) {
+    // Safeguard to make sure this doesn't go in a channel with others while I test
+    if (channel === '#general' || channel === '#help' || channel === '#labs') return;
+    this.client?.action(channel, 'is not typing...');
+    this.channels[channel]!.typing = this.channels[channel]!.typing
+      .filter(e => e !== this.username);
   }
 
   @action()
@@ -1375,7 +1403,7 @@ export default class ChatModule extends VuexModule {
         if (post) {
           if (!this.channels[channel]?.banned && !banned && !quieted) {
             if (isAction) {
-                this.client!.action(channel, `${message}`);
+                this.client!.action(channel, `${message.replace(/ \[#.+\]$/, '')}`);
             } else {
                 this.client!.say(channel, message);
             }
@@ -1550,6 +1578,15 @@ export default class ChatModule extends VuexModule {
     message, nick, tags, time, type, target,
   }: Irc.MessageEventArgs) {
     let channel = this.channels[target];
+    if (message === 'is typing...' && type === 'action') {
+      if (channel?.typing.includes(this.username)) return;
+      channel?.typing.push(this.username);
+      return;
+    }
+    if (message === 'is not typing...' && type === 'action') {
+      channel!.typing = channel!.typing.filter(e => e !== User.parseUsername(nick));
+      return;
+    }
     // If it's a private message
     if (this.currentUser.username.includes(User.parseUsername(target)) && nick) {
       if (!this.channels[User.parseUsername(nick)]) { // If the channel doesn't exist yet, create it
@@ -1598,7 +1635,7 @@ export default class ChatModule extends VuexModule {
     let msg = message;
     if (this.notificationsKeywords) { // Bolds keywords
       this.notificationsKeywords.forEach(n => {
-        msg = msg.replace(` ${n}`, `**|${n}|**`);
+        msg = msg.replace(` ${n}`, `|${n}|`);
       });
     }
     const messageObject = new Message(

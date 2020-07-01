@@ -12,6 +12,7 @@
       <UnreadMessageBanner v-show="unreads > 0" @click.native="scrollDown" :messages="unreads" />
     </ul>
     <template v-slot:footer>
+      <span class='typing' v-show="anyTyping">{{typingString}}</span>
       <EmoticonBar
         @emote="add"
         @md="format"
@@ -56,6 +57,7 @@
   import Message from '@/types/message';
   import { Channel } from '@/store/chat.vuex';
   import UnreadMessageBanner from './UnreadMessageBanner.vue';
+  import User from '@/types/user';
 
   @Component({
     components: {
@@ -102,6 +104,36 @@
       if (to) {
         this.unreads = 0;
       }
+    }
+
+    get typing() {
+      return this.data.typing;
+    }
+
+    get anyTyping() {
+      if (!this.typing) return false;
+      return this.typing.length > 0;
+    }
+
+    get username() {
+      return this.$vxm.chat.username;
+    }
+
+    get typingString() {
+      if (!this.typing) return '';
+      const users = this.typing.slice();
+      const plural = users.length > 1;
+      if (this.username !== '') {
+        const nameIndex = users.indexOf(this.username);
+        if (nameIndex !== -1) {
+          users[nameIndex] = 'You';
+        }
+      }
+      if (plural) {
+        const lastUser = users.pop();
+        return `${users.join(', ')}${users.length > 1 ? ',' : ''} and ${lastUser} are typing...`;
+      }
+      return `${users[0]} ${users[0] === 'You' ? 'are' : 'is'} typing...`;
     }
 
     selection: number[] = [];
@@ -174,6 +206,7 @@
       this.newMessage = '';
       this.$refs.input.$refs.textarea.value = '';
       this.scrollDown();
+      this.$vxm.chat.stopTyping(this.data.name);
     }
 
     format(options:string) {
@@ -214,6 +247,7 @@
         this.newMessage = '';
         e.preventDefault();
         this.scrollDown();
+        this.$vxm.chat.stopTyping(this.data.name);
       }
     }
 
@@ -233,4 +267,8 @@
   }
 </script>
 <style scoped>
+.typing {
+  font-style: italic;
+  font-weight: bold;
+}
 </style>
