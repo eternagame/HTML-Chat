@@ -3,8 +3,8 @@ import * as Irc from 'irc-framework';
 import {
   createModule, mutation, action, extractVuexModule,
 } from 'vuex-class-component';
-import toBool from 'to-bool';
 import Vue from 'vue';
+import { Watch } from 'vue-property-decorator';
 
 const VuexModule = createModule({
   strict: false,
@@ -23,4 +23,14 @@ export default class SettingsModule extends VuexModule {
   previewChatFeatures = true;
 
   awayReason = '';
+
+  typingMessages = true;
+
+  created() {
+    if (localStorage) {
+      if (localStorage.chat_typingMessages) {
+        this.typingMessages = JSON.parse(localStorage.chat_typingMessages);
+      }
+    }
+  }
 }

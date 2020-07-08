@@ -54,6 +54,13 @@
         <span class="warning">{{ emoticonErrorMessage }}</span>
       </li>
     </ul>
+    <li style="list-style-type: none">
+      Typing messages
+      <SettingsTooltip text="Whether you see messages above the toolbar when people are typing" />
+      <span style="float: right">
+        <SettingsSwitch v-model="$vxm.settings.typingMessages" />
+      </span>
+    </li>
   </SettingsSection>
 </template>
 <script lang="ts">
@@ -147,7 +154,7 @@
       targ.value = '';
     }
 
-  emoticonErrorMessage = '';
+    emoticonErrorMessage = '';
 
     get customEmoticons() {
       return this.$vxm.chat.customEmoticons;
@@ -163,6 +170,13 @@
         this.markdownChatFeatures = JSON.parse(localStorage.chat_markdownChatFeatures);
       } else {
         this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
+      }
+    }
+
+    @Watch('$vxm.settings.typingMessages')
+    typingMessageSettingsUpdated() {
+      if (localStorage) {
+        localStorage.chat_typingMessages = JSON.stringify(this.$vxm.settings.typingMessages);
       }
     }
   }
