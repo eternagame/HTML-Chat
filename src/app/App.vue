@@ -7,6 +7,7 @@
     :enabled="!fullSize /* Disables dragging when chat is fullsize*/"
     v-resize:debounce="resized"
     :inGame="inGame"
+    :inForum="inForum"
   >
     <template slot="main">
       <slideout
@@ -240,20 +241,19 @@
 
   get positionStyle() {
     const style: { [key:string]: string} = {};
-    if (this.inGame) {
-      if (this.gamePosition[0] === 'l') {
-        style.left = `${this.gamePosition[1]}px`;
-      } else {
-        style.right = `${this.gamePosition[1]}px`;
-      }
-      if (this.gamePosition[2] === 't') {
-        style.top = `${this.gamePosition[3]}px`;
-      } else {
-        style.bottom = `${this.gamePosition[3]}px`;
-      }
+    let basis;
+    if (this.inGame) basis = this.gamePosition;
+    else if (this.inForum) basis = this.forumPosition;
+    else basis = this.initialPosition;
+    if (basis[0] === 'l') {
+      style.left = `${basis[1]}px`;
     } else {
-      style.left = `${this.initialPosition[0]}px`;
-      style.top = `${this.initialPosition[1]}px`;
+      style.right = `${basis[1]}px`;
+    }
+    if (basis[2] === 't') {
+      style.top = `${basis[3]}px`;
+    } else {
+      style.bottom = `${basis[3]}px`;
     }
     return style;
   }
@@ -267,6 +267,10 @@
 
   get initialPosition() {
     return this.$vxm.chat.initialPosition;
+  }
+
+  get forumPosition() {
+    return this.$vxm.chat.forumPosition;
   }
 
   get initialSize() {
@@ -329,6 +333,9 @@
 
   @Prop()
   inGame !: boolean;
+
+  @Prop()
+  inForum !: boolean;
 
   $refs!: {
     reportDialog: ReportDialog;
@@ -461,7 +468,7 @@
   font-size: 14px;
   font-weight: 300;
   background-color: $med-dark-blue;
-  position: absolute; /* Makes sure everything is placed with respect to it, not to its parent */
+  position: fixed; /* Makes sure everything is placed with respect to it, not to its parent */
   transition: width 200ms, height 200ms, margin 1s, position 1s;
   min-width: 350px; /* Bounds on chat resizing */
   max-width: 450px;

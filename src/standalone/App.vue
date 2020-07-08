@@ -9,7 +9,10 @@
       :username="username"
       :uid="uid"
       workbranch="eternagame.org"
-      :inGame="false" />
+      :inGame="inGame"
+      :inForum="inForum" />
+      <input type="checkbox" v-model="inGame">in game<br>
+      <input type="checkbox" v-model="inForum">in forum<br>
   </div>
 </template>
 
@@ -30,6 +33,10 @@
     username!: string;
 
     uid!: string;
+
+    inGame = false;
+
+    inForum = true;
 
     created() {
       if (localStorage.chat_username) {

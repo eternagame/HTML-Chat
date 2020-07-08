@@ -128,7 +128,9 @@ export default class ChatModule extends VuexModule {
 
   rawHistoryMessages: string[] = []; // Stores history messages
 
-  initialPosition: [number, number] = [0, 0];
+  initialPosition: [string, number, string, number] = ['l', 0, 't', 0];
+
+  forumPosition: [string, number, string, number] = ['l', 0, 't', 0];
 
   inGamePosition: [string, number, string, number] = ['l', 0, 't', 0];
 
@@ -344,12 +346,7 @@ export default class ChatModule extends VuexModule {
       }
       if (localStorage.chat_position) {
         try {
-          const data = JSON.parse(localStorage.chat_position);
-          const values = data.split(' '); // Gets X and Y
-          const midpoint = [window.innerWidth / 2, window.innerHeight / 2]; // Gets center
-          const point = [Number(values[0]), Number(values[1])];
-          // Gets position relative to center
-          this.initialPosition = [midpoint[0] - point[0], midpoint[1] - point[1]];
+          this.initialPosition = JSON.parse(localStorage.chat_position);
         } catch {
           console.error(
             'Encountered an error while parsing the local data of chat location',
@@ -364,6 +361,17 @@ export default class ChatModule extends VuexModule {
             'Encountered an error while parsing the local data of in-game chat location',
           );
         }
+      }
+      if (localStorage.chat_forumPosition) {
+        try {
+          this.forumPosition = JSON.parse(localStorage.chat_forumPosition);
+        } catch {
+          console.error(
+            'Encountered an error while parsing the local data of forum chat location',
+          );
+        }
+      } else {
+        this.forumPosition = this.initialPosition;
       }
       if (localStorage.chat_size) {
         try {
