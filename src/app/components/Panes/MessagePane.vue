@@ -12,7 +12,12 @@
       <UnreadMessageBanner v-show="unreads > 0" @click.native="scrollDown" :messages="unreads" />
     </ul>
     <template v-slot:footer>
-      <span class='typing' v-show="anyTyping">{{typingString}}</span>
+      <span
+        class='typing'
+        v-if="$vxm.settings.typingMessages"
+        v-show="anyTyping">
+        {{typingString}}
+      </span>
       <EmoticonBar
         @emote="add"
         @md="format"
