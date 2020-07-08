@@ -157,6 +157,9 @@
 
   @Watch('currentTab')
   loadHistory() { // Load history when tab changed
+    if (this.currentTab === 'ChatHelper') {
+      localStorage.chat_viewedTutorial = true;
+    }
     // Don't put duplicates of existing history messages
     if (this.$vxm.chat.channels[this.currentTab]!.postedMessages.length <= 50) {
       this.$vxm.chat.loadMessagesForChannel(this.currentTab); // Load messages

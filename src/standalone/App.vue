@@ -11,8 +11,6 @@
       workbranch="eternagame.org"
       :inGame="inGame"
       :inForum="inForum" />
-      <input type="checkbox" v-model="inGame">in game<br>
-      <input type="checkbox" v-model="inForum">in forum<br>
   </div>
 </template>
 
@@ -36,7 +34,7 @@
 
     inGame = false;
 
-    inForum = true;
+    inForum = false;
 
     created() {
       if (localStorage.chat_username) {
