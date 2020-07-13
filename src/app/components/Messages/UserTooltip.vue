@@ -22,14 +22,14 @@
   import User from '@/types/user';
   @Component
   export default class UserTooltip extends Vue {
-    @Prop()
+    @Prop({ required: true })
     user!: User;
 
     @Prop()
-    top!: number;
+    top: number = 0;
 
     @Prop()
-    left!: number;
+    left: number = 0;
 
     desc = 'This user has not added a description to their profile';
 

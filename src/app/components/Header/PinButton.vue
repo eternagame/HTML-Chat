@@ -3,15 +3,9 @@
     class="pin-button"
     style="float: right;"
     @click="$emit('input', !value);"
-    :class="{ active: value}"
+    :class="{ active: value, tabbing: $vxm.chat.tabbing}"
     aria-label="`Click to pin viewed messages"
    >
-   <v-style>
-      button:focus {
-        border: {{$vxm.chat.tabbing ? '' : 'none !important'}};
-        outline: {{$vxm.chat.tabbing ? '' : 'none !important'}};
-      }
-    </v-style>
   </button>
 </template>
 
@@ -21,8 +15,8 @@
 
   @Component
   export default class PinButton extends Vue {
-    @Prop()
-    value!: boolean;
+    @Prop({ required: true })
+    value: boolean = false;
   }
 </script>
 
@@ -44,5 +38,9 @@
   }
   .pin-button.active {
     background-image: url("../../assets/pin.png");
+  }
+  button:not(.tabbing):focus {
+    outline: none;
+    border: none;
   }
 </style>

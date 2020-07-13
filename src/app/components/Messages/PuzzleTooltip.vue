@@ -20,14 +20,14 @@
   } from 'vue-property-decorator';
   @Component
   export default class PuzzleTooltip extends Vue {
-    @Prop()
-    pid !: number;
+    @Prop({ required: true })
+    pid : number = 0;
 
     @Prop()
-    top!: number;
+    top: number = 0;
 
     @Prop()
-    left!: number;
+    left: number = 0;
 
     $refs !: {
       container: HTMLDivElement;

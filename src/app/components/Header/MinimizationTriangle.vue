@@ -3,17 +3,14 @@
     :aria-label="label"
     class="minimization-triangle"
     style="float: right;"
-    :class="{'flipped': value && !settings,
-    'settings-flipped': value && settings,
-    'settings':settings}"
+    :class="{
+      'flipped': value && !settings,
+      'settings-flipped': value && settings,
+      'settings':settings,
+      'tabbing': $vxm.chat.tabbing,
+    }"
     @click="$emit('input', !value)"
   >
-    <v-style>
-      button:focus {
-        border: {{$vxm.chat.tabbing ? '' : 'none !important'}};
-        outline: {{$vxm.chat.tabbing ? '' : 'none !important'}};
-      }
-    </v-style>
   </button>
 </template>
 
@@ -23,11 +20,11 @@
 
   @Component
   export default class MinimizationTriangle extends Vue {
-    @Prop()
+    @Prop({ required: true })
     value!: boolean;
 
-    @Prop()
-    settings !: boolean;
+    @Prop({ default: false })
+    settings : boolean = false;
 
     get label() {
       return `Click to ${this.value ? 'show' : 'hide'} content${this.settings ? ' in settings' : ''}.`;
@@ -71,5 +68,9 @@
 
   .minimization-triangle:hover {
     cursor: pointer;
+  }
+  button:not(.tabbing):focus {
+    border: none;
+    outline: none;
   }
 </style>

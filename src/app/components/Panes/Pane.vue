@@ -50,8 +50,8 @@
 
     footerHeight: number = 0;
 
-    @Prop()
-    visibility!: boolean;
+    @Prop({ required: true })
+    visibility: boolean = true;
 
     scrollHandle(evt: any) {
       const { container } = this;

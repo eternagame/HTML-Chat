@@ -30,7 +30,7 @@
   export default class SettingsSection extends Vue {
     open = false;
 
-    @Prop()
+    @Prop({ required: true })
     title !: string;
 
     mounted() {

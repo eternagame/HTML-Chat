@@ -90,7 +90,7 @@
       menu: HTMLFormElement;
     };
 
-    @Prop()
+    @Prop({ required: true })
     message!: Message;
 
     get user(): User {

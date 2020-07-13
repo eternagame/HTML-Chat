@@ -1,14 +1,9 @@
 <template>
   <button
     class="send-button"
-    :class="{animated: animationValue}"
+    :class="{animated: animationValue, tabbing: $vxm.chat.tabbing}"
     @click="sendMessage"
   >
-    <v-style>
-      .send-button:focus {
-        outline: {{ $vxm.chat.tabbing ? '' : 'none'}} !important;
-      }
-    </v-style>
   </button>
 </template>
 
@@ -42,5 +37,9 @@
   }
   .send-button:active {
     transform:translateX(3px);
+  }
+  .send-button:not(.tabbing):focus {
+    outline: none;
+    border: none;
   }
 </style>

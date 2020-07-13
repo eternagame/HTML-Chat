@@ -7,8 +7,8 @@
 
   @Component
   export default class SettingsTooltip extends Vue {
-    @Prop()
-    text !: string;
+    @Prop({ required: true })
+    text : string = '';
   }
 </script>
 <style>

@@ -5,12 +5,6 @@
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
     <HamburgerMenuButton v-model="checked" :notification="notifications" :mention="mentions"/>
-    <v-style>
-      .slideout-button:focus {
-        border: {{tabbing ? 'solid white 1px' : 'none !important'}};
-        outline: {{tabbing ? 'solid white 1px' : 'none !important'}};
-      }
-    </v-style>
     <span v-show="checked">
       <span id="slideout-header">
         <SlideoutButton
@@ -18,18 +12,21 @@
           name="chat"
           @input="activeTab = 0"
           class='slideout-button'
+          :class="{tabbing: $vxm.chat.tabbing}"
         />
         <SlideoutButton
           name="user"
           :selected="userSelected"
           @input="activeTab = 1"
           class='slideout-button'
+          :class="{tabbing: $vxm.chat.tabbing}"
         />
         <SlideoutButton
           name="settings"
           :selected="settingsSelected"
           @input="activeTab = 2"
           class='slideout-button'
+          :class="{tabbing: $vxm.chat.tabbing}"
         />
       </span>
       <SlideoutChats
@@ -67,7 +64,7 @@
     // For hamburger
     checked = false;
 
-    @Prop() // Whether chat is minimized
+    @Prop({ required: true }) // Whether chat is minimized
     minimizedValue !: boolean;
 
     get tabbing() { // If the tab key has been pressed - used to conditionally enable focus rings
@@ -194,5 +191,11 @@
   margin-left:-15px; /* Treats hamburger button distance correctly */
   width: calc(100% - 30px); /* Makes sure there is room to fill */
   justify-content: space-evenly; /* Fills the room */
+}
+.slideout-button.tabbing:focus {
+  outline: solid white 1px;
+}
+.slideout-button:focus {
+  outline: none;
 }
 </style>

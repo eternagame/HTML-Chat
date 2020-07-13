@@ -7,8 +7,8 @@
   import { Component, Prop, Vue } from 'vue-property-decorator';
   @Component
   export default class EmoticonButton extends Vue {
-    @Prop()
-    emoticon !: string;
+    @Prop({ required: true })
+    emoticon : string = '';
 
     clicked() {
       this.$emit('emote', this.emoticon);

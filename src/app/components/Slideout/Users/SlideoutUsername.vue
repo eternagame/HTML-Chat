@@ -41,7 +41,7 @@
     },
   })
   export default class SlideoutUsername extends Vue {
-    @Prop()
+    @Prop({ required: true })
     user !: User;
 
     hover = false;

@@ -325,19 +325,19 @@
 
   // Other
 
-  @Prop()
+  @Prop({ required: true })
   username!: string;
 
-  @Prop()
+  @Prop({ required: true })
   workbranch!: string;
 
-  @Prop()
+  @Prop({ required: true })
   uid!: string;
 
-  @Prop()
+  @Prop({ default: false })
   inGame !: boolean;
 
-  @Prop()
+  @Prop({ default: false })
   inForum !: boolean;
 
   $refs!: {
@@ -461,6 +461,11 @@
   }
   }
 </script>
+<style lang="scss">
+@import "./assets/_custom.scss";
+@import "~bootstrap/scss/bootstrap.scss";
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
+</style>
 <style lang="scss" scoped>
 @import "./assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";

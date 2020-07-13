@@ -19,7 +19,7 @@
 
   @Component
   export default class SlideoutButton extends Vue {
-    @Prop()
+    @Prop({ required: true })
     name!: string;
 
     @Prop({ required: true })
