@@ -23,10 +23,10 @@
   @Component
   export default class ChatSelectButton extends Vue {
     @Prop({ required: true })
-    name: string = '';
+    name !: string;
 
     @Prop({ required: true })
-    description: string = '';
+    description !: string;
 
     get isActive() {
       return this.$vxm.chat.chatChannel.includes(this.name);

@@ -25,13 +25,13 @@
   @Component
   export default class HamburgerMenuButton extends Vue {
     @Prop({ required: true })
-    value: boolean = false;
+    value!: boolean;
 
     @Prop({ default: false })
-    notification: boolean = false;
+    notification!: boolean;
 
     @Prop({ default: false })
-    mention: boolean = false;
+    mention!: boolean;
   }
 </script>
 <style scoped>

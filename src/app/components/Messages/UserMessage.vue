@@ -86,7 +86,7 @@
     hover = false;
 
     @Prop({ default: false })
-    private isHistory: boolean = false;
+    private isHistory !: boolean;
 
     get isNotice() {
       return this.message.isNotice;
@@ -263,7 +263,7 @@
     }
 
     @Prop({ required: true })
-    messageIndex : number = 0;
+    messageIndex !: number;
 
     get sameUserAsPrevious() {
       const channelName = this.message.target;

@@ -620,119 +620,6 @@ export default class ChatModule extends VuexModule {
         },
       });
     });
-    if (localStorage && !localStorage.chat_viewedTutorial) {
-      this.promptTutorial();
-    }
-    this.postToQuery({
-      message: 'help',
-      channel: 'ChatHelper',
-    });
-  }
-
-  @action()
-  async promptTutorial() {
-    this.postAsTutorial('Hi! I\'m ChatHelper, a bot designed to show you the features and help you navigate the Eterna chat. Would you like to begin the tutorial?');
-    this.lastMessage = 'tutorial_begin?';
-  }
-
-  lastMessage = '';
-
-  @action()
-  async postAsTutorial(msg: string) {
-    if (!this.channels.ChatHelper) {
-      Vue.set(this.channels, 'ChatHelper', {
-        name: 'ChatHelper',
-        postedMessages: [],
-        maxHistoryMessages: 50,
-        notifications: false,
-        notificationsEnabled: false,
-        mentioned: false,
-        typing: [],
-        banned: BanStatus.BAN_STATUS_NORMAL,
-      });
-    }
-    this.channels.ChatHelper?.postedMessages.push(new Message(msg, this.nick, new User('ChatHelper')));
-  }
-
-  @action()
-  async tutorial() {
-    switch (this.lastMessage) {
-      case 'tutorial_begin?':
-        this.postAsTutorial('A lot of the chat\'s features are located in the **slideout**. To open the slideout, click the three bars in the top left.');
-        this.postAsTutorial('Continue?');
-        this.lastMessage = 'continue_chat?';
-        break;
-      case 'continue_chat?':
-        this.postAsTutorial('You can change channels in the slideout by entering the **chat** tab of the slideout. Click the # button in the slideout at the top. To change channels, click on one of the channels.');
-        this.postAsTutorial('You can also add new channels in the chat tab by scrolling to the bottom, entering the channel name in the text box, and clicking the + button. To remove a channel you\'ve added, hover over it and click the X button.');
-        this.postAsTutorial('Continue?');
-        this.lastMessage = 'continue_users?';
-        break;
-      case 'continue_users?':
-        this.postAsTutorial('You view and manage users in the slideout by entering the **users** tab of the slideout. Click the users button in the slideout at the top.');
-        this.postAsTutorial('In the users tab, you can see a list of online users, how many there are. If a user is away, a yellow dot appears before their name. Hover over the dot to view the reason they are away. Hovering over the username brings up a tooltip with useful information about the user.');
-        this.postAsTutorial('When you hover over a user, three dots appear to the right of their name. If you click on those dots, a context menu appears. The context menu allows you to ignore, report, and private message the user.');
-        this.postAsTutorial('Continue?');
-        this.lastMessage = 'continue_settings?';
-        break;
-      case 'continue_settings?':
-        this.postAsTutorial('You customize the chat in the **settings** tab of the slideout. Click the gear icon in the slideout at the top.');
-        this.postAsTutorial('To open a settings category, click the arrow next to the category name to show the contents. To hide them, click the arrow again.');
-        this.postAsTutorial('Hover over the circled question mark next to a setting to learn more about the setting.');
-        this.postAsTutorial('Continue?');
-        this.lastMessage = 'continue_message?';
-        break;
-      case 'continue_message?':
-        this.postAsTutorial('If you hover over a user message in a chat channel, the three dots appear to the right. Click on them to open up the context menu. In this context menu, you can ignore, report, and private message the user and copy or pin the message.');
-        this.postAsTutorial('Continue?');
-        this.lastMessage = 'continue_toolbar?';
-        break;
-      case 'continue_toolbar?':
-        this.postAsTutorial('The toolbar is an easy way to add emoticons and formatting to your text. The toolbar has three menus - one for emoticons, one for markdown, and one for the preview.');
-        this.postAsTutorial('The emoticons menu of the toolbar adds emoticons to your text. You can choose from several preset emoticons and three custom emoticons of your choice. For more information, see the toolbar features category in the settings tab.');
-        this.postAsTutorial('The markdown menu of the toolbar makes it easy to format your text. To use it, just highlight some text or place your cursor where you want the formatting. Then, click one of the buttons to add the formatting to your selection or your cursor position. You can rearrange the markdown buttons.');
-        this.postAsTutorial('The preview menu of the toolbar shows you what your text will look like when you send it. It displays your formatted message. It\'s useful for making sure you\'ve used the right markdown styles before you send the message.');
-        this.postAsTutorial('Continue?');
-        this.lastMessage = 'final?';
-        break;
-      case 'final?':
-        this.postAsTutorial('You\'ve reached the end of the tutorial. Thank you! If you want help with a specific topic, just reply to me with `help <topic>`, just `help` or use the `/help` chat command. Please message @Ahalb or one of our moderators if you have any questions, comments, or concerns.');
-        this.lastMessage = '';
-        break;
-      default: break;
-    }
-  }
-
-  @action()
-  async onChatHelperMessage(msg: string) {
-    if (msg.toLowerCase().match(/(yes|true|on|ok)/)) {
-      this.tutorial();
-      return;
-    }
-    if (msg.toLowerCase().includes('begin tutorial')) {
-      this.lastMessage = 'tutorial_begin?';
-      this.tutorial();
-    }
-    if (msg.startsWith('help')) {
-      const params = msg.substring(4).trim();
-      switch (params) {
-        case 'pin':
-        case 'pins':
-          this.postAsTutorial('Pins allow you to save messages to view later. To pin a message, open the context menu for the message and click pin message. To view only pins for a channel, click the pin button at the top. To view all messages, click the pin button again. To unpin a message, click unpin message in the context menu');
-          break;
-        case 'notification':
-        case 'notifications':
-          this.postAsTutorial('You receive notifications when a message is sent in a channel you are not viewing. When you have notifications, and indicator appears in the page title, the slideout button has a red bubble, and the name of the notified channel in the slideout is red.');
-          this.postAsTutorial('If someone mentions your name, you are also notified. The slideout button gets an orange bubble and the name of the mentioned channel in the slideout turns orange.');
-          this.postAsTutorial('You can customize the page title indicator and which channels receive notifications in the settings tab of the slideout');
-          break;
-        case 'markdown':
-          this.postAsTutorial('Markdown is a system of text formatting. You can use markdown in your messages to send bold text, links, quotes, and more. To use markdown styles, type them in your message or use the toolbar');
-          this.postAsTutorial('The chat supports the following markdown styles: bold, italics, bold italics, highlights, links, strikethrough, code, actions, quotes, and two fonts');
-          break;
-        default: this.postAsTutorial('I can offer specific help with pins, notifications, and markdown. To view these guides, use `help <topic>` (example: `help pins`).');
-      }
-    }
   }
 
   @action()
@@ -740,7 +627,6 @@ export default class ChatModule extends VuexModule {
     // Safeguard to make sure this doesn't go in a channel with others while I test
     if (channel === '#general' || channel === '#help' || channel === '#labs') return;
     if (this.channels[channel]?.typing.includes(this.username)) return;
-    if (channel !== 'ChatHelper') this.client?.action(channel, 'is typing...');
     this.channels[channel]?.typing.push(this.username);
   }
 
@@ -749,7 +635,6 @@ export default class ChatModule extends VuexModule {
   async stopTyping(channel: string) {
     // Safeguard to make sure this doesn't go in a channel with others while I test
     if (channel === '#general' || channel === '#help' || channel === '#labs') return;
-    if (channel !== 'ChatHelper') this.client?.action(channel, 'is not typing...');
     this.channels[channel]!.typing = this.channels[channel]!.typing
       .filter(e => e !== this.username);
   }
@@ -1639,11 +1524,7 @@ export default class ChatModule extends VuexModule {
   async postToQuery({ message, channel }: { message:string, channel:string}) {
     /* Splits argument into message and channel
     Will only cause issues if people are putting | in their nick */
-    let post = true;
-    if (channel === 'ChatHelper') {
-      post = false;
-      this.onChatHelperMessage(message);
-    }
+    const post = true;
     if (this.channels[User.parseUsername(channel)] === undefined) {
       // If the channel doesn't exist, make a new one
       Vue.set(this.channels, User.parseUsername(channel), {

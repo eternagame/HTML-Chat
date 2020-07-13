@@ -13,17 +13,17 @@
 
   @Component
   export default class SettingsEnableDisable extends Vue {
-    @Prop()
-    value : boolean | null = null;
+    @Prop({ required: true })
+    value !: boolean | null;
 
     @Prop({ default: 'OFF' })
-    offText : string = 'OFF';
+    offText !: string;
 
     @Prop({ default: 'ON' })
-    onText: string = 'ON';
+    onText !: string;
 
     @Prop({ default: 80 })
-    width : number = 80;
+    width !: number;
 
     get label() {
       return `Three state switch in state ${this.value === true ? (this.onText) : (this.offText) || 'neither'}; possible states ${this.onText}, ${this.offText}, and neither`;

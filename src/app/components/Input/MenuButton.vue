@@ -16,10 +16,10 @@
   @Component
   export default class MenuButton extends Vue {
     @Prop({ required: true })
-    name:string = '';
+    name !: string;
 
     @Prop({ required: true })
-    styles: string = '';
+    styles !: string;
 
     get style() {
       const normal = getStyles(this.styles);

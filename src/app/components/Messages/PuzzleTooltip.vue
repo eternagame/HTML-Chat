@@ -23,11 +23,11 @@
     @Prop({ required: true })
     pid : number = 0;
 
-    @Prop()
-    top: number = 0;
+    @Prop({ default: 0 })
+    top !: number;
 
-    @Prop()
-    left: number = 0;
+    @Prop({ default: 0 })
+    left !: number;
 
     $refs !: {
       container: HTMLDivElement;
