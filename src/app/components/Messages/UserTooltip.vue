@@ -23,13 +23,13 @@
   @Component
   export default class UserTooltip extends Vue {
     @Prop({ required: true })
-    user!: User;
+    user !: User;
 
-    @Prop()
-    top: number = 0;
+    @Prop({ default: 0 })
+    top !: number;
 
-    @Prop()
-    left: number = 0;
+    @Prop({ default: 0 })
+    left !: number;
 
     desc = 'This user has not added a description to their profile';
 

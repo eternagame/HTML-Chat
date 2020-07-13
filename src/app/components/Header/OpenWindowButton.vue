@@ -16,7 +16,7 @@
   @Component
   export default class OpenWindowButton extends Vue {
     @Prop({ required: true })
-    value: boolean = false;
+    value !: boolean;
   }
 </script>
 

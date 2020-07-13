@@ -8,7 +8,7 @@
   @Component
   export default class EmoticonButton extends Vue {
     @Prop({ required: true })
-    emoticon : string = '';
+    emoticon !: string;
 
     clicked() {
       this.$emit('emote', this.emoticon);

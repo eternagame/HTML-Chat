@@ -176,9 +176,9 @@
     }
 
     @Prop({ required: true })
-    inputValue = '';
+    inputValue !: string;
 
-    @Prop()
+    @Prop({ default: [0, 0] })
     selection !: number[];
 
     get inputHTML() {

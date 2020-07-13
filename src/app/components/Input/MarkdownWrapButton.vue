@@ -14,7 +14,7 @@
   @Component
   export default class MarkdownWrapButton extends Vue {
     @Prop({ required: true })
-    type : string = '';
+    type !: string;
 
     typeIs(type:string):boolean {
       return this.type.includes(type);

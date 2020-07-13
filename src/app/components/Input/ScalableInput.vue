@@ -181,7 +181,7 @@
     }
 
     @Prop({ default: false })
-    disabled: boolean = false;
+    disabled !: boolean;
 
     value = '';
 

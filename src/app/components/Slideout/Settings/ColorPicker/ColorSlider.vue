@@ -31,7 +31,7 @@
     gradientEnd !: string;
 
     @Prop({ required: true }) // Red, green, or blue. Used to fetch value from localStorage/vuex
-    colorID : string = 'red';
+    colorID !: string;
 
     defaultColors = ['#f3a891', '#f3c491', '#f3df91', '#e2f391', '#bef391', '#91f3bc', '#f391ba', '#f39196'];
 

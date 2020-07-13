@@ -24,7 +24,7 @@
     value!: boolean;
 
     @Prop({ default: false })
-    settings : boolean = false;
+    settings !: boolean;
 
     get label() {
       return `Click to ${this.value ? 'show' : 'hide'} content${this.settings ? ' in settings' : ''}.`;
