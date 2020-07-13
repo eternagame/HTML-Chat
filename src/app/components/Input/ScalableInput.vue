@@ -173,8 +173,8 @@
       this.value = newText;
       this.$refs.textarea.value = newText;
       this.$refs.textarea.setSelectionRange( // Reselects previously selected text
-        startPosition + inside.length / 2 + 1,
-        endPosition + inside.length / 2 + 1,
+        startPosition + inside.length,
+        endPosition + inside.length,
       );
     }
 
