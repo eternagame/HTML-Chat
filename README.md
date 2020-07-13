@@ -1,7 +1,9 @@
 # html-chat
 Web-based chat client for Eterna
 
-Note: We currently use txircd on the backend with a custom python-based IRC bot to record recent history
+Interested in development? Join the discusson on the Eterna Discord!
+
+[![Eterna Discord](https://discord.com/api/guilds/702618517589065758/widget.png?style=banner2)](https://discord.gg/KYeTwux)
 
 ## Project setup
 ```
@@ -33,4 +35,4 @@ npm run test:e2e
 ```
 
 ## Contributing
-Feel free to fork this repository, make some changes, and create a pull request. Your changes will then be revewed, merged, and deployed once accepted. It is encouraged to use a channel other than #global (the default) for testing purposes if it could be disruptive.
+Feel free to fork this repository, make some changes, and create a pull request. Your changes will then be revewed, merged, and deployed once accepted. It is encouraged to use a channel other than #global (the default) for testing purposes if it could be disruptive. We also recommend joining our [Discord](https://discord.gg/KYeTwux) to chat with other developers.
