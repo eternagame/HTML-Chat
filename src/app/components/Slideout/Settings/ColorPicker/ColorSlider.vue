@@ -24,14 +24,14 @@
   export default class ColorSlider extends Vue {
     sliderValue = 127;
 
-    @Prop() // Starting color for slider gradient
+    @Prop({ required: true }) // Starting color for slider gradient
     gradientStart !: string;
 
-    @Prop() // Ending color for slider gradient
+    @Prop({ required: true }) // Ending color for slider gradient
     gradientEnd !: string;
 
-    @Prop() // Red, green, or blue. Used to fetch value from localStorage/vuex
-    colorID !: string;
+    @Prop({ required: true }) // Red, green, or blue. Used to fetch value from localStorage/vuex
+    colorID : string = 'red';
 
     defaultColors = ['#f3a891', '#f3c491', '#f3df91', '#e2f391', '#bef391', '#91f3bc', '#f391ba', '#f39196'];
 

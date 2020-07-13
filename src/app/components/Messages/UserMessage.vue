@@ -86,7 +86,7 @@
     hover = false;
 
     @Prop({ default: false })
-    private isHistory!: boolean;
+    private isHistory: boolean = false;
 
     get isNotice() {
       return this.message.isNotice;
@@ -96,7 +96,7 @@
 
     pid !: number;
 
-    @Prop()
+    @Prop({ required: true })
     private message!: Message;
 
     get isAction() {
@@ -262,8 +262,8 @@
       return message.match(/\[#(.+,)*.+\]\r?$/);
     }
 
-    @Prop()
-    messageIndex !: number;
+    @Prop({ required: true })
+    messageIndex : number = 0;
 
     get sameUserAsPrevious() {
       const channelName = this.message.target;

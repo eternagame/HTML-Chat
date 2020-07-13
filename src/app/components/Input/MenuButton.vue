@@ -1,35 +1,30 @@
 <template>
   <button
     class='menu-button'
-    :style="{
-      'font-weight':styles.includes('bold') ? 'bold' : 'normal', /* Applies text styling */
-      'font-style':styles.includes('italics') ? 'italic' : 'normal',
-      'text-decoration':styles.includes('underline') ? 'underline' : 'normal',
-    }"
+    :style="style"
     @click="$emit('button', name)"
+    @dblclick="$emit('close')"
   >
     {{name}}
-    <v-style>
-      .menu-button:focus {
-        outline: {{ tabbing ? '' : 'none !important'}};
-      }
-    </v-style>
   </button>
 </template>
 <script lang='ts'>
   import {
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
+  import getStyles from './Styles';
   @Component
   export default class MenuButton extends Vue {
-    @Prop()
-    name!:string;
+    @Prop({ required: true })
+    name:string = '';
 
-    @Prop()
-    styles!: string;
+    @Prop({ required: true })
+    styles: string = '';
 
-    get tabbing() {
-      return this.$vxm.chat.tabbing;
+    get style() {
+      const normal = getStyles(this.styles);
+      normal.tabbing = this.$vxm.chat.tabbing;
+      return normal;
     }
   }
 </script>
@@ -45,5 +40,9 @@
 }
 .menu-button:hover {
   background-color:#21508c; /* Lightened version of med-dark-blue. Same as input background */
+}
+button:not(.tabbing):focus {
+  outline: none;
+  border: none;
 }
 </style>

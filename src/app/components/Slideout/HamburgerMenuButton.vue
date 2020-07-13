@@ -2,7 +2,11 @@
   <button
     class="hamburger"
     @click="$emit('input', !value)"
-    :class="{notified:notification, mentioned:mention}"
+    :class="{
+      notified:notification,
+      mentioned:mention,
+      tabbing: $vxm.chat.tabbing
+    }"
     :aria-label="`Click to ${this.value ? 'close' : 'open'} the slideout`"
   >
     <v-style>
@@ -20,14 +24,14 @@
 
   @Component
   export default class HamburgerMenuButton extends Vue {
-    @Prop()
-    value!: boolean;
+    @Prop({ required: true })
+    value: boolean = false;
 
-    @Prop()
-    notification!: boolean;
+    @Prop({ default: false })
+    notification: boolean = false;
 
-    @Prop()
-    mention!: boolean;
+    @Prop({ default: false })
+    mention: boolean = false;
   }
 </script>
 <style scoped>
@@ -49,5 +53,9 @@
 }
 .mentioned { /* Mentioned hamburger icon */
   background-image: url("../../assets/hamburger-mention.png") !important;
+}
+button:not(.tabbing):focus {
+  outline: none;
+  border: none;
 }
 </style>

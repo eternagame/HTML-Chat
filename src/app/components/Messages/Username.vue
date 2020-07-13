@@ -44,7 +44,7 @@
     },
   })
   export default class Username extends Vue {
-    @Prop()
+    @Prop({ required: true })
     user!: User;
 
     @Prop()

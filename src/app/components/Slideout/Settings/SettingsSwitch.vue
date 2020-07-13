@@ -4,16 +4,12 @@
     @keypress.enter="$emit('input', !$event.target.checked)"
     :aria-label="label"
     >
-    <v-style>
-      input:focus:checked + .slider {
-        outline: {{$vxm.chat.tabbing ? 'green 1px solid' : ''}};
-      }
-
-      input:focus:not(:checked) + .slider {
-        outline: {{$vxm.chat.tabbing ? 'gray 1px solid' : '' }};
-      }
-    </v-style>
-    <input type="checkbox" :checked="value" @change="$emit('input', $event.target.checked)">
+    <input
+      type="checkbox"
+      :checked="value"
+      @change="$emit('input', $event.target.checked)"
+      :class="{ tabbing: $vxm.chat.tabbing }"
+    >
     <span class="slider round" />
   </label>
 </template>
@@ -22,7 +18,7 @@
 
   @Component
   export default class SettingsSwitch extends Vue {
-    @Prop()
+    @Prop({ required: true })
     value !: boolean;
 
     get label() {
@@ -85,5 +81,13 @@ input:checked + .slider:before {
   -webkit-transform: translateX(16px);
   -ms-transform: translateX(16px);
   transform: translateX(16px);
+}
+
+input.tabbing:focus:checked + .slider {
+  outline: green 1px solid;
+}
+
+input.tabbing:focus:not(:checked) + .slider {
+  outline: gray 1px solid;
 }
 </style>

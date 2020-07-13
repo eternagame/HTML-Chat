@@ -4,13 +4,8 @@
     style="float: right;"
     @click="$emit('input', !value)"
     :aria-label="`Click to make the chat ${value ? 'fullscreen' : 'normal size'}`"
+    :class="{ tabbing: $vxm.chat.tabbing }"
    >
-   <v-style>
-      button:focus {
-        border: {{$vxm.chat.tabbing ? '' : 'none !important'}};
-        outline: {{$vxm.chat.tabbing ? '' : 'none !important'}};
-      }
-    </v-style>
   </button>
 </template>
 
@@ -20,8 +15,8 @@
 
   @Component
   export default class OpenWindowButton extends Vue {
-    @Prop()
-    value!: boolean;
+    @Prop({ required: true })
+    value: boolean = false;
   }
 </script>
 
@@ -39,5 +34,9 @@
   }
   .open-window:hover {
     cursor: pointer;
+  }
+  button:not(.tabbing):focus {
+    border: none;
+    outline: none;
   }
 </style>

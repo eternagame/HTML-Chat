@@ -1,10 +1,5 @@
 <template>
   <div style="overflow:hidden; position: relative;">
-    <v-style> <!-- Dynamically add focus ring if tab key is pressed -->
-      .scalable-input:focus {
-        box-shadow: {{bshadow}};
-      }
-    </v-style>
     <textarea
       v-model="value"
       :style="{
@@ -14,6 +9,7 @@
         'font-size': `${fontsize}px`
       }"
       class="scalable-input"
+      :class="{ tabbing: $vxm.chat.tabbing }"
       :disabled="disabled"
       @input="$emit('input', $event.target.value); updateAutocomplete($event)"
       ref="textarea"
@@ -88,15 +84,6 @@
 
     get fontsize() {
       return this.$vxm.settings.fontSize;
-    }
-
-    get bshadow() { // Used to conditionally add focus ring if user has pressed the tab key
-      if (this.$vxm.chat.tabbing) {
-        2;
-      } else {
-        return 'none';
-      }
-      return 'box-shadow: 0px 0px 5px 2px rgba(255,255,255,1);';
     }
 
     // Puts string at index in another string. Used for /me and /help insertions
@@ -193,8 +180,8 @@
       this.$nextTick(() => this.$forceUpdate());
     }
 
-    @Prop()
-    disabled!: boolean;
+    @Prop({ default: false })
+    disabled: boolean = false;
 
     value = '';
 
@@ -326,6 +313,14 @@
     outline: none;
     padding-right:24px;
     width:calc(100% - 2px) !important;
+  }
+
+  .scalable-input:focus {
+    box-shadow: 0px 0px 5px 2px rgba(255,255,255,1);
+  }
+
+  .scalable-input:not(.tabbing):focus {
+    box-shadow: none;
   }
 
   .scalable-input,

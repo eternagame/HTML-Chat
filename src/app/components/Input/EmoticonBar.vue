@@ -52,6 +52,7 @@
         name="👍"
         styles=""
         @button="select('emoticon');"
+        @close="close"
       />
       <MenuButton
         aria-label="Open markdown toolbar"
@@ -60,6 +61,7 @@
         name="A"
         styles="bold italics underline"
         @button="select('markdown');"
+        @close="close"
       />
       <MenuButton
         aria-label="Open preview toolbar"
@@ -68,6 +70,7 @@
         name="P"
         styles=""
         @button="select('preview');"
+        @close="close"
       />
       <MenuButton
         name="?"
@@ -146,9 +149,7 @@
     menuButtonClicked(button:string) { // Handles button clicks
       switch (button) {
       case 'X':
-        this.markdownSelected = false;
-        this.emoticonsSelected = false;
-        this.previewSelected = false;
+        this.close();
         break;
       case '?':
         this.$emit('md', 'question');
@@ -156,6 +157,12 @@
       default: break;
       }
       this.$emit('update');
+    }
+
+    close() {
+      this.markdownSelected = false;
+      this.emoticonsSelected = false;
+      this.previewSelected = false;
     }
 
     // Changing input
@@ -168,7 +175,7 @@
       this.$emit('md', options);
     }
 
-    @Prop()
+    @Prop({ required: true })
     inputValue = '';
 
     @Prop()
@@ -295,31 +302,11 @@
   width: calc(100% - 25px);
   height:25px;
 }
-::-webkit-scrollbar-track {
-  height: 0;
-  width: 0;
-  display:none;
-}
-::-webkit-scrollbar {
-  height: 0;
-  width: 0;
-  display:none;
-}
-::-moz-scrollbar {
-  height: 0;
-  width: 0;
-  display:none;
-}
-::-moz-scrollbar-track {
-  height: 0;
-  width: 0;
-  display:none;
-}
-::-webkit-scrollbar-thumb {
-  height: 0;
-  width: 0;
-  display:none;
-}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar,
+::-moz-scrollbar,
+::-moz-scrollbar-track,
+::-webkit-scrollbar-thumb,
 ::-moz-scrollbar-thumb {
   height: 0;
   width: 0;

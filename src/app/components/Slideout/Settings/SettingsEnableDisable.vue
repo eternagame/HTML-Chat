@@ -1,10 +1,10 @@
 <template>
-  <label class="switch" :style="{ width: `${width || 80}px` }" :aria-label="label">
+  <label class="switch" :style="{ width: `${width}px` }" :aria-label="label">
     <button @click="$emit('input', false)" :disabled="value === false" id="disable">
-      {{offText || 'OFF'}}
+      {{offText}}
     </button>
     <button @click="$emit('input', true)" :disabled="value === true" id="enable">
-      {{onText || 'ON'}}
+      {{onText}}
     </button>
   </label>
 </template>
@@ -14,19 +14,19 @@
   @Component
   export default class SettingsEnableDisable extends Vue {
     @Prop()
-    value !: boolean | null;
+    value : boolean | null = null;
 
-    @Prop()
-    offText !: string;
+    @Prop({ default: 'OFF' })
+    offText : string = 'OFF';
 
-    @Prop()
-    onText !: string;
+    @Prop({ default: 'ON' })
+    onText: string = 'ON';
 
-    @Prop()
-    width !: number;
+    @Prop({ default: 80 })
+    width : number = 80;
 
     get label() {
-      return `Three state switch in state ${this.value === true ? (this.onText || 'on') : (this.offText || 'off') || 'neither'}; possible states ${this.onText || 'on'}, ${this.offText || 'off'}, and neither`;
+      return `Three state switch in state ${this.value === true ? (this.onText) : (this.offText) || 'neither'}; possible states ${this.onText}, ${this.offText}, and neither`;
     }
   }
 </script>
