@@ -4,7 +4,6 @@
     style="float: right;"
     @click="$emit('input', !value)"
     :aria-label="`Click to make the chat ${value ? 'fullscreen' : 'normal size'}`"
-    :class="{ tabbing: $vxm.chat.tabbing }"
    >
   </button>
 </template>
@@ -34,9 +33,5 @@
   }
   .open-window:hover {
     cursor: pointer;
-  }
-  button:not(.tabbing):focus {
-    border: none;
-    outline: none;
   }
 </style>

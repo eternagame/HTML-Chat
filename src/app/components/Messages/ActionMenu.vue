@@ -8,7 +8,7 @@
         target="_blank"
         style="color:white;"
       >
-        {{ message ? message.user.username : '' }}
+        {{ message && message.user ? message.user.username : '' }}
       </a>
     </li>
     <li>
@@ -94,7 +94,7 @@
     message!: Message;
 
     get user(): User {
-      return this.message!.user;
+      return this.message?.user;
     }
 
     ban() {
@@ -118,6 +118,7 @@
     }
 
     privmsg() { // Opens up the private message modal
+      if (!this.user || !this.user.username) return;
       this.$vxm.chat.userToPrivMsg = this.user.username;
       this.$vxm.chat.privMsgModal = true;
     }
@@ -148,6 +149,7 @@
     }
 
     get profileUrl(): string {
+      if (!this.user) return '';
       return `http://${this.$vxm.chat.workbranch}/web/player/${this.user.uid}/`;
     }
 
@@ -193,6 +195,7 @@
     }
 
     copyMessage() {
+      if (!this.message || !this.message.user) return;
       const copyString = `<${this.message.user.username}>${this.message.message}`;
       Clipboard.writeText(copyString);
     }

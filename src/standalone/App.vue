@@ -9,8 +9,7 @@
       :username="username"
       :uid="uid"
       workbranch="eternagame.org"
-      :inGame="inGame"
-      :inForum="inForum" />
+      positionBasis="initial" />
   </div>
 </template>
 
@@ -31,10 +30,6 @@
     username!: string;
 
     uid!: string;
-
-    inGame = false;
-
-    inForum = false;
 
     created() {
       if (localStorage.chat_username) {

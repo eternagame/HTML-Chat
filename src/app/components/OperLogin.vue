@@ -27,14 +27,14 @@
       </table>
       <p v-show="authFailed">Username or password incorrect</p>
       <button
-        class="btn login-button"
+        class="btn login-button btn-primary"
         style="width: 100%; left: 50%; margin-top:10px"
         @click="$emit('login', { password, username, remember })"
       >
         Continue
       </button>
       <button
-        class="btn login-button"
+        class="btn login-button btn-primary"
         style="width: 100%; left: 50%; margin-top:10px;"
         @click="$emit('cancel')"
       >
@@ -46,7 +46,7 @@
 
 <script lang="ts">
   import BootstrapVue from 'bootstrap-vue';
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue, Prop } from 'vue-property-decorator';
 
   Vue.use(BootstrapVue);
 
@@ -60,7 +60,8 @@
 
     username: string = '';
 
-    showsMessage = false;
+    @Prop({ default: false })
+    showsMessage !: boolean;
 
     message = '';
 

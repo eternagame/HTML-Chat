@@ -5,16 +5,9 @@
     :class="{
       notified:notification,
       mentioned:mention,
-      tabbing: $vxm.chat.tabbing
     }"
     :aria-label="`Click to ${this.value ? 'close' : 'open'} the slideout`"
   >
-    <v-style>
-      button:focus {
-        border: {{$vxm.chat.tabbing ? '' : 'none !important'}};
-        outline: {{$vxm.chat.tabbing ? '' : 'none !important'}};
-      }
-    </v-style>
   </button>
 </template>
 
@@ -53,9 +46,5 @@
 }
 .mentioned { /* Mentioned hamburger icon */
   background-image: url("../../assets/hamburger-mention.png") !important;
-}
-button:not(.tabbing):focus {
-  outline: none;
-  border: none;
 }
 </style>

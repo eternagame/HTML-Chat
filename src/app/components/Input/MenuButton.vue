@@ -23,7 +23,6 @@
 
     get style() {
       const normal = getStyles(this.styles);
-      normal.tabbing = this.$vxm.chat.tabbing;
       return normal;
     }
   }
@@ -40,9 +39,5 @@
 }
 .menu-button:hover {
   background-color:#21508c; /* Lightened version of med-dark-blue. Same as input background */
-}
-button:not(.tabbing):focus {
-  outline: none;
-  border: none;
 }
 </style>

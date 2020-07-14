@@ -12,21 +12,18 @@
           name="chat"
           @input="activeTab = 0"
           class='slideout-button'
-          :class="{tabbing: $vxm.chat.tabbing}"
         />
         <SlideoutButton
           name="user"
           :selected="userSelected"
           @input="activeTab = 1"
           class='slideout-button'
-          :class="{tabbing: $vxm.chat.tabbing}"
         />
         <SlideoutButton
           name="settings"
           :selected="settingsSelected"
           @input="activeTab = 2"
           class='slideout-button'
-          :class="{tabbing: $vxm.chat.tabbing}"
         />
       </span>
       <SlideoutChats
@@ -191,11 +188,5 @@
   margin-left:-15px; /* Treats hamburger button distance correctly */
   width: calc(100% - 30px); /* Makes sure there is room to fill */
   justify-content: space-evenly; /* Fills the room */
-}
-.slideout-button.tabbing:focus {
-  outline: solid white 1px;
-}
-.slideout-button:focus {
-  outline: none;
 }
 </style>

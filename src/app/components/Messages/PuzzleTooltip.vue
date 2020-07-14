@@ -21,7 +21,7 @@
   @Component
   export default class PuzzleTooltip extends Vue {
     @Prop({ required: true })
-    pid : number = 0;
+    pid !: number;
 
     @Prop({ default: 0 })
     top !: number;
