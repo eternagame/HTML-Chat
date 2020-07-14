@@ -63,6 +63,12 @@
   import SettingsTooltip from '../SettingsTooltip.vue';
   import { Channel } from '@/store/chat.vuex';
 
+  enum states {
+    all_enabled,
+    some_enabled,
+    all_disabled
+  }
+
   @Component({
     components: {
       SettingsSection,
@@ -101,9 +107,9 @@
 
     get allEnabled() {
       const channels = Object.values(this.$vxm.chat.channels);
-      if (channels.every(e => e!.notificationsEnabled)) return true;
-      if (channels.every(e => !e!.notificationsEnabled)) return false;
-      return null;
+      if (channels.every(e => e!.notificationsEnabled)) return states.all_enabled;
+      if (channels.every(e => !e!.notificationsEnabled)) return states.all_disabled;
+      return states.some_enabled;
     }
 
     updateAll(to: boolean) {

@@ -17,7 +17,7 @@
   export default class ConnectButton extends Vue { }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .connect-button {
   width: 100%;
 }

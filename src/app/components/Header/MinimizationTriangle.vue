@@ -7,7 +7,6 @@
       'flipped': value && !settings,
       'settings-flipped': value && settings,
       'settings':settings,
-      'tabbing': $vxm.chat.tabbing,
     }"
     @click="$emit('input', !value)"
   >
@@ -68,9 +67,5 @@
 
   .minimization-triangle:hover {
     cursor: pointer;
-  }
-  button:not(.tabbing):focus {
-    border: none;
-    outline: none;
   }
 </style>

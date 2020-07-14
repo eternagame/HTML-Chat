@@ -1,9 +1,9 @@
 <template>
   <label class="switch" :style="{ width: `${width}px` }" :aria-label="label">
-    <button @click="$emit('input', false)" :disabled="value === false" id="disable">
+    <button @click="$emit('input', false)" :disabled="value === 2" id="disable">
       {{offText}}
     </button>
-    <button @click="$emit('input', true)" :disabled="value === true" id="enable">
+    <button @click="$emit('input', true)" :disabled="value === 0" id="enable">
       {{onText}}
     </button>
   </label>
@@ -11,10 +11,16 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
+  enum states {
+    all_on,
+    some_on,
+    all_off,
+  }
+
   @Component
   export default class SettingsEnableDisable extends Vue {
     @Prop({ required: true })
-    value !: boolean | null;
+    value !: states;
 
     @Prop({ default: 'OFF' })
     offText !: string;
@@ -26,7 +32,10 @@
     width !: number;
 
     get label() {
-      return `Three state switch in state ${this.value === true ? (this.onText) : (this.offText) || 'neither'}; possible states ${this.onText}, ${this.offText}, and neither`;
+      let stateDescription = 'neither';
+      if (this.value === states.all_on) stateDescription = this.onText;
+      else if (this.value === states.all_off) stateDescription = this.offText;
+      return `Three state switch in state ${stateDescription}; possible states ${this.onText}, ${this.offText}, and neither`;
     }
   }
 </script>

@@ -1,16 +1,16 @@
 <template>
   <div class="message panel" tabindex="0">
     <span id="user">To: {{username}}</span>
-    <textarea type="text" id="msg" name="msg" ref="ta" v-model="msg"/>
+    <textarea type="text" id="msg" name="msg" ref="textArea" v-model="msg"/>
     <button
-      class="btn"
+      class="btn btn-primary"
       style="width: 100%; left: 50%; margin-top:5px"
       @click="send"
     >
       Continue
     </button>
     <button
-      class="btn"
+      class="btn btn-primary"
       style="width: 100%; left: 50%; margin-top:10px;"
       @click="cancel"
     >
@@ -21,7 +21,7 @@
 
 <script lang="ts">
   /* Taken from OperLogin and modified */
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue, Ref } from 'vue-property-decorator';
   import Message from '@/types/message';
 
 
@@ -36,13 +36,11 @@
     }
 
     onStart() {
-      this.$nextTick(() => this.$refs.ta.focus());
-      this.$refs.ta.setSelectionRange(0, this.$refs.ta.value.length);
+      this.$nextTick(() => this.textArea.focus());
+      this.textArea.setSelectionRange(0, this.textArea.value.length);
     }
 
-    $refs !: {
-      ta: HTMLTextAreaElement,
-    };
+    @Ref() readonly textArea!: HTMLTextAreaElement;
 
     send() {
       this.$vxm.chat.postToQuery({ message: this.msg, channel: this.username });

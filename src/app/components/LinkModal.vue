@@ -8,7 +8,7 @@
     <button
       tabindex=0
       aria-label="Click to travel to the link you clicked on"
-      class="btn link-button"
+      class="btn link-button btn-primary"
       style="width: 100%; left: 50%; margin-top:10px"
       @click="openModal = false"
     >
@@ -17,7 +17,7 @@
     <button
       tabindex=0
       aria-label="Click to return to the chat; this cancels opening the link"
-      class="btn link-button"
+      class="btn link-button btn-primary"
       style="width: 100%; left: 50%; margin-top:10px;"
       @click="openModal = false;"
     >
@@ -36,9 +36,10 @@
 
   @Component
   export default class LinkModal extends Vue {
+    @Prop({ required: true })
     url !: string;
 
-    openModal = false;
+    openModal: boolean = false;
   }
 </script>
 

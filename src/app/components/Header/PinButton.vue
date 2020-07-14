@@ -3,7 +3,7 @@
     class="pin-button"
     style="float: right;"
     @click="$emit('input', !value);"
-    :class="{ active: value, tabbing: $vxm.chat.tabbing}"
+    :class="{ active: value}"
     aria-label="`Click to pin viewed messages"
    >
   </button>
@@ -38,9 +38,5 @@
   }
   .pin-button.active {
     background-image: url("../../assets/pin.png");
-  }
-  button:not(.tabbing):focus {
-    outline: none;
-    border: none;
   }
 </style>

@@ -9,99 +9,107 @@
   </div>
 </template>
 
-<script>
-  export default {
-    name: 'DraggableDiv',
-    data() {
-      return {
-        positions: {
-          clientX: undefined,
-          clientY: undefined,
-          movementX: 0,
-          movementY: 0,
-        },
-      };
-    },
-    props: {
-      enabled: Boolean,
-      inGame: Boolean,
-      inForum: Boolean,
-    },
-    computed: {
-      disabled: function disabled() {
-        return !this.enabled;
-      },
-    },
-    watch: {
-      enabled: {
-        handler: function changed() {
-          if (!this.enabled) {
-            this.$refs.draggableContainer.style.top = `${this.clientY}px`;
-            this.$refs.draggableContainer.style.left = `${this.clientX}px`;
-          }
-        },
-      },
-    },
-    methods: {
-      dragMouseDown(event) {
-        if (!this.disabled) {
-          event.preventDefault();
-          // get the mouse cursor position at startup:
-          this.positions.clientX = event.clientX;
-          this.positions.clientY = event.clientY;
-          document.onmousemove = this.elementDrag;
-          document.onmouseup = this.closeDragElement;
+<script lang="ts">
+  import {
+    Component, Prop, Watch, Vue,
+  } from 'vue-property-decorator';
+
+  @Component
+  export default class DraggableDiv extends Vue {
+    positions = {
+      clientX: undefined,
+      clientY: undefined,
+      movementX: 0,
+      movementY: 0,
+    };
+
+    @Prop({ default: true })
+    enabled !: boolean;
+
+    @Prop({ default: 'initial' })
+    positionBasis !: string;
+
+    get container() {
+      return this.$refs.draggableContainer;
+    }
+
+    @Watch('enabled')
+    changed() {
+      if (this.enabled) {
+        this.container.style.top = `${this.positions.clientY}px`;
+        this.container.style.left = `${this.positions.clientX}px`;
+      }
+    }
+
+    dragMouseDown(event) {
+      if (this.enabled) {
+        this.$emit('dragMouseDown');
+        event.preventDefault();
+        // get the mouse cursor position at startup:
+        this.positions.clientX = event.clientX;
+        this.positions.clientY = event.clientY;
+        document.onmousemove = this.elementDrag;
+        document.onmouseup = this.closeDragElement;
+      }
+    }
+
+    elementDrag(event) {
+      if (this.enabled) { // If dragging isn't disabled
+        event.preventDefault();
+        this.positions.movementX = this.positions.clientX - event.clientX;
+        this.positions.movementY = this.positions.clientY - event.clientY;
+        this.positions.clientX = event.clientX;
+        this.positions.clientY = event.clientY;
+        // set the element's new position:
+        if (!this.container) return;
+        this.container.style.left = `${this.container.offsetLeft - this.positions.movementX}px`;
+        this.container.style.top = `${this.container.offsetTop - this.positions.movementY}px`;
+      }
+    }
+
+    closeDragElement() {
+      document.onmouseup = null;
+      document.onmousemove = null;
+      if (localStorage) {
+        if (!this.container) return;
+        const windowSize = {
+          x: window.innerWidth,
+          y: window.innerHeight,
+        };
+        const {
+          left, top, width, height,
+        } = this.container.style;
+        const chatPosition = {
+          x: (left.replace('px', '')),
+          y: Number(top.replace('px', '')),
+        };
+        const chatSize = {
+          x: Number(width.replace('px', '')),
+          y: Number(height.replace('px', '')),
+        };
+        // Determines whether chat is placed WRT l/r, t/b by center
+        const center = {
+          x: chatPosition.x + chatSize.x / 2,
+          y: chatPosition.y + chatSize.y / 2,
+        };
+        const side = center.x < windowSize.x / 2 ? 'left' : 'right';
+        const side2 = center.y < windowSize.y / 2 ? 'top' : 'bottom';
+        // Gets offsets from sides
+        let offset = chatPosition.x;
+        if (side === 'right') {
+          // Gets offset from right
+          offset = windowSize.x - chatPosition.x - chatSize.x;
         }
-      },
-      elementDrag(event) {
-        if (!this.disabled) { // If dragging isn't disabled
-          event.preventDefault();
-          this.positions.movementX = this.positions.clientX - event.clientX;
-          this.positions.movementY = this.positions.clientY - event.clientY;
-          this.positions.clientX = event.clientX;
-          this.positions.clientY = event.clientY;
-          // set the element's new position:
-          this.$refs.draggableContainer.style.top = `${this.$refs.draggableContainer.offsetTop - this.positions.movementY}px`;
-          this.$refs.draggableContainer.style.left = `${this.$refs.draggableContainer.offsetLeft - this.positions.movementX}px`;
+        let offset2 = chatPosition.y;
+        if (side2 === 'bottom') {
+          // Gets offset from bottom
+          offset2 = windowSize.y - chatPosition.y - chatSize.y;
         }
-      },
-      closeDragElement() {
-        /* Chat position is stored relative to the center of the page - this is because
-        of how the site is laid out. It means that the chat won't move if the browser resizes. */
-        /* If the chat is in-game, position is stored relative to edges of page */
-        if (localStorage) {
-          const windowSize = [window.innerWidth, window.innerHeight];
-          const {
-            left, top, width, height,
-          } = this.$refs.draggableContainer.style;
-          const chatPosition = [Number(left.replace('px', '')), Number(top.replace('px', ''))];
-          const chatSize = [Number(width.replace('px', '')), Number(height.replace('px', ''))];
-          // Determines whether chat is placed WRT l/r, t/b by center
-          const center = [chatPosition[0] + chatSize[0] / 2, chatPosition[1] + chatSize[1] / 2];
-          const side = center[0] < windowSize[0] / 2 ? 'l' : 'r';
-          const side2 = center[1] < windowSize[1] / 2 ? 't' : 'b';
-          // Gets offsets from sides
-          let offset = chatPosition[0];
-          if (side === 'r') {
-            // Gets offset from right
-            offset = windowSize[0] - chatPosition[0] - chatSize[0];
-          }
-          let offset2 = chatPosition[1];
-          if (side2 === 'b') {
-            // Gets offset from bottom
-            offset2 = windowSize[1] - chatPosition[1] - chatSize[1];
-          }
-          let basis;
-          if (this.inGame) basis = 'gameP';
-          else if (this.inForum) basis = 'forumP';
-          else basis = 'p';
-          localStorage[`chat_${basis}osition`] = JSON.stringify([side, offset, side2, offset2]);
-        }
-        document.onmouseup = null;
-        document.onmousemove = null;
-      },
-    },
-  };
+        localStorage[`chat_${this.positionBasis}Position`] = JSON.stringify([side, offset, side2, offset2]);
+        this.$emit('closeDragElement');
+      }
+    }
+  }
 </script>
 
 <style>

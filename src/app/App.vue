@@ -3,11 +3,15 @@
     id="eterna-chat"
     style="overflow-y: hidden"
     :style="chatStyle"
-    :class="{ eternaChatFull: fullSized, eternaChatNormal: !fullSized, minimizedChat: minimized }"
+    :class="{
+      eternaChatFull: fullSized,
+      eternaChatNormal: !fullSized,
+      minimizedChat: minimized,
+      tabbing: $vxm.chat.tabbing
+    }"
     :enabled="!fullSize /* Disables dragging when chat is fullsize*/"
     v-resize:debounce="resized"
-    :inGame="inGame"
-    :inForum="inForum"
+    :positionBasis="positionBasis"
   >
     <template slot="main">
       <slideout
@@ -235,22 +239,18 @@
 
   // Drag and resize
 
-  get gamePosition() {
-    return this.$vxm.chat.inGamePosition;
-  }
-
   get positionStyle() {
     const style: { [key:string]: string} = {};
-    let basis;
-    if (this.inGame) basis = this.gamePosition;
-    else if (this.inForum) basis = this.forumPosition;
-    else basis = this.initialPosition;
-    if (basis[0] === 'l') {
+    if (!localStorage) return style;
+    if (!localStorage[`chat_${this.positionBasis}Position`]) return style;
+    const basis = JSON.parse(localStorage[`chat_${this.positionBasis}Position`]);
+    if (!basis) return style;
+    if (basis[0] === 'left') {
       style.left = `${basis[1]}px`;
     } else {
       style.right = `${basis[1]}px`;
     }
-    if (basis[2] === 't') {
+    if (basis[2] === 'top') {
       style.top = `${basis[3]}px`;
     } else {
       style.bottom = `${basis[3]}px`;
@@ -263,14 +263,6 @@
       width: `${this.initialSize[0] || 300}px`,
       height: `${this.initialSize[1] || 500}px`,
     };
-  }
-
-  get initialPosition() {
-    return this.$vxm.chat.initialPosition;
-  }
-
-  get forumPosition() {
-    return this.$vxm.chat.forumPosition;
   }
 
   get initialSize() {
@@ -331,11 +323,8 @@
   @Prop({ required: true })
   uid!: string;
 
-  @Prop({ default: false })
-  inGame !: boolean;
-
-  @Prop({ default: false })
-  inForum !: boolean;
+  @Prop({ default: 'initial' })
+  positionBasis !: string;
 
   $refs!: {
     reportDialog: ReportDialog;
@@ -460,13 +449,13 @@
 </script>
 <style lang="scss">
 @import "./assets/_custom.scss";
-@import "~bootstrap/scss/bootstrap.scss";
-@import '~bootstrap-vue/dist/bootstrap-vue.css';
+#eterna-chat:not(.tabbing) button:focus {
+  outline: none;
+  border: none;
+}
 </style>
 <style lang="scss" scoped>
 @import "./assets/_custom.scss";
-@import "~bootstrap/scss/bootstrap.scss";
-@import '~bootstrap-vue/dist/bootstrap-vue.css';
 /*** Chat container ***/
 #eterna-chat {
   font-family: "Open Sans", "Open Sans", Arial, Gulim;

@@ -6,14 +6,14 @@
         aria-label="When others view your username, they will see an indicator if you are away">
         You are currently {{userStatus ? 'away' : 'online'}}
         <SettingsTooltip
-          title="When others view your username, they will see an indicator if you are away"
+          text="When others view your username, they will see an indicator if you are away"
         />
       </span>
     </li>
     <li>
       <span aria-label="Change your status">Set
         <SettingsTooltip
-          title="Change your status"
+          text="Change your status"
         /></span>
       <span style="float:right;">
         <SettingsEnableDisable
@@ -27,7 +27,7 @@
     <li>
       <span>Automatically Update
         <SettingsTooltip
-          title="Whether your status will update when you leave or come back to the tab"
+          text="Whether your status will update when you leave or come back to the tab"
         />
       </span>
       <span style="float: right">
@@ -43,7 +43,7 @@
       >
         Reason
         <SettingsTooltip
-          title="When others see the away indicator, they will see the reason you are away"
+          text="When others see the away indicator, they will see the reason you are away"
         />
       </span>
       <span style="float:right">

@@ -1,13 +1,17 @@
 <template>
   <Pane ref="pane" :visibility="visibility" :data="data" @autoscroll="this.autoscroll">
     <ul style="margin-bottom:0; padding-right:10px">
-      <UserMessage
-        v-for="(message, i) in displayedMessages"
+      <span
+        v-for="(message, i) in groupedMessages"
         :key="i"
-        :message="message"
-        :messageIndex="i"
         :style="{fontSize:fontSize}"
-      />
+      >
+        <UserMessage
+          v-show="message.user"
+          :message="message"
+        />
+        <MessageGroup v-show="!message.user" :messages="message" />
+      </span>
       <ConnectingMessage/>
       <UnreadMessageBanner v-show="unreads > 0" @click.native="scrollDown" :messages="unreads" />
     </ul>
@@ -54,6 +58,7 @@
   import { mapState } from 'vuex';
   import EmoticonBar from '@/components/Input/EmoticonBar.vue';
   import UserMessage from '../Messages/UserMessage.vue';
+  import MessageGroup from '../Messages/MessageGroup.vue';
   import Pane from './Pane.vue';
   import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ScalableInput from '@/components/Input/ScalableInput.vue';
@@ -73,6 +78,7 @@
       ConnectButton,
       EmoticonBar,
       UnreadMessageBanner,
+      MessageGroup,
     },
   })
   export default class MessagePane extends Vue {
@@ -100,6 +106,36 @@
       } else {
         this.unreads = 0;
       }
+    }
+
+    get groupedMessages() {
+      const msgs = this.displayedMessages;
+      // Creates and array of Message arrays and Messages. Messages by the same user
+      // are grouped together in one array. Other, non-grouped messages are in the main array
+      const temp = [];
+      msgs.forEach(e => {
+        const len = temp.length - 1;
+        // If it's the first message, add it
+        if (len < 0) {
+          temp.push(e);
+          return;
+        }
+        const last = temp[len];
+        // If the last message was by the same user and it was not in a grouped array
+        if (last.user && last.user.username === e.user.username) {
+          // Make the previous entry a grouped array of the old message and the current one
+          temp[len] = [last, e];
+        } else if (last[last.length - 1] // If the last entry was a grouped array
+          // And the grouped messages are by the same user as the current one
+          && last[last.length - 1].user.username === e.user.username) {
+          // Add the current message to the grouped array
+          temp[len].push(e);
+        } else {
+          // Otherwise, just add it to the temp array
+          temp.push(e);
+        }
+      });
+      return temp;
     }
 
     autoScroll = true;

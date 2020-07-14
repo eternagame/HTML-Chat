@@ -11,15 +11,13 @@
           :color="usernameColor"
           :is-action="isAction"
           @focus="hover = true"
-          v-if="!isNotice && (!sameUserAsPrevious || isAction)"
-        >{{ isAction || !message.user.username ? '': ':' }}
+          v-if="!isNotice && (!grouped || first)"
+        >{{ isAction || !message.user || !message.user.username ? '': ':' }}
         </Username>
         &nbsp;
         <span
           ref="msg"
-          :style="{
-            fontStyle:isNotice ? 'italic' : '',
-          }"
+          :class="{ notice: isNotice }"
           v-html="formattedMessage" />
       </span>
       <UserTooltip
@@ -44,7 +42,7 @@
         class="chat-message-options"
         @click.prevent="openContextMenu"
         @keypress.enter.prevent="openContextMenuWithKey"
-        v-show="hover && message.user.username"
+        v-show="hover && message.user && message.user.username"
         tabindex=0
         @blur="hover = false"
       >
@@ -55,7 +53,7 @@
         :message="message"
       />
     </div>
-    <LinkModal ref="linkModal"/>
+    <LinkModal ref="linkModal" url=''/>
   </li>
 </template>
 
@@ -88,6 +86,12 @@
     @Prop({ default: false })
     private isHistory !: boolean;
 
+    @Prop({ default: false })
+    grouped !: boolean;
+
+    @Prop({ default: false })
+    first !: boolean;
+
     get isNotice() {
       return this.message.isNotice;
     }
@@ -106,6 +110,7 @@
     get formattedMessage(): string {
       // If there are tags, remove them before the message is seen
       let msg = this.message.message;
+      if (!msg) return '';
       if (this.messageHasTags(msg)) {
         const tagsStringPosition = msg.search(/\[#(.+,)*.+\]\r?$/);
         msg = msg.substring(0, tagsStringPosition);
@@ -115,6 +120,7 @@
     }
 
     mounted() {
+      if (!this.$el || !this.$refs.msg) return;
       // Gets all of the channel links from markdown
       const channelLinks = this.$refs.msg.getElementsByClassName('channel-link');
       // Spread operators converts HTMLCollectionOf<Element> to HTMLElement[]
@@ -209,19 +215,15 @@
         });
       });
       const usernames = Object.keys(this.$vxm.chat.connectedUsers);
-      [...this.$el.getElementsByTagName('a')]
-        .filter(e => e.href !== e.innerText) // If the text doesn't match the href
-        .filter(e => !usernames.includes(e.innerText.replace('●', '').trim().replace(':', '').trim())) // Don't flag usernames
-        .filter(e => ![...e.classList].includes('chat-message-options')) // Or context menu
-        .filter(e => ![...e.classList].includes('user-link')) // Or user tooltips
-        .filter(e => ![...e.classList].includes('image-link')) // Or inline images
-        .forEach(e => {
-        e.addEventListener('click', ev => {
-          ev.preventDefault();
-          ev.stopImmediatePropagation();
-          if (e.href.trim() !== '') this.$refs.linkModal.url = e.href;
-          this.$refs.linkModal.openModal = true;
-        });
+      [...this.$el.getElementsByClassName('external-link')]
+        .forEach((el) => {
+          const e = el as HTMLAnchorElement;
+          e.addEventListener('click', ev => {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            if (e.href.trim() !== '') this.$refs.linkModal.url = e.href;
+            this.$refs.linkModal.openModal = true;
+          });
       });
     }
 
@@ -248,6 +250,7 @@
     }
 
     parseMessageTags(message:string) { // Gets tags as array from message
+      if (!message) return [];
       const tagsStringPosition = message.search(/\[#(.+,)*.+\]\r?$/); // Searches for [...,...] at end of message
       let tagsString = message.substring(tagsStringPosition); // Gets tags as a string
       if (tagsString.includes('\r')) { // In history messages, message ends with \r
@@ -259,19 +262,8 @@
     }
 
     messageHasTags(message:string) { // If a message has any tags
+      if (!message) return false;
       return message.match(/\[#(.+,)*.+\]\r?$/);
-    }
-
-    @Prop({ required: true })
-    messageIndex !: number;
-
-    get sameUserAsPrevious() {
-      const channelName = this.message.target;
-      const channel = this.$vxm.chat.channels[channelName];
-      const { username } = this.message.user;
-      if (!channel || !channel.postedMessages[this.messageIndex - 1]) return false;
-      const previousMessage = channel.postedMessages[this.messageIndex - 1];
-      return username === previousMessage.user.username;
     }
 
     $refs!: {
@@ -403,5 +395,8 @@
   }
   blockquote:after {
     content: close-quote;
+  }
+  .notice {
+    font-style: italic;
   }
 </style>

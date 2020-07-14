@@ -23,6 +23,18 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
     tokens[idx].attrs[aIndex][1] = '_blank'; // replace value of existing attr
   }
 
+  const hrefIndex = tokens[idx].attrIndex('href');
+  const href = tokens[idx].attrs[hrefIndex][1];
+  const text = tokens[idx + 1].content;
+  if (href.replace(/https?:\/\//, '') !== text) {
+    const classIndex = tokens[idx].attrIndex('class');
+    if (classIndex < 0) {
+      tokens[idx].attrPush(['class', 'external-link']); // add new attribute
+    } else {
+      tokens[idx].attrs[classIndex][1] += ' external-link'; // replace value of existing attr
+    }
+  }
+
   return defaultRender(tokens, idx, options, env, self);
 
   // pass token to default renderer.
@@ -30,6 +42,7 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
 };
 md.renderer.rules.text = (tokens, idx, options, env, self) => {
   let { content } = tokens[idx];
+  if (!content) return '';
   // Detects instances of :: or : indicating fonts
   [...content.matchAll(/:+[^:]+:+/g)].forEach(e => {
     if (e[0].startsWith('::')) { // If it's :: (cursive), remove the colons and wrap it in a styled <span>

@@ -128,12 +128,6 @@ export default class ChatModule extends VuexModule {
 
   rawHistoryMessages: string[] = []; // Stores history messages
 
-  initialPosition: [string, number, string, number] = ['l', 0, 't', 0];
-
-  forumPosition: [string, number, string, number] = ['l', 0, 't', 0];
-
-  inGamePosition: [string, number, string, number] = ['l', 0, 't', 0];
-
   initialSize: [number, number] = [400, 500];
 
   customNick !: string; // Custom nick for oper
@@ -343,35 +337,6 @@ export default class ChatModule extends VuexModule {
             'Encountered an error while parsing the local data of custom emoticons',
           );
         }
-      }
-      if (localStorage.chat_position) {
-        try {
-          this.initialPosition = JSON.parse(localStorage.chat_position);
-        } catch {
-          console.error(
-            'Encountered an error while parsing the local data of chat location',
-          );
-        }
-      }
-      if (localStorage.chat_gamePosition) {
-        try {
-          this.inGamePosition = JSON.parse(localStorage.chat_gamePosition);
-        } catch {
-          console.error(
-            'Encountered an error while parsing the local data of in-game chat location',
-          );
-        }
-      }
-      if (localStorage.chat_forumPosition) {
-        try {
-          this.forumPosition = JSON.parse(localStorage.chat_forumPosition);
-        } catch {
-          console.error(
-            'Encountered an error while parsing the local data of forum chat location',
-          );
-        }
-      } else {
-        this.forumPosition = this.initialPosition;
       }
       if (localStorage.chat_size) {
         try {
