@@ -442,7 +442,7 @@ export default class ChatModule extends VuexModule {
             switch (commandNumber) { // Might be useful in the future
               case 482:
                 if (!this.oper) this.operCommand();
-                this.setChannelOps();
+                else this.setChannelOps();
                 break;
               default: break;
             }
@@ -537,7 +537,6 @@ export default class ChatModule extends VuexModule {
     // Converting the array to a set and then back removes duplicates
     // Iterates through to make sure each nick for the user has proper permissions
     Array.from(new Set(this.connectedUsers[this.currentUser.username]?.nicks)).forEach(i => {
-      console.log(i);
       // Iterates through all channels
       channelNames.forEach(e => this.client?.raw(`SAMODE ${e} +o ${i}`));
     });
