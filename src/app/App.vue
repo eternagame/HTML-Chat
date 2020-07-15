@@ -190,8 +190,8 @@
       localStorage.chat_operPass = JSON.stringify(sjcl.encrypt('password', password));
       localStorage.chat_operUser = username;
     }
-    this.$vxm.chat.operCommand(); // Set all nicks as opers
-    setTimeout(this.operLoginStatus, 200); // A precaution so messages are received properly
+    await this.$vxm.chat.operCommand(); // Set all nicks as opers
+    this.operLoginStatus(); // A precaution so messages are received properly
   }
 
   operLoginStatus() {
@@ -351,11 +351,11 @@
       uid: this.uid,
     });
     const timer = setInterval(() => { // Creates a timer to check for history and connection
-      this.logInOper();
       if (this.$vxm.chat.rawHistoryMessages.length > 0) {
         clearInterval(timer); // Once history messages start coming in, stop the timer
         setTimeout(() => { // Make sure all of them come in, then process them
           this.$vxm.chat.loadMessagesForChannel('#general');
+          this.logInOper();
           setTimeout(() => {
             /* This gives an error because it doesn't recognize
             using ref on a v-for gives an Array of VueComponents.
