@@ -1,7 +1,12 @@
 <template>
   <!-- Centers images -->
-  <button @click="$emit('input')" :aria-label="`Open the ${name} tab of the slideout`">
+  <button
+    class='border-0'
+     @click="$emit('input')"
+     :aria-label="`Open the ${name} tab of the slideout`"
+  >
     <center
+    class='border-0 font-weight-bold text-white d-inline-block'
     @click="$emit('input')"
   >
     <img
@@ -31,20 +36,14 @@
 <style lang="scss" scoped>
   /* Style the buttons that are used to open the tab content */
   center {
-    border: none;
     outline: none;
     cursor: pointer;
     transition: 0.3s;
     font-family: "Century Gothic", "Didact Gothic", Arial, sans-serif;
     font-size: 12px;
-    font-weight: bold;
-    color: #fff;
-    text-transform: capitalize;
     width:40px;
-    display:inline-block;
   }
   button {
     background-color:transparent;
-    border:none;
   }
 </style>

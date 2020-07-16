@@ -1,6 +1,6 @@
 <template>
   <button
-    class="hamburger d-inline-block border-0"
+    class="hamburger d-inline-block border-0 align-top"
     @click="$emit('input', !value)"
     :class="{
       notified:notification,

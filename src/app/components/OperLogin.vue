@@ -1,5 +1,5 @@
 <template>
-  <div class="login panel">
+  <div class="login panel p-2 rounded">
     <div class="trans-panel rounded-10" v-show="showsMessage">
       <p> {{message}}</p>
       <button
@@ -78,9 +78,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    padding: 10px;
     background-color:#043468;
-    border-radius:10px;
     z-index:3;
   }
 

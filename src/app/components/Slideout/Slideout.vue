@@ -1,12 +1,15 @@
 <template>
   <div
     style="position:relative; width:70%"
-    class="slideout-container"
+    class="slideout-container text-white"
     :class="{ slideoutContainerHidden: !checked, tall:checked}"
   >
     <HamburgerMenuButton v-model="checked" :notification="notifications" :mention="mentions"/>
     <span v-show="checked">
-      <span id="slideout-header">
+      <span
+      id="slideout-header"
+      class='align-items-center d-inline-flex'
+      >
         <SlideoutButton
           :selected="chatSelected"
           name="chat"
@@ -153,16 +156,13 @@
 <style scoped>
 .hamburger { /* Hamburger button */
   position: relative;
-  vertical-align: top;
 }
 .slideout-container { /* Container for slideout */
-  width:fit-content;
   background-color:black;
-  color:white;
-  height:100%;
   top:0px;
   left:0px;
   z-index: 2;
+  height: 100%;
 }
 .slideoutContainerHidden { /* When slideout is closed */
   height:0px;
@@ -182,8 +182,6 @@
   animation: slide 0.25s;
 }
 #slideout-header { /* Displays tab buttons */
-  display:inline-flex;
-  align-items: center; /* Centers buttons vertically */
   height:40px;
   margin-left:-15px; /* Treats hamburger button distance correctly */
   width: calc(100% - 30px); /* Makes sure there is room to fill */
