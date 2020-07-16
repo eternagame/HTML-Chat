@@ -33,4 +33,4 @@ npm run test:e2e
 ```
 
 ## Contributing
-Feel free to fork this repository, make some changes, and create a pull request. Your changes will then be revewed, merged, and deployed once accepted. It is encouraged to use a channel other than #global (the default) for testing purposes if it could be disruptive.
+Feel free to fork this repository, make some changes, and create a pull request. Your changes will then be reviewed, merged, and deployed once accepted. We encourage you to use different channels than the main ones (#general, #off-topic, #help, and #labs) if your testing could be considered disruptive.
