@@ -6,7 +6,7 @@
   >
     <img
       src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
-      class="loading-icon"
+      class="loading-icon mr-auto ml-auto align-middle mb-1"
     >
     <span
       v-show="connectionData.tryingToConnect"
@@ -39,12 +39,8 @@
 
 <style lang="scss">
 .loading-icon {
-  margin-bottom: 5px;
   background-repeat: no-repeat;
   width: 20px;
   height: 20px;
-  margin-left: auto;
-  margin-right: auto;
-  vertical-align: middle;
 }
 </style>

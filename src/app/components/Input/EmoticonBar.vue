@@ -1,7 +1,8 @@
 <template>
-  <div id='menu-container'>
+  <div id='menu-container' class='text-white'>
     <div
       id='submenu'
+      class='text-white overflow-hidden mb-1'
       v-show='(emoticonsSelected || markdownSelected || previewSelected) && anyChatFeatures'>
       <div id='emoticon-submenu' v-show="emoticonsSelected && emoticonChatFeatures" >
         <EmoticonButton
@@ -12,7 +13,11 @@
           :aria-label="`Add a ${emoticon} emoticon to the input text`"
           @emote='add' />
       </div>
-      <div id='markdown-submenu' v-show="markdownSelected && markdownChatFeatures" >
+      <div
+        id='markdown-submenu'
+        class='overflow-auto d-flex'
+        v-show="markdownSelected && markdownChatFeatures"
+      >
         <MarkdownWrapButton
           v-for="(item, index) in markdownCodes"
           :key="item"
@@ -44,6 +49,7 @@
       </div>
     <div
       id='emoticon-bar-container'
+      class="text-white border-0 overflow-hidden"
       v-if="anyChatFeatures" >
       <MenuButton
         aria-label="Open emoticon toolbar"
@@ -87,7 +93,6 @@
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
   import EmoticonButton from './EmoticonButton.vue';
-  import ExpandButton from './ExpandButton.vue';
   import SendButton from './SendButton.vue';
   import MarkdownWrapButton from './MarkdownWrapButton.vue';
   import MenuButton from './MenuButton.vue';
@@ -97,7 +102,6 @@
     components: {
       SendButton,
       EmoticonButton,
-      ExpandButton,
       MarkdownWrapButton,
       MenuButton,
     },
@@ -257,29 +261,17 @@
 <style scoped>
 #emoticon-bar-container {
   background-color:#043468;
-  color:white;
   width:calc(100% - 2px); /* Same width as textarea */
   height:25px;
-  border:none;
-  overflow:hidden; /* Prevents awkward scrolling and overflow */
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   position: relative;
 }
-#strike { /* Strikethrough isn't cut off */
-  padding:2px;
-  padding-right:2px;
-  overflow-x:hidden;
-  text-align:center;
-}
 #submenu {
   background-color:#043468;
-  color:white;
   width:calc(100% - 2px); /* Same width as textarea */
   border-radius:8px;
   height:25px;
-  overflow:hidden; /* Prevents awkward scrolling and overflow */
-  margin-bottom:3px;
   position: relative;
 }
 .other-menu-button {
@@ -289,16 +281,13 @@
 }
 .menu-container {
   background-color:#043468;
-  color:white;
 }
 #preview-submenu {
   display:inline-block;
   width:calc(100% - 30px) !important;
 }
 #markdown-submenu {
-  overflow-x: auto;
   flex-wrap: nowrap;
-  display: flex;
   width: calc(100% - 25px);
   height:25px;
 }

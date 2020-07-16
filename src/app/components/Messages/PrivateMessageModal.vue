@@ -1,17 +1,24 @@
 <template>
-  <div class="message panel" tabindex="0">
-    <span id="user">To: {{username}}</span>
-    <textarea type="text" id="msg" name="msg" ref="textArea" v-model="msg"/>
+  <div class="message panel rounded p-2" tabindex="0">
+    <span id="user" class="mb-2">To: {{username}}</span>
+    <textarea
+      type="text"
+      id="msg"
+      name="msg"
+      class="form-control form-control-sm m-0 mw-100 mt-1 mb-1"
+      ref="textArea"
+      v-model="msg"
+    />
     <button
-      class="btn btn-primary"
-      style="width: 100%; left: 50%; margin-top:5px"
+      class="btn btn-primary w-100 mt-1"
+      style="left: 50%"
       @click="send"
     >
       Continue
     </button>
     <button
-      class="btn btn-primary"
-      style="width: 100%; left: 50%; margin-top:10px;"
+      class="btn btn-primary w-100 mt-2"
+      style="left: 50%"
       @click="cancel"
     >
       Cancel
@@ -62,24 +69,12 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    padding: 10px;
     background-color:#043468;
-    border-radius:10px;
     z-index:3;
   }
 
   #msg {
-    min-width:150px;
     min-height:24px;
-    margin:5px;
-  }
-
-  #user {
-    margin-bottom:5px;
-  }
-
-  .btn {
-    background-color: $green;
   }
 
   button:focus {

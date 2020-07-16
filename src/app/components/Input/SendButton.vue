@@ -1,6 +1,6 @@
 <template>
   <button
-    class="send-button"
+    class="send-button border-0"
     :class="{animated: animationValue}"
     @click="sendMessage"
   >
@@ -25,7 +25,6 @@
 <style lang="scss" scoped>
   .send-button {
     background-color:rgba(0,0,0,0);
-    border:none;
     background-image: url("../../assets/send-button.png");
     background-repeat: no-repeat;
     background-size: 60% 60%;
@@ -33,7 +32,6 @@
     height: 30px;
     width: 25px;
     transition: transform 0.5s;
-    margin:0;
   }
   .send-button:active {
     transform:translateX(3px);

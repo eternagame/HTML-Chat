@@ -1,9 +1,13 @@
 <template>
   <div class="add-chat-container">
-    <button @click="addChat">+</button>
-    <span class="input-container">
+    <button
+      @click="addChat"
+      class='btn btn-primary text-center border-0 rounded mt-0 p-0 d-inline-block align-top'
+    >+</button>
+    <span class="input-container d-inline-block align-baseline">
       #<input
         @keypress.enter="addChat(); chatName = ''"
+        class='h-100 float-right'
         v-model="chatName"
         aria-label="Add a channel"
     ></span>
@@ -35,9 +39,9 @@
 
 
 <style lang="scss" scoped>
-  @import "../../../assets/_custom.scss";
   @import "~bootstrap/scss/bootstrap.scss";
   @import '~bootstrap-vue/dist/bootstrap-vue.css';
+  @import "../../../assets/_custom.scss";
   /* Style the buttons that are used to open the tab content */
   .add-chat-container {
     transition: 0.3s;
@@ -51,27 +55,17 @@
   button {
     height: 30px;
     width: 30px;
-    background-color: $green;
-    text-align: center;
-    padding-top:2px;
-    font-size: 18px;
-    border: none;
-    color: white;
-    display: inline-block;
-    border-radius: 4px;
+    padding-top: 2px;
     margin-right: 10px;
+    font-size: 18px;
   }
   .input-container {
     height: 30px;
     width: calc(100% - 40px);
-    display: inline-block;
     font-size: 20px;
-    vertical-align: baseline;
   }
   input {
     width: calc(100% - 1rem - 2px);
-    float: right;
-    height: 100%;
     padding-bottom: 2px;
   }
 </style>

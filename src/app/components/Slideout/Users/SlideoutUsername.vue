@@ -7,7 +7,7 @@
       @focus="hover = true" />
       <div style="overflow:hidden">
       <button
-        class="chat-message-options"
+        class="chat-message-options border-0"
         ref="chatOptions"
         @click.prevent="openContextMenu"
         v-show="hover && user.username"
@@ -79,7 +79,6 @@
     cursor: pointer;
     overflow: visible;
     background-color: transparent;
-    border: none;
   }
   .chat-message-options:focus {
     outline: 1px dotted #212121;

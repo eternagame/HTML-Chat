@@ -1,14 +1,14 @@
 <template>
-  <div class='color-slider-container'>
+  <div class='color-slider-container overflow-hidden ml-0 mt-2 mb-2'>
     <input
       aria-label="Slider to control a color value"
-      class="slider"
+      class="slider border-0"
       v-model="sliderValue"
       type=range min=0 max=255
       :style='{ background:getGradient()}'
       :name="colorID">
     <span
-      class="value-thumb"
+      class="value-thumb text-center overflow-hidden d-inline-block"
       :style="{ left: calculateOffset}"
     >{{sliderValue}}</span>
     <input type=number v-model="sliderValue" class="slider-input-number">
@@ -81,23 +81,16 @@
   .color-slider-container { /* Container */
     position:relative;
     height:20px;
-    margin:8px;
-    margin-left:0;
     width:180px;
-    padding:0;
-    overflow:hidden;
   }
   .slider { /* Sliders for color values */
     -webkit-appearance: none;
     appearance: none;
     outline: none;
-    border: none;
     border-radius:2px;
     height:15px;
     margin:2px;
-    margin-left:0px;
     width:120px;
-    padding:0;
   }
   .slider::-webkit-slider-thumb { /* Draggable part of slider (for webkit compatibility) */
     -webkit-appearance: none;
@@ -123,11 +116,7 @@
     position:absolute;
     /* Disables clicks or highlights to the text, so they 'pass through' to the slider */
     pointer-events:none;
-    overflow-x:hidden;
-    text-align:center;
     width:40px;
-    display:inline-block;
-    margin:0px;
     font-size: 14px !important;
     height:20px;
     top: 0px;

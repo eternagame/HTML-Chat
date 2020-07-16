@@ -1,15 +1,15 @@
 <template>
-  <Button
-    class="chat-select"
+  <button
+    class="chat-select border-0 font-weight-bold text-white d-block w-100"
     :class="{active: isActive}"
     @click="$emit('input');"
     :aria-label="`Open the ${name.substring(1)} channel`"
   >
-    <p class='channel-name'>{{ name }}</p>
-    <p class='channel-description'>{{ description }}</p>
+    <p class='channel-name text-justify ml-1 mb-2'>{{ name }}</p>
+    <p class='channel-description text-justify ml-1'>{{ description }}</p>
     <button class="channel-close" @click="close" v-show="joined">X</button>
     <slot />
-  </Button>
+  </button>
 </template>
 
 <script lang="ts">
@@ -51,19 +51,12 @@
 <style lang="scss" scoped>
   /* Style the buttons that are used to open the tab content */
   .chat-select {
-    border: none;
     cursor: pointer;
     padding: 0.4em 1.25em;
     font-family: "Open Sans","Century Gothic", "Didact Gothic", Arial, sans-serif;
     font-size: 12px;
-    font-weight: bold;
-    color: #fff;
     background-color: black;
-    text-transform: none;
-    display:block;
-    width: 100%;
     height:90px;
-    margin:0px;
     position: relative;
     transition: all 0.2s !important;
   }
@@ -83,15 +76,10 @@
   .channel-name { /* Name of chat channel */
     margin-top:2px;
     font-size: 20px;
-    text-align: justify;
-    margin-left:5px;
-    margin-bottom:10px;
   }
 
   .channel-description { /* Description of chat channel */
     font-size: 12px;
-    text-align:justify;
-    margin-left:5px;
   }
   .notified { /* Text color when notified */
     color:#e74c3c;

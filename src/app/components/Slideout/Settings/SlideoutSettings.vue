@@ -1,5 +1,8 @@
 <template>
-  <div id="settings-wrapper" :style="{ fontSize:`${fontSize}px` }">
+  <div
+    id="settings-wrapper"
+    class="pt-1 pb-1 pr-1 pl-3 overflow-auto"
+    :style="{ fontSize:`${fontSize}px` }" >
     <TextSizeSection />
     <IgnoredSection />
     <NotificationsSection />
@@ -54,9 +57,6 @@
 @import "~bootstrap/scss/bootstrap.scss";
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
 #settings-wrapper { /* Wrapper div */
-  padding:5px;
-  padding-left:20px;
   height:calc(100% - 50px);
-  overflow-y:auto;
 }
 </style>

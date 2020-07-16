@@ -2,7 +2,7 @@
   <SettingsSection title="Status" >
     <li>
       <span
-        style="vertical-align: middle"
+        class="align-middle"
         aria-label="When others view your username, they will see an indicator if you are away">
         You are currently {{userStatus ? 'away' : 'online'}}
         <SettingsTooltip
@@ -15,7 +15,7 @@
         <SettingsTooltip
           text="Change your status"
         /></span>
-      <span style="float:right;">
+      <span class="float-right;">
         <SettingsEnableDisable
           :value="!userStatus"
           @input="changeStatus"
@@ -30,7 +30,7 @@
           text="Whether your status will update when you leave or come back to the tab"
         />
       </span>
-      <span style="float: right">
+      <span class="float-right">
         <SettingsSwitch
           v-model="$vxm.chat.autoUpdateStatus"
           aria-label="Whether your status will update when you leave or come back to the tab"
@@ -46,7 +46,7 @@
           text="When others see the away indicator, they will see the reason you are away"
         />
       </span>
-      <span style="float:right">
+      <span class="float-right">
         <input type=text v-model="reason">
       </span>
     </li>
@@ -104,9 +104,6 @@
 @import "@/assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
-.settings-button {
-  background-color:$green;
-}
 li {
   list-style-type: none;
   width: calc(100% - 40px);

@@ -8,14 +8,17 @@
       style="padding: 5.6px 7px;"
       :style="{height: `calc(100% - ${footerHeight}px - 5.6px * 0)`}"
     >
-      <VuePerfectScrollbar class="scroll-area" :settings="settings" @ps-scroll-y="scrollHandle">
+      <VuePerfectScrollbar
+        class="scroll-area m-auto w-100 h-100"
+        :settings="settings"
+        @ps-scroll-y="scrollHandle" >
         <div style="height: 100%; word-wrap: break-word; white-space: normal;">
           <slot ref="slot"/>
         </div>
       </VuePerfectScrollbar>
     </div>
 
-    <div ref="footer" id="footer">
+    <div ref="footer" id="footer" class='overflow-auto p-1'>
       <slot name="footer"/>
     </div>
   </div>
@@ -99,9 +102,6 @@
 <style lang="scss">
   .scroll-area {
     position: relative;
-    margin: auto;
-    width: 100%;
-    height: 100%;
   }
 
   .ps.ps--active-x > .ps__scrollbar-x-rail,
@@ -109,8 +109,6 @@
     background-color: transparent !important;
   }
   #footer {
-    overflow: auto;
-    padding: 5px;
     bottom:0px;
     position:absolute; /* Necessary to keep it at the bottom */
     width:calc(100% + 2px);

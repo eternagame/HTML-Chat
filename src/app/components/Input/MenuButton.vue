@@ -1,6 +1,6 @@
 <template>
   <button
-    class='menu-button'
+    class='menu-button border-0 text-white float-left'
     :style="style"
     @click="$emit('button', name)"
     @dblclick="$emit('close')"
@@ -31,10 +31,7 @@
 .menu-button {
   height:25px;
   background-color:#043468;
-  border:none;
   width:30px; /* Corresponds to a real width of 25px accounting for border */
-  color:white;
-  float:left;
   font-size:14px;
 }
 .menu-button:hover {

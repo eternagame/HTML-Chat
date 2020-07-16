@@ -1,5 +1,8 @@
 <template>
-  <button id='md-wrap-button-container' class='md-button' @click="clicked">
+  <button
+    id='md-wrap-button-container'
+    class='md-button text-white border-left-0 border-top-0 float-left pt-0 text-center'
+    @click="clicked">
     <span
       class="text"
       :class="classes"
@@ -50,15 +53,10 @@
 </script>
 <style scoped>
   .md-button {
-    color:white;
     background-color:#043468;
-    border:none;
-    float:left;
     position: relative;
     width:30px;
     height:25px;
-    padding-top:1px;
-    text-align:center;
   }
   .md-button:hover {
     background-color:#21508c;

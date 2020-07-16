@@ -1,9 +1,9 @@
 <template>
   <section>
       <li class="settings-section-header">
-      <h5 class="heading" >{{title}}</h5>
+      <h5 class="heading mt-1 mb-1 ml-0 d-inline-block" >{{title}}</h5>
       <MinimizationTriangle
-        style="display:inline-block"
+        class="d-inline-block"
         settings="true"
         @input="update($event)"
         v-model="open" />
@@ -85,10 +85,5 @@ li {
   position:absolute;
   right:10px;
   top:0px;
-}
-.heading {
-  display:inline-block;
-  margin:4px;
-  margin-left:0;
 }
 </style>

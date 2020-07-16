@@ -8,7 +8,7 @@
         'border-bottom-left-radius': radius,
         'font-size': `${fontsize}px`
       }"
-      class="scalable-input"
+      class="scalable-input border-0 pl-1 overflow-hidden"
       :class="{ tabbing: $vxm.chat.tabbing }"
       :disabled="disabled"
       @input="$emit('input', $event.target.value); updateAutocomplete($event)"
@@ -20,10 +20,10 @@
       @keypress="onKeyPress"
       aria-label="Send message text input"
     />
-    <SendButton @send="send" aria-label="Send"/>
+    <SendButton @send="send" aria-label="Send" class='float-right'/>
     <div
       ref="hiddenDiv"
-      class="scalable-input-hidden"
+      class="scalable-input-hidden invisible border-0"
     ></div>
   </div>
 </template>
@@ -300,14 +300,10 @@
 <style scoped lang="scss">
   .scalable-input {
     resize: none;
-    overflow: hidden;
     position: absolute;
     bottom: 0px;
-    padding: 0;
-    padding-left:2px;
     color:white;
     background-color:#21508c;
-    border:none;
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
     outline: none;
@@ -331,16 +327,13 @@
   /* To determine input size */
   .scalable-input-hidden {
     position:relative;
-    visibility: hidden;
     white-space: pre-wrap;
     word-wrap: break-word;
-    border: none;
-    padding-right:50px; /* Makes sure height updates when it should */
+    padding-right:25px; /* Makes sure height updates when it should */
     width: calc(100% - 2px);
   }
   .send-button { /* Send message button */
     position: absolute;
-    float:right;
     right:0;
     width:30px;
     height:30px;

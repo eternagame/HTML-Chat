@@ -1,8 +1,7 @@
 <template>
   <button
     :aria-label="label"
-    class="minimization-triangle"
-    style="float: right;"
+    class="minimization-triangle float-right border-0 "
     :class="{
       'flipped': value && !settings,
       'settings-flipped': value && settings,
@@ -44,7 +43,6 @@
     -webkit-transform: rotate(0deg);
     transition: transform 0.2s;
     background-color: transparent;
-    border: none;
   }
 
   .minimization-triangle.settings-flipped {

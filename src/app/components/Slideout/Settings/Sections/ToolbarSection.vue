@@ -2,34 +2,34 @@
   <SettingsSection title="Toolbar Features">
     <ul aria-label="Which features are enabled in the toolbar">
       <li aria-label="Whether emoticons are enabled in the toolbar">
-        <span class="left-side">
+        <span class="align-sub">
           Emoticons
           <SettingsTooltip text="Whether the emoticons menu in the toolbar is visible" />
         </span>
-        <span style="float: right"><SettingsSwitch v-model="emoticonChatFeatures" /></span>
+        <span class="float-right"><SettingsSwitch v-model="emoticonChatFeatures" /></span>
       </li>
       <li aria-label="Whether markdown is enabled in the toolbar">
-        <span class="left-side">
+        <span class="align-sub">
           Markdown
           <SettingsTooltip text="Whether the markdown menu in the toolbar is visible" />
         </span>
-        <span style="float: right"><SettingsSwitch v-model="markdownChatFeatures" /></span>
+        <span class="float-right"><SettingsSwitch v-model="markdownChatFeatures" /></span>
       </li>
       <li aria-label="Whether the preview is enabled in the toolbar">
-        <span class="left-side">
+        <span class="align-sub">
           Preview
           <SettingsTooltip text="Whether the markdown preview menu in the toolbar is visible" />
         </span>
-        <span style="float: right"><SettingsSwitch v-model="previewChatFeatures" /></span>
+        <span class="float-right"><SettingsSwitch v-model="previewChatFeatures" /></span>
       </li>
       <li>
-        <span class="left-side">All</span>
-        <span style="float: right">
+        <span class="align-sub">All</span>
+        <span class="float-right">
           <SettingsEnableDisable :value="allChatFeatures" @input="allChatFeaturesChanged" />
         </span>
       </li>
     </ul>
-    <ul style="margin-top:10px" v-if="$vxm.settings.emoticonChatFeatures"
+    <ul class="mt-2" v-if="$vxm.settings.emoticonChatFeatures"
       aria-label="Change custom emoticons that appear in the toolbar">
       <li>
         Custom emoticons
@@ -41,13 +41,14 @@
         :key="emote"
         :aria-label="`Change emote in slot ${index}`">
           {{ emote}}
-          <span style="float: right">
+          <span class="float-right">
           <label :for="index">Replace with</label>
           <input
             :name="index"
             :id="index"
             @input="update"
-            style="width:1rem; position: relative; bottom: 2px; height:1rem; margin-left: 5px" />
+            class='ml-1'
+            style="width:1rem; position: relative; bottom: 2px; height:1rem" />
           </span>
       </li>
       <li v-show="emoticonErrorMessage && emoticonErrorMessage !== ''">
@@ -57,7 +58,7 @@
     <li style="list-style-type: none">
       Typing messages
       <SettingsTooltip text="Whether you see messages above the toolbar when people are typing" />
-      <span style="float: right">
+      <span class="float-right">
         <SettingsSwitch v-model="$vxm.settings.typingMessages" />
       </span>
     </li>
@@ -185,12 +186,6 @@
 @import "@/assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";
 @import "~bootstrap-vue/dist/bootstrap-vue.css";
-.settings-button {
-  background-color: $green;
-}
-.left-side {
-  vertical-align: sub;
-}
 .feature-button-container {
   padding: 2px;
 }

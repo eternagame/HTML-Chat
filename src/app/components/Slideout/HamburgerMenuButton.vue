@@ -1,6 +1,6 @@
 <template>
   <button
-    class="hamburger"
+    class="hamburger d-inline-block border-0"
     @click="$emit('input', !value)"
     :class="{
       notified:notification,
@@ -29,7 +29,6 @@
 </script>
 <style scoped>
 .hamburger { /* Normal hamburger icon */
-  display:inline-block;
   width:40px;
   height:40px;
   background-image: url("../../assets/hamburger.png");
@@ -37,7 +36,6 @@
   background-size: 50% 45%;
   background-position: bottom 10px left 11px;
   background-color: transparent;
-  border: none;
 }
 .notified { /* Notified hamburger icon */
   background-image: url("../../assets/hamburger-notification.png");
