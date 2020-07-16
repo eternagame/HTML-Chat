@@ -214,18 +214,17 @@
           this.puzzleTooltipY = ev.clientY;
         });
       });
-      const usernames = Object.keys(this.$vxm.chat.connectedUsers);
       [...this.$el.getElementsByClassName('external-link')]
         .forEach((el) => {
           const e = el as HTMLAnchorElement;
           e.addEventListener('click', ev => {
             ev.preventDefault();
-            ev.stopImmediatePropagation();
-            if (e.href.trim() !== '') this.$refs.linkModal.url = e.href;
-            this.$refs.linkModal.openModal = true;
+            if (e.href.trim() !== '') this.$refs.linkModal.open(e.href);
           });
       });
     }
+
+    openLinkModal = false;
 
     tooltipX = 0;
 
