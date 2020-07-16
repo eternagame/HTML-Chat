@@ -1,6 +1,6 @@
 <template>
   <button
-    class="open-window"
+    class="open-window border-0"
     style="float: right;"
     @click="$emit('input', !value)"
     :aria-label="`Click to make the chat ${value ? 'fullscreen' : 'normal size'}`"
@@ -29,7 +29,6 @@
     height: 34px;
     width: 35px;
     background-color: transparent;
-    border: none;
   }
   .open-window:hover {
     cursor: pointer;

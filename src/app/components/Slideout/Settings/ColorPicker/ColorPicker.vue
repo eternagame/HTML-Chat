@@ -28,7 +28,7 @@
         <button
           v-for="color in defaultColors"
           :key="color"
-          class="swatch"
+          class="swatch border-0 m-1"
           :style="{ backgroundColor:color }"
           @click="setColor(color)" />
       </div>
@@ -168,8 +168,6 @@
   .swatch { /* Swatch colors */
     width:25px;
     height:15px;
-    margin:5px;
-    border: none;
   }
   #swatch-container { /* Container for swatches */
     display: grid;

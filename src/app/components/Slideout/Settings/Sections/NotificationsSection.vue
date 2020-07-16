@@ -5,14 +5,14 @@
             v-for="channel in channels"
             :key="channel.name"
             :aria-label="`Notifications for ${channel.name}`" >
-            <span style="vertical-align:baseline">{{channel.name}}</span>
+            <span class="align-baseline">{{channel.name}}</span>
             <span class="switch">
               <SettingsSwitch v-model="$vxm.chat.channels[channel.name].notificationsEnabled"
               @input="updateNotifications(channel.name)" />
             </span>
           </li>
           <li aria-label="Notifications for all channels">
-            <span style="vertical-align:baseline">All</span>
+            <span class="align-baseline">All</span>
             <span class="switch">
               <SettingsEnableDisable :value="allEnabled" @input="updateAll" />
             </span>
@@ -20,26 +20,25 @@
         </ul>
         <li>
           <span
-            style="vertical-align:baseline; display: inline-block"
+            class="align-baseline d-inline-block"
             aria-label="Appears in the page title if you have notifications" >
             Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
           </span>
-          <span style="float: right; width: 40%">
+          <span style="width: 40%" class='float-right'>
             <input type=text v-model="indicator" style="padding:1px;">
           </span>
         </li>
         <li>
-          <span style="vertical-align:baseline; display:inline-block">Desktop Notifications</span>
+          <span class="align-baseline d-inline-block">Desktop Notifications</span>
           <span
             class="switch"
-            style="vertical-align: baseline"
             aria-label="Whether notifications should be sent directly to your computer">
            <SettingsSwitch v-model="desktopNotifications" />
           </span>
         </li>
         <li>
           <span
-            style="vertical-align:baseline; display: inline-block;"
+            class="align-baseline d-inline-block;"
             aria-label="Keywords that trigger notifications.
             If you have multiple keywords, separate them with commas.
             Your username is automatically a keyword.">
@@ -47,7 +46,7 @@
             <SettingsTooltip text="If you have multiple keywords, separate them with commas.
             Your username is automatically a keyword." />
           </span>
-          <span style="float: right; width: 40%">
+          <span class='float-right' style="width: 40%">
             <input type=text v-model="keywords" style="padding:1px;">
           </span>
         </li>

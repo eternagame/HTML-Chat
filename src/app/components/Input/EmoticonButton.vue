@@ -1,6 +1,10 @@
 <template>
-  <div id='emoticon-button-container' class='emoticon-button' @click="clicked">
-    <p id='emoticon-text-container'>{{emoticon}}</p>
+  <div
+    id='emoticon-button-container'
+    class='emoticon-button text-white border-left-0 border-top-0  pt-1 text-center float-left'
+    @click="clicked"
+  >
+    <p id='emoticon-text-container' class='align-middle h-100'>{{emoticon}}</p>
   </div>
 </template>
 <script lang='ts'>
@@ -18,21 +22,14 @@
 <style scoped>
   .emoticon-button {
     background-color:#043468;
-    color:white;
-    border:none;
-    float:left;
     position: relative;
     width:30px;
     height:25px;
-    padding-top:2px;
-    text-align:center;
   }
   #emoticon-button-container:hover {
     background-color: #21508c;
   }
   #emoticon-text-container {
-    vertical-align: middle;
-    height:100%;
     font-size:14px;
     -webkit-user-select: none;
     -moz-user-select: none;

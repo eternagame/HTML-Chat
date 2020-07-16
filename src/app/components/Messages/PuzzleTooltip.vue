@@ -1,17 +1,38 @@
 <template>
   <div
-    class="puzzle-tooltip-container"
+    class="
+      puzzle-tooltip-container
+      text-white
+      d-flex
+      justify-space-between
+      flex-row
+      flex-wrap
+      rounded
+    "
     ref="container"
     :style="{
       top: `${top + 5}px`,
       left: `${left + 5}px`
     }">
-      <span class="puzzle-name puzzle">{{puzzleName}}</span>
-      <span class="puzzle-user puzzle">{{username}}</span>
-      <span class="puzzle-solvers puzzle">{{solved}} solvers</span>
-      <span class="puzzle-reward puzzle">{{reward}}$</span>
-      <span class="puzzle-comments puzzle">{{comments}} comments</span>
-      <span class="puzzle-description puzzle" v-html="desc" />
+      <span
+        class="puzzle-name puzzle p-1 flex-grow-1 flex-shrink-0 text-left"
+      > {{puzzleName}}</span>
+      <span
+        class="puzzle-user puzzle p-1 flex-grow-1 flex-shrink-0 text-left"
+      >{{username}}</span>
+      <span
+        class="puzzle-solvers puzzle p-1 flex-grow-1 flex-shrink-0 text-right"
+      >{{solved}} solvers</span>
+      <span
+        class="puzzle-reward puzzle p-1 flex-grow-1 flex-shrink-0 text-left"
+      >{{reward}}$</span>
+      <span
+        class="puzzle-comments puzzle p-1 flex-grow-1 flex-shrink-0 text-right"
+      >{{comments}} comments</span>
+      <span
+        class="puzzle-description puzzle p-1 flex-grow-1 flex-shrink-0 border-0"
+        v-html="desc"
+      />
   </div>
 </template>
 <script lang="ts">
@@ -75,38 +96,20 @@
   @import '~bootstrap-vue/dist/bootstrap-vue.css';
   @import '~vue-context/src/sass/vue-context';
   .puzzle-tooltip-container {
-    color:white;
     position: fixed;
     background-color:$med-dark-blue;
     z-index: 2;
-    overflow: visible;
     height:auto;
     top:0px;
     left:0px;
     min-width:250px;
     max-width: 350px;
-    border-radius:5px;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
   }
   .puzzle {
     flex-basis: 50%;
-    flex-grow: 1;
-    flex-shrink: 0;
     border-bottom: white solid 1px;
-    padding: 5px;
   }
   .puzzle-name, .puzzle-description {
     flex-basis: 100%;
-  }
-  .puzzle-user, .puzzle-reward {
-    text-align: left;
-  }
-  .puzzle-solvers, .puzzle-comments {
-    text-align: right;
-  }
-  .puzzle-description {
-    border: none;
   }
 </style>

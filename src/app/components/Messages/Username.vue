@@ -3,7 +3,7 @@
     <a
       v-if="user"
       target="_blank"
-      class="username"
+      class="username text-decoration-none font-weight-bold"
       @focus="$emit('focus')"
       @blur="$emit('blur')"
       :style="{ color: displayedColor }"
@@ -132,10 +132,6 @@
 </script>
 
 <style scoped lang="scss">
-  .username {
-    text-decoration: none;
-    font-weight: bold;
-  }
   .username:focus {
     outline: 1px dotted #212121;
     outline: 5px auto -webkit-focus-ring-color;

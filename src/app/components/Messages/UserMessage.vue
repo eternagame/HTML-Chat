@@ -1,6 +1,6 @@
 <template>
   <li
-    class="chat-message"
+    class="chat-message d-block"
     @mouseleave="hover = false"
     @mouseover="hover = true"
   >
@@ -39,7 +39,7 @@
     </div>
     <div style="overflow:hidden">
       <button
-        class="chat-message-options"
+        class="chat-message-options mr-2 overflow-hidden text-white border-0"
         @click.prevent="openContextMenu"
         @keypress.enter.prevent="openContextMenuWithKey"
         v-show="hover && message.user && message.user.username"
@@ -293,12 +293,7 @@
 @import "../../assets/_custom.scss";
 @import "~bootstrap/scss/bootstrap.scss";
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
-  a {
-    color: #fff;
-  }
-
   .chat-message {
-    display: block;
     position: relative;
   }
 
@@ -344,14 +339,9 @@
     position: absolute;
     top: -4px;
     right: 15px;
-    margin-right:10px;
     font-size: 20px;
-    display: block;
     cursor: pointer;
-    overflow: visible;
     background-color: transparent;
-    color: white;
-    border: none;
   }
 
   .chat-message-options:focus {

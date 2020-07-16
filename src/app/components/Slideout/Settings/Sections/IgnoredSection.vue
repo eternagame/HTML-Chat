@@ -4,8 +4,7 @@
         <li v-for="user in ignoredUsers" :key="user">
           <span style="vertical-align: sub">{{user}}</span>
           <button
-            :style="{ fontSize:`${11 / 14}rem` }"
-            class='unignore-user btn settings-button'
+            class='float-right btn btn-primary btn-sm'
             :aria-label="`Ignore user ${user}`"
             v-on:click="unignore(user)" >
             Unignore
@@ -15,9 +14,7 @@
         <li v-show="anyIgnoredUsers" class="height-normal">
           <button
           aria-label="Unignore all users"
-          :style="{ fontSize:`${11 / 14}rem` }"
-          style="width:100%"
-          class='btn settings-button'
+          class='btn btn-primary w-100 btn-sm'
           v-on:click="unignore('*')"
           >
           Unignore All
@@ -53,19 +50,9 @@
   }
 </script>
 <style lang="scss" scoped>
-@import "@/assets/_custom.scss";
-@import "~bootstrap/scss/bootstrap.scss";
-@import '~bootstrap-vue/dist/bootstrap-vue.css';
-.settings-button {
-  background-color:$green;
-  display: inline-block;
-}
 li {
   width:calc(100% - 40px);
   height:36px;
-}
-.unignore-user {
-  float:right;
 }
 .height-normal {
   height:auto;

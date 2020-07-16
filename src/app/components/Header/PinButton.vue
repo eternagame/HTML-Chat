@@ -1,6 +1,6 @@
 <template>
   <button
-    class="pin-button"
+    class="pin-button border-0"
     style="float: right;"
     @click="$emit('input', !value);"
     :class="{ active: value}"
@@ -30,7 +30,6 @@
     height: 35px;
     width: 35px;
     background-color: transparent;
-    border: none;
     transition: all 0.4s;
   }
   .pin-button:hover {

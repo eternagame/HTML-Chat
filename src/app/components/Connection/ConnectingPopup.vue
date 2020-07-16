@@ -2,7 +2,7 @@
   <div
     v-show="!connectionData.connected &&
       connectionData.firstConnection"
-    class="connecting-popup"
+    class="connecting-popup text-center text-white"
   >
     <img
       src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
@@ -41,7 +41,5 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #fff;
-  text-align: center;
 }
 </style>

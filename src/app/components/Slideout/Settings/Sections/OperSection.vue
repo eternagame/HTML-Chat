@@ -2,20 +2,19 @@
   <SettingsSection title="Operator" >
     <li aria-label="Whether you are a chat moderator/operator">
       <span>You are {{isOper ? '' : 'not'}} an operator</span>
-      <span style="float: right">
+      <span class="float-right">
         <button
           aria-label="Log in as an operator"
           @click="$emit('auth')"
-          :style="{ fontSize:`${11 / 14}rem` }"
-          class="btn settings-button"
+          class="btn btn-primary btn-sm"
           v-show="!isOper" >
             Log in
         </button>
       </span>
     </li>
     <li>
-      <span v-show="isOper" style="vertical-align: sub">Nick</span>
-      <span style="float: right">
+      <span v-show="isOper" class="align-sub">Nick</span>
+      <span class="float-right">
         <input v-show="isOper" @input="setNick" :value="opernick">
       </span>
     </li>
@@ -60,12 +59,6 @@
   }
 </script>
 <style lang="scss" scoped>
-@import "@/assets/_custom.scss";
-@import "~bootstrap/scss/bootstrap.scss";
-@import '~bootstrap-vue/dist/bootstrap-vue.css';
-.settings-button {
-  background-color:$green;
-}
 input {
   margin:2px;
   font-size: 0.85rem;

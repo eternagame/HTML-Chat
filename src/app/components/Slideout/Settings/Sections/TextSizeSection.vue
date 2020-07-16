@@ -8,7 +8,7 @@
       </p>
       <SettingsTooltip
         text="Must be a number between 10 and 18. Default is 14"
-        style="vertical-align:middle"
+        class="align-middle"
       />
     </SettingsSection>
 </template>

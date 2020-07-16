@@ -1,6 +1,6 @@
 <template>
   <div
-    class="user-tooltip-container"
+    class="user-tooltip-container text-white d-flex rounded flex-row flex-wrap overflow-auto"
     ref="container"
     :style="{
       top: `${top + 5}px`,
@@ -97,18 +97,13 @@
   @import '~bootstrap-vue/dist/bootstrap-vue.css';
   @import '~vue-context/src/sass/vue-context';
   .user-tooltip-container {
-    color:white;
     position: fixed;
     background-color:$med-dark-blue;
-    z-index: 1501;
-    overflow: visible;
+    z-index: 99;
     height:auto;
     top:0px;
     left:0px;
     width:250px;
-    border-radius:5px;
-    display: flex;
-    flex-flow: row wrap;
   }
   .user {
     flex: 0 1 50%;
