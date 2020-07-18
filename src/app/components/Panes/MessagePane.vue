@@ -112,7 +112,7 @@
       const msgs = this.displayedMessages;
       // Creates and array of Message arrays and Messages. Messages by the same user
       // are grouped together in one array. Other, non-grouped messages are in the main array
-      const temp = [];
+      const temp: any = [];
       msgs.forEach(e => {
         const len = temp.length - 1;
         // If it's the first message, add it

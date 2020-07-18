@@ -21,7 +21,7 @@
   })
   export default class MessageGroup extends Vue {
     @Prop({ required: true })
-    messages: Message[];
+    messages !: Message[];
   }
 </script>
 <style lang="scss">
