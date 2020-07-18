@@ -2,12 +2,10 @@
   "name": "html-chat",
   "version": "0.1.0",
   "private": true,
-  "main": "/dist/html-chat.umd.js",
   "scripts": {
     "start": "npm run serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build-bundle": "vue-cli-service build --target lib --name html-chat ./src/app/App.vue",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
