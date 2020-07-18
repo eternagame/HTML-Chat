@@ -17,8 +17,8 @@
   @Component
   export default class DraggableDiv extends Vue {
     positions = {
-      clientX: undefined,
-      clientY: undefined,
+      clientX: 0,
+      clientY: 0,
       movementX: 0,
       movementY: 0,
     };
@@ -30,7 +30,7 @@
     positionBasis !: string;
 
     get container() {
-      return this.$refs.draggableContainer;
+      return this.$refs.draggableContainer as HTMLDivElement;
     }
 
     @Watch('enabled')
@@ -41,7 +41,7 @@
       }
     }
 
-    dragMouseDown(event) {
+    dragMouseDown(event: MouseEvent) {
       if (this.enabled) {
         this.$emit('dragMouseDown');
         event.preventDefault();
@@ -53,7 +53,7 @@
       }
     }
 
-    elementDrag(event) {
+    elementDrag(event: MouseEvent) {
       if (this.enabled) { // If dragging isn't disabled
         event.preventDefault();
         this.positions.movementX = this.positions.clientX - event.clientX;
@@ -80,7 +80,7 @@
           left, top, width, height,
         } = this.container.style;
         const chatPosition = {
-          x: (left.replace('px', '')),
+          x: Number(left.replace('px', '')),
           y: Number(top.replace('px', '')),
         };
         const chatSize = {

@@ -142,8 +142,8 @@
     }
     if (this.fullSize === false) {
       // Scrolls down when the chat is brought back to normal size
-      if (this.$refs.messagepanes && this.$refs.messagepanes[this.activeTab]) {
-        this.$refs.messagepanes[this.activeTab].onContentChanged();
+      if (this.$refs.messagepanes && this.$refs.messagepanes[this.activeTab as number]) {
+        this.$refs.messagepanes[this.activeTab as number].onContentChanged();
       }
     }
   }
@@ -330,7 +330,7 @@
     reportDialog: ReportDialog;
     login: OperLogin,
     privmsgmodal: PrivateMessageModal,
-    messagepanes: MessagePane,
+    messagepanes: MessagePane[],
     slideout: Slideout,
   };
 
@@ -357,10 +357,6 @@
           this.$vxm.chat.loadMessagesForChannel('#general');
           this.logInOper();
           setTimeout(() => {
-            /* This gives an error because it doesn't recognize
-            using ref on a v-for gives an Array of VueComponents.
-            It think's its just a normal MessagePane
-            */
             const pane = this.$refs.messagepanes[0];
             if (pane) {
               pane.scrollDown();

@@ -2,6 +2,7 @@
   "name": "html-chat",
   "version": "0.1.0",
   "private": true,
+  "main": "src/app/App.vue",
   "scripts": {
     "start": "npm run serve",
     "serve": "vue-cli-service serve",
