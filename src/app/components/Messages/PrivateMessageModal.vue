@@ -62,8 +62,6 @@
 
 <style lang="scss">
   @import "@/assets/_custom.scss";
-  @import "~bootstrap/scss/bootstrap.scss";
-  @import '~bootstrap-vue/dist/bootstrap-vue.css';
   .message {
     position: absolute;
     left: 50%;

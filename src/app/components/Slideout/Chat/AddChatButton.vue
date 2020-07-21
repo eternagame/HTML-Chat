@@ -39,9 +39,7 @@
 
 
 <style lang="scss" scoped>
-  @import "~bootstrap/scss/bootstrap.scss";
-  @import '~bootstrap-vue/dist/bootstrap-vue.css';
-  @import "../../../assets/_custom.scss";
+  @import "~@/assets/_custom.scss";
   /* Style the buttons that are used to open the tab content */
   .add-chat-container {
     transition: 0.3s;

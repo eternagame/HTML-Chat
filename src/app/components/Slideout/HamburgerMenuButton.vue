@@ -31,18 +31,18 @@
 .hamburger { /* Normal hamburger icon */
   width:40px;
   height:40px;
-  background-image: url("../../assets/hamburger.png");
+  background-image: url("~@/assets/hamburger.png");
   background-repeat: no-repeat;
   background-size: 50% 45%;
   background-position: bottom 10px left 11px;
   background-color: transparent;
 }
 .notified { /* Notified hamburger icon */
-  background-image: url("../../assets/hamburger-notification.png");
+  background-image: url("~@/assets/hamburger-notification.png");
   background-size: 62.5% 55%;
   background-position:bottom 10px left 11px;
 }
 .mentioned { /* Mentioned hamburger icon */
-  background-image: url("../../assets/hamburger-mention.png") !important;
+  background-image: url("~@/assets/hamburger-mention.png") !important;
 }
 </style>

@@ -92,9 +92,7 @@
   }
 </script>
 <style scoped lang="scss">
-  @import "../../assets/_custom.scss";
-  @import "~bootstrap/scss/bootstrap.scss";
-  @import '~bootstrap-vue/dist/bootstrap-vue.css';
+  @import "~@/assets/_custom.scss";
   @import '~vue-context/src/sass/vue-context';
   .user-tooltip-container {
     position: fixed;
