@@ -15,9 +15,6 @@
   }
 </script>
 <style lang="scss">
-@import "../../assets/_custom.scss";
-@import "~bootstrap/scss/bootstrap.scss";
-@import '~bootstrap-vue/dist/bootstrap-vue.css';
 .unread-banner-container {
   position:sticky;
   bottom:0;

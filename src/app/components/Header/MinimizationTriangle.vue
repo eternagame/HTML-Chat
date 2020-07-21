@@ -33,7 +33,7 @@
 
 <style lang="scss" scoped>
   .minimization-triangle { /* Normal state */
-    background-image: url("../../assets/minimization-triangle.png");
+    background-image: url("~@/assets/minimization-triangle.png");
     background-repeat: no-repeat;
     background-size: 60% 40%;
     background-position: center;

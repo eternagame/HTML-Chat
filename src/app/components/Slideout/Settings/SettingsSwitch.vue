@@ -28,8 +28,6 @@
 </script>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";
-@import "~bootstrap/scss/bootstrap.scss";
-@import '~bootstrap-vue/dist/bootstrap-vue.css';
 /* The switch - the box around the slider */
 .switch {
   position: relative;

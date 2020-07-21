@@ -101,9 +101,6 @@
   }
 </script>
 <style lang="scss" scoped>
-@import "@/assets/_custom.scss";
-@import "~bootstrap/scss/bootstrap.scss";
-@import '~bootstrap-vue/dist/bootstrap-vue.css';
 li {
   list-style-type: none;
   width: calc(100% - 40px);

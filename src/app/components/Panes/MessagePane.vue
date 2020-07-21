@@ -203,9 +203,9 @@
     }
 
     get anyChatFeatures() { // Checks if any chat features are enabled
-      return (this.$vxm.settings.allChatFeatures
-      || this.$vxm.settings.emoticonChatFeatures
-      || this.$vxm.settings.markdownChatFeatures);
+      return (this.$vxm.settings.emoticonChatFeatures
+      || this.$vxm.settings.markdownChatFeatures
+      || this.$vxm.settings.previewChatFeatures);
     }
 
     // Updates footer height when chat disappears/appears

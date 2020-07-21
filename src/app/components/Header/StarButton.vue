@@ -23,7 +23,7 @@
 
 <style lang="scss" scoped>
   .star-button {
-    background-image: url("../../assets/star-outline.png");
+    background-image: url("~@/assets/star-outline.png");
     background-repeat: no-repeat;
     background-size: 60% 60%;
     background-position: center;
@@ -36,6 +36,6 @@
     cursor: pointer;
   }
   .star-button.active {
-    background-image: url("../../assets/star.png");
+    background-image: url("~@/assets/star.png");
   }
 </style>

@@ -25,7 +25,7 @@
 <style lang="scss" scoped>
   .send-button {
     background-color:rgba(0,0,0,0);
-    background-image: url("../../assets/send-button.png");
+    background-image: url("~@/assets/send-button.png");
     background-repeat: no-repeat;
     background-size: 60% 60%;
     background-position: center;
