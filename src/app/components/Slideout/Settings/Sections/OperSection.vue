@@ -2,11 +2,11 @@
   <SettingsSection title="Operator" >
     <li aria-label="Whether you are a chat moderator/operator">
       <span>You are {{isOper ? '' : 'not'}} an operator</span>
-      <span class="float-right">
+      <span class="float-right w-100">
         <button
           aria-label="Log in as an operator"
           @click="$emit('auth')"
-          class="btn btn-primary btn-sm"
+          class="btn btn-primary btn-sm w-100"
           v-show="!isOper" >
             Log in
         </button>
