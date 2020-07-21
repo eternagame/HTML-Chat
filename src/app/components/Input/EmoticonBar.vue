@@ -57,7 +57,6 @@
         name="👍"
         styles=""
         @button="select('emoticon');"
-        @close="close"
       />
       <MenuButton
         aria-label="Open markdown toolbar"
@@ -66,7 +65,6 @@
         name="A"
         styles="bold italics underline"
         @button="select('markdown');"
-        @close="close"
       />
       <MenuButton
         aria-label="Open preview toolbar"
@@ -75,7 +73,6 @@
         name="P"
         styles=""
         @button="select('preview');"
-        @close="close"
       />
       <MenuButton
         name="?"
@@ -132,17 +129,17 @@
     /* Opens emoticon or markdown submenu depending on which button was pressed */
     select(menu:string) {
       if (menu === 'markdown') {
-        this.markdownSelected = true;
+        this.markdownSelected = !this.markdownSelected;
         this.emoticonsSelected = false;
         this.previewSelected = false;
       } else if (menu === 'emoticon') {
         this.markdownSelected = false;
-        this.emoticonsSelected = true;
+        this.emoticonsSelected = !this.emoticonsSelected;
         this.previewSelected = false;
       } else if (menu === 'preview') {
         this.markdownSelected = false;
         this.emoticonsSelected = false;
-        this.previewSelected = true;
+        this.previewSelected = !this.previewSelected;
       }
       this.$emit('update');
     }
@@ -166,6 +163,7 @@
       this.markdownSelected = false;
       this.emoticonsSelected = false;
       this.previewSelected = false;
+      this.$emit('update');
     }
 
     // Changing input

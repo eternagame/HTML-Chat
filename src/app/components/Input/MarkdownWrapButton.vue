@@ -1,7 +1,15 @@
 <template>
   <button
     id='md-wrap-button-container'
-    class='md-button text-white border-left-0 border-top-0 float-left pt-0 text-center'
+    class='
+    md-button
+    text-white
+    border-left-0
+    border-top-0
+    border-bottom-0
+    float-left
+    pt-0
+    text-center'
     @click="clicked">
     <span
       class="text"
