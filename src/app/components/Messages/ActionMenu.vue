@@ -56,14 +56,14 @@
         Copy message
       </button>
     </li>
-    <li v-if="!pinned">
-      <button @click.once="pin">
-        Pin message
+    <li v-if="!starred">
+      <button @click.once="star">
+        Star message
       </button>
     </li>
-    <li v-if="pinned">
-      <button @click="unpin">
-        Unpin message
+    <li v-if="starred">
+      <button @click="unstar">
+        Unstar message
       </button>
     </li>
   </VueContext>
@@ -123,25 +123,25 @@
       this.$vxm.chat.privMsgModal = true;
     }
 
-    pin() {
-      this.$vxm.chat.addPinnedMessage(this.message);
-      const localPins = [];
-      if (localStorage.chat_pins) {
-        localPins.push(...JSON.parse(localStorage.chat_pins) as Message[]);
+    star() {
+      this.$vxm.chat.addStarredMessage(this.message);
+      const localStars = [];
+      if (localStorage.chat_stars) {
+        localStars.push(...JSON.parse(localStorage.chat_stars) as Message[]);
       }
-      localPins.push(this.message);
-      localStorage.chat_pins = JSON.stringify(localPins);
+      localStars.push(this.message);
+      localStorage.chat_stars = JSON.stringify(localStars);
     }
 
-    unpin() {
-      this.$vxm.chat.removePin(this.message);
-      let localPins = [];
-      if (localStorage.chat_pins) {
-        localPins.push(...JSON.parse(localStorage.chat_pins) as Message[]);
+    unstar() {
+      this.$vxm.chat.removeStar(this.message);
+      let localStars = [];
+      if (localStorage.chat_stars) {
+        localStars.push(...JSON.parse(localStorage.chat_stars) as Message[]);
       }
-      localPins = localPins.filter(e => e.message !== this.message.message
+      localStars = localStars.filter(e => e.message !== this.message.message
           && e.user !== this.message.user);
-      localStorage.chat_pins = JSON.stringify(localPins);
+      localStorage.chat_stars = JSON.stringify(localStars);
     }
 
     get oper() {
@@ -153,8 +153,8 @@
       return `http://${this.$vxm.chat.workbranch}/web/player/${this.user.uid}/`;
     }
 
-    get pinned() {
-      return this.message.pinnned;
+    get starred() {
+      return this.message.starred;
     }
 
     open(event: MouseEvent) {
