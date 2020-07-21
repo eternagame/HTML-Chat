@@ -4,7 +4,7 @@
     @mouseleave="hover = false"
     @mouseover="hover = true"
   >
-    <div :style="{ textAlign: isNotice ? 'center' : 'left'}">
+    <div :style="{ textAlign: isNotice ? 'center' : 'left'}" class="message-container">
       <span :class="{'chat-message-action': isAction}">
         <Username
           :user="message.user"
@@ -37,7 +37,7 @@
       &lrm;
       <span v-if="!isNotice" class="message-time">[{{formattedTime}}]</span>
     </div>
-    <div style="overflow:hidden">
+    <div class="options overflow-hidden">
       <button
         class="chat-message-options mr-2 overflow-hidden text-white border-0"
         @click.prevent="openContextMenu"
@@ -334,11 +334,16 @@
     font-size: 0.8em;
   }
 
+  .message-container {
+    padding-right: 12px;
+  }
+
   .chat-message-options {
     position: absolute;
     top: -4px;
-    right: 15px;
+    right: 0px;
     font-size: 20px;
+    font-weight: bold;
     cursor: pointer;
     background-color: transparent;
   }
