@@ -24,14 +24,6 @@ export default class SettingsModule extends VuexModule {
 
   typingMessages = true;
 
-  created() {
-    if (localStorage) {
-      if (localStorage.chat_typingMessages) {
-        this.typingMessages = JSON.parse(localStorage.chat_typingMessages);
-      }
-    }
-  }
-
   get fontSize() {
     return Math.min(Math.max(this.font, 0), 18);
   }
