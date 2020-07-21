@@ -7,7 +7,10 @@
       left: `${left + 5}px`
     }">
       <div class="user-tooltip-heading-container pr-2 pl-2 pt-2 mb-1">
-        <div class="user-profile text-center"><img :src="profileImage"></div>
+        <div class="user-profile text-center">
+          <img v-if="profileImage" :src="profileImage">
+          <InlineLoadingSpinner v-else />
+        </div>
         <span class="user-name text-center w-100 d-inline-block">
           <span style="color:yellow; font-size:1.25em" v-show="user.away">● </span>
           <a :href="`https://${$vxm.chat.workbranch}/players/${user.uid}`">{{user.username}}</a>
@@ -16,7 +19,10 @@
       <div class="user-tooltip-info-container user-tooltip-section pr-2 pl-2 mb-1">
         <li class="w-100">
           <span>Rank</span>
-          <span class="user-rank float-right">{{rank}}</span>
+          <span class="user-rank float-right">
+            <span v-if="rank">{{rank}}</span>
+            <InlineLoadingSpinner v-else />
+          </span>
         </li>
         <li>
           <span>Roles</span>
@@ -24,7 +30,10 @@
         </li>
       </div>
       <div class="user-tooltip-desc-container pr-2 pl-2 pb-2">
-        <span class="user-description w-100 d-inline-block" v-html="desc" />
+        <span class="user-description w-100 d-inline-block">
+          <span v-if="desc" v-html="desc" />
+          <InlineLoadingSpinner v-else />
+        </span>
       </div>
   </div>
 </template>
@@ -33,7 +42,12 @@
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
   import User from '@/types/user';
-  @Component
+  import InlineLoadingSpinner from './InlineLoadingSpinner.vue';
+  @Component({
+    components: {
+      InlineLoadingSpinner,
+    },
+  })
   export default class UserTooltip extends Vue {
     @Prop({ required: true })
     user !: User;
@@ -44,11 +58,11 @@
     @Prop({ default: 0 })
     left !: number;
 
-    desc = 'This user has not added a description to their profile';
+    desc: string | null = null;
 
-    rank = 'Unranked';
+    rank: string | null = null;
 
-    profileImage = '';
+    profileImage: string | null = null;
 
     $refs !: {
       container: HTMLDivElement;
@@ -68,12 +82,18 @@
                 desc += '&hellip;';
               }
               this.desc = desc;
+            } else {
+              this.desc = 'User has not added a description to their profile';
             }
             if (data.data.user.rank) {
               this.rank = `#${data.data.user.rank}`;
+            } else {
+              this.rank = 'Unranked';
             }
             if (data.data.user.picture) {
               this.profileImage = `https://eternagame.org/${data.data.user.picture}`;
+            } else {
+              this.profileImage = '';
             }
           }
         },

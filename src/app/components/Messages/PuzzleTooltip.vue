@@ -10,28 +10,44 @@
       top: `${top + 5}px`,
       left: `${left + 5}px`
     }">
-      <div class="user-tooltip-heading-container pr-2 pl-2 pt-2 mb-1">
-        <div class="puzzle-name text-center">{{puzzleName}}</div>
+      <div class="puzzle-tooltip-heading-container pr-2 pl-2 pt-2 mb-1">
+        <div class="puzzle-name text-center">
+          <span v-if="puzzleName">{{puzzleName}}</span>
+          <InlineLoadingSpinner v-else />
+        </div>
         <div class="puzzle-user text-center">
-          <a :href="`https://${$vxm.chat.workbranch}/user/${uid}`">{{username}}</a>
+          <a v-if="uid" :href="`https://${$vxm.chat.workbranch}/user/${uid}`">{{username}}</a>
+          <InlineLoadingSpinner v-else />
         </div>
       </div>
-      <div class="user-tooltip-info-container user-tooltip-section pr-2 pl-2 mb-1">
+      <div class="puzzle-tooltip-info-container user-tooltip-section pr-2 pl-2 mb-1">
         <li class="w-100">
           <span>Solvers</span>
-          <span class="user-rank float-right">{{solved}}</span>
+          <span class="puzzle-solvers float-right">
+            <span v-if="solved">{{ solved }}</span>
+            <InlineLoadingSpinner v-else />
+          </span>
         </li>
         <li class="w-100">
           <span>Reward</span>
-          <span class="user-rank float-right">{{reward}}</span>
+          <span class="puzzle-reward float-right">
+            <span v-if="reward">{{reward}}</span>
+            <InlineLoadingSpinner v-else />
+          </span>
         </li>
         <li>
           <span>Comments</span>
-          <span class="puzzle-status float-right">{{comments}}</span>
+          <span class="puzzle-comments float-right">
+            <span v-if="comments">{{comments}}</span>
+            <InlineLoadingSpinner v-else />
+          </span>
         </li>
       </div>
       <div class="puzzle-tooltip-desc-container pr-2 pl-2 pb-2">
-        <span class="puzzle-description w-100 d-inline-block" v-html="desc" />
+        <span class="puzzle-description w-100 d-inline-block">
+          <span v-if="desc" v-html="desc" />
+          <InlineLoadingSpinner v-else />
+        </span>
       </div>
   </div>
 </template>
@@ -39,7 +55,12 @@
   import {
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
-  @Component
+  import InlineLoadingSpinner from './InlineLoadingSpinner.vue';
+  @Component({
+    components: {
+      InlineLoadingSpinner,
+    },
+  })
   export default class PuzzleTooltip extends Vue {
     @Prop({ required: true })
     pid !: number;
@@ -54,19 +75,19 @@
       container: HTMLDivElement;
     };
 
-    puzzleName = 'Untitled';
+    puzzleName: string | null = null;
 
-    desc = 'No description';
+    desc: string | null = null;
 
-    username = 'Anonymous';
+    username: string | null = null;
 
-    uid = '0';
+    uid: string | null = null;
 
-    comments = 'None';
+    comments: string | null = null;
 
-    solved = 0;
+    solved: number | null = null;
 
-    reward = 100;
+    reward: number | null = null;
 
     fill() {
       this.$vxm.chat.getPuzzleInfo({
@@ -82,7 +103,6 @@
             desc += '&hellip;';
           }
           this.desc = desc;
-          console.log(data);
           this.solved = parseInt(data['num-cleared'], 10) || 0;
           this.reward = parseInt(data.reward, 10);
           this.username = data.username;
