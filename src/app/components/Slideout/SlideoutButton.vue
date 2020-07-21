@@ -10,7 +10,7 @@
     @click="$emit('input')"
   >
     <img
-    :alt="`${this.selected ? 'Selected' : 'Unselected'} ${name} tab image`"
+    :alt="`${this.selected ? 'Selected' : 'Unselected'} ${name} tab`"
     :src="require(`@/assets/${name}-icon-${selected ? 'green' : 'white'}.png`)"
     >
     <slot />
