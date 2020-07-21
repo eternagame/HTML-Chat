@@ -1,6 +1,6 @@
 <template>
   <Pane ref="pane" :visibility="visibility" :data="data" @autoscroll="this.autoscroll">
-    <ul style="margin-bottom:0; padding-right:10px">
+    <ul style="margin-bottom:0;" class="list-group list-style-type-none">
       <span
         v-for="(message, i) in groupedMessages"
         :key="i"

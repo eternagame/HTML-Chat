@@ -52,8 +52,12 @@
 </script>
 
 <style lang="scss">
-@import url(https://eternagame.org/workbranch_main/frontend/eterna.min.css?ver=t1563775052);
 @import url(https://fonts.googleapis.com/css?family=Didact+Gothic|Open+Sans:400,300,600,700);
+
+@import "@/assets/global.scss";
+@import '~bootstrap-vue/src/index.scss';
+@import '~bootstrap/scss/bootstrap.scss';
+@import "@/assets/_custom.scss";
 
 body {
   min-width: 0;

@@ -42,6 +42,11 @@
     }
   }
 </script>
+<style>
+li {
+  list-style-type: none;
+}
+</style>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";
 #settings-wrapper { /* Wrapper div */

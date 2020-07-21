@@ -1,18 +1,31 @@
 <template>
   <div
-    class="user-tooltip-container text-white d-flex rounded flex-row flex-wrap overflow-auto"
+    class="user-tooltip-container text-white rounded overflow-auto"
     ref="container"
     :style="{
       top: `${top + 5}px`,
       left: `${left + 5}px`
     }">
-      <span class="user-name user">
-        <span style="color:yellow; font-size:1.25em" v-show="user.away">● </span>{{user.username}}
-      </span>
-      <span class="user-profile user"><img :src="profileImage"></span>
-      <span class="user-rank user">{{rank}}</span>
-      <span class="user-status user">{{status}}</span>
-      <span class="user-description user" v-html="desc" />
+      <div class="user-tooltip-heading-container pr-2 pl-2 pt-2 mb-1">
+        <div class="user-profile text-center"><img :src="profileImage"></div>
+        <span class="user-name text-center w-100 d-inline-block">
+          <span style="color:yellow; font-size:1.25em" v-show="user.away">● </span>
+          <a :href="`https://${$vxm.chat.workbranch}/players/${user.uid}`">{{user.username}}</a>
+        </span>
+      </div>
+      <div class="user-tooltip-info-container user-tooltip-section pr-2 pl-2 mb-1">
+        <li class="w-100">
+          <span>Rank</span>
+          <span class="user-rank float-right">{{rank}}</span>
+        </li>
+        <li>
+          <span>Roles</span>
+          <span class="user-status float-right">{{status}}</span>
+        </li>
+      </div>
+      <div class="user-tooltip-desc-container pr-2 pl-2 pb-2">
+        <span class="user-description w-100 d-inline-block" v-html="desc" />
+      </div>
   </div>
 </template>
 <script lang="ts">
@@ -83,17 +96,25 @@
           status.push(e);
         }
       });
-      if (status.length > 0) {
-        this.status = status.join(', ');
-      }
+      status.push('player');
+      this.status = status.join(', ');
     }
 
     status = '';
+
+    created() {
+      window.addEventListener('click', (e) => {
+        const clicked = e.target as Element;
+        if (!clicked.classList.contains('user-link')) {
+          this.$emit('hide');
+         }
+      });
+    }
   }
 </script>
 <style scoped lang="scss">
-  @import "~@/assets/_custom.scss";
   @import '~vue-context/src/sass/vue-context';
+  @import "~@/assets/_custom.scss";
   .user-tooltip-container {
     position: fixed;
     background-color:$med-dark-blue;
@@ -103,22 +124,21 @@
     left:0px;
     width:250px;
   }
-  .user {
-    flex: 0 1 50%;
-    padding: 5px;
-    border-bottom: 1px solid white;
-  }
   .user-status::first-letter {
     text-transform: capitalize;
   }
-  .user-profile, .user-status {
+  .user-status, .user-rank {
     text-align:right;
   }
-  .user-description {
-    flex-basis: 100%;
-    border: none;
-  }
   img {
-    height: 1.5rem;
+    height: 75px;
+    background-color: $dark-blue;
+    border-radius: 50%;
+  }
+  .user-tooltip-heading-container {
+    background-color: $med-dark-blue;
+  }
+  .user-name > a {
+    color: $yellow;
   }
 </style>

@@ -1,55 +1,59 @@
 <template>
   <SettingsSection title="Notifications" >
-        <ul aria-label="Enable or disable notifications for channels">
-          <li
-            v-for="channel in channels"
-            :key="channel.name"
-            :aria-label="`Notifications for ${channel.name}`" >
-            <span class="align-baseline">{{channel.name}}</span>
-            <span class="switch">
-              <SettingsSwitch v-model="$vxm.chat.channels[channel.name].notificationsEnabled"
-              @input="updateNotifications(channel.name)" />
-            </span>
-          </li>
-          <li aria-label="Notifications for all channels">
-            <span class="align-baseline">All</span>
-            <span class="switch">
-              <SettingsEnableDisable :value="allEnabled" @input="updateAll" />
-            </span>
-          </li>
-        </ul>
-        <li>
-          <span
-            class="align-baseline d-inline-block"
-            aria-label="Appears in the page title if you have notifications" >
-            Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
-          </span>
-          <span style="width: 40%" class='float-right'>
-            <input type=text v-model="indicator" style="padding:1px;">
-          </span>
-        </li>
-        <li>
-          <span class="align-baseline d-inline-block">Desktop Notifications</span>
-          <span
-            class="switch"
-            aria-label="Whether notifications should be sent directly to your computer">
-           <SettingsSwitch v-model="desktopNotifications" />
-          </span>
-        </li>
-        <li>
-          <span
-            class="align-baseline d-inline-block;"
-            aria-label="Keywords that trigger notifications.
-            If you have multiple keywords, separate them with commas.
-            Your username is automatically a keyword.">
-            Keywords
-            <SettingsTooltip text="If you have multiple keywords, separate them with commas.
-            Your username is automatically a keyword." />
-          </span>
-          <span class='float-right' style="width: 40%">
-            <input type=text v-model="keywords" style="padding:1px;">
-          </span>
-        </li>
+    <ul aria-label="Enable or disable notifications for channels" class="list-group">
+      <li
+        v-for="channel in channels"
+        :key="channel.name"
+        :aria-label="`Notifications for ${channel.name}`"
+      >
+        <span class="align-baseline">{{channel.name}}</span>
+        <span class="switch">
+          <SettingsSwitch
+            v-model="$vxm.chat.channels[channel.name].notificationsEnabled"
+            @input="updateNotifications(channel.name)"
+          />
+        </span>
+      </li>
+      <li aria-label="Notifications for all channels">
+        <span class="align-baseline">All</span>
+        <span class="switch">
+          <SettingsEnableDisable :value="allEnabled" @input="updateAll" />
+        </span>
+      </li>
+    </ul>
+    <li>
+      <span
+        class="align-baseline d-inline-block"
+        aria-label="Appears in the page title if you have notifications"
+      >
+        Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
+      </span>
+      <span style="width: 40%" class='float-right'>
+        <input type=text v-model="indicator" style="padding:1px;">
+      </span>
+    </li>
+    <li>
+      <span class="align-baseline d-inline-block">Desktop Notifications</span>
+      <span
+        class="switch"
+        aria-label="Whether notifications should be sent directly to your computer"
+      >
+        <SettingsSwitch v-model="desktopNotifications" />
+      </span>
+    </li>
+    <li>
+      <span
+        class="align-baseline d-inline-block;"
+        aria-label="Keywords that trigger notifications."
+      >
+        Keywords
+          <SettingsTooltip text="If you have multiple keywords, separate them with commas.
+          Your username is automatically a keyword." />
+      </span>
+      <span class='float-right' style="width: 40%">
+        <input type=text v-model="keywords" style="padding:1px;">
+      </span>
+    </li>
   </SettingsSection>
 </template>
 <script lang="ts">

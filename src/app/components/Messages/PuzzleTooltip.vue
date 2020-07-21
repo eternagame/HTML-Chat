@@ -3,10 +3,6 @@
     class="
       puzzle-tooltip-container
       text-white
-      d-flex
-      justify-space-between
-      flex-row
-      flex-wrap
       rounded
     "
     ref="container"
@@ -14,25 +10,29 @@
       top: `${top + 5}px`,
       left: `${left + 5}px`
     }">
-      <span
-        class="puzzle-name puzzle p-1 flex-grow-1 flex-shrink-0 text-left"
-      > {{puzzleName}}</span>
-      <span
-        class="puzzle-user puzzle p-1 flex-grow-1 flex-shrink-0 text-left"
-      >{{username}}</span>
-      <span
-        class="puzzle-solvers puzzle p-1 flex-grow-1 flex-shrink-0 text-right"
-      >{{solved}} solvers</span>
-      <span
-        class="puzzle-reward puzzle p-1 flex-grow-1 flex-shrink-0 text-left"
-      >{{reward}}$</span>
-      <span
-        class="puzzle-comments puzzle p-1 flex-grow-1 flex-shrink-0 text-right"
-      >{{comments}} comments</span>
-      <span
-        class="puzzle-description puzzle p-1 flex-grow-1 flex-shrink-0 border-0"
-        v-html="desc"
-      />
+      <div class="user-tooltip-heading-container pr-2 pl-2 pt-2 mb-1">
+        <div class="puzzle-name text-center">{{puzzleName}}</div>
+        <div class="puzzle-user text-center">
+          <a :href="`https://${$vxm.chat.workbranch}/user/${uid}`">{{username}}</a>
+        </div>
+      </div>
+      <div class="user-tooltip-info-container user-tooltip-section pr-2 pl-2 mb-1">
+        <li class="w-100">
+          <span>Solvers</span>
+          <span class="user-rank float-right">{{solved}}</span>
+        </li>
+        <li class="w-100">
+          <span>Reward</span>
+          <span class="user-rank float-right">{{reward}}</span>
+        </li>
+        <li>
+          <span>Comments</span>
+          <span class="puzzle-status float-right">{{comments}}</span>
+        </li>
+      </div>
+      <div class="puzzle-tooltip-desc-container pr-2 pl-2 pb-2">
+        <span class="puzzle-description w-100 d-inline-block" v-html="desc" />
+      </div>
   </div>
 </template>
 <script lang="ts">
@@ -60,7 +60,9 @@
 
     username = 'Anonymous';
 
-    comments = 'No';
+    uid = '0';
+
+    comments = 'None';
 
     solved = 0;
 
@@ -80,12 +82,23 @@
             desc += '&hellip;';
           }
           this.desc = desc;
-          this.solved = parseInt(data['num-cleared'], 10);
+          console.log(data);
+          this.solved = parseInt(data['num-cleared'], 10) || 0;
           this.reward = parseInt(data.reward, 10);
           this.username = data.username;
+          this.uid = data.uid;
           const { comments } = JSON.parse(d).data;
-          this.comments = comments.length > 0 ? comments.length : 'No';
+          this.comments = comments.length > 0 ? comments.length : 'None';
         },
+      });
+    }
+
+    created() {
+      window.addEventListener('click', (e) => {
+        const clicked = e.target as Element;
+        if (!clicked.classList.contains('puzzle-link')) {
+          this.$emit('hide');
+         }
       });
     }
   }
@@ -103,11 +116,7 @@
     min-width:250px;
     max-width: 350px;
   }
-  .puzzle {
-    flex-basis: 50%;
-    border-bottom: white solid 1px;
-  }
-  .puzzle-name, .puzzle-description {
-    flex-basis: 100%;
+  a {
+    color: $yellow;
   }
 </style>
