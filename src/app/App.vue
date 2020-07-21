@@ -444,7 +444,10 @@
   }
 </script>
 <style lang="scss">
-@import "./assets/_custom.scss";
+@import "@/assets/global.scss";
+@import '~bootstrap-vue/src/index.scss';
+@import '~bootstrap/scss/bootstrap.scss';
+@import "@/assets/_custom.scss";
 #eterna-chat:not(.tabbing) button:focus {
   outline: none;
   border: none;

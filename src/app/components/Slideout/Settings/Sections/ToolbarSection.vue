@@ -1,6 +1,6 @@
 <template>
   <SettingsSection title="Toolbar Features">
-    <ul aria-label="Which features are enabled in the toolbar">
+    <ul aria-label="Which features are enabled in the toolbar" class="list-group">
       <li aria-label="Whether emoticons are enabled in the toolbar">
         <span class="align-sub">
           Emoticons
@@ -29,7 +29,7 @@
         </span>
       </li>
     </ul>
-    <ul class="mt-2" v-if="$vxm.settings.emoticonChatFeatures"
+    <ul class="mt-2 list-group" v-if="$vxm.settings.emoticonChatFeatures"
       aria-label="Change custom emoticons that appear in the toolbar">
       <li>
         Custom emoticons

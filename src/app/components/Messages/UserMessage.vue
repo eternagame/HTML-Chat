@@ -27,6 +27,7 @@
         ref="clickTooltip"
         :top="tooltipY"
         :left="tooltipX"
+        @hide="tooltipVisible = false"
       />
       <PuzzleTooltip
         v-if="puzzleTooltipVisible"
@@ -34,6 +35,7 @@
         ref="puzzleTooltip"
         :top="puzzleTooltipY"
         :left="puzzleTooltipX"
+        @hide="puzzleTooltipVisible = false"
       />
       &lrm;
       <span
@@ -142,13 +144,17 @@
       // Iterates through each channel link
       [...userLinks].forEach(l => {
         // Adds event listener for hover
-        l.addEventListener('mouseenter', (ev) => {
+        l.addEventListener('click', (ev) => {
           const user = l.innerHTML.substring(1);
           // Makes sure user exists
           if (Object.keys(this.$vxm.chat.connectedUsers).includes(user)) {
             // Set the user of the tooltip
             this.clickedUser = this.$vxm.chat.connectedUsers[user]!;
             this.tooltipVisible = true; // Make it visible
+            this.tooltipX = (ev as MouseEvent).clientX
+              || (ev.target as Element).getBoundingClientRect().x;
+            this.tooltipY = (ev as MouseEvent).clientY
+              || (ev.target as Element).getBoundingClientRect().y;
             /* Ensures information is loaded after the tooltip exists
             The tooltip uses v-if (to limit GET requests)
             If the functions are called right away,
@@ -161,23 +167,6 @@
             console.log(`No such user ${user}`);
           }
         });
-        // Hide the tooltip not hovered over
-        l.addEventListener('mouseleave', (ev) => {
-          this.tooltipVisible = false;
-        });
-        // When the mouse is moved, update the tooltip position
-        l.addEventListener('mousemove', (e: Event) => {
-          const ev = e as MouseEvent;
-          this.tooltipX = ev.clientX;
-          this.tooltipY = ev.clientY;
-        });
-        // Opens player profile on click
-        l.addEventListener('click', () => {
-          const username = l.innerHTML.substring(1);
-          const user = this.$vxm.chat.connectedUsers[username];
-          if (!user) return;
-          window.open(`https://${this.$vxm.chat.workbranch}/web/player/${user.uid}/`);
-        });
       });
       // Gets puzzle links from markdown
       const puzzleLinks = this.$refs.msg.getElementsByClassName('puzzle-link');
@@ -185,11 +174,15 @@
       // Iterates through each channel link
       [...puzzleLinks].forEach(l => {
         // Adds event listener for hover
-        l.addEventListener('mouseenter', (ev) => {
+        l.addEventListener('click', (ev) => {
           const url = (l as HTMLElement).innerText;
           const matches = url.match(/\d+\/?$/);
           this.pid = parseInt((matches ? matches[0] : '0'), 10);
           this.puzzleTooltipVisible = true; // Make it visible
+          this.puzzleTooltipX = (ev as MouseEvent).clientX
+            || (ev.target as Element).getBoundingClientRect().x;
+          this.puzzleTooltipY = (ev as MouseEvent).clientY
+            || (ev.target as Element).getBoundingClientRect().y;
             /* Ensures information is loaded after the tooltip exists
             The tooltip uses v-if (to limit GET requests)
             If the functions are called right away,
@@ -199,23 +192,13 @@
               this.$refs.puzzleTooltip.fill();
           });
         });
-        // Hide the tooltip not hovered over
-        l.addEventListener('mouseleave', (ev) => {
-          this.puzzleTooltipVisible = false;
-        });
-        // When the mouse is moved, update the tooltip position
-        l.addEventListener('mousemove', (e: Event) => {
-          const ev = e as MouseEvent;
-          this.puzzleTooltipX = ev.clientX;
-          this.puzzleTooltipY = ev.clientY;
-        });
       });
       [...this.$el.getElementsByClassName('external-link')]
         .forEach((el) => {
           const e = el as HTMLAnchorElement;
           e.addEventListener('click', ev => {
             ev.preventDefault();
-            if (e.href.trim() !== '') this.$refs.linkModal.open(e.href);
+            if (e.href.trim() !== '' && !e.href.match(/(https?:\/\/)?eternagame\.org\/(game\/)?puzzles?\/\d+\/?/)) this.$refs.linkModal.open(e.href);
           });
       });
     }

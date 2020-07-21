@@ -1,16 +1,16 @@
 <template>
   <span>
-    <a
+    <span
       v-if="user"
       target="_blank"
       class="username text-decoration-none font-weight-bold"
       @focus="$emit('focus')"
       @blur="$emit('blur')"
       :style="{ color: displayedColor }"
-      :href="`https://${$vxm.chat.workbranch}/web/player/${user.uid}/`"
-      @mouseover="hovered = true; updateTooltipCoordinates($event) /* Shows and hides tooltip */"
-      @mouseout="hovered = false"
-      @mousemove="updateTooltipCoordinates"
+      @click="showTooltip"
+      tabindex="0"
+      v-on-clickaway="hide"
+      @keypress.enter="toggleTooltip"
     >
       <span
         class="away-indicator"
@@ -19,12 +19,12 @@
         ●
       </span>
       {{ uniqueNicks[0] || user.username }}<slot/>
-    </a>
+    </span>
     <transition name="fade" @after-enter="enter">
       <UserTooltip
         :top="top"
         :left="left"
-        v-if="hovered"
+        v-if="tooltipVisible"
         :user="user"
         ref="tooltip"
       />
@@ -34,14 +34,15 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
+  import { mixin as clickaway } from 'vue-clickaway';
   import User from '@/types/user';
   import UserTooltip from './UserTooltip.vue';
-
 
   @Component({
     components: {
       UserTooltip,
     },
+    mixins: [clickaway],
   })
   export default class Username extends Vue {
     @Prop({ required: true })
@@ -50,15 +51,39 @@
     @Prop()
     color?: string;
 
-    hovered = false;
+    tooltipVisible = false;
 
     top = 0;
 
     left = 0;
 
-    updateTooltipCoordinates(e:MouseEvent) {
-      this.top = e.clientY;
-      this.left = e.clientX;
+    showTooltip(e:MouseEvent) {
+      e.preventDefault();
+      if (e.clientX && e.clientY) {
+        this.top = e.clientY;
+        this.left = e.clientX;
+      } else {
+        const rect = (e.target as Element).getBoundingClientRect();
+        this.top = rect.y;
+        this.left = rect.x;
+      }
+      this.tooltipVisible = true;
+    }
+
+    hide() {
+      this.tooltipVisible = false;
+    }
+
+    toggleTooltip(e: KeyboardEvent) {
+      if (this.tooltipVisible) this.hide();
+      else {
+        const rect = (e.target as Element).getBoundingClientRect();
+        const event = new MouseEvent('click', {
+          clientX: rect.x,
+          clientY: rect.y,
+        });
+        this.showTooltip(event);
+      }
     }
 
     private defaultColor = '#ffffff';
@@ -138,12 +163,6 @@
   }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;
-  }
-  .fade-enter-active {
-    transition-delay: 0.75s;
-  }
-  .fade-leave-active {
-    transition-delay: 0s;
   }
   .fade-enter, .fade-leave-to {
     opacity: 0;

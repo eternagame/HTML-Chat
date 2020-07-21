@@ -1,6 +1,6 @@
 <template>
   <SettingsSection title="Ignored" >
-      <ul style="margin-bottom: 0" aria-label="List of ignored users">
+      <ul style="margin-bottom: 0" class="list-group" aria-label="List of ignored users">
         <li v-for="user in ignoredUsers" :key="user">
           <span style="vertical-align: sub">{{user}}</span>
           <button
