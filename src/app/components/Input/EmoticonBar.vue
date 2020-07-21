@@ -289,6 +289,7 @@
   height:25px;
   overflow: auto;
   display: flex;
+  scrollbar-width: none;
 }
 ::-webkit-scrollbar-track,
 ::-webkit-scrollbar,
