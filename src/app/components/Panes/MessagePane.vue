@@ -8,6 +8,7 @@
       >
         <UserMessage
           v-show="message.user"
+          :display="message.user"
           :message="message"
         />
         <MessageGroup v-show="!message.user" :messages="message" />
