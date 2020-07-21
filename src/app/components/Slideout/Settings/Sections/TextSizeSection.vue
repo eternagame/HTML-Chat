@@ -33,23 +33,13 @@
     updateFontSize() {
        // Only update if valid font size
       if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 18) {
-        this.$vxm.settings.fontSize = parseInt(this.size, 10);
+        this.$vxm.settings.font = parseInt(this.size, 10);
         localStorage.chat_fontSize = JSON.stringify(this.size);
       }
     }
 
     get fontSize() {
-      const numSize = parseInt(this.size, 10); // Font size as an int
-      if (numSize >= 10 && numSize <= 18) {
-        return numSize;
-      }
-      if (numSize >= 18) {
-        return 18; // If font size greater than 18, set to maximum of 18
-      }
-      if (numSize <= 10) {
-        return 10; // If font size less than 10, set to minimum of 10
-      }
-      return 14; // If nothing else works, make it the default, 14
+      return this.$vxm.settings.fontSize;
     }
 
     created() {
