@@ -5,6 +5,7 @@
       :message="message"
       :key="message.message"
       :first="index === 0"
+      display="true"
       grouped=true
     />
   </div>

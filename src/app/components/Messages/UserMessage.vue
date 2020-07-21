@@ -3,6 +3,7 @@
     class="chat-message d-block"
     @mouseleave="hover = false"
     @mouseover="hover = true"
+    v-if="display"
   >
     <div :style="{ textAlign: isNotice ? 'center' : 'left'}" class="message-container">
       <span :class="{'chat-message-action': isAction}">
@@ -35,7 +36,12 @@
         :left="puzzleTooltipX"
       />
       &lrm;
-      <span v-if="!isNotice" class="message-time">[{{formattedTime}}]</span>
+      <span
+        v-if="!isNotice && formattedTime !== 'Invalid Date'"
+        class="message-time"
+      >
+        [{{formattedTime}}]
+      </span>
     </div>
     <ItemOptions :user="message.user" :message="message" :hover="hover" class="options" />
     <LinkModal ref="linkModal" url=''/>
@@ -69,6 +75,9 @@
     show!: boolean;
 
     hover = false;
+
+    @Prop({ required: true })
+    display !: boolean;
 
     @Prop({ default: false })
     private isHistory !: boolean;
