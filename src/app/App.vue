@@ -461,8 +461,6 @@
   position: fixed; /* Makes sure everything is placed with respect to it, not to its parent */
   transition: width 200ms, height 200ms, margin 1s, position 1s;
   min-width: 350px; /* Bounds on chat resizing */
-  max-width: 450px;
-  max-height: 600px;
 }
 .eternaChatNormal {
   width: $container-width; // Fill in with normal size
