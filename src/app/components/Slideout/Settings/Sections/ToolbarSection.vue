@@ -59,7 +59,7 @@
       Typing messages
       <SettingsTooltip text="Whether you see messages above the toolbar when people are typing" />
       <span class="float-right">
-        <SettingsSwitch v-model="$vxm.settings.typingMessages" />
+        <SettingsSwitch v-model="typingMessages" />
       </span>
     </li>
   </SettingsSection>
@@ -172,12 +172,26 @@
       } else {
         this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
       }
+      if (localStorage.chat_previewChatFeatures) {
+        this.previewChatFeatures = JSON.parse(localStorage.chat_previewChatFeatures);
+      } else {
+        this.previewChatFeatures = this.$vxm.settings.previewChatFeatures;
+      }
+
+      if (localStorage.chat_typingMessages) {
+        this.typingMessages = JSON.parse(localStorage.chat_typingMessages);
+      } else {
+        this.typingMessages = this.$vxm.settings.typingMessages;
+      }
     }
 
-    @Watch('$vxm.settings.typingMessages')
+    typingMessages = true;
+
+    @Watch('typingMessages')
     typingMessageSettingsUpdated() {
+      this.$vxm.settings.typingMessages = this.typingMessages;
       if (localStorage) {
-        localStorage.chat_typingMessages = JSON.stringify(this.$vxm.settings.typingMessages);
+        localStorage.chat_typingMessages = JSON.stringify(this.typingMessages);
       }
     }
   }
