@@ -15,7 +15,6 @@
       </div>
       <div
         id='markdown-submenu'
-        class='overflow-auto d-flex'
         v-show="markdownSelected && markdownChatFeatures"
       >
         <MarkdownWrapButton
@@ -34,7 +33,7 @@
         />
       </div>
       <div id='preview-submenu' v-show="previewSelected && previewChatFeatures">
-        <span v-html="inputHTML" id="preview-content"/>
+        <span v-html="inputHTML" id="preview-content" class="pl-1" />
       </div>
       <MenuButton
         id="close"
@@ -290,6 +289,8 @@
   flex-wrap: nowrap;
   width: calc(100% - 25px);
   height:25px;
+  overflow: auto;
+  display: flex;
 }
 ::-webkit-scrollbar-track,
 ::-webkit-scrollbar,
