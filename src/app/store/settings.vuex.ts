@@ -14,8 +14,6 @@ export default class SettingsModule extends VuexModule {
 
   indicator: string = ' (!)';
 
-  allChatFeatures = true;
-
   emoticonChatFeatures = true;
 
   markdownChatFeatures = true;
