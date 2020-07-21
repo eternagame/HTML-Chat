@@ -15,7 +15,7 @@
         <SettingsTooltip
           text="Change your status"
         /></span>
-      <span class="float-right;">
+      <span class="float-right">
         <SettingsEnableDisable
           :value="!userStatus"
           @input="changeStatus"
@@ -25,7 +25,7 @@
       </span>
     </li>
     <li>
-      <span>Automatically Update
+      <span>Auto Update
         <SettingsTooltip
           text="Whether your status will update when you leave or come back to the tab"
         />
@@ -47,7 +47,7 @@
         />
       </span>
       <span class="float-right">
-        <input type=text v-model="reason">
+        <input type=text v-model="reason" style="width: 115px">
       </span>
     </li>
   </SettingsSection>
