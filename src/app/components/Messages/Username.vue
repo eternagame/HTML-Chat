@@ -145,9 +145,7 @@
         parseInt(blue, 16),
       );
       // If it contrasts well enough
-      return Math.abs(colorValue - backgroundValue) > 20;
-      /* Note that the threshold is a little lower than in the color picker
-      to make sure any color from the picker works in the chat */
+      return Math.abs((colorValue + 0.05) / (backgroundValue + 0.05)) > 4;
     }
 
     brightness(r:number, g:number, b:number) { // Brightness of a color
