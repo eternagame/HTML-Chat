@@ -6,7 +6,7 @@
           <button
             class='float-right btn btn-primary btn-sm'
             :aria-label="`Ignore user ${user}`"
-            v-on:click="unignore(user)" >
+            @click="unignore(user)" >
             Unignore
           </button>
         </li>
