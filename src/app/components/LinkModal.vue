@@ -1,25 +1,24 @@
 <template>
   <div class="link panel rounded p-2" v-if="openModal" tabindex=0>
-    <p
-    >
+    <span>
       This link goes to <a target="_blank" :href="url">{{url}}</a>.
-    </p>
+    </span>
     <button
-      aria-label="Click to travel to the link you clicked on"
       class="btn link-button btn-primary w-100 mt-2"
       style="left: 50%"
       @click="openModal = false"
     >
     <a :href="url" target="_blank">Continue</a>
     </button>
+    <span class="text-muted">Travel to the link you clicked on</span>
     <button
-      aria-label="Click to return to the chat; this cancels opening the link"
       class="btn link-button btn-primary w-100 mt-2"
       style="left: 50%;"
       @click="openModal = false;"
     >
       Cancel
     </button>
+    <span class="text-muted">Do not travel to the link you clicked on</span>
   </div>
 </template>
 
@@ -49,6 +48,8 @@
     transform: translate(-50%, -50%);
     background-color:#043468;
     z-index:3;
+    max-width: 30%;
+    zoom: 1.02; // Fixes anti-aliasing caused by translation
   }
 
   .link-button > a:hover {
@@ -56,5 +57,9 @@
   }
   .link-button:focus {
     outline: 2px solid white;
+  }
+
+  .link > span {
+    width: auto
   }
 </style>

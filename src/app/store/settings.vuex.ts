@@ -10,7 +10,7 @@ const VuexModule = createModule({
   strict: false,
 });
 export default class SettingsModule extends VuexModule {
-  fontSize: Number = 14;
+  font: number = 14;
 
   indicator: string = ' (!)';
 
@@ -30,5 +30,9 @@ export default class SettingsModule extends VuexModule {
         this.typingMessages = JSON.parse(localStorage.chat_typingMessages);
       }
     }
+  }
+
+  get fontSize() {
+    return Math.min(Math.max(this.font, 0), 18);
   }
 }

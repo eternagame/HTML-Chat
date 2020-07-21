@@ -1333,7 +1333,7 @@ export default class ChatModule extends VuexModule {
               postMessage('Invalid value. Type `/help size` for  usage instructions');
               break;
             }
-            (this.$store as FullStore).rootState.$_settings.fontSize = parseInt(params, 10);
+            (this.$store as FullStore).rootState.$_settings.font = parseInt(params, 10);
             break;
           case 'join':
             if (!params) {
