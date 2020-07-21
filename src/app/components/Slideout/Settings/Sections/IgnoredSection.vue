@@ -15,7 +15,7 @@
           <button
           aria-label="Unignore all users"
           class='btn btn-primary w-100 btn-sm'
-          v-on:click="unignore('*')"
+          @click="unignore('*')"
           >
           Unignore All
           </button>
