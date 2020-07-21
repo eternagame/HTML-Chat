@@ -3,7 +3,7 @@
   <button
     class='border-0'
      @click="$emit('input')"
-     :aria-label="`Open the ${name} tab of the slideout`"
+     :aria-label="`${name} tab`"
   >
     <center
     class='border-0 font-weight-bold text-white d-inline-block'
