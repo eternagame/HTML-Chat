@@ -37,22 +37,7 @@
       &lrm;
       <span v-if="!isNotice" class="message-time">[{{formattedTime}}]</span>
     </div>
-    <div class="options overflow-hidden">
-      <button
-        class="chat-message-options mr-2 overflow-hidden text-white border-0"
-        @click.prevent="openContextMenu"
-        @keypress.enter.prevent="openContextMenuWithKey"
-        v-show="hover && message.user && message.user.username"
-        tabindex=0
-        @blur="hover = false"
-      >
-        &vellip;
-      </button>
-      <ActionMenu
-        ref="contextMenu"
-        :message="message"
-      />
-    </div>
+    <ItemOptions :user="message.user" :message="message" :hover="hover" class="options" />
     <LinkModal ref="linkModal" url=''/>
   </li>
 </template>
@@ -68,6 +53,7 @@
   import LinkModal from '@/components/LinkModal.vue';
   import { Channel } from '@/store/chat.vuex';
   import PuzzleTooltip from './PuzzleTooltip.vue';
+  import ItemOptions from '@/components/ItemOptions.vue';
 
   @Component({
     components: {
@@ -76,6 +62,7 @@
       ActionMenu,
       LinkModal,
       PuzzleTooltip,
+      ItemOptions,
     },
   })
   export default class UserMessage extends Vue {
@@ -266,25 +253,11 @@
     }
 
     $refs!: {
-      contextMenu: HTMLFormElement;
       msg: HTMLSpanElement;
       clickTooltip: UserTooltip;
       linkModal: LinkModal;
       puzzleTooltip: PuzzleTooltip;
     };
-
-    openContextMenu(e: MouseEvent) {
-      setTimeout(() => this.$refs.contextMenu.open(e));
-    }
-
-    openContextMenuWithKey(e: KeyboardEvent) {
-      const rect = (e.target as Element).getBoundingClientRect();
-      const event = new MouseEvent('click', {
-        clientX: rect.x,
-        clientY: rect.y,
-      });
-      setTimeout(() => this.$refs.contextMenu.open(event));
-    }
   }
 </script>
 
@@ -300,6 +273,20 @@
     align-items: center;
     margin-top: 5px;
     margin-bottom: 5px;
+  }
+
+  .chat-message-options {
+    position: absolute;
+    top: -4px;
+    right: 0px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: transparent;
+  }
+  .chat-message-options:focus {
+    outline: 1px dotted #212121;
+    outline: 5px auto -webkit-focus-ring-color;
   }
 
   .chat-message-action {
@@ -334,21 +321,6 @@
 
   .message-container {
     padding-right: 12px;
-  }
-
-  .chat-message-options {
-    position: absolute;
-    top: -4px;
-    right: 0px;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: transparent;
-  }
-
-  .chat-message-options:focus {
-    outline: 1px dotted #212121;
-    outline: 5px auto -webkit-focus-ring-color;
   }
 
   mark {
