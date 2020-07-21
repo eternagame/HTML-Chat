@@ -41,7 +41,7 @@
       <div id="current-tab">{{ currentTab }}</div>
       <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
       <OpenWindowButton v-model="fullSize" />
-      <PinButton v-model="$vxm.chat.showPinned" />
+      <StarButton v-model="$vxm.chat.showStarred" />
     </template>
     <template slot="footer">
       <div id="resize-handle" v-show="!minimized"/>
@@ -64,7 +64,7 @@
   import DraggableDiv from '@/components/DraggableDiv.vue';
   import OperLogin from '@/components/OperLogin.vue';
   import PrivateMessageModal from '@/components/Messages/PrivateMessageModal.vue';
-  import PinButton from '@/components/Header/PinButton.vue';
+  import StarButton from '@/components/Header/StarButton.vue';
 
   Vue.use(BootstrapVue);
 
@@ -85,7 +85,7 @@
     OpenWindowButton,
     OperLogin,
     PrivateMessageModal,
-    PinButton,
+    StarButton,
   },
   directives: {
     resize,
@@ -522,7 +522,7 @@
   margin-top: 2.5px;
   right: 40px;
 }
-.pin-button {
+.star-button {
   //Link that opens chat in new window
   position: absolute;
   top: 0px;

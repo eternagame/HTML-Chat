@@ -90,8 +90,8 @@
     }
 
     get displayedMessages() {
-      if (this.$vxm.chat.showPinned) {
-        return this.messages.filter(e => e.pinnned);
+      if (this.$vxm.chat.showStarred) {
+        return this.messages.filter(e => e.starred);
       }
       return this.messages;
     }

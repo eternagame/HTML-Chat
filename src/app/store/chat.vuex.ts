@@ -142,7 +142,7 @@ export default class ChatModule extends VuexModule {
 
   desktopNotifications = false;
 
-  showPinned = false;
+  showStarred = false;
 
   constructor() {
     super();
@@ -466,23 +466,23 @@ export default class ChatModule extends VuexModule {
     this.rawHistoryMessages.filter(e => e.split(' ')[3] === channel).forEach(e => {
       this.processAndPost(e);
     });
-    const pins = [];
-    if (localStorage.chat_pins) {
-      pins.push(...JSON.parse(localStorage.chat_pins) as Message[]);
+    const stars = [];
+    if (localStorage.chat_stars) {
+      stars.push(...JSON.parse(localStorage.chat_stars) as Message[]);
     }
-    pins.filter(e => e.target === channel).forEach(e => {
-      this.addPinnedMessage(e);
+    stars.filter(e => e.target === channel).forEach(e => {
+      this.addStarredMessage(e);
     });
   }
 
   /**
-   * Pins a message
-   * @param message - The message to be pinned
+   * Stars a message
+   * @param message - The message to be starred
    */
   @action()
-  async addPinnedMessage(message: Message) {
+  async addStarredMessage(message: Message) {
     const msg = message;
-    msg.pinnned = true;
+    msg.starred = true;
     let messages = this.channels[message.target]!.postedMessages;
     if (messages.includes(message)) return;
     this.postMessage(msg);
@@ -491,14 +491,14 @@ export default class ChatModule extends VuexModule {
   }
 
   /**
-   * Unpins a message
-   * @param message - The message to unpin
+   * Unstars a message
+   * @param message - The message to unstar
    */
   @action()
-  async removePin(message: Message) {
+  async removeStar(message: Message) {
     const messages = this.channels[message.target]?.postedMessages;
     if (!messages) return;
-    messages.find(e => e === message)!.pinnned = false;
+    messages.find(e => e === message)!.starred = false;
     this.channels[message.target]!.postedMessages = messages;
   }
 

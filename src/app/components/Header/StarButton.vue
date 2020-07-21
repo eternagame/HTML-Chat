@@ -1,10 +1,10 @@
 <template>
   <button
-    class="pin-button border-0"
+    class="star-button border-0"
     style="float: right;"
     @click="$emit('input', !value);"
     :class="{ active: value}"
-    aria-label="`Click to pin viewed messages"
+    aria-label="`Click to display starred messages"
    >
   </button>
 </template>
@@ -14,7 +14,7 @@
 
 
   @Component
-  export default class PinButton extends Vue {
+  export default class StarButton extends Vue {
     @Prop({ required: true })
     value !: boolean;
   }
@@ -22,8 +22,8 @@
 
 
 <style lang="scss" scoped>
-  .pin-button {
-    background-image: url("../../assets/pin-outline.png");
+  .star-button {
+    background-image: url("../../assets/star-outline.png");
     background-repeat: no-repeat;
     background-size: 60% 60%;
     background-position: center;
@@ -32,10 +32,10 @@
     background-color: transparent;
     transition: all 0.4s;
   }
-  .pin-button:hover {
+  .star-button:hover {
     cursor: pointer;
   }
-  .pin-button.active {
-    background-image: url("../../assets/pin.png");
+  .star-button.active {
+    background-image: url("../../assets/star.png");
   }
 </style>
