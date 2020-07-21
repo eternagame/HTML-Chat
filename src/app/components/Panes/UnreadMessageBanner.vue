@@ -11,7 +11,7 @@
   @Component
   export default class UnreadMessageBanner extends Vue {
     @Prop({ required: true })
-    messages !: number;
+    messages!: number;
   }
 </script>
 <style lang="scss">
