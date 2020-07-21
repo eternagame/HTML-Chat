@@ -62,8 +62,17 @@
         this.positions.clientY = event.clientY;
         // set the element's new position:
         if (!this.container) return;
-        this.container.style.left = `${this.container.offsetLeft - this.positions.movementX}px`;
-        this.container.style.top = `${this.container.offsetTop - this.positions.movementY}px`;
+        let leftValue = this.container.offsetLeft - this.positions.movementX;
+        let topValue = this.container.offsetTop - this.positions.movementY;
+        leftValue = Math.max(0, leftValue);
+        topValue = Math.max(0, topValue);
+        const { width, height } = this.container.style;
+        const chatWidth = parseInt(width.replace('px', ''), 10);
+        const chatHeight = parseInt(height.replace('px', ''), 10);
+        leftValue = Math.min(leftValue, window.innerWidth - chatWidth);
+        topValue = Math.min(topValue, window.innerHeight - chatHeight);
+        this.container.style.left = `${leftValue}px`;
+        this.container.style.top = `${topValue}px`;
       }
     }
 
