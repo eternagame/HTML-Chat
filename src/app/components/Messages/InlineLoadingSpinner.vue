@@ -1,4 +1,4 @@
-<template>
+<template functional>
   <img
     src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
     class="d-inline"
