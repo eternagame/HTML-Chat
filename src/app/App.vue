@@ -1,7 +1,6 @@
 <template>
   <DraggableDiv
     id="eterna-chat"
-    style="overflow-y: hidden"
     :style="chatStyle"
     :class="{
       eternaChatFull: fullSized,
@@ -13,6 +12,7 @@
     v-resize:debounce="resized"
     :positionBasis="positionBasis"
     ref="draggable"
+    @scrollDown="scrollDown"
   >
     <template slot="main">
       <slideout
@@ -43,9 +43,6 @@
       <MinimizationTriangle v-model="minimization" class="minimizationTriangle" />
       <OpenWindowButton v-model="fullSize" />
       <StarButton v-model="$vxm.chat.showStarred" />
-    </template>
-    <template slot="footer">
-      <div id="resize-handle" v-show="!minimized"/>
     </template>
   </DraggableDiv>
 </template>
@@ -110,7 +107,6 @@
   get minimizedStyle() {
     return {
       'min-height': this.minimized ? '40px' : '400px',
-      resize: this.minimized ? '' : 'both',
     };
   }
 
@@ -277,6 +273,10 @@
     if (localStorage && (w !== 300 || h !== 500)) {
       localStorage.chat_size = JSON.stringify(`${w} ${h}`);
     }
+  }
+
+  scrollDown() {
+    this.$refs.messagepanes.forEach(e => e.scrollDown());
   }
 
   // Slideout
@@ -467,6 +467,9 @@
   position: fixed; /* Makes sure everything is placed with respect to it, not to its parent */
   transition: width 200ms, height 200ms, margin 1s, position 1s;
   min-width: 350px; /* Bounds on chat resizing */
+}
+#eterna-chat.clicked-inside {
+  outline: gray dashed 1px;
 }
 .eternaChatNormal {
   width: $container-width; // Fill in with normal size

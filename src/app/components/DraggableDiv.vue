@@ -1,6 +1,14 @@
 <!-- Code taken from https://dev.to/mandrewcito/vue-js-draggable-div-3mee and modified so draggability can be turned on or off -->
 <template>
-  <div ref="draggableContainer" id="draggable-container">
+  <div ref="draggableContainer" id="draggable-container" @click="internalClick">
+    <div class="handle handle-l" @mousedown="resizeMouseDown($event, 'l')"/>
+    <div class="handle handle-tl" @mousedown="resizeMouseDown($event, 'tl')" />
+    <div class="handle handle-t" @mousedown="resizeMouseDown($event, 't')" />
+    <div class="handle handle-tr"  @mousedown="resizeMouseDown($event, 'tr')" />
+    <div class="handle handle-r" @mousedown="resizeMouseDown($event, 'r')" />
+    <div class="handle handle-br" @mousedown="resizeMouseDown($event, 'br')" />
+    <div class="handle handle-b" @mousedown="resizeMouseDown($event, 'b')" />
+    <div class="handle handle-bl" @mousedown="resizeMouseDown($event, 'bl')" />
     <div id="draggable-header" @mousedown="dragMouseDown">
       <slot name="header"></slot>
     </div>
@@ -14,6 +22,8 @@
     Component, Prop, Watch, Vue,
   } from 'vue-property-decorator';
   import gsap from 'gsap';
+  // @ts-ignore
+  import throttle from 'lodash.throttle';
 
   @Component
   export default class DraggableDiv extends Vue {
@@ -22,6 +32,14 @@
       clientY: 0,
       movementX: 0,
       movementY: 0,
+    };
+
+    resizePositions = {
+      clientX: 0,
+      clientY: 0,
+      movementX: 0,
+      movementY: 0,
+      dir: '',
     };
 
     @Prop({ default: true })
@@ -117,40 +135,6 @@
       }
     }
 
-    minimize() {
-      const {
-      left, top, width, height, minHeight,
-      } = this.container.style;
-      const chatLeft = parseInt(left.replace('px', ''), 10);
-      const chatTop = parseInt(top.replace('px', ''), 10);
-      const chatWidth = parseInt(width.replace('px', ''), 10);
-      const chatHeight = parseInt(height.replace('px', ''), 10);
-      const minimized = minHeight !== '40px'; // Timing of function means it's called right before the update; it gives a delayed value that is the opposite of the true value
-
-      const breakpoint = 10;
-
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-
-      const chat = this.$refs.draggableContainer;
-
-      if (!minimized) {
-        if (chatTop >= windowHeight - chatHeight) {
-          gsap.to(chat, {
-            duration: 0.2,
-            top: windowHeight - chatHeight,
-          });
-        }
-      } else if (chatTop + chatHeight >= windowHeight) {
-          gsap.to(chat, {
-            duration: 0.2,
-            top: windowHeight - 40,
-          });
-        }
-
-      // TODO
-    }
-
     closeDragElement() {
       document.onmouseup = null;
       document.onmousemove = null;
@@ -193,6 +177,117 @@
         this.$emit('closeDragElement');
       }
     }
+
+    minimize() {
+      const {
+      left, top, width, height, minHeight,
+      } = this.container.style;
+      const chatLeft = parseInt(left.replace('px', ''), 10);
+      const chatTop = parseInt(top.replace('px', ''), 10);
+      const chatWidth = parseInt(width.replace('px', ''), 10);
+      const chatHeight = parseInt(height.replace('px', ''), 10);
+      const minimized = minHeight !== '40px'; // Timing of function means it's called right before the update; it gives a delayed value that is the opposite of the true value
+
+      const breakpoint = 10;
+
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      const chat = this.$refs.draggableContainer;
+
+      if (!minimized) {
+        if (chatTop >= windowHeight - chatHeight) {
+          gsap.to(chat, {
+            duration: 0.2,
+            top: windowHeight - chatHeight,
+          });
+        }
+      } else if (chatTop + chatHeight >= windowHeight) {
+          gsap.to(chat, {
+            duration: 0.2,
+            top: windowHeight - 40,
+          });
+        }
+
+      // TODO
+    }
+
+    internalClick(event: MouseEvent) {
+      event.stopPropagation();
+      this.container.classList.add('clicked-inside');
+    }
+
+    externalClick(event: MouseEvent) {
+      this.container.classList.remove('clicked-inside');
+    }
+
+    mounted() {
+      document.onclick = this.externalClick;
+    }
+
+    emitScrolDown() {
+      this.$emit('scrollDown');
+    }
+
+    // Not as many $emits
+    throttleScrollDown = throttle(this.emitScrolDown, 15);
+
+    resizeMouseDown(event: MouseEvent, direction: string) {
+      event.stopPropagation();
+      document.onmousemove = this.resizeDrag;
+      document.onmouseup = this.closeResizeElement;
+      this.resizePositions.dir = direction;
+      this.resizePositions.clientX = event.x;
+      this.resizePositions.clientY = event.y;
+      // Disables transitions during the resize
+      this.container.style.transition = 'none';
+    }
+
+    resizeDrag(event: MouseEvent) {
+      this.resizePositions.movementX = this.resizePositions.clientX - event.x;
+      this.resizePositions.movementY = this.resizePositions.clientY - event.y;
+      this.resizePositions.clientX = event.x;
+      this.resizePositions.clientY = event.y;
+
+      let widthValue = this.container.offsetWidth - this.resizePositions.movementX;
+      let heightValue = this.container.offsetHeight - this.resizePositions.movementY;
+
+      const { dir } = this.resizePositions;
+      // If the width/height isn't being changed, don't update it
+      const heightChange = dir.includes('t') || dir.includes('b');
+      const widthChange = dir.includes('r') || dir.includes('l');
+
+      if (!heightChange) heightValue = this.container.offsetHeight;
+      if (!widthChange) widthValue = this.container.offsetWidth;
+
+      if (dir.includes('l')) {
+        // Moves the chat left and keeps the right edge constant
+        widthValue = this.container.offsetWidth + this.resizePositions.movementX;
+        const { minWidth } = this.container.style;
+        const minWidthNum = parseFloat(minWidth.replace('px', '')) || 350;
+        // Only move the chat left if the width can be changed
+        if (widthValue > minWidthNum) this.container.style.left = `${this.container.offsetLeft - this.resizePositions.movementX}px`;
+      }
+      if (dir.includes('t')) {
+        heightValue = this.container.offsetHeight + this.resizePositions.movementY;
+        const { minHeight } = this.container.style;
+        const minHeightNum = parseFloat(minHeight.replace('px', '')) || 400;
+        if (heightValue > minHeightNum) {
+          this.container.style.top = `${this.container.offsetTop - this.resizePositions.movementY}px`;
+        }
+      }
+      this.container.style.width = `${widthValue}px`;
+      this.container.style.height = `${heightValue}px`;
+      this.throttleScrollDown();
+    }
+
+    closeResizeElement() {
+      document.onmousemove = null;
+      document.onmouseup = null;
+      // Makes sure CSS recognizes the changes and then restores transitions
+      this.container.offsetHeight;
+      this.container.style.transition = '';
+    }
   }
 </script>
 
@@ -203,5 +298,61 @@
 }
 #draggable-header {
   z-index: 10;
+}
+
+.clicked-inside > .handle {
+  background-color: lightgray;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  display: block;
+}
+
+.handle {
+  display: none;
+}
+.handle-l, .handle-tl, .handle-bl {
+  left: -5px;
+}
+.handle-r, .handle-tr, .handle-br {
+  right: -5px;
+}
+.handle-t, .handle-tl, .handle-tr {
+  top: -5px;
+}
+.handle-b, .handle-bl, .handle-br {
+  bottom: -5px;
+}
+.handle-l, .handle-r {
+  top: 50%;
+  margin-top: -5px;
+}
+.handle-t, .handle-b {
+  left: 50%;
+  margin-left: -5px;
+}
+.handle-l {
+  cursor: w-resize
+}
+.handle-tl {
+  cursor: nw-resize;
+}
+.handle-t {
+  cursor: n-resize;
+}
+.handle-tr {
+  cursor: ne-resize;
+}
+.handle-r {
+  cursor: e-resize;
+}
+.handle-br {
+  cursor: se-resize;
+}
+.handle-b {
+  cursor: s-resize;
+}
+.handle-bl {
+  cursor: sw-resize;
 }
 </style>
