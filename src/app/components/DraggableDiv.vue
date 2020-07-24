@@ -13,6 +13,7 @@
   import {
     Component, Prop, Watch, Vue,
   } from 'vue-property-decorator';
+  import gsap from 'gsap';
 
   @Component
   export default class DraggableDiv extends Vue {
@@ -62,18 +63,92 @@
         this.positions.clientY = event.clientY;
         // set the element's new position:
         if (!this.container) return;
+
         let leftValue = this.container.offsetLeft - this.positions.movementX;
         let topValue = this.container.offsetTop - this.positions.movementY;
-        leftValue = Math.max(0, leftValue);
-        topValue = Math.max(0, topValue);
-        const { width, height } = this.container.style;
+
+        const {
+        width, height, minHeight, transform,
+        } = this.container.style;
+
         const chatWidth = parseInt(width.replace('px', ''), 10);
-        const chatHeight = parseInt(height.replace('px', ''), 10);
-        leftValue = Math.min(leftValue, window.innerWidth - chatWidth);
-        topValue = Math.min(topValue, window.innerHeight - chatHeight);
+        let chatHeight = parseInt(height.replace('px', ''), 10);
+
+        let minimized = false;
+        if (minHeight === '40px') minimized = true;
+        if (minimized) chatHeight = 40;
+
+        const breakpoint = 10;
+        const minLeft = 0;
+        let minTop = 0;
+        let maxTop = window.innerHeight - chatHeight;
+        const maxLeft = window.innerWidth - chatWidth;
+
+        if (minimized) {
+          const chat = this.$refs.draggableContainer;
+
+          // When the chat is rotated, width and height are a little strange
+          // To properly respect the window boundaries, there needs to be an offset
+          const offsetX = 0 - chatWidth / 2 + chatHeight / 2;
+
+          if (leftValue < minLeft + breakpoint) {
+            minTop -= offsetX;
+            maxTop += offsetX;
+            gsap.to(chat, { duration: 0.5, rotation: 90 });
+            gsap.to(chat, { duration: 1, x: offsetX });
+          } else if (leftValue > maxLeft - breakpoint) {
+            minTop -= offsetX;
+            maxTop += offsetX;
+            gsap.to(chat, { duration: 0.5, rotation: -90 });
+            gsap.to(chat, { duration: 1, x: 0 - offsetX });
+          } else {
+            gsap.to(chat, { duration: 0.5, rotation: 0 });
+            gsap.to(chat, { duration: 1, x: 0 });
+          }
+        }
+
+        leftValue = Math.max(minLeft, leftValue);
+        topValue = Math.max(minTop, topValue);
+        leftValue = Math.min(maxLeft, leftValue);
+        topValue = Math.min(maxTop, topValue);
+
         this.container.style.left = `${leftValue}px`;
         this.container.style.top = `${topValue}px`;
       }
+    }
+
+    minimize() {
+      const {
+      left, top, width, height, minHeight,
+      } = this.container.style;
+      const chatLeft = parseInt(left.replace('px', ''), 10);
+      const chatTop = parseInt(top.replace('px', ''), 10);
+      const chatWidth = parseInt(width.replace('px', ''), 10);
+      const chatHeight = parseInt(height.replace('px', ''), 10);
+      const minimized = minHeight !== '40px'; // Timing of function means it's called right before the update; it gives a delayed value that is the opposite of the true value
+
+      const breakpoint = 10;
+
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      const chat = this.$refs.draggableContainer;
+
+      if (!minimized) {
+        if (chatTop >= windowHeight - chatHeight) {
+          gsap.to(chat, {
+            duration: 0.2,
+            top: windowHeight - chatHeight,
+          });
+        }
+      } else if (chatTop + chatHeight >= windowHeight) {
+          gsap.to(chat, {
+            duration: 0.2,
+            top: windowHeight - 40,
+          });
+        }
+
+      // TODO
     }
 
     closeDragElement() {

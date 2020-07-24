@@ -9,6 +9,8 @@ Vue.use(BootstrapVue);
 Vue.use(VueResource);
 Vue.config.productionTip = false;
 
+// Vue.config.performance = true;
+
 export default new Vue({
   render: h => h(App),
 });

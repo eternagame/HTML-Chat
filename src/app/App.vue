@@ -12,6 +12,7 @@
     :enabled="!fullSize /* Disables dragging when chat is fullsize*/"
     v-resize:debounce="resized"
     :positionBasis="positionBasis"
+    ref="draggable"
   >
     <template slot="main">
       <slideout
@@ -102,6 +103,7 @@
   }
 
   get minimized() {
+    if (this.$refs && this.$refs.draggable) this.$refs.draggable.minimize();
     return this.minimization;
   }
 
@@ -332,6 +334,7 @@
     privmsgmodal: PrivateMessageModal,
     messagepanes: MessagePane[],
     slideout: Slideout,
+    draggable: DraggableDiv,
   };
 
   postMessage(rawMessage: string, channel: string) {
@@ -495,7 +498,7 @@
 .fade-leave-to {
   transform-origin: top center;
   transform: scaleY(0);
-  //Moves everything up without interfering with top bar.
+  // Moves everything up without interfering with top bar.
 }
 .chat-content {
   border: solid #0405224b 2px;
