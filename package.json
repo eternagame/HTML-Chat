@@ -13,6 +13,7 @@
   "dependencies": {
     "@cloudcmd/clipboard": "^2.0.0",
     "@types/irc": "^0.3.33",
+    "@types/lodash": "^4.14.158",
     "@types/node": "^14.0.13",
     "@types/punycode": "^2.1.0",
     "@types/sjcl": "^1.0.29",
@@ -29,6 +30,7 @@
     "idb": "^5.0.4",
     "irc-framework": "^4.8.1",
     "lodash": "^4.17.15",
+    "lodash.throttle": "^4.1.1",
     "markdown-it": "^11.0.0",
     "sjcl": "^1.0.8",
     "stream": "0.0.2",

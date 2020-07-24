@@ -64,17 +64,22 @@
         this.$forceUpdate();
         if (container.scrollTop > actualScrollHeight - 50) {
           this.autoScroll = true;
-          this.$emit('autoscroll', true);
         } else {
           this.autoScroll = false;
-          this.$emit('autoscroll', false);
         }
       }
     }
 
+    @Watch('autoScroll')
+    autoScrollChanged() {
+      this.$emit('autoscroll', this.autoScroll);
+    }
+
     scrollDown() {
-      this.$nextTick(() => { this.container.scrollTop = this.container.scrollHeight; });
-      this.$nextTick(this.updateFooterHeight);
+      this.$nextTick(() => {
+        this.container.scrollTop = this.container.scrollHeight;
+        this.updateFooterHeight();
+      });
     }
 
     onContentChanged() {
