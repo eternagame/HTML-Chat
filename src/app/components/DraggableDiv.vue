@@ -312,16 +312,16 @@
   display: none;
 }
 .handle-l, .handle-tl, .handle-bl {
-  left: -5px;
+  left: 0px;
 }
 .handle-r, .handle-tr, .handle-br {
-  right: -5px;
+  right: 0px;
 }
 .handle-t, .handle-tl, .handle-tr {
-  top: -5px;
+  top: 0px;
 }
 .handle-b, .handle-bl, .handle-br {
-  bottom: -5px;
+  bottom: 0px;
 }
 .handle-l, .handle-r {
   top: 50%;
