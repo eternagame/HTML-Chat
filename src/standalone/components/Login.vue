@@ -1,29 +1,50 @@
 <template>
   <div class="login">
-    <div class="trans-panel-bg  rounded-10"></div>
+    <div class="trans-panel-bg rounded-10"></div>
     <div class="trans-panel rounded-10">
       <form>
-        <table>
-          <tr>
-            <td><span for="username">username:</span></td>
-            <td><input type="text" id="username" v-model="username"/></td>
-          </tr>
-          <tr>
-            <td><span for="uid">uid:</span></td>
-            <td><input type="text" id="uid" v-model="uid"/></td>
-          </tr>
-          <tr>
-            <td><label for="remember-me">Remember Me:</label></td>
-            <td><input id="remember-me" type="checkbox" v-model="remember" style="width: auto"></td>
-          </tr>
-        </table>
-        <div
-          class="green-button"
-          style="width: 40%; left: 50%; transform: translateX(-50%);"
+        <div class="form-group">
+          <label class="forn-control-label" for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            v-model="username"
+            class="form-control"
+          />
+          <div class="invalid-feedback d-block" v-if="nameError !== ''">{{ nameError }}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-control-label" for="uid">UID</label>
+          <input
+            type="text"
+            id="uid"
+            v-model="uid"
+            class="form-control"
+          />
+          <div class="invalid-feedback d-block" v-if="idError !== ''">{{ idError }}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-control-label" for="remember-me">Remember Me</label>
+          <input
+            id="remember-me"
+            type="checkbox"
+            class="ml-2 align-text-bottom pb-1"
+            v-model="remember">
+        </div>
+        <button
+          class="btn btn-primary w-100"
+          type="submit"
           @click="$emit('login', { uid, username, remember })"
         >
           Continue
-        </div>
+        </button>
+        <button
+          class="btn btn-primary w-100 mt-2"
+          type="submit"
+          @click="anonLogin"
+        >
+          Continue as anonymous
+        </button>
       </form>
     </div>
   </div>
@@ -42,6 +63,21 @@
     username: string = '';
 
     remember: boolean = false;
+
+    get idError() {
+      if (!parseInt(this.uid, 10)) return 'Must be a number';
+      if (this.uid.trim() === '') return 'Must provide a user id';
+      return '';
+    }
+
+    get nameError() {
+      if (this.uid.trim() === '') return 'Must provide a username';
+      return '';
+    }
+
+    anonLogin() {
+      this.$emit('login', { uid: '0', username: 'Anonymous', remember: this.remember });
+    }
   }
 </script>
 
