@@ -21,7 +21,7 @@
         ref="slideout"
         @auth="showAuth = true" />
       <transition name="fade">
-        <div class="chat-content" v-if="!minimized">
+        <div class="chat-content" v-show="!minimized">
           <MessagePane
             v-for="(channel, index) in messageTabs"
             :key="channel.name"
@@ -53,6 +53,7 @@
   import resize from 'vue-resize-directive';
   import BootstrapVue from 'bootstrap-vue';
   import sjcl from 'sjcl';
+  import gsap from 'gsap';
   import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
@@ -102,12 +103,6 @@
   get minimized() {
     if (this.$refs && this.$refs.draggable) this.$refs.draggable.minimize();
     return this.minimization;
-  }
-
-  get minimizedStyle() {
-    return {
-      'min-height': this.minimized ? '40px' : '400px',
-    };
   }
 
   // Private messages
@@ -408,7 +403,7 @@
   }
 
   get chatStyle() {
-    return Object.assign(Object.assign(this.positionStyle, this.sizeStyle), this.minimizedStyle);
+    return Object.assign(this.positionStyle, this.sizeStyle);
   }
 
   // Inactivity timer
@@ -467,6 +462,7 @@
   position: fixed; /* Makes sure everything is placed with respect to it, not to its parent */
   transition: width 200ms, height 200ms, margin 1s, position 1s;
   min-width: 350px; /* Bounds on chat resizing */
+  min-height: 400px;
 }
 #eterna-chat.clicked-inside {
   outline: gray dashed 1px;
@@ -489,8 +485,10 @@
   left:0px !important; /* Overrides dragging styles so full size chat isn't cut off */
   top:0px !important;
 }
-.minimizedChat { /* Removes light blue background when chat is minimzed and only shows top bar */
+#eterna-chat.minimizedChat {
+  /* Removes light blue background when chat is minimzed and only shows top bar */
   height:40px !important;
+  min-height: 40px;
 }
 .fade-enter-active,
 .fade-leave-active {
