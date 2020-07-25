@@ -120,7 +120,6 @@
     privmsg() { // Opens up the private message modal
       if (!this.user || !this.user.username) return;
       this.$vxm.chat.userToPrivMsg = this.user.username;
-      this.$vxm.chat.privMsgModal = true;
     }
 
     star() {
