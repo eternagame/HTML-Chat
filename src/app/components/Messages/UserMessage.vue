@@ -12,7 +12,7 @@
           :color="usernameColor"
           :is-action="isAction"
           @focus="hover = true"
-          v-if="!isNotice && (!grouped || first)"
+          v-if="!isNotice && !grouped"
         >{{ isAction || !message.user || !message.user.username ? '': ':' }}
         </Username>
         &nbsp;
@@ -39,7 +39,7 @@
       />
       &lrm;
       <span
-        v-if="!isNotice && formattedTime !== 'Invalid Date'"
+        v-if="!isNotice && formattedTime !== 'Invalid Date' && !grouped"
         class="message-time"
       >
         [{{formattedTime}}]
@@ -86,9 +86,6 @@
 
     @Prop({ default: false })
     grouped !: boolean;
-
-    @Prop({ default: false })
-    first !: boolean;
 
     get isNotice() {
       return this.message.isNotice;

@@ -640,7 +640,6 @@ export default class ChatModule extends VuexModule {
     message = `${message} [${this.usernameColor}]`; // Message with tags added on
     let isAction = false;
     // No posting as annon or if nothing has been actually posted
-    console.log(6, message.replace(/ \[#.*\]\r?$/, '').trim());
     if (this.currentUser.username && message.replace(/ \[#.*\]\r?$/, '').trim() !== '') {
       let post = true;
       let banned = false;
@@ -1374,7 +1373,6 @@ export default class ChatModule extends VuexModule {
       }
 
       this.client?.banlist(channel, (e) => { // Check if user is banned before sending message
-        console.log(7);
         const bans = e.bans.map(i => new Ban(i.banned, i.channel)); // Make an array of Ban objects
         // If the user is banned
         if (bans.some(b => b.username.includes(this.currentUser.username))) {
@@ -1390,29 +1388,23 @@ export default class ChatModule extends VuexModule {
         } // If they aren't banned, continue and send the message
         if (post) {
           if (!this.channels[channel]?.banned && !banned && !quieted) {
-            console.log(8);
             if (isAction) {
                 this.client!.action(channel, `${message.replace(/ \[#.+\]$/, '')}`);
             } else {
                 this.client!.say(channel, message);
             }
-            console.log(9);
             const name = User.parseUsername(channel);
             // If it's a private message, send to the username, not the nick
             if (this.connectedUsers[User.parseUsername(channel)]?.nicks.includes(channel)) {
-              console.log(10);
               this.postMessage(new Message(message, name, this.currentUser, isAction));
             } else {
-              console.log(11);
               this.postMessage(new Message(message, channel, this.currentUser, isAction));
             }
-            console.log(12);
           } else if (quieted) {
             this.postMessage(new Message("Can't send messages because you are quieted"));
           } else {
             this.postMessage(new Message("Can't send messages because you are banned"));
           } // TODO
-          console.log(13);
         }
       });
     }
@@ -1514,7 +1506,6 @@ export default class ChatModule extends VuexModule {
     Will only cause issues if people are putting | in their nick */
     const post = true;
     if (this.channels[User.parseUsername(channel)] === undefined) {
-      console.log(0);
       // If the channel doesn't exist, make a new one
       Vue.set(this.channels, User.parseUsername(channel), {
         name: User.parseUsername(channel),
@@ -1526,19 +1517,14 @@ export default class ChatModule extends VuexModule {
         mentioned: false,
         typing: [],
       });
-      console.log(1);
     }
-    console.log(3);
     if (post) {
-      console.log(4);
       // Converting from array to set to array removes duplicates
       Array.from(new Set(this.connectedUsers[User.parseUsername(channel)]?.nicks)).forEach(e => {
       // Sends message to all nicks so each tab receives the message
-        console.log(5);
         this.sendMessage({ rawMessage: message, channel: e });
       });
     }
-    console.log(2);
   }
 
   @action()
