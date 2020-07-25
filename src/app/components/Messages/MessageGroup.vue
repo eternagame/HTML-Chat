@@ -3,7 +3,7 @@
     <UserMessage
       v-for="(message, index) in messages"
       :message="message"
-      :key="message.message"
+      :key="`${message.message || random()}_${index}`"
       :first="index === 0"
       display="true"
       grouped=true
@@ -23,6 +23,11 @@
   export default class MessageGroup extends Vue {
     @Prop({ required: true })
     messages !: Message[];
+
+    // This avoids duplicate keys
+    random() {
+      return Math.round((Math.random() * 1000 * Math.random()));
+    }
   }
 </script>
 <style lang="scss">

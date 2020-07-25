@@ -33,7 +33,6 @@
           />
           <ConnectingPopup />
           <ReportDialog ref="reportDialog" />
-          <PrivateMessageModal ref="privmsgmodal" v-show="showPrivMsgModal"/>
         </div>
       </transition>
       <OperLogin @login="operAuthenticate" v-if="showAuth" @cancel="showAuth=false" ref="login" />
@@ -62,7 +61,6 @@
   import OpenWindowButton from '@/components/Header/OpenWindowButton.vue';
   import DraggableDiv from '@/components/DraggableDiv.vue';
   import OperLogin from '@/components/OperLogin.vue';
-  import PrivateMessageModal from '@/components/Messages/PrivateMessageModal.vue';
   import StarButton from '@/components/Header/StarButton.vue';
 
   Vue.use(BootstrapVue);
@@ -83,7 +81,6 @@
     MinimizationTriangle,
     OpenWindowButton,
     OperLogin,
-    PrivateMessageModal,
     StarButton,
   },
   directives: {
@@ -107,16 +104,22 @@
 
   // Private messages
 
-  get showPrivMsgModal() {
-    return this.$vxm.chat.privMsgModal;
+  get privateMessageUser() {
+    return this.$vxm.chat.userToPrivMsg;
   }
 
-
-  @Watch('showPrivMsgModal') // Shows modal
-  triggerStart() {
-    if (this.showPrivMsgModal) {
-      this.$refs.privmsgmodal.onStart();
+  @Watch('privateMessageUser')
+  openChannel() {
+    if (this.privateMessageUser !== '') { // If the user is '', don't trigger
+      // If private message channel with user nonexistent, make one
+      if (!this.messageTabs.some(e => e.name === this.privateMessageUser)) {
+        this.$vxm.chat.joinChannel(this.privateMessageUser);
+      }
+      this.$vxm.chat.tab = this.messageTabs.findIndex(e => e.name === this.privateMessageUser);
+      this.$vxm.chat.chatChannel = this.privateMessageUser;
+      this.$vxm.chat.slideoutOpen = false; // Open the chat channel and close slideout
     }
+    this.$vxm.chat.userToPrivMsg = ''; // Reset
   }
 
   // Full size
@@ -326,7 +329,6 @@
   $refs!: {
     reportDialog: ReportDialog;
     login: OperLogin,
-    privmsgmodal: PrivateMessageModal,
     messagepanes: MessagePane[],
     slideout: Slideout,
     draggable: DraggableDiv,
@@ -463,6 +465,7 @@
   transition: width 200ms, height 200ms, margin 1s, position 1s;
   min-width: 350px; /* Bounds on chat resizing */
   min-height: 400px;
+  overflow-x: hidden;
 }
 #eterna-chat.clicked-inside {
   outline: gray dashed 1px;

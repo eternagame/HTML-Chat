@@ -5,7 +5,7 @@
       target="_blank"
       class="username text-decoration-none font-weight-bold"
       @focus="$emit('focus')"
-      @blur="$emit('blur')"
+      @blur="$emit('blur'); hide()"
       :style="{ color: displayedColor }"
       @click="showTooltip"
       tabindex="0"

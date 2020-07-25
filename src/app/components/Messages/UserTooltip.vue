@@ -29,11 +29,31 @@
           <span class="user-status float-right">{{status}}</span>
         </li>
       </div>
-      <div class="user-tooltip-desc-container pr-2 pl-2 pb-2">
+      <div class="user-tooltip-desc-container pr-2 pl-2">
         <span class="user-description w-100 d-inline-block">
           <span v-if="desc" v-html="desc" />
           <InlineLoadingSpinner v-else />
         </span>
+      </div>
+      <div class="user-tooltip-actions-container pr-2 pl-2 pb-2">
+        <button
+          class="btn btn-primary w-100 mt-1"
+          @click="openReportModal({ ignore: false, report: true })"
+        >
+          Report
+        </button>
+        <button
+          class="btn btn-primary w-100 mt-1"
+          @click="openReportModal({ ignore: true, report: false })"
+        >
+          Ignore
+        </button>
+        <button
+          class="btn btn-primary w-100 mt-1"
+          @click="privateMessage"
+        >
+          Private Message
+        </button>
       </div>
   </div>
 </template>
@@ -43,6 +63,7 @@
   } from 'vue-property-decorator';
   import User from '@/types/user';
   import InlineLoadingSpinner from './InlineLoadingSpinner.vue';
+  import Message from '../../types/message';
   @Component({
     components: {
       InlineLoadingSpinner,
@@ -104,7 +125,7 @@
       Eventually, this will be replaced with an API call
       */
       const statusUsernames: {[key:string]:string[]} = {
-        developer: ['LFP6', 'Ahalb', 'ElNando888', 'jnicol', 'MasterStormer', ''],
+        developer: ['LFP6', 'Ahalb', 'ElNando888', 'jnicol', 'MasterStormer'],
         scientist: ['rhiju', 'dosoonkim'],
         staff: ['LFP6', 'Omei', 'rhiju'],
         moderator: ['Hoglahoo', 'LFP6', 'Omei'],
@@ -130,11 +151,21 @@
          }
       });
     }
+
+    openReportModal(defaults: { report: boolean; ignore: boolean }) {
+      const message = new Message('Reporting user', '*', this.user);
+      this.$vxm.chat.openReportModal({ message, defaults });
+    }
+
+    privateMessage() {
+      if (!this.user || !this.user.username) return;
+      this.$vxm.chat.userToPrivMsg = this.user.username;
+    }
   }
 </script>
 <style scoped lang="scss">
-  @import '~vue-context/src/sass/vue-context';
   @import "~@/assets/_custom.scss";
+  @import '~vue-context/src/sass/vue-context';
   .user-tooltip-container {
     position: fixed;
     background-color:$med-dark-blue;
