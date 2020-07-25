@@ -465,7 +465,7 @@
   transition: width 200ms, height 200ms, margin 1s, position 1s;
   min-width: 350px; /* Bounds on chat resizing */
   min-height: 400px;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 #eterna-chat.clicked-inside {
   outline: gray dashed 1px;
