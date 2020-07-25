@@ -463,7 +463,7 @@
   background-color: $med-dark-blue;
   position: fixed; /* Makes sure everything is placed with respect to it, not to its parent */
   transition: width 200ms, height 200ms, margin 1s, position 1s;
-  min-width: 350px; /* Bounds on chat resizing */
+  min-width: 300px; /* Bounds on chat resizing */
   min-height: 400px;
   overflow: hidden;
 }
