@@ -2,8 +2,7 @@
   <SettingsSection title="Status" >
     <li>
       <span
-        class="align-middle"
-        aria-label="When others view your username, they will see an indicator if you are away">
+        class="align-middle">
         You are currently {{userStatus ? 'away' : 'online'}}
         <SettingsTooltip
           text="When others view your username, they will see an indicator if you are away"
@@ -11,7 +10,7 @@
       </span>
     </li>
     <li>
-      <span aria-label="Change your status">Set
+      <span aria-label="set status">Set
         <SettingsTooltip
           text="Change your status"
         /></span>
@@ -33,13 +32,11 @@
       <span class="float-right">
         <SettingsSwitch
           v-model="$vxm.chat.autoUpdateStatus"
-          aria-label="Whether your status will update when you leave or come back to the tab"
         />
       </span>
     </li>
     <li>
       <span
-        aria-label="When others see the away indicator, they will see the reason you are away"
       >
         Reason
         <SettingsTooltip

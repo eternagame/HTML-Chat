@@ -6,7 +6,7 @@
       notified:notification,
       mentioned:mention,
     }"
-    :aria-label="`Click to ${this.value ? 'close' : 'open'} the slideout`"
+    :aria-label="`${this.value ? 'Close' : 'Open'} slideout`"
   >
   </button>
 </template>

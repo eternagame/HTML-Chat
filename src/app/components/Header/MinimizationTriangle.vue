@@ -25,7 +25,7 @@
     settings !: boolean;
 
     get label() {
-      return `Click to ${this.value ? 'show' : 'hide'} content${this.settings ? ' in settings' : ''}.`;
+      return `${this.value ? 'Show' : 'Hide'}`;
     }
   }
 </script>

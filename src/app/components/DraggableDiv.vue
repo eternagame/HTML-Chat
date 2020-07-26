@@ -196,13 +196,15 @@
       const chat = this.$refs.draggableContainer;
 
       if (!minimized) {
-        if (chatTop >= windowHeight - chatHeight) {
+        // If the chat is docked to the bottom, the minimization needs to move the top bar down
+        if (chatTop >= windowHeight - chatHeight - breakpoint) {
           gsap.to(chat, {
             duration: 0.2,
             top: windowHeight - chatHeight,
           });
         }
-      } else if (chatTop + chatHeight >= windowHeight) {
+        // If the chat is minimized and docked, the top should move up
+      } else if (chatTop + chatHeight >= windowHeight - breakpoint) {
           gsap.to(chat, {
             duration: 0.2,
             top: windowHeight - 40,
@@ -213,11 +215,11 @@
     }
 
     internalClick(event: MouseEvent) {
-      event.stopPropagation();
+      event.stopPropagation(); // Stops event propogation before it reaches document
       this.container.classList.add('clicked-inside');
     }
 
-    externalClick(event: MouseEvent) {
+    externalClick(event: MouseEvent) { // Only receives clicks outside container
       this.container.classList.remove('clicked-inside');
     }
 
@@ -225,7 +227,7 @@
       document.onclick = this.externalClick;
     }
 
-    emitScrolDown() {
+    emitScrolDown() { // Scrolls down chat on resize
       this.$emit('scrollDown');
     }
 

@@ -3,6 +3,7 @@
     class="send-button border-0"
     :class="{animated: animationValue}"
     @click="sendMessage"
+    aria-label="send"
   >
   </button>
 </template>

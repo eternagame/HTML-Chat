@@ -9,7 +9,7 @@
         @keypress.enter="addChat(); chatName = ''"
         class='h-100 float-right'
         v-model="chatName"
-        aria-label="Add a channel"
+        aria-label="Add channel"
     ></span>
   </div>
 </template>

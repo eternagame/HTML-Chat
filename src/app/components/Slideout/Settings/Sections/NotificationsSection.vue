@@ -1,6 +1,6 @@
 <template>
   <SettingsSection title="Notifications" >
-    <ul aria-label="Enable or disable notifications for channels" class="list-group">
+    <ul class="list-group">
       <li
         v-for="channel in channels"
         :key="channel.name"
@@ -14,7 +14,7 @@
           />
         </span>
       </li>
-      <li aria-label="Notifications for all channels">
+      <li>
         <span class="align-baseline">All</span>
         <span class="switch">
           <SettingsEnableDisable :value="allEnabled" @input="updateAll" />
@@ -24,7 +24,6 @@
     <li>
       <span
         class="align-baseline d-inline-block"
-        aria-label="Appears in the page title if you have notifications"
       >
         Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
       </span>
@@ -36,7 +35,6 @@
       <span class="align-baseline d-inline-block">Desktop Notifications</span>
       <span
         class="switch"
-        aria-label="Whether notifications should be sent directly to your computer"
       >
         <SettingsSwitch v-model="desktopNotifications" />
       </span>
@@ -44,7 +42,6 @@
     <li>
       <span
         class="align-baseline d-inline-block;"
-        aria-label="Keywords that trigger notifications."
       >
         Keywords
           <SettingsTooltip text="If you have multiple keywords, separate them with commas.

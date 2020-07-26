@@ -3,7 +3,7 @@
     class="open-window border-0"
     style="float: right;"
     @click="$emit('input', !value)"
-    :aria-label="`Click to make the chat ${value ? 'fullscreen' : 'normal size'}`"
+    :aria-label="`Make chat ${value ? 'fullscreen' : 'normal size'}`"
    >
   </button>
 </template>
