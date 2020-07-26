@@ -4,7 +4,7 @@
     style="float: right;"
     @click="$emit('input', !value);"
     :class="{ active: value}"
-    aria-label="`Click to display starred messages"
+    aria-label="Show/hide starred messages"
    >
   </button>
 </template>

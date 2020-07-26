@@ -1,21 +1,21 @@
 <template>
   <SettingsSection title="Toolbar Features">
-    <ul aria-label="Which features are enabled in the toolbar" class="list-group">
-      <li aria-label="Whether emoticons are enabled in the toolbar">
+    <ul class="list-group">
+      <li>
         <span class="align-sub">
           Emoticons
           <SettingsTooltip text="Whether the emoticons menu in the toolbar is visible" />
         </span>
         <span class="float-right"><SettingsSwitch v-model="emoticonChatFeatures" /></span>
       </li>
-      <li aria-label="Whether markdown is enabled in the toolbar">
+      <li>
         <span class="align-sub">
           Markdown
           <SettingsTooltip text="Whether the markdown menu in the toolbar is visible" />
         </span>
         <span class="float-right"><SettingsSwitch v-model="markdownChatFeatures" /></span>
       </li>
-      <li aria-label="Whether the preview is enabled in the toolbar">
+      <li>
         <span class="align-sub">
           Preview
           <SettingsTooltip text="Whether the markdown preview menu in the toolbar is visible" />
@@ -29,8 +29,7 @@
         </span>
       </li>
     </ul>
-    <ul class="mt-2 list-group" v-if="$vxm.settings.emoticonChatFeatures"
-      aria-label="Change custom emoticons that appear in the toolbar">
+    <ul class="mt-2 list-group" v-if="$vxm.settings.emoticonChatFeatures">
       <li>
         Custom emoticons
         <SettingsTooltip text="Which emoticons appear in your three custom slots

@@ -1,5 +1,9 @@
 <template>
-  <label class="switch" :style="{ width: `${width}px` }" :aria-label="label">
+  <label
+    class="switch"
+    :style="{ width: `${width}px` }"
+    :aria-label="label"
+    role='three state switch'>
     <button @click="$emit('input', false)" :disabled="value === 2" id="disable">
       {{offText}}
     </button>
@@ -35,7 +39,7 @@
       let stateDescription = 'neither';
       if (this.value === states.all_on) stateDescription = this.onText;
       else if (this.value === states.all_off) stateDescription = this.offText;
-      return `Three state switch in state ${stateDescription}; possible states ${this.onText}, ${this.offText}, and neither`;
+      return `State is ${stateDescription}; possible states ${this.onText}, ${this.offText}, and neither`;
     }
   }
 </script>

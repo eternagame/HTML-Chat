@@ -448,6 +448,7 @@
 @import '~bootstrap-vue/src/index.scss';
 @import '~bootstrap/scss/bootstrap.scss';
 @import "@/assets/_custom.scss";
+/* Removes focus ring for non-tabbing users on all buttons */
 #eterna-chat:not(.tabbing) button:focus {
   outline: none;
   border: none;

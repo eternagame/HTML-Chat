@@ -18,9 +18,8 @@
       @select="updateSelection"
       @click="deselect"
       @keypress="onKeyPress"
-      aria-label="Send message text input"
     />
-    <SendButton @send="send" aria-label="Send" class='float-right'/>
+    <SendButton @send="send" class='float-right'/>
     <div
       ref="hiddenDiv"
       class="scalable-input-hidden invisible border-0"

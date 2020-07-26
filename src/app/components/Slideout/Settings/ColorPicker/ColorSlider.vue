@@ -1,7 +1,7 @@
 <template>
   <div class='color-slider-container overflow-hidden ml-0 mt-2 mb-2'>
     <input
-      aria-label="Slider to control a color value"
+      :aria-label="colorId"
       class="slider border-0"
       v-model="sliderValue"
       type=range min=0 max=255
