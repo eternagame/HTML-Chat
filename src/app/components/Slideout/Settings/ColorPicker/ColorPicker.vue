@@ -1,7 +1,7 @@
 <template>
   <div id='picker'>
     <ColorSlider
-      aria-label="red color slider"
+      aria-label="red"
       id='red'
       gradientStart="#300"
       gradientEnd="#c00"
@@ -9,7 +9,7 @@
       colorID="red"
       ref="red" />
     <ColorSlider
-      aria-label="green color slider"
+      aria-label="green"
       id='green'
       gradientStart='#030'
       gradientEnd='#0c0'
@@ -17,7 +17,7 @@
       colorID="green"
       ref="green" />
     <ColorSlider
-      aria-label="blue color slider"
+      aria-label="blue"
       id='blue'
       gradientStart='#003'
       gradientEnd='#00c'
@@ -26,10 +26,11 @@
       ref="blue" />
       <div id='swatch-container'>
         <button
-          v-for="color in defaultColors"
+          v-for="(color, i) in defaultColors"
           :key="color"
           class="swatch border-0 m-1"
           :style="{ backgroundColor:color }"
+          :aria-label="`default color ${i + 1}`"
           @click="setColor(color)" />
       </div>
     <p

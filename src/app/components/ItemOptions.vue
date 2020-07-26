@@ -3,6 +3,7 @@
       <button
         class="chat-message-options border-0 text-white font-weight-bold"
         ref="chatOptions"
+        aria-label="open message options"
         @click.prevent="openContextMenu"
         v-show="hovered && user.username"
         @blur="hovered = false"
