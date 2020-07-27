@@ -64,8 +64,6 @@ class ConnectionData {
 let channelNames = ['#general', '#off-topic', '#help', '#labs', '#test'];
 
 export default class ChatModule extends VuexModule {
-  toBePosted: Message[] = [];
-
   currentUser!: User;
 
   nick!: string;
@@ -171,125 +169,23 @@ export default class ChatModule extends VuexModule {
     });
   }
 
-  /**
-   * Sets a channel as 'read', clearing notifications and syncing with other tabs
-   * @param channel {string} - The channel to be read
-   */
-  @mutation
-  readChannel(channel: string) {
-    if (channel.startsWith('!')) { // If it came from BroadcastChannel
-      const trueChannel = this.channels[channel.substring(1)];
-      if (trueChannel) {
-        // Set notifications for that channel to false
-        trueChannel.notifications = false;
-        trueChannel.mentioned = false;
-      }
-    } else {
-      const trueChannel = this.channels[channel];
-      if (trueChannel) {
-        // Set notifications for that channel to false
-        trueChannel.notifications = false;
-        trueChannel.mentioned = false;
-      }
-      /* Only relay the message if it didn't come from BroadcastChannel
-      so there isn't a loop of messages */
-      this.broadcast.postMessage(new Message(channel));
-    }
+  // Initializer and related functions
+
+  @action()
+  async onNickInUse({ nick }: Irc.NickInvalidEventArgs) {
+    this.currentUser.nicks.splice(this.currentUser.nicks.indexOf(nick));
+    this.initClient();
   }
 
-  /**
-   * Turns notifications on for a channel
-   * @param channel {string} - The channel notifications should be turned on for
-   */
-  @mutation
-  notify(channel: string) {
-    // Again, making sure there is an actual channel with the name
-    const trueChannel = this.channels[channel];
-    if (trueChannel) {
-      // Turning on notifications for that channel
-      trueChannel.notifications = true;
-      if (this.desktopNotifications) {
-        const msg = trueChannel.postedMessages[trueChannel.postedMessages.length - 1];
-        const notification = new Notification(`New message in ${channel}`, {
-          body: `${msg.user.username}: ${msg.message}`,
-          tag: `new-message-${msg.target}`,
-        });
-      }
+  @action()
+  async generateNick() {
+    const connectionId = Math.floor(Math.random() * 1000);
+    let nick = `${this.currentUser.username}^${connectionId}`;
+    if (this.customNick) {
+      nick = `${this.customNick}^${connectionId}`;
     }
-  }
-
-  /**
-   * Sets a channel as mentioned (the user's username is mentioned in an unread message)
-   * @param channel {string} - The channel notifications should be turned on for
-   */
-  @mutation
-  mention(channel: string) {
-    // Again, making sure there is an actual channel with the name
-    const trueChannel = this.channels[channel];
-    if (trueChannel) {
-      // Turning on notifications for that channel
-      trueChannel.mentioned = true;
-    }
-  }
-
-  @mutation
-  postMessage(message: Message) {
-    if (message.target === '*') {
-      Object.values(this.channels).forEach((channel) => {
-        channel?.postedMessages.push(message);
-        this.channels[message.target]?.postedMessages.slice(0, 50);
-      });
-    } else {
-      this.channels[message.target]?.postedMessages.push(message);
-      this.channels[message.target]?.postedMessages.slice(0, 50);
-    }
-  }
-
-  @mutation
-  addUser({ nick, uid }: { nick: string; uid: string }) {
-    const username = User.parseUsername(nick);
-    if (!(username in this.connectedUsers)) {
-      Vue.set(this.connectedUsers, username, new User(username, uid));
-    }
-    const user = this.connectedUsers[username];
-    if (user) {
-      user.nicks.push(nick);
-    }
-  }
-
-  @mutation
-  removeUser(nick: string) {
-    const username = User.parseUsername(nick);
-    const user = this.connectedUsers[username];
-    if (!user) {
-      console.error(`Tried to remove user ${nick} but they weren't in the users dictionary.}`);
-      return;
-    }
-    const index = user.nicks.indexOf(nick);
-    Vue.delete(user.nicks, index);
-    if (user.nicks.length === 0) {
-      Vue.delete(this.connectedUsers, user.username);
-    }
-  }
-
-  @mutation
-  openReportModal({
-    message,
-    defaults,
-  }: {
-    message: Message;
-    defaults: { ignore: boolean; report: boolean };
-  }) {
-    // Subscribed to in the report modal file
-  }
-
-  @mutation
-  unignoreUser(username: string) {
-    if (this.ignoredUsers.includes(username)) {
-      this.ignoredUsers.splice(this.ignoredUsers.indexOf(username), 1);
-    }
-    if (username === '*') this.ignoredUsers = [];
-    localStorage.chat_ignoredUsers = JSON.stringify(this.ignoredUsers);
+    this.currentUser.nicks.push(nick);
+    this.nick = nick;
   }
 
   @action()
@@ -454,6 +350,159 @@ export default class ChatModule extends VuexModule {
     this.connect();
   }
 
+  // Notifications
+
+  /**
+   * Sets a channel as 'read', clearing notifications and syncing with other tabs
+   * @param channel {string} - The channel to be read
+   */
+  @mutation
+  readChannel(channel: string) {
+    if (channel.startsWith('!')) { // If it came from BroadcastChannel
+      const trueChannel = this.channels[channel.substring(1)];
+      if (trueChannel) {
+        // Set notifications for that channel to false
+        trueChannel.notifications = false;
+        trueChannel.mentioned = false;
+      }
+    } else {
+      const trueChannel = this.channels[channel];
+      if (trueChannel) {
+        // Set notifications for that channel to false
+        trueChannel.notifications = false;
+        trueChannel.mentioned = false;
+      }
+      /* Only relay the message if it didn't come from BroadcastChannel
+      so there isn't a loop of messages */
+      this.broadcast.postMessage(new Message(channel));
+    }
+  }
+
+  /**
+   * Turns notifications on for a channel
+   * @param channel {string} - The channel notifications should be turned on for
+   */
+  @mutation
+  notify(channel: string) {
+    // Again, making sure there is an actual channel with the name
+    const trueChannel = this.channels[channel];
+    if (trueChannel) {
+      // Turning on notifications for that channel
+      trueChannel.notifications = true;
+      if (this.desktopNotifications) {
+        const msg = trueChannel.postedMessages[trueChannel.postedMessages.length - 1];
+        const notification = new Notification(`New message in ${channel}`, {
+          body: `${msg.user.username}: ${msg.message}`,
+          tag: `new-message-${msg.target}`,
+        });
+      }
+    }
+  }
+
+  /**
+   * Sets a channel as mentioned (the user's username is mentioned in an unread message)
+   * @param channel {string} - The channel notifications should be turned on for
+   */
+  @mutation
+  mention(channel: string) {
+    // Again, making sure there is an actual channel with the name
+    const trueChannel = this.channels[channel];
+    if (trueChannel) {
+      // Turning on notifications for that channel
+      trueChannel.mentioned = true;
+    }
+  }
+
+  // Users
+
+  @mutation
+  addUser({ nick, uid }: { nick: string; uid: string }) {
+    const username = User.parseUsername(nick);
+    if (!(username in this.connectedUsers)) {
+      Vue.set(this.connectedUsers, username, new User(username, uid));
+    }
+    const user = this.connectedUsers[username];
+    if (user) {
+      user.nicks.push(nick);
+    }
+  }
+
+  @mutation
+  removeUser(nick: string) {
+    const username = User.parseUsername(nick);
+    const user = this.connectedUsers[username];
+    if (!user) {
+      console.error(`Tried to remove user ${nick} but they weren't in the users dictionary.}`);
+      return;
+    }
+    const index = user.nicks.indexOf(nick);
+    Vue.delete(user.nicks, index);
+    if (user.nicks.length === 0) {
+      Vue.delete(this.connectedUsers, user.username);
+    }
+  }
+
+  // Report/ignore
+
+  @mutation
+  openReportModal({
+    message,
+    defaults,
+  }: {
+    message: Message;
+    defaults: { ignore: boolean; report: boolean };
+  }) {
+    // Subscribed to in the report modal file
+  }
+
+  @action()
+  async ignoreUser({ username, channel }: { username: string; channel?: string }) {
+    if (!this.ignoredUsers.includes(username)) {
+      this.ignoredUsers.push(username);
+      localStorage.chat_ignoredUsers = JSON.stringify(this.ignoredUsers);
+      if (channel) {
+        this.postMessage(
+          new Message(
+            `Ignored ${username}. To unignore this user, either use the options menu again (on a message or the user list) or type /unignore ${username}`,
+            channel,
+          ),
+        );
+      }
+    } else if (channel) this.postMessage(new Message(`${username} has already been ignored`, channel));
+  }
+
+  @action()
+  async reportUser({
+    userToReport,
+    message,
+    reportComments,
+  }: {
+    userToReport: User;
+    message: Message | null;
+    reportComments: string;
+  }) {
+    const client = this.client!;
+    client.say(
+      '#ops-notifications',
+      `[REPORT] Reporting ${userToReport.username} (${userToReport.uid}) by ${this.currentUser.username} (${this.currentUser.uid}).\r\n`,
+    );
+    if (message) {
+      client.say('#ops-notifications', `[REPORTED MESSAGE] ${message.message}\r\n`);
+    }
+    client.say('#ops-notifications', `[REPORT REASON] ${reportComments}\r\n`);
+  }
+
+  @mutation
+  unignoreUser(username: string) {
+    if (this.ignoredUsers.includes(username)) {
+      this.ignoredUsers.splice(this.ignoredUsers.indexOf(username), 1);
+    }
+    if (username === '*') this.ignoredUsers = [];
+    localStorage.chat_ignoredUsers = JSON.stringify(this.ignoredUsers);
+  }
+
+  // History
+
   /**
    * Loads messages from history for a channel
    * @param channel {string} - The channel history messages should be loaded for
@@ -471,33 +520,6 @@ export default class ChatModule extends VuexModule {
     stars.filter(e => e.target === channel).forEach(e => {
       this.addStarredMessage(e);
     });
-  }
-
-  /**
-   * Stars a message
-   * @param message - The message to be starred
-   */
-  @action()
-  async addStarredMessage(message: Message) {
-    const msg = message;
-    msg.starred = true;
-    let messages = this.channels[message.target]!.postedMessages;
-    if (messages.includes(message)) return;
-    this.postMessage(msg);
-    messages = messages.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
-    this.channels[message.target]!.postedMessages = messages;
-  }
-
-  /**
-   * Unstars a message
-   * @param message - The message to unstar
-   */
-  @action()
-  async removeStar(message: Message) {
-    const messages = this.channels[message.target]?.postedMessages;
-    if (!messages) return;
-    messages.find(e => e === message)!.starred = false;
-    this.channels[message.target]!.postedMessages = messages;
   }
 
   /**
@@ -526,63 +548,7 @@ export default class ChatModule extends VuexModule {
     this.postMessage(msg);
   }
 
-  /**
-   * Sets +o for all nicks for all channels
-   */
-  @action()
-  async setChannelOps() {
-    // This.connectedUsers[this.currentUser.username].nicks returns a list of the user's nicks
-    // Converting the array to a set and then back removes duplicates
-    // Iterates through to make sure each nick for the user has proper permissions
-    Array.from(new Set(this.connectedUsers[this.currentUser.username]?.nicks)).forEach(i => {
-      // Iterates through all channels
-      channelNames.forEach(e => this.client?.raw(`SAMODE ${e} +o ${i}`));
-    });
-  }
-
-  /**
-   * Sends the OPER command to log the user in as an operator
-   */
-  @action()
-  async operCommand() {
-    if (!this.oper) {
-      this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
-      this.setChannelOps();
-      this.joinOpsChannel();
-      console.log('Logging in as operator');
-    }
-  }
-
-  /**
-   * Joins the #ops-notifications channel
-   */
-  @action()
-  async joinOpsChannel() {
-    this.client?.join('#ops-notifications');
-  }
-
-  @action()
-  async connect() {
-    this.disconnected = false;
-    this.client!.connect();
-    (Object.values(this.channels) as Channel[]).forEach(e => { // Removes disconnecting message
-      e.postedMessages = e.postedMessages.filter(m => m.message !== 'Disconnecting...');
-    });
-    this.connectionData.currentTimer = 0;
-    clearInterval(this.connectionData.timerInterval);
-    // Check bans on connect
-    Object.keys(this.channels).forEach(e => {
-      this.bans({
-        user: this.currentUser,
-        channel: e,
-        cb: (b) => {
-          if (b) {
-            this.onBanned(e);
-          }
-        },
-      });
-    });
-  }
+  // Sending messages
 
   @action()
   async type(channel: string) {
@@ -594,7 +560,6 @@ export default class ChatModule extends VuexModule {
     this.channels[channel]?.typing.push(this.username);
   }
 
-
   @action()
   async stopTyping(channel: string) {
     // Safeguard to make sure this doesn't go in a channel with others while I test
@@ -603,23 +568,6 @@ export default class ChatModule extends VuexModule {
     if (!this.channels[channel]?.typing) this.channels[channel]!.typing = [];
     this.channels[channel]!.typing = this.channels[channel]!.typing
       .filter(e => e !== this.username);
-  }
-
-  @action()
-  async onNickInUse({ nick }: Irc.NickInvalidEventArgs) {
-    this.currentUser.nicks.splice(this.currentUser.nicks.indexOf(nick));
-    this.initClient();
-  }
-
-  @action()
-  async generateNick() {
-    const connectionId = Math.floor(Math.random() * 1000);
-    let nick = `${this.currentUser.username}^${connectionId}`;
-    if (this.customNick) {
-      nick = `${this.customNick}^${connectionId}`;
-    }
-    this.currentUser.nicks.push(nick);
-    this.nick = nick;
   }
 
   @action()
@@ -1410,6 +1358,116 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  @mutation
+  postMessage(message: Message) {
+    if (message.target === '*') {
+      Object.values(this.channels).forEach((channel) => {
+        channel?.postedMessages.push(message);
+        this.channels[message.target]?.postedMessages.slice(0, 50);
+      });
+    } else {
+      this.channels[message.target]?.postedMessages.push(message);
+      this.channels[message.target]?.postedMessages.slice(0, 50);
+    }
+  }
+
+  /**
+   * Sends a message to a private channel
+   * @param param0 - An object containing the message and the channel (user) to send it to
+   */
+  @action()
+  async privateMessage({ message, channel }: { message:string, channel:string}) {
+    /* Splits argument into message and channel
+    Will only cause issues if people are putting | in their nick */
+    const post = true;
+    if (this.channels[User.parseUsername(channel)] === undefined) {
+      // If the channel doesn't exist, make a new one
+      Vue.set(this.channels, User.parseUsername(channel), {
+        name: User.parseUsername(channel),
+        maxHistoryMessages: 50,
+        notifications: false,
+        notificationsEnabled: true,
+        banned: BanStatus.BAN_STATUS_NORMAL,
+        postedMessages: [],
+        mentioned: false,
+        typing: [],
+      });
+    }
+    if (post) {
+      // Converting from array to set to array removes duplicates
+      Array.from(new Set(this.connectedUsers[User.parseUsername(channel)]?.nicks)).forEach(e => {
+      // Sends message to all nicks so each tab receives the message
+        this.sendMessage({ rawMessage: message, channel: e });
+      });
+    }
+  }
+
+  // Starring messages
+
+  /**
+   * Stars a message
+   * @param message - The message to be starred
+   */
+  @action()
+  async addStarredMessage(message: Message) {
+    const msg = message;
+    msg.starred = true;
+    let messages = this.channels[message.target]!.postedMessages;
+    if (messages.includes(message)) return;
+    this.postMessage(msg);
+    messages = messages.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    this.channels[message.target]!.postedMessages = messages;
+  }
+
+  /**
+   * Unstars a message
+   * @param message - The message to unstar
+   */
+  @action()
+  async removeStar(message: Message) {
+    const messages = this.channels[message.target]?.postedMessages;
+    if (!messages) return;
+    messages.find(e => e === message)!.starred = false;
+    this.channels[message.target]!.postedMessages = messages;
+  }
+
+  // Moderation
+
+  /**
+   * Sets +o for all nicks for all channels
+   */
+  @action()
+  async setChannelOps() {
+    // This.connectedUsers[this.currentUser.username].nicks returns a list of the user's nicks
+    // Converting the array to a set and then back removes duplicates
+    // Iterates through to make sure each nick for the user has proper permissions
+    Array.from(new Set(this.connectedUsers[this.currentUser.username]?.nicks)).forEach(i => {
+      // Iterates through all channels
+      channelNames.forEach(e => this.client?.raw(`SAMODE ${e} +o ${i}`));
+    });
+  }
+
+  /**
+   * Sends the OPER command to log the user in as an operator
+   */
+  @action()
+  async operCommand() {
+    if (!this.oper) {
+      this.client?.raw(`OPER ${this.operLoginUser} ${this.operLoginPassword}`);
+      this.setChannelOps();
+      this.joinOpsChannel();
+      console.log('Logging in as operator');
+    }
+  }
+
+  /**
+   * Joins the #ops-notifications channel
+   */
+  @action()
+  async joinOpsChannel() {
+    this.client?.join('#ops-notifications');
+  }
+
   /**
    * Gives a reason for a ban
    * @param param0 - An object containing the reason for the ban and the nick to send it to
@@ -1417,22 +1475,6 @@ export default class ChatModule extends VuexModule {
   @action()
   async giveReason({ reason, nick }: {reason: string, nick: string}) {
     this.client?.say(nick, reason);
-  }
-
-  @action()
-  async ignoreUser({ username, channel }: { username: string; channel?: string }) {
-    if (!this.ignoredUsers.includes(username)) {
-      this.ignoredUsers.push(username);
-      localStorage.chat_ignoredUsers = JSON.stringify(this.ignoredUsers);
-      if (channel) {
-        this.postMessage(
-          new Message(
-            `Ignored ${username}. To unignore this user, either use the options menu again (on a message or the user list) or type /unignore ${username}`,
-            channel,
-          ),
-        );
-      }
-    } else if (channel) this.postMessage(new Message(`${username} has already been ignored`, channel));
   }
 
   /**
@@ -1460,25 +1502,61 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  /**
+   * Bans a user
+   * @param user {User} - The user to be banned
+   */
   @action()
-  async reportUser({
-    userToReport,
-    message,
-    reportComments,
-  }: {
-    userToReport: User;
-    message: Message | null;
-    reportComments: string;
-  }) {
-    const client = this.client!;
-    client.say(
-      '#ops-notifications',
-      `[REPORT] Reporting ${userToReport.username} (${userToReport.uid}) by ${this.currentUser.username} (${this.currentUser.uid}).\r\n`,
-    );
-    if (message) {
-      client.say('#ops-notifications', `[REPORTED MESSAGE] ${message.message}\r\n`);
+  async ban(user:User) {
+    if (this.oper) {
+      this.client?.ban(this.chatChannel, `*!${user.username}@*`);
     }
-    client.say('#ops-notifications', `[REPORT REASON] ${reportComments}\r\n`);
+  }
+
+  /**
+   * Kicks a user
+   * @param user {User} - The user to be kicked
+   */
+  @action()
+  async kick(user:User) {
+    if (this.oper) {
+      this.connectedUsers[user.username]?.nicks.forEach((e) => {
+        this.client?.raw(`KICK ${this.chatChannel} ${e}`);
+      });
+    }
+  }
+
+  /**
+   * Quiets a user
+   * @param user {User} - The user to be quieted
+   */
+  @action()
+  async quiet(user:User) {
+    if (this.oper) {
+      this.client?.raw(`MODE ${this.chatChannel} +b m;*!${user.username}@*`);
+    }
+  }
+
+  /**
+   * Unquiets a user
+   * @param user {User} - The user to be unquieted
+   */
+  @action()
+  async unquiet(user:User) {
+    if (this.oper) {
+      this.client?.raw(`MODE ${this.chatChannel} -b m;*!${user.username}@*`);
+    }
+  }
+
+  /**
+   * Unbans a user
+   * @param user {User} - The user to be unbanned
+   */
+  @action()
+  async unban(user:User) {
+    if (this.oper) {
+      this.client?.unban(this.chatChannel, `*!${user.username}@*`);
+    }
   }
 
   @action()
@@ -1496,36 +1574,145 @@ export default class ChatModule extends VuexModule {
     }
   }
 
+  @action()
+  async onBanned(channelName: string) {
+    const channel = this.channels[channelName];
+    if (!channel) return;
+    if (!channel.banned) {
+      this.postMessage(new Message('You have been banned', channelName));
+      this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channelName));
+    }
+    channel.banned = BanStatus.BAN_STATUS_BANNED;
+    /* Not sure why user is set as banned in all channels
+    - just leaving it here in case it needs to stay */
+    /* Object.values(this.channels).forEach((c) => {
+      if (c) c.banned = BanStatus.BAN_STATUS_BANNED;
+    }); */
+  }
+
+  @action()
+  async onMuted(channelName: string) {
+    const channel = this.channels[channelName];
+    if (!channel) return;
+    if (!channel.banned) {
+      this.postMessage(new Message('You have been muted', channelName));
+      this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channelName));
+    }
+    channel.banned = BanStatus.BAN_STATUS_QUIET;
+  }
+
+  @action()
+  async onUnbanned(channelName: string) {
+    const channel = this.channels[channelName];
+    if (!channel) return;
+    channel.banned = BanStatus.BAN_STATUS_NORMAL;
+    this.postMessage(new Message('You are now allowed to post in chat', channelName));
+  }
+
   /**
-   * Sends a message to a private channel
-   * @param param0 - An object containing the message and the channel (user) to send it to
+   * Determines whether a user is banned in a channel
+   * @param arg - An object containing the user, channel, and a callback.
    */
   @action()
-  async postToQuery({ message, channel }: { message:string, channel:string}) {
-    /* Splits argument into message and channel
-    Will only cause issues if people are putting | in their nick */
-    const post = true;
-    if (this.channels[User.parseUsername(channel)] === undefined) {
-      // If the channel doesn't exist, make a new one
-      Vue.set(this.channels, User.parseUsername(channel), {
-        name: User.parseUsername(channel),
-        maxHistoryMessages: 50,
-        notifications: false,
-        notificationsEnabled: true,
-        banned: BanStatus.BAN_STATUS_NORMAL,
-        postedMessages: [],
-        mentioned: false,
-        typing: [],
+  async bans(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
+    const { username } = arg.user;
+    const { channel, cb } = arg;
+    if (channel === '*') {
+      channelNames.forEach(c => {
+        this.client?.banlist(c, (e) => {
+          const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
+          cb(banmap.some(i => i.username.includes(username) && !i.username.includes('m;')));
+        });
       });
-    }
-    if (post) {
-      // Converting from array to set to array removes duplicates
-      Array.from(new Set(this.connectedUsers[User.parseUsername(channel)]?.nicks)).forEach(e => {
-      // Sends message to all nicks so each tab receives the message
-        this.sendMessage({ rawMessage: message, channel: e });
+    } else {
+      this.client?.banlist(channel, (e) => {
+        const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
+        cb(banmap.some(i => i.username.includes(username) && !i.username.includes('m;')));
       });
     }
   }
+
+  /**
+   * Determines whether a user is muted in a channel
+   * @param arg - An object containing the user, channel, and a callback.
+   */
+  @action()
+  async quiets(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
+    const { username } = arg.user;
+    const { channel, cb } = arg;
+    if (channel === '*') {
+      channelNames.forEach(c => {
+        this.client?.banlist(c, (e) => {
+          const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
+          cb(banmap.some(i => i.username.includes(username) && i.username.includes('m;')));
+        });
+      });
+    } else {
+      this.client?.banlist(channel, (e) => {
+        const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
+        cb(banmap.some(i => i.username.includes(username) && i.username.includes('m;')));
+      });
+    }
+  }
+
+  // Connection
+
+  @action()
+  async connect() {
+    this.disconnected = false;
+    this.client!.connect();
+    (Object.values(this.channels) as Channel[]).forEach(e => { // Removes disconnecting message
+      e.postedMessages = e.postedMessages.filter(m => m.message !== 'Disconnecting...');
+    });
+    this.connectionData.currentTimer = 0;
+    clearInterval(this.connectionData.timerInterval);
+    // Check bans on connect
+    Object.keys(this.channels).forEach(e => {
+      this.bans({
+        user: this.currentUser,
+        channel: e,
+        cb: (b) => {
+          if (b) {
+            this.onBanned(e);
+          }
+        },
+      });
+    });
+  }
+
+  @action()
+  async onDisconnect(stayDisconnected:boolean = false) {
+    const data = this.connectionData;
+    if (data.currentTimer > 0) return;
+    // TODO: What if connect is called and then immidiately a late "onDisconnect" arives?
+    data.connected = false;
+    data.firstConnection = false;
+    if (!stayDisconnected) { // If the disconnect wasn't intentional
+      if (data.failedAttempts === 0) {
+        data.failedAttempts += 1;
+        this.connect();
+      } else {
+        data.currentTimer = data.disconnectionTimers[Math.min(data.failedAttempts - 1, 3)];
+        data.failedAttempts += 1;
+        clearInterval(data.timerInterval);
+        data.timerInterval = setInterval(this.updateTimer, 1000);
+      }
+    } else { // If it was, disconnect and stay disconnected
+      this.client?.quit();
+      data.timerInterval = 100000000; // Doesn't try to reconnect again
+      this.disconnected = true;
+    }
+  }
+
+  @action()
+  async updateTimer() {
+    this.connectionData.currentTimer -= 1;
+    if (this.connectionData.currentTimer <= 0) {
+      this.connect();
+    }
+  }
+
+  // API calls
 
   @action()
   async getUserInfo(arg: { user: User, callback: (data: any | undefined) => any}) {
@@ -1552,6 +1739,8 @@ export default class ChatModule extends VuexModule {
     xmlHttp.open('GET', `https://eternagame.org/get/?type=puzzle&nid=${pid}`, true);
     xmlHttp.send(null);
   }
+
+  // Message handlers
 
   @action()
   async onNoticeReceived({
@@ -1657,12 +1846,6 @@ export default class ChatModule extends VuexModule {
     this.postMessage(messageObject);
   }
 
-  // TODO
-  @action()
-  async onUserQuit(message: any) {
-    this.removeUser(message);
-  }
-
   @action()
   async onModeMessageRecieved(event: Irc.ModeEventArgs) {
     event.modes.forEach((mode) => {
@@ -1697,62 +1880,14 @@ export default class ChatModule extends VuexModule {
     });
   }
 
-  /**
-   * Bans a user
-   * @param user {User} - The user to be banned
-   */
+  // Miscellaneous handlers
+
+  // TODO
   @action()
-  async ban(user:User) {
-    if (this.oper) {
-      this.client?.ban(this.chatChannel, `*!${user.username}@*`);
-    }
+  async onUserQuit(message: any) {
+    this.removeUser(message);
   }
 
-  /**
-   * Kicks a user
-   * @param user {User} - The user to be kicked
-   */
-  @action()
-  async kick(user:User) {
-    if (this.oper) {
-      this.connectedUsers[user.username]?.nicks.forEach((e) => {
-        this.client?.raw(`KICK ${this.chatChannel} ${e}`);
-      });
-    }
-  }
-
-  /**
-   * Quiets a user
-   * @param user {User} - The user to be quieted
-   */
-  @action()
-  async quiet(user:User) {
-    if (this.oper) {
-      this.client?.raw(`MODE ${this.chatChannel} +b m;*!${user.username}@*`);
-    }
-  }
-
-  /**
-   * Unquiets a user
-   * @param user {User} - The user to be unquieted
-   */
-  @action()
-  async unquiet(user:User) {
-    if (this.oper) {
-      this.client?.raw(`MODE ${this.chatChannel} -b m;*!${user.username}@*`);
-    }
-  }
-
-  /**
-   * Unbans a user
-   * @param user {User} - The user to be unbanned
-   */
-  @action()
-  async unban(user:User) {
-    if (this.oper) {
-      this.client?.unban(this.chatChannel, `*!${user.username}@*`);
-    }
-  }
 
   @action()
   async onIrcError(error: Irc.IrcErrorEventArgs) {
@@ -1764,110 +1899,7 @@ export default class ChatModule extends VuexModule {
     }
   }
 
-  @action()
-  async onBanned(channelName: string) {
-    const channel = this.channels[channelName];
-    if (!channel) return;
-    if (!channel.banned) {
-      this.postMessage(new Message('You have been banned', channelName));
-      this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channelName));
-    }
-    channel.banned = BanStatus.BAN_STATUS_BANNED;
-    /* Not sure why user is set as banned in all channels
-    - just leaving it here in case it needs to stay */
-    /* Object.values(this.channels).forEach((c) => {
-      if (c) c.banned = BanStatus.BAN_STATUS_BANNED;
-    }); */
-  }
-
-  @action()
-  async onMuted(channelName: string) {
-    const channel = this.channels[channelName];
-    if (!channel) return;
-    if (!channel.banned) {
-      this.postMessage(new Message('You have been muted', channelName));
-      this.postMessage(new Message('Please read our [code of conduct](https://eternagame.org/about/conduct)', channelName));
-    }
-    channel.banned = BanStatus.BAN_STATUS_QUIET;
-  }
-
-  @action()
-  async onUnbanned(channelName: string) {
-    const channel = this.channels[channelName];
-    if (!channel) return;
-    channel.banned = BanStatus.BAN_STATUS_NORMAL;
-    this.postMessage(new Message('You are now allowed to post in chat', channelName));
-  }
-
-  @action()
-  async onDisconnect(stayDisconnected:boolean = false) {
-    const data = this.connectionData;
-    if (data.currentTimer > 0) return;
-    // TODO: What if connect is called and then immidiately a late "onDisconnect" arives?
-    data.connected = false;
-    data.firstConnection = false;
-    if (!stayDisconnected) { // If the disconnect wasn't intentional
-      if (data.failedAttempts === 0) {
-        data.failedAttempts += 1;
-        this.connect();
-      } else {
-        data.currentTimer = data.disconnectionTimers[Math.min(data.failedAttempts - 1, 3)];
-        data.failedAttempts += 1;
-        clearInterval(data.timerInterval);
-        data.timerInterval = setInterval(this.updateTimer, 1000);
-      }
-    } else { // If it was, disconnect and stay disconnected
-      this.client?.quit();
-      data.timerInterval = 100000000; // Doesn't try to reconnect again
-      this.disconnected = true;
-    }
-  }
-
-  /**
-   * Determines whether a user is banned in a channel
-   * @param arg - An object containing the user, channel, and a callback.
-   */
-  @action()
-  async bans(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
-    const { username } = arg.user;
-    const { channel, cb } = arg;
-    if (channel === '*') {
-      channelNames.forEach(c => {
-        this.client?.banlist(c, (e) => {
-          const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
-          cb(banmap.some(i => i.username.includes(username) && !i.username.includes('m;')));
-        });
-      });
-    } else {
-      this.client?.banlist(channel, (e) => {
-        const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
-        cb(banmap.some(i => i.username.includes(username) && !i.username.includes('m;')));
-      });
-    }
-  }
-
-  /**
-   * Determines whether a user is muted in a channel
-   * @param arg - An object containing the user, channel, and a callback.
-   */
-  @action()
-  async quiets(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
-    const { username } = arg.user;
-    const { channel, cb } = arg;
-    if (channel === '*') {
-      channelNames.forEach(c => {
-        this.client?.banlist(c, (e) => {
-          const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
-          cb(banmap.some(i => i.username.includes(username) && i.username.includes('m;')));
-        });
-      });
-    } else {
-      this.client?.banlist(channel, (e) => {
-        const banmap = e.bans.map(i => new Ban(i.banned, i.channel));
-        cb(banmap.some(i => i.username.includes(username) && i.username.includes('m;')));
-      });
-    }
-  }
+  // Status
 
   /**
    * Updates the away/online status for all connected users
@@ -1923,13 +1955,7 @@ export default class ChatModule extends VuexModule {
     return this.connectedUsers[this.currentUser.username]?.away;
   }
 
-  @action()
-  async updateTimer() {
-    this.connectionData.currentTimer -= 1;
-    if (this.connectionData.currentTimer <= 0) {
-      this.connect();
-    }
-  }
+  // Channels
 
   /**
    * Joins a channel
