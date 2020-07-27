@@ -33,6 +33,11 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
     } else {
       tokens[idx].attrs[classIndex][1] += ' external-link'; // replace value of existing attr
     }
+
+    if (href.match(/(.+\.)+\w+(\/.)*/) && !href.match(/^.+:\/\//)) {
+      console.log(`http://${href}`, href);
+      tokens[idx].attrs[hrefIndex][1] = `http://${href}`;
+    }
   }
 
   return defaultRender(tokens, idx, options, env, self);

@@ -4,7 +4,7 @@
       This link goes to <a target="_blank" :href="url">{{url}}</a>.
     </span>
     <button
-      class="btn link-button btn-primary w-100 mt-2"
+      class="btn link-button btn-primary w-100 mt-2 text-white"
       style="left: 50%"
       @click="openModal = false"
     >
