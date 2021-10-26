@@ -3,7 +3,7 @@
   "description": "HTML IRC chat client for Eterna (eternagame.org)",
   "dependencies": {
     "jquery": "^3.5.1",
-    "jquery-ui": "^1.12.1",
+    "jquery-ui": "^1.13.0",
     "malihu-custom-scrollbar-plugin": "github:luxaritas/malihu-custom-scrollbar-plugin#bda645721d2ff82bc",
     "markdown-it": "^8.4.0",
     "sockjs-client": "^1.1.5",
