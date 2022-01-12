@@ -5,7 +5,7 @@
     "jquery": "^3.5.1",
     "jquery-ui": "^1.12.1",
     "malihu-custom-scrollbar-plugin": "github:luxaritas/malihu-custom-scrollbar-plugin#bda645721d2ff82bc",
-    "markdown-it": "^8.4.0",
+    "markdown-it": "^12.3.2",
     "sockjs-client": "^1.1.5",
     "ui-contextmenu": "^1.18.1"
   },
