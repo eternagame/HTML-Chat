@@ -5,6 +5,7 @@ module.exports = function(env) {
     return {
         entry: './src/js/chat.js',
         mode: env.target === 'dev' ? 'development' : 'production',
+        output: env.target === 'production' ? {publicPath: 'static/'} : {},
         module: {
             rules: [
                 {
