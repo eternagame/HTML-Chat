@@ -11,14 +11,12 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
-
   @Component
   export default class OpenWindowButton extends Vue {
     @Prop({ required: true })
     value !: boolean;
   }
 </script>
-
 
 <style lang="scss" scoped>
   .open-window {

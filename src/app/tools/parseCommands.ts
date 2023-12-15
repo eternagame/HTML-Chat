@@ -3,7 +3,6 @@ function parseCommands(data: any) {
 
   // Split into individual messages (commands)
 
-
   for (let i = 0; i < msgs.length; i++) {
     // Split into prefix, command, params, and trailer
     // (does not represent RFC1459/2812 specs, only what's needed to parse)

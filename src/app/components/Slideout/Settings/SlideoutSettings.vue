@@ -24,7 +24,6 @@
   import StatusSection from './Sections/StatusSection.vue';
   import OperSection from './Sections/OperSection.vue';
 
-
   @Component({
     components: {
       TextSizeSection,

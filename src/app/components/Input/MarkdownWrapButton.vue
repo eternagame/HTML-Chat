@@ -22,6 +22,7 @@
 <script lang='ts'>
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import getStyles from './Styles';
+
   @Component
   export default class MarkdownWrapButton extends Vue {
     @Prop({ required: true })

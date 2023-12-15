@@ -53,7 +53,6 @@
   import BootstrapVue from 'bootstrap-vue';
   import sjcl from 'sjcl';
   import gsap from 'gsap';
-  import Slideout from './components/Slideout/Slideout.vue';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
   import MessagePane from '@/components/Panes/MessagePane.vue';
@@ -62,6 +61,7 @@
   import DraggableDiv from '@/components/DraggableDiv.vue';
   import OperLogin from '@/components/OperLogin.vue';
   import StarButton from '@/components/Header/StarButton.vue';
+  import Slideout from './components/Slideout/Slideout.vue';
 
   Vue.use(BootstrapVue);
 
@@ -129,7 +129,6 @@
   get fullSized() {
     return this.fullSize;
   }
-
 
   @Watch('fullSize')
   sizeChanged() {
@@ -301,7 +300,6 @@
   // Status
 
   windowFocused = true;
-
 
   @Watch('windowFocused')
   focusChanged() { // Updates status when focus is changed

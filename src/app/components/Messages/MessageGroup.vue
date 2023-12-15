@@ -22,8 +22,8 @@
 </template>
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
-  import UserMessage from './UserMessage.vue';
   import Message from '@/types/message';
+  import UserMessage from './UserMessage.vue';
   import Username from './Username.vue';
 
   @Component({

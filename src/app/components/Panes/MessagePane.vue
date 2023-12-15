@@ -58,17 +58,17 @@
   } from 'vue-property-decorator';
   import { mapState } from 'vuex';
   import EmoticonBar from '@/components/Input/EmoticonBar.vue';
-  import UserMessage from '../Messages/UserMessage.vue';
-  import MessageGroup from '../Messages/MessageGroup.vue';
-  import Pane from './Pane.vue';
-  import ConnectingMessage from '../Connection/ConnectingMessage.vue';
   import ScalableInput from '@/components/Input/ScalableInput.vue';
   import ConnectButton from '@/components/Connection/ConnectButton.vue';
   import BanStatus from '@/types/BanStatus';
   import Message from '@/types/message';
   import { Channel } from '@/store/chat.vuex';
-  import UnreadMessageBanner from './UnreadMessageBanner.vue';
   import User from '@/types/user';
+  import UnreadMessageBanner from './UnreadMessageBanner.vue';
+  import ConnectingMessage from '../Connection/ConnectingMessage.vue';
+  import Pane from './Pane.vue';
+  import MessageGroup from '../Messages/MessageGroup.vue';
+  import UserMessage from '../Messages/UserMessage.vue';
 
   @Component({
     components: {

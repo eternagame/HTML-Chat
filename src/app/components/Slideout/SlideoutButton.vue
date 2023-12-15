@@ -21,7 +21,6 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
-
   @Component
   export default class SlideoutButton extends Vue {
     @Prop({ required: true })
@@ -31,7 +30,6 @@
     selected!: boolean;
   }
 </script>
-
 
 <style lang="scss" scoped>
   /* Style the buttons that are used to open the tab content */

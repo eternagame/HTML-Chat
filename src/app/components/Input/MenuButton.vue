@@ -13,6 +13,7 @@
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
   import getStyles from './Styles';
+
   @Component
   export default class MenuButton extends Vue {
     @Prop({ required: true })

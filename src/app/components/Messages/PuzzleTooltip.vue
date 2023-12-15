@@ -56,6 +56,7 @@
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
   import InlineLoadingSpinner from './InlineLoadingSpinner.vue';
+
   @Component({
     components: {
       InlineLoadingSpinner,

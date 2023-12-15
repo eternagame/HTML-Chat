@@ -9,11 +9,11 @@ import toBool from 'to-bool';
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import { BroadcastChannel } from 'broadcast-channel';
-import Message from '../types/message';
 import Connection from '@/tools/websocket';
 import BanStatus from '@/types/BanStatus';
 import User from '@/types/user';
 import Ban from '@/types/Ban';
+import Message from '../types/message';
 import SettingsModule from './settings.vuex';
 
 // For polyfill
@@ -1887,7 +1887,6 @@ export default class ChatModule extends VuexModule {
   async onUserQuit(message: any) {
     this.removeUser(message);
   }
-
 
   @action()
   async onIrcError(error: Irc.IrcErrorEventArgs) {

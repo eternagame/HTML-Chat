@@ -7,6 +7,7 @@
 </template>
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
+
   @Component
   export default class InlineLoadingSpinner extends Vue {}
 </script>

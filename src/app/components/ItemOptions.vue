@@ -40,7 +40,6 @@
     @Prop({ required: false })
     message !: Message;
 
-
     @Prop({ required: true })
     hover = false;
 

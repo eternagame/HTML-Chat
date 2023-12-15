@@ -53,15 +53,15 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import Message from '@/types/message';
-  import Username from './Username.vue';
   import User from '@/types/user';
-  import ActionMenu from './ActionMenu.vue';
   import md from '@/tools/Markdown';
-  import UserTooltip from './UserTooltip.vue';
   import LinkModal from '@/components/LinkModal.vue';
   import { Channel } from '@/store/chat.vuex';
-  import PuzzleTooltip from './PuzzleTooltip.vue';
   import ItemOptions from '@/components/ItemOptions.vue';
+  import PuzzleTooltip from './PuzzleTooltip.vue';
+  import UserTooltip from './UserTooltip.vue';
+  import ActionMenu from './ActionMenu.vue';
+  import Username from './Username.vue';
 
   @Component({
     components: {

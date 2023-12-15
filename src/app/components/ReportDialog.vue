@@ -76,7 +76,6 @@
   import User from '@/types/user';
   import Message from '@/types/message';
 
-
   @Component({})
   export default class ReportDialog extends Vue {
     report: boolean = false;

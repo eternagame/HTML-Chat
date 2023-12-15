@@ -64,6 +64,7 @@
   import User from '@/types/user';
   import InlineLoadingSpinner from './InlineLoadingSpinner.vue';
   import Message from '../../types/message';
+
   @Component({
     components: {
       InlineLoadingSpinner,

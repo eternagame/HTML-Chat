@@ -30,7 +30,6 @@
     Prop, Component, Watch, Vue,
   } from 'vue-property-decorator';
 
-
   @Component({
     components: {
       VuePerfectScrollbar,

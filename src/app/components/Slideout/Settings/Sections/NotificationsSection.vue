@@ -57,11 +57,11 @@
   import {
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
+  import { Channel } from '@/store/chat.vuex';
   import SettingsSection from '../SettingsSection.vue';
   import SettingsSwitch from '../SettingsSwitch.vue';
   import SettingsEnableDisable from '../SettingsEnableDisable.vue';
   import SettingsTooltip from '../SettingsTooltip.vue';
-  import { Channel } from '@/store/chat.vuex';
 
   enum states {
     all_enabled,

@@ -19,7 +19,6 @@
   import chat from '@/store/chat.vuex';
   import SlideoutChats from './SlideoutChats.vue';
 
-
   @Component
   export default class ChatSelectButton extends Vue {
     @Prop({ required: true })
@@ -46,7 +45,6 @@
     }
   }
 </script>
-
 
 <style lang="scss" scoped>
   /* Style the buttons that are used to open the tab content */

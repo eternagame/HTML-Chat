@@ -15,7 +15,6 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
-
   @Component
   export default class MinimizationTriangle extends Vue {
     @Prop({ required: true })
@@ -29,7 +28,6 @@
     }
   }
 </script>
-
 
 <style lang="scss" scoped>
   .minimization-triangle { /* Normal state */

@@ -2,7 +2,7 @@ declare module 'irc-framework' {
   import { EventEmitter } from 'eventemitter3';
   import { DuplexStream } from 'stream';
   import Connection from 'irc-framework/src/transports/websocket';
-  
+
   export class Client extends EventEmitter {
     constructor(options: ClientConstructorParameters);
 
@@ -152,7 +152,7 @@ declare module 'irc-framework' {
     on(eventType: 'nick in use', cb: (event: NickInUseEventArgs) => any): this;
 
     on(eventType: 'nick invalid', cb: (event: NickInvalidEventArgs) => any): this;
-    
+
     on(eventType: 'irc error', cb: (event: IrcErrorEventArgs) => any): this;
   }
   export class Message {
@@ -319,7 +319,6 @@ declare module 'irc-framework' {
     on(eventType: 'channel info', cb: (event: ChannelInfoEventArgs) => any): this;
 
     on(eventType: string | symbol, cb: (event: any) => any): this;
-
   }
   export interface ChannelInfoEventArgs{
     channel: string;

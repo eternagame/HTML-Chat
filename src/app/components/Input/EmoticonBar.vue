@@ -87,12 +87,13 @@
   import {
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
+  import md from '@/tools/Markdown';
   import EmoticonButton from './EmoticonButton.vue';
   import SendButton from './SendButton.vue';
   import MarkdownWrapButton from './MarkdownWrapButton.vue';
   import MenuButton from './MenuButton.vue';
-  import md from '@/tools/Markdown';
   import MessagePane from '../Panes/MessagePane.vue';
+
   @Component({
     components: {
       SendButton,

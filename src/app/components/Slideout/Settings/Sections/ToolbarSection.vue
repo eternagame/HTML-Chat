@@ -121,7 +121,6 @@
       this.$vxm.settings.previewChatFeatures = this.previewChatFeatures;
     }
 
-
     // Custom emoticons
 
     update(e: Event) {

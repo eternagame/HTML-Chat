@@ -46,8 +46,8 @@
   import {
     Component, Watch, Prop, Vue,
   } from 'vue-property-decorator';
-  import ColorSlider from './ColorSlider.vue';
   import User from '@/types/user';
+  import ColorSlider from './ColorSlider.vue';
 
   @Component({
     components: {
