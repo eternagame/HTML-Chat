@@ -1,0 +1,11 @@
+// Eterna theme
+
+@import "~bootstrap/scss/bootstrap.scss";
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
+@import './bootswatch';
+@import './variables';
+
+$dark-blue-transparent: #05224680;
+
+$container-width: 300px;
+$container-height: 500px;
