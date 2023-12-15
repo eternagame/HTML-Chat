@@ -1,11 +1,12 @@
 <template>
   <li
-    v-if="!connectionData.connected && !connectionData.firstConnection"
+    v-if="!connectionData.connected && !connectionData.firstConnection && !disconnected"
     id="chat-loading"
+    style="list-style-type: none"
   >
     <img
       src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
-      class="loading-icon"
+      class="loading-icon mr-auto ml-auto align-middle mb-1"
     >
     <span
       v-show="connectionData.tryingToConnect"
@@ -29,17 +30,17 @@
     get connectionData() {
       return this.$vxm.chat.connectionData;
     }
+
+    get disconnected() {
+      return this.$vxm.chat.disconnected;
+    }
   }
 </script>
 
 <style lang="scss">
 .loading-icon {
-  margin-bottom: 5px;
   background-repeat: no-repeat;
   width: 20px;
   height: 20px;
-  margin-left: auto;
-  margin-right: auto;
-  vertical-align: middle;
 }
 </style>

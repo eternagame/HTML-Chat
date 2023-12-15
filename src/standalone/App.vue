@@ -4,7 +4,12 @@
     style="height:100%; overflow-y:hidden;"
   >
     <login v-if="!logged" @login="login"/>
-    <chat-app v-if="logged" :username="username" :uid="uid" workbranch="eternagame.org" />
+    <chat-app
+      v-if="logged"
+      :username="username"
+      :uid="uid"
+      workbranch="eternagame.org"
+      positionBasis="initial" />
   </div>
 </template>
 
@@ -27,9 +32,9 @@
     uid!: string;
 
     created() {
-      if (localStorage.username) {
-        this.username = localStorage.username;
-        this.uid = localStorage.uid;
+      if (localStorage.chat_username) {
+        this.username = localStorage.chat_username;
+        this.uid = localStorage.chat_uid;
         this.logged = true;
       }
     }
@@ -39,16 +44,20 @@
       this.uid = uid;
       this.logged = true;
       if (remember) {
-        localStorage.username = username;
-        localStorage.uid = uid;
+        localStorage.chat_username = username;
+        localStorage.chat_uid = uid;
       }
     }
   }
 </script>
 
 <style lang="scss">
-@import url(https://eternagame.org/workbranch_main/frontend/eterna.min.css?ver=t1563775052);
 @import url(https://fonts.googleapis.com/css?family=Didact+Gothic|Open+Sans:400,300,600,700);
+
+@import "@/assets/global.scss";
+@import '~bootstrap-vue/src/index.scss';
+@import '~bootstrap/scss/bootstrap.scss';
+@import "@/assets/_custom.scss";
 
 body {
   min-width: 0;
