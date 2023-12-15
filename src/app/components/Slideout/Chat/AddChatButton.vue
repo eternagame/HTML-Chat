@@ -22,7 +22,6 @@
   import SlideoutChats from './SlideoutChats.vue';
   import BanStatus from '../../../types/BanStatus';
 
-
   @Component
   export default class AddChatButton extends Vue {
     chatName: string = '';
@@ -31,12 +30,11 @@
       const name = `#${this.chatName.replace('#', '')}`;
       this.$vxm.chat.joinChannel(name);
       this.$nextTick(() => {
-        this.$parent.$el.scrollTop = this.$parent.$el.scrollHeight;
+        if (this.$parent) this.$parent.$el.scrollTop = this.$parent.$el.scrollHeight;
       });
     }
   }
 </script>
-
 
 <style lang="scss" scoped>
   @import "~@/assets/_custom.scss";

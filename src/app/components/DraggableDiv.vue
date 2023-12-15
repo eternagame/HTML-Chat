@@ -19,7 +19,7 @@
 
 <script lang="ts">
   import {
-    Component, Prop, Watch, Vue,
+    Component, Prop, Watch, Vue, Ref,
   } from 'vue-property-decorator';
   import gsap from 'gsap';
   // @ts-ignore
@@ -59,6 +59,9 @@
         this.container.style.left = `${this.positions.clientX}px`;
       }
     }
+
+    @Ref('draggableContainer')
+    draggableContainer!: HTMLDivElement;
 
     dragMouseDown(event: MouseEvent) {
       if (this.enabled) {
@@ -103,8 +106,6 @@
         const maxLeft = window.innerWidth - chatWidth;
 
         if (minimized) {
-          const chat = this.$refs.draggableContainer;
-
           // When the chat is rotated, width and height are a little strange
           // To properly respect the window boundaries, there needs to be an offset
           const offsetX = 0 - chatWidth / 2 + chatHeight / 2;
@@ -112,16 +113,16 @@
           if (leftValue < minLeft + breakpoint) {
             minTop -= offsetX;
             maxTop += offsetX;
-            gsap.to(chat, { duration: 0.5, rotation: 90 });
-            gsap.to(chat, { duration: 1, x: offsetX });
+            gsap.to(this.draggableContainer, { duration: 0.5, rotation: 90 });
+            gsap.to(this.draggableContainer, { duration: 1, x: offsetX });
           } else if (leftValue > maxLeft - breakpoint) {
             minTop -= offsetX;
             maxTop += offsetX;
-            gsap.to(chat, { duration: 0.5, rotation: -90 });
-            gsap.to(chat, { duration: 1, x: 0 - offsetX });
+            gsap.to(this.draggableContainer, { duration: 0.5, rotation: -90 });
+            gsap.to(this.draggableContainer, { duration: 1, x: 0 - offsetX });
           } else {
-            gsap.to(chat, { duration: 0.5, rotation: 0 });
-            gsap.to(chat, { duration: 1, x: 0 });
+            gsap.to(this.draggableContainer, { duration: 0.5, rotation: 0 });
+            gsap.to(this.draggableContainer, { duration: 1, x: 0 });
           }
         }
 
@@ -193,19 +194,17 @@
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
 
-      const chat = this.$refs.draggableContainer;
-
       if (!minimized) {
         // If the chat is docked to the bottom, the minimization needs to move the top bar down
         if (chatTop >= windowHeight - chatHeight - breakpoint) {
-          gsap.to(chat, {
+          gsap.to(this.draggableContainer, {
             duration: 0.2,
             top: windowHeight - chatHeight,
           });
         }
         // If the chat is minimized and docked, the top should move up
       } else if (chatTop + chatHeight >= windowHeight - breakpoint) {
-          gsap.to(chat, {
+          gsap.to(this.draggableContainer, {
             duration: 0.2,
             top: windowHeight - 40,
           });
