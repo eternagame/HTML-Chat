@@ -139,7 +139,7 @@
         localStars.push(...JSON.parse(localStorage.chat_stars) as Message[]);
       }
       localStars = localStars.filter(e => e.message !== this.message.message
-          && e.user !== this.message.user);
+        && e.user !== this.message.user);
       localStorage.chat_stars = JSON.stringify(localStars);
     }
 

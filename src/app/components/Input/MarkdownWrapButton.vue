@@ -34,14 +34,14 @@
 
     get buttonLetter() {
       switch (this.type) {
-        case 'italics': return 'T';
-        case 'action': return 'me';
-        case 'question': return '?';
-        case 'italicsbold': return 'E';
-        case 'quote': return '""';
-        case 'serif': return 'F';
-        case 'cursive': return 'F';
-        default: return this.type.substring(0, 1).toUpperCase();
+      case 'italics': return 'T';
+      case 'action': return 'me';
+      case 'question': return '?';
+      case 'italicsbold': return 'E';
+      case 'quote': return '""';
+      case 'serif': return 'F';
+      case 'cursive': return 'F';
+      default: return this.type.substring(0, 1).toUpperCase();
       }
     }
 
@@ -50,10 +50,10 @@
     }
 
     get classes() {
-        return {
-          highlight: this.typeIs('highlight'),
-        };
-      }
+      return {
+        highlight: this.typeIs('highlight'),
+      };
+    }
 
     clicked() {
       this.$emit('md', this.type);

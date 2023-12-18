@@ -76,11 +76,11 @@
       if (this.validColor) {
         // Update vuex
         this.$vxm.chat.usernameColor = `#${this.colorToHexValue(this.red)}${this.colorToHexValue(this.green)}${this.colorToHexValue(this.blue)}`;
-          // Set value to localStorage if available
-          if (localStorage) {
-            localStorage.chat_usernameColor = this.$vxm.chat.usernameColor;
-          }
+        // Set value to localStorage if available
+        if (localStorage) {
+          localStorage.chat_usernameColor = this.$vxm.chat.usernameColor;
         }
+      }
       // Sets color of preview test
       return `rgb(${this.red}, ${this.green}, ${this.blue})`;
     }

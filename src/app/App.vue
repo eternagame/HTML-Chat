@@ -71,374 +71,382 @@
     },
   });
 
-@Component({
-  components: {
-    DraggableDiv,
-    Slideout,
-    ReportDialog,
-    ConnectingPopup,
-    MessagePane,
-    MinimizationTriangle,
-    OpenWindowButton,
-    OperLogin,
-    StarButton,
-  },
-  directives: {
-    resize,
-  },
-})
+  @Component({
+    components: {
+      DraggableDiv,
+      Slideout,
+      ReportDialog,
+      ConnectingPopup,
+      MessagePane,
+      MinimizationTriangle,
+      OpenWindowButton,
+      OperLogin,
+      StarButton,
+    },
+    directives: {
+      resize,
+    },
+  })
   export default class App extends Vue {
-  // Minimization
+    // Minimization
 
-  minimization = false;
+    minimization = false;
 
-  @Watch('minimized')
-  minimizedChanged() {
-    this.fullSize = false;
-  }
-
-  get minimized() {
-    if (this.$refs && this.$refs.draggable) this.$refs.draggable.minimize();
-    return this.minimization;
-  }
-
-  // Private messages
-
-  get privateMessageUser() {
-    return this.$vxm.chat.userToPrivMsg;
-  }
-
-  @Watch('privateMessageUser')
-  openChannel() {
-    if (this.privateMessageUser !== '') { // If the user is '', don't trigger
-      // If private message channel with user nonexistent, make one
-      if (!this.messageTabs.some(e => e.name === this.privateMessageUser)) {
-        this.$vxm.chat.joinChannel(this.privateMessageUser);
-      }
-      this.$vxm.chat.tab = this.messageTabs.findIndex(e => e.name === this.privateMessageUser);
-      this.$vxm.chat.chatChannel = this.privateMessageUser;
-      this.$vxm.chat.slideoutOpen = false; // Open the chat channel and close slideout
-    }
-    this.$vxm.chat.userToPrivMsg = ''; // Reset
-  }
-
-  // Full size
-
-  fullSize = false;
-
-  get fullSized() {
-    return this.fullSize;
-  }
-
-  @Watch('fullSize')
-  sizeChanged() {
-    if (this.fullSize && this.minimized) {
+    @Watch('minimized')
+    minimizedChanged() {
       this.fullSize = false;
     }
-    if (this.fullSize === false) {
-      // Scrolls down when the chat is brought back to normal size
-      if (this.$refs.messagepanes && this.$refs.messagepanes[this.activeTab as number]) {
-        this.$refs.messagepanes[this.activeTab as number].onContentChanged();
+
+    get minimized() {
+      if (this.$refs && this.$refs.draggable) this.$refs.draggable.minimize();
+      return this.minimization;
+    }
+
+    // Private messages
+
+    get privateMessageUser() {
+      return this.$vxm.chat.userToPrivMsg;
+    }
+
+    @Watch('privateMessageUser')
+    openChannel() {
+      if (this.privateMessageUser !== '') { // If the user is '', don't trigger
+        // If private message channel with user nonexistent, make one
+        if (!this.messageTabs.some(e => e.name === this.privateMessageUser)) {
+          this.$vxm.chat.joinChannel(this.privateMessageUser);
+        }
+        this.$vxm.chat.tab = this.messageTabs.findIndex(e => e.name === this.privateMessageUser);
+        this.$vxm.chat.chatChannel = this.privateMessageUser;
+        this.$vxm.chat.slideoutOpen = false; // Open the chat channel and close slideout
+      }
+      this.$vxm.chat.userToPrivMsg = ''; // Reset
+    }
+
+    // Full size
+
+    fullSize = false;
+
+    get fullSized() {
+      return this.fullSize;
+    }
+
+    @Watch('fullSize')
+    sizeChanged() {
+      if (this.fullSize && this.minimized) {
+        this.fullSize = false;
+      }
+      if (this.fullSize === false) {
+        // Scrolls down when the chat is brought back to normal size
+        if (this.$refs.messagepanes && this.$refs.messagepanes[this.activeTab as number]) {
+          this.$refs.messagepanes[this.activeTab as number].onContentChanged();
+        }
       }
     }
-  }
 
-  // Tabs
+    // Tabs
 
-  get messageTabs() {
-    return Object.values(this.$vxm.chat.channels).map((channel) => channel!);
-  }
-
-  // For text in top bar
-  get currentTab() {
-    return this.$vxm.chat.chatChannel;
-  }
-
-  @Watch('currentTab')
-  loadHistory() { // Load history when tab changed
-    // Don't put duplicates of existing history messages
-    if (this.$vxm.chat.channels[this.currentTab]!.postedMessages.length <= 50) {
-      this.$vxm.chat.loadMessagesForChannel(this.currentTab); // Load messages
+    get messageTabs() {
+      return Object.values(this.$vxm.chat.channels).map((channel) => channel!);
     }
-  }
 
-  // Gets current chat tab
-  get activeTab() {
-    return this.$vxm.chat.tab;
-  }
-
-  // Oper
-
-  get isOper() {
-    return this.$vxm.chat.oper;
-  }
-
-  showAuth = false;
-
-  async operAuthenticate(
-    { username, password, remember }: {username: string, password: string, remember: boolean},
-  ) {
-    this.$vxm.chat.operLoginUser = username; // Sets creds used for authentification by chat.vuex
-    this.$vxm.chat.operLoginPassword = password;
-    if (remember) { // Store values
-      // Encrypt password
-      localStorage.chat_operPass = JSON.stringify(sjcl.encrypt('password', password));
-      localStorage.chat_operUser = username;
+    // For text in top bar
+    get currentTab() {
+      return this.$vxm.chat.chatChannel;
     }
-    await this.$vxm.chat.operCommand(); // Set all nicks as opers
-    this.operLoginStatus(); // A precaution so messages are received properly
-  }
 
-  operLoginStatus() {
-    if (this.$refs.login) {
-      if (this.isOper) {
-        this.$refs.login.message = 'Login succeeded'; // Success message
-        this.$refs.login.showsMessage = true; // Modal shows success message
+    @Watch('currentTab')
+    loadHistory() { // Load history when tab changed
+      // Don't put duplicates of existing history messages
+      if (this.$vxm.chat.channels[this.currentTab]!.postedMessages.length <= 50) {
+        this.$vxm.chat.loadMessagesForChannel(this.currentTab); // Load messages
+      }
+    }
+
+    // Gets current chat tab
+    get activeTab() {
+      return this.$vxm.chat.tab;
+    }
+
+    // Oper
+
+    get isOper() {
+      return this.$vxm.chat.oper;
+    }
+
+    showAuth = false;
+
+    async operAuthenticate(
+      { username, password, remember }: {username: string, password: string, remember: boolean},
+    ) {
+      this.$vxm.chat.operLoginUser = username; // Sets creds used for authentification by chat.vuex
+      this.$vxm.chat.operLoginPassword = password;
+      if (remember) { // Store values
+        // Encrypt password
+        localStorage.chat_operPass = JSON.stringify(sjcl.encrypt('password', password));
+        localStorage.chat_operUser = username;
+      }
+      await this.$vxm.chat.operCommand(); // Set all nicks as opers
+      this.operLoginStatus(); // A precaution so messages are received properly
+    }
+
+    operLoginStatus() {
+      if (this.$refs.login) {
+        if (this.isOper) {
+          this.$refs.login.message = 'Login succeeded'; // Success message
+          this.$refs.login.showsMessage = true; // Modal shows success message
+        } else {
+          this.$refs.login.authFailed = true; // Sets 'incorrect user/pass' message
+          this.$refs.login.password = ''; // Resets password field
+        }
       } else {
-        this.$refs.login.authFailed = true; // Sets 'incorrect user/pass' message
-        this.$refs.login.password = ''; // Resets password field
-      }
-    } else {
-      this.$vxm.chat.oper = this.isOper;
-    }
-  }
-
-  get show() {
-    return this.$vxm.chat.auth;
-  }
-
-  @Watch('show') // Show authentification modal
-  showAuthentification() {
-    if (this.show) {
-      this.showAuth = true;
-      this.$vxm.chat.auth = false;
-    }
-  }
-
-  /**
-   * Logs the user in as an operator
-   */
-  async logInOper() {
-    if (localStorage && localStorage.chat_operUser && localStorage.chat_operPass) {
-      let pass = JSON.parse(localStorage.chat_operPass);
-      const user = localStorage.chat_operUser;
-      pass = sjcl.decrypt('password', pass); // Decrypt password
-      if (user && pass) {
-        this.$vxm.chat.operLoginPassword = pass; // Log in
-        this.$vxm.chat.operLoginUser = user;
-        this.$vxm.chat.operCommand();
-        setTimeout(this.operLoginStatus, 150);
+        this.$vxm.chat.oper = this.isOper;
       }
     }
-  }
 
-  // Drag and resize
-
-  get positionStyle() {
-    const style: { [key:string]: string} = {};
-    if (!localStorage) return style;
-    if (!localStorage[`chat_${this.positionBasis}Position`]) return style;
-    const basis = JSON.parse(localStorage[`chat_${this.positionBasis}Position`]);
-    if (!basis) return style;
-    if (basis[0] === 'left') {
-      style.left = `${basis[1]}px`;
-    } else {
-      style.right = `${basis[1]}px`;
+    get show() {
+      return this.$vxm.chat.auth;
     }
-    if (basis[2] === 'top') {
-      style.top = `${basis[3]}px`;
-    } else {
-      style.bottom = `${basis[3]}px`;
-    }
-    return style;
-  }
 
-  get sizeStyle() {
-    return {
-      width: `${this.initialSize[0] || 300}px`,
-      height: `${this.initialSize[1] || 500}px`,
+    @Watch('show') // Show authentification modal
+    showAuthentification() {
+      if (this.show) {
+        this.showAuth = true;
+        this.$vxm.chat.auth = false;
+      }
+    }
+
+    /**
+     * Logs the user in as an operator
+     */
+    async logInOper() {
+      if (localStorage && localStorage.chat_operUser && localStorage.chat_operPass) {
+        let pass = JSON.parse(localStorage.chat_operPass);
+        const user = localStorage.chat_operUser;
+        pass = sjcl.decrypt('password', pass); // Decrypt password
+        if (user && pass) {
+          this.$vxm.chat.operLoginPassword = pass; // Log in
+          this.$vxm.chat.operLoginUser = user;
+          this.$vxm.chat.operCommand();
+          setTimeout(this.operLoginStatus, 150);
+        }
+      }
+    }
+
+    // Drag and resize
+
+    get positionStyle() {
+      const style: { [key:string]: string} = {};
+      if (!localStorage) return style;
+      if (!localStorage[`chat_${this.positionBasis}Position`]) return style;
+      const basis = JSON.parse(localStorage[`chat_${this.positionBasis}Position`]);
+      if (!basis) return style;
+      if (basis[0] === 'left') {
+        style.left = `${basis[1]}px`;
+      } else {
+        style.right = `${basis[1]}px`;
+      }
+      if (basis[2] === 'top') {
+        style.top = `${basis[3]}px`;
+      } else {
+        style.bottom = `${basis[3]}px`;
+      }
+      return style;
+    }
+
+    get sizeStyle() {
+      return {
+        width: `${this.initialSize[0] || 300}px`,
+        height: `${this.initialSize[1] || 500}px`,
+      };
+    }
+
+    get initialSize() {
+      return this.$vxm.chat.initialSize;
+    }
+
+    resized() { // When the chat is resized, store the new size
+      const w = this.$el.scrollWidth;
+      const h = this.$el.scrollHeight;
+      if (localStorage && (w !== 300 || h !== 500)) {
+        localStorage.chat_size = JSON.stringify(`${w} ${h}`);
+      }
+    }
+
+    scrollDown() {
+      this.$refs.messagepanes.forEach(e => e.scrollDown());
+    }
+
+    // Slideout
+
+    get slideoutOpen() {
+      return this.$vxm.chat.slideoutOpen;
+    }
+
+    @Watch('slideoutOpen')
+    slideoutChanged() { // Make sure the chat isn't minimized when the slideout opens
+      if (this.slideoutOpen) {
+        this.minimization = false;
+      }
+    }
+
+    close(ev: MouseEvent) {
+      if (!this.$refs.slideout || !this.$refs.slideout.$el) return;
+
+      if (
+        // If the click is not in the slideout
+        !this.$refs.slideout.$el.contains(ev.target as Node)
+        // And it is in the chat
+        && this.$el.contains(ev.target as Node)
+      ) {
+        // Close the slideout
+        this.$vxm.chat.slideoutOpen = false;
+      }
+    }
+
+    // Status
+
+    windowFocused = true;
+
+    @Watch('windowFocused')
+    focusChanged() { // Updates status when focus is changed
+      if (this.windowFocused) {
+        this.$vxm.chat.setUnaway();
+      } else {
+        this.$vxm.chat.setAway();
+      }
+    }
+
+    // Other
+
+    @Prop({ required: true })
+    username!: string;
+
+    @Prop({ required: true })
+    workbranch!: string;
+
+    @Prop({ required: true })
+    uid!: string;
+
+    @Prop({ default: 'initial' })
+    positionBasis !: string;
+
+    $refs!: {
+      reportDialog: ReportDialog;
+      login: OperLogin,
+      messagepanes: MessagePane[],
+      slideout: Slideout,
+      draggable: DraggableDiv,
     };
-  }
 
-  get initialSize() {
-    return this.$vxm.chat.initialSize;
-  }
-
-  resized() { // When the chat is resized, store the new size
-    const w = this.$el.scrollWidth;
-    const h = this.$el.scrollHeight;
-    if (localStorage && (w !== 300 || h !== 500)) {
-      localStorage.chat_size = JSON.stringify(`${w} ${h}`);
+    postMessage(rawMessage: string, channel: string) {
+      if (!channel.startsWith('#')) { // If it's a private message (channel not prefixed with #)
+        this.$vxm.chat.privateMessage({ message: rawMessage, channel });
+      } else { // Otherwise
+        this.$vxm.chat.sendMessage({ rawMessage, channel });
+      }
+      // When user sends a message, make sure it doesn't notify itself
+      this.$vxm.chat.readChannel(channel);
     }
-  }
 
-  scrollDown() {
-    this.$refs.messagepanes.forEach(e => e.scrollDown());
-  }
-
-  // Slideout
-
-  get slideoutOpen() {
-    return this.$vxm.chat.slideoutOpen;
-  }
-
-  @Watch('slideoutOpen')
-  slideoutChanged() { // Make sure the chat isn't minimized when the slideout opens
-    if (this.slideoutOpen) {
-      this.minimization = false;
+    mounted() {
+      this.$vxm.chat.init({
+        username: this.username,
+        workbranch: this.workbranch,
+        uid: this.uid,
+      });
+      const timer = setInterval(() => { // Creates a timer to check for history and connection
+        if (this.$vxm.chat.rawHistoryMessages.length > 0) {
+          clearInterval(timer); // Once history messages start coming in, stop the timer
+          setTimeout(() => { // Make sure all of them come in, then process them
+            this.$vxm.chat.loadMessagesForChannel('#general');
+            this.logInOper();
+            setTimeout(() => {
+              const pane = this.$refs.messagepanes[0];
+              if (pane) {
+                pane.scrollDown();
+              }
+            }, 100);
+          }, 500);
+        }
+      }, 100);
+      this.startTimers();
     }
-  }
 
-  close(ev: MouseEvent) {
-    if (!this.$refs.slideout || !this.$refs.slideout.$el) return;
-    if (!this.$refs.slideout.$el.contains(ev.target as Node) // If the click is not in the slideout
-    && this.$el.contains(ev.target as Node)) { // And it is in the chat
-      this.$vxm.chat.slideoutOpen = false; // Close the slideout
+    key(e:KeyboardEvent) {
+      if (e.code === 'Tab') { /* Watches for tabs. If a tab is detected, outline on input will remain on focus */
+        this.$vxm.chat.tabbing = true;
+      }
+      if (e.code === 'ArrowUp') { // Checks if up arrow has been pressed
+        // Finds the most recent message the user has sent
+        const channelMsgs = this.$vxm.chat.channels[this.currentTab]?.postedMessages;
+        let recent = channelMsgs?.filter(
+          m => m.user.username === this.username
+        ).reverse()[0].message;
+        if (recent?.match(/\[#[a-f0-9]{6}\]$/)) { // Remove the color
+          recent = recent.substring(0, recent.length - 10);
+        }
+        // Notify the input
+        this.$vxm.chat.updateMessage = recent || '';
+        this.$vxm.chat.inputUpdate = true;
+      }
     }
-  }
 
-  // Status
+    created() {
+      this.$vxm.chat.$subscribe('openReportModal', (payload) => {
+        this.$refs.reportDialog.open(payload);
+      });
+      window.addEventListener('keydown', this.key);
+      window.addEventListener('click', this.close); // Closes slideout when clicked outside
+      window.addEventListener('focus', () => { // Updates away/online status when tab is clicked on/off
+        if (this.$vxm.chat.autoUpdateStatus) { // Don't update if user has set themselves as away
+          this.windowFocused = true;
+        }
+        this.$vxm.chat.focused = true;
+        this.$vxm.chat.readChannel(this.currentTab);
+      });
+      window.addEventListener('blur', () => {
+        this.windowFocused = false;
+        this.$vxm.chat.focused = false;
+      });
+    }
 
-  windowFocused = true;
+    get chatStyle() {
+      return Object.assign(this.positionStyle, this.sizeStyle);
+    }
 
-  @Watch('windowFocused')
-  focusChanged() { // Updates status when focus is changed
-    if (this.windowFocused) {
-      this.$vxm.chat.setUnaway();
-    } else {
+    // Inactivity timer
+
+    timeout = 60000; // How long a user is inactive before they are marked as away
+
+    timeoutId !: number;
+
+    onInactive() {
       this.$vxm.chat.setAway();
     }
-  }
 
-  // Other
-
-  @Prop({ required: true })
-  username!: string;
-
-  @Prop({ required: true })
-  workbranch!: string;
-
-  @Prop({ required: true })
-  uid!: string;
-
-  @Prop({ default: 'initial' })
-  positionBasis !: string;
-
-  $refs!: {
-    reportDialog: ReportDialog;
-    login: OperLogin,
-    messagepanes: MessagePane[],
-    slideout: Slideout,
-    draggable: DraggableDiv,
-  };
-
-  postMessage(rawMessage: string, channel: string) {
-    if (!channel.startsWith('#')) { // If it's a private message (channel not prefixed with #)
-      this.$vxm.chat.privateMessage({ message: rawMessage, channel });
-    } else { // Otherwise
-      this.$vxm.chat.sendMessage({ rawMessage, channel });
+    resetInactiveTimer() { // When the user interacts with the chat, reset the timer
+      window.clearTimeout(this.timeoutId);
+      this.beginInactiveTimer();
     }
-    // When user sends a message, make sure it doesn't notify itself
-    this.$vxm.chat.readChannel(channel);
-  }
 
-  mounted() {
-    this.$vxm.chat.init({
-      username: this.username,
-      workbranch: this.workbranch,
-      uid: this.uid,
-    });
-    const timer = setInterval(() => { // Creates a timer to check for history and connection
-      if (this.$vxm.chat.rawHistoryMessages.length > 0) {
-        clearInterval(timer); // Once history messages start coming in, stop the timer
-        setTimeout(() => { // Make sure all of them come in, then process them
-          this.$vxm.chat.loadMessagesForChannel('#general');
-          this.logInOper();
-          setTimeout(() => {
-            const pane = this.$refs.messagepanes[0];
-            if (pane) {
-              pane.scrollDown();
-            }
-          }, 100);
-        }, 500);
-      }
-    }, 100);
-    this.startTimers();
-  }
-
-  key(e:KeyboardEvent) {
-    if (e.code === 'Tab') { /* Watches for tabs. If a tab is detected, outline on input will remain on focus */
-      this.$vxm.chat.tabbing = true;
+    beginInactiveTimer() {
+      this.timeoutId = setTimeout(this.onInactive, this.timeout);
     }
-    if (e.code === 'ArrowUp') { // Checks if up arrow has been pressed
-      // Finds the most recent message the user has sent
-      const channelMsgs = this.$vxm.chat.channels[this.currentTab]?.postedMessages;
-      let recent = channelMsgs?.filter(m => m.user.username === this.username).reverse()[0].message;
-      if (recent?.match(/\[#[a-f0-9]{6}\]$/)) { // Remove the color
-        recent = recent.substring(0, recent.length - 10);
-      }
-      // Notify the input
-      this.$vxm.chat.updateMessage = recent || '';
-      this.$vxm.chat.inputUpdate = true;
-    }
-  }
 
-  created() {
-    this.$vxm.chat.$subscribe('openReportModal', (payload) => {
-      this.$refs.reportDialog.open(payload);
-    });
-    window.addEventListener('keydown', this.key);
-    window.addEventListener('click', this.close); // Closes slideout when clicked outside
-    window.addEventListener('focus', () => { // Updates away/online status when tab is clicked on/off
-      if (this.$vxm.chat.autoUpdateStatus) { // Don't update if user has set themselves as away
-        this.windowFocused = true;
-      }
-      this.$vxm.chat.focused = true;
-      this.$vxm.chat.readChannel(this.currentTab);
-    });
-    window.addEventListener('blur', () => {
-      this.windowFocused = false;
-      this.$vxm.chat.focused = false;
-    });
-  }
-
-  get chatStyle() {
-    return Object.assign(this.positionStyle, this.sizeStyle);
-  }
-
-  // Inactivity timer
-
-  timeout = 60000; // How long a user is inactive before they are marked as away
-
-  timeoutId !: number;
-
-  onInactive() {
-    this.$vxm.chat.setAway();
-  }
-
-  resetInactiveTimer() { // When the user interacts with the chat, reset the timer
-    window.clearTimeout(this.timeoutId);
-    this.beginInactiveTimer();
-  }
-
-  beginInactiveTimer() {
-    this.timeoutId = setTimeout(this.onInactive, this.timeout);
-  }
-
-  startTimers() { // Begins timers and sets event listeners
-    const chat = document.getElementById('eterna-chat'); // $refs was acting up
+    startTimers() { // Begins timers and sets event listeners
+      const chat = document.getElementById('eterna-chat'); // $refs was acting up
     chat?.addEventListener('mousemove', this.resetInactiveTimer, false);
     chat?.addEventListener('mousedown', this.resetInactiveTimer, false);
     chat?.addEventListener('keypress', this.resetInactiveTimer, false);
     chat?.addEventListener('touchmove', this.resetInactiveTimer, false);
-    this.beginInactiveTimer();
-  }
+      this.beginInactiveTimer();
+    }
 
-  // Hooks
+    // Hooks
 
-  postScreenshot(url:string) {
-    this.postMessage(url, '#help');
-  }
+    postScreenshot(url:string) {
+      this.postMessage(url, '#help');
+    }
   }
 </script>
 <style lang="scss">

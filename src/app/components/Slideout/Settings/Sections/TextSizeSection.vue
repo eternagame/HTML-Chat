@@ -31,7 +31,7 @@
     // Updates global font size when input changes
     @Watch('size')
     updateFontSize() {
-       // Only update if valid font size
+      // Only update if valid font size
       if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 18) {
         this.$vxm.settings.font = parseInt(this.size, 10);
         localStorage.chat_fontSize = JSON.stringify(this.size);

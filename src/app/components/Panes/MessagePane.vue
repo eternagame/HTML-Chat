@@ -195,7 +195,7 @@
 
     get input() {
       return this.connectionData.connected
-          || this.connectionData.firstConnection;
+        || this.connectionData.firstConnection;
     }
 
     // Updates font size
@@ -205,8 +205,8 @@
 
     get anyChatFeatures() { // Checks if any chat features are enabled
       return (this.$vxm.settings.emoticonChatFeatures
-      || this.$vxm.settings.markdownChatFeatures
-      || this.$vxm.settings.previewChatFeatures);
+        || this.$vxm.settings.markdownChatFeatures
+        || this.$vxm.settings.previewChatFeatures);
     }
 
     // Updates footer height when chat disappears/appears
@@ -254,19 +254,19 @@
     format(options:string) {
       // Adds markdown formatting
       switch (options) {
-        case 'bold': this.$refs.input.wrapOrInsert('**', true); break;
-        case 'italics': this.$refs.input.wrapOrInsert('*', true); break;
-        case 'italicsbold': this.$refs.input.wrapOrInsert('***', true); break;
-        case 'strikethrough': this.$refs.input.wrapOrInsert('~~', true); break;
-        case 'code': this.$refs.input.wrapOrInsert('`', true); break;
-        case 'link': this.$refs.input.insertLink(); break;
-        case 'action': this.$refs.input.insertString(0, '/me '); break;
-        case 'quote': this.$refs.input.insertString(0, '> '); break;
-        case 'question': this.$emit('postMessage', '/help'); break;
-        case 'cursive': this.$refs.input.wrapOrInsert('::', true); break;
-        case 'serif': this.$refs.input.wrapOrInsert(':', true); break;
-        case 'highlight': this.$refs.input.wrapOrInsert('|', true); break;
-        default: break;
+      case 'bold': this.$refs.input.wrapOrInsert('**', true); break;
+      case 'italics': this.$refs.input.wrapOrInsert('*', true); break;
+      case 'italicsbold': this.$refs.input.wrapOrInsert('***', true); break;
+      case 'strikethrough': this.$refs.input.wrapOrInsert('~~', true); break;
+      case 'code': this.$refs.input.wrapOrInsert('`', true); break;
+      case 'link': this.$refs.input.insertLink(); break;
+      case 'action': this.$refs.input.insertString(0, '/me '); break;
+      case 'quote': this.$refs.input.insertString(0, '> '); break;
+      case 'question': this.$emit('postMessage', '/help'); break;
+      case 'cursive': this.$refs.input.wrapOrInsert('::', true); break;
+      case 'serif': this.$refs.input.wrapOrInsert(':', true); break;
+      case 'highlight': this.$refs.input.wrapOrInsert('|', true); break;
+      default: break;
       }
     }
 

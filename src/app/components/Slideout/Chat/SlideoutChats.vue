@@ -32,10 +32,10 @@
     activeTab = 100; // If any real channel index (or unset), causes weird bug. This fixes it
 
     channelDescriptions: {[channel:string]:string} = {
-    '#general': 'General chat',
-    '#off-topic': 'Off-topic chat',
-    '#help': 'Help requests',
-    '#labs': 'Discussion related to labs',
+      '#general': 'General chat',
+      '#off-topic': 'Off-topic chat',
+      '#help': 'Help requests',
+      '#labs': 'Discussion related to labs',
     };
 
     get messageTabs() {
@@ -52,7 +52,7 @@
 
     update() {
       (this.$parent as Slideout).checked = false; // Hide slideout
-       // Set current tab name in top bar as this tab's name
+      // Set current tab name in top bar as this tab's name
       this.$vxm.chat.chatChannel = this.messageTabs[this.activeTab].name;
       this.$vxm.chat.tab = this.activeTab; // Set self as active tab
     }

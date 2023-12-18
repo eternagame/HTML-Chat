@@ -73,7 +73,7 @@
 
     // Each of the functions below tells whether a given tab is selected
     get chatSelected() {
-        return this.activeTab === 0;
+      return this.activeTab === 0;
     }
 
     get userSelected() {

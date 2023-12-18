@@ -149,7 +149,7 @@
         const clicked = e.target as Element;
         if (!clicked.classList.contains('user-link')) {
           this.$emit('hide');
-         }
+        }
       });
     }
 

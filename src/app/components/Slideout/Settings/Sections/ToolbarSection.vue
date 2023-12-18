@@ -72,14 +72,14 @@
   import SettingsEnableDisable from '../SettingsEnableDisable.vue';
   import SettingsTooltip from '../SettingsTooltip.vue';
 
-@Component({
-  components: {
-    SettingsSection,
-    SettingsSwitch,
-    SettingsEnableDisable,
-    SettingsTooltip,
-  },
-})
+  @Component({
+    components: {
+      SettingsSection,
+      SettingsSwitch,
+      SettingsEnableDisable,
+      SettingsTooltip,
+    },
+  })
   export default class ToolbarSection extends Vue {
     get allChatFeatures() {
       if (this.emoticonChatFeatures

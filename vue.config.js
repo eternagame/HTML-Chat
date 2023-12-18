@@ -8,6 +8,9 @@ module.exports = {
       alias: {
         '@': path.resolve(__dirname, 'src/app/'),
       },
+      fallback: {
+        "crypto": require.resolve("crypto-browserify")
+      }
     },
   },
 };

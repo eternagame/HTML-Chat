@@ -119,7 +119,7 @@
         const clicked = e.target as Element;
         if (!clicked.classList.contains('puzzle-link')) {
           this.$emit('hide');
-         }
+        }
       });
     }
   }

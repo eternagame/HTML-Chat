@@ -54,27 +54,27 @@
 
     // Gets value from localStorage, parent, or vuex when created
     created() {
-        let color;
-        if (localStorage.chat_usernameColor) {
-          color = localStorage.chat_usernameColor;
-        } else if (this.$vxm.chat.usernameColor !== '' && this.$vxm.chat.usernameColor !== undefined) {
-          color = this.$vxm.chat.usernameColor;
-        } else {
-          color = (this.$parent as ColorPicker).color;
-        }
-        switch (this.colorID) {
-          case 'red':
-            this.sliderValue = parseInt(color.substring(1, 3), 16);
-            break;
-          case 'green':
-            this.sliderValue = parseInt(color.substring(3, 5), 16);
-            break;
-          case 'blue':
-            this.sliderValue = parseInt(color.substring(5, 7), 16);
-            break;
-          default: break;
-        }
+      let color;
+      if (localStorage.chat_usernameColor) {
+        color = localStorage.chat_usernameColor;
+      } else if (this.$vxm.chat.usernameColor !== '' && this.$vxm.chat.usernameColor !== undefined) {
+        color = this.$vxm.chat.usernameColor;
+      } else {
+        color = (this.$parent as ColorPicker).color;
       }
+      switch (this.colorID) {
+      case 'red':
+        this.sliderValue = parseInt(color.substring(1, 3), 16);
+        break;
+      case 'green':
+        this.sliderValue = parseInt(color.substring(3, 5), 16);
+        break;
+      case 'blue':
+        this.sliderValue = parseInt(color.substring(5, 7), 16);
+        break;
+      default: break;
+      }
+    }
   }
 </script>
 <style scoped>

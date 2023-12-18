@@ -89,7 +89,7 @@
         let topValue = this.container.offsetTop - this.positions.movementY;
 
         const {
-        width, height, minHeight, transform,
+          width, height, minHeight, transform,
         } = this.container.style;
 
         const chatWidth = parseInt(width.replace('px', ''), 10);
@@ -181,7 +181,7 @@
 
     minimize() {
       const {
-      left, top, width, height, minHeight,
+        left, top, width, height, minHeight,
       } = this.container.style;
       const chatLeft = parseInt(left.replace('px', ''), 10);
       const chatTop = parseInt(top.replace('px', ''), 10);
@@ -204,11 +204,11 @@
         }
         // If the chat is minimized and docked, the top should move up
       } else if (chatTop + chatHeight >= windowHeight - breakpoint) {
-          gsap.to(this.draggableContainer, {
-            duration: 0.2,
-            top: windowHeight - 40,
-          });
-        }
+        gsap.to(this.draggableContainer, {
+          duration: 0.2,
+          top: windowHeight - 40,
+        });
+      }
 
       // TODO
     }

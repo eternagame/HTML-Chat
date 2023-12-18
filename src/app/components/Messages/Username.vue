@@ -133,7 +133,7 @@
       if (!this.validColor(red, green, blue)) { // If color doesn't have enough contrast
         return this.computedColor; // Return computed
       }
-       // After it's passed all that, return the color; if it somehow fails, return a computed
+      // After it's passed all that, return the color; if it somehow fails, return a computed
       return this.color || this.computedColor;
     }
 

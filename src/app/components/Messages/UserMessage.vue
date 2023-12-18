@@ -133,10 +133,10 @@
           } else {
             console.log(`No such channel ${channel}`);
           }
-       });
-     });
-     // Gets all user links from markdown
-     const userLinks = this.$refs.msg.getElementsByClassName('user-link');
+        });
+      });
+      // Gets all user links from markdown
+      const userLinks = this.$refs.msg.getElementsByClassName('user-link');
       // Spread operators converts HTMLCollectionOf<Element> to HTMLElement[]
       // Iterates through each channel link
       [...userLinks].forEach(l => {
@@ -180,13 +180,13 @@
             || (ev.target as Element).getBoundingClientRect().x;
           this.puzzleTooltipY = (ev as MouseEvent).clientY
             || (ev.target as Element).getBoundingClientRect().y;
-            /* Ensures information is loaded after the tooltip exists
+          /* Ensures information is loaded after the tooltip exists
             The tooltip uses v-if (to limit GET requests)
             If the functions are called right away,
             they could fail because the tooltip doesn't exist yet */
-            this.$nextTick(() => {
-              // Updates tooltip information
-              this.$refs.puzzleTooltip.fill();
+          this.$nextTick(() => {
+            // Updates tooltip information
+            this.$refs.puzzleTooltip.fill();
           });
         });
       });
@@ -197,7 +197,7 @@
             ev.preventDefault();
             if (e.href.trim() !== '' && !e.href.match(/(https?:\/\/)?eternagame\.org\/(game\/)?puzzles?\/\d+\/?/)) this.$refs.linkModal.open(e.href);
           });
-      });
+        });
     }
 
     openLinkModal = false;
