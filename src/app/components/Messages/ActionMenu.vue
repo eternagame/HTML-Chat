@@ -74,7 +74,6 @@
     Component, Prop, Vue, Watch,
   } from 'vue-property-decorator';
   import { VueContext } from 'vue-context';
-  import Clipboard from '@cloudcmd/clipboard';
   import Message from '@/types/message';
   import User from '@/types/user';
 
@@ -196,7 +195,7 @@
     copyMessage() {
       if (!this.message || !this.message.user) return;
       const copyString = `<${this.message.user.username}>${this.message.message}`;
-      Clipboard.writeText(copyString);
+      navigator.clipboard.writeText(copyString);
     }
 
     quieted = false;

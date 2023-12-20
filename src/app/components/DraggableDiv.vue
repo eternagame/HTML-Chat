@@ -23,7 +23,7 @@
   } from 'vue-property-decorator';
   import gsap from 'gsap';
   // @ts-ignore
-  import throttle from 'lodash.throttle';
+  import throttle from 'lodash/throttle';
 
   @Component
   export default class DraggableDiv extends Vue {

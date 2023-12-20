@@ -1,13 +1,9 @@
-import {
-  ActionTree, MutationTree, CommitOptions, Store,
-} from 'vuex';
+import { Store } from 'vuex';
 import * as Irc from 'irc-framework';
 import {
-  createModule, mutation, action, extractVuexModule, createProxy,
+  createModule, mutation, action,
 } from 'vuex-class-component';
-import toBool from 'to-bool';
 import Vue from 'vue';
-import { Component, Prop, Watch } from 'vue-property-decorator';
 import { BroadcastChannel } from 'broadcast-channel';
 import Connection from '@/tools/websocket';
 import BanStatus from '@/types/BanStatus';
@@ -281,7 +277,7 @@ export default class ChatModule extends VuexModule {
       console.error("VUE_APP_SERVER_URL wasn't found in the .env file!");
     }
     if (process.env.VUE_APP_SSL) {
-      this.connectionData.ssl = toBool(process.env.VUE_APP_SSL);
+      this.connectionData.ssl = process.env.VUE_APP_SSL === 'true';
     } else {
       console.error("VUE_APP_SSL wasn't found in the .env file!");
     }

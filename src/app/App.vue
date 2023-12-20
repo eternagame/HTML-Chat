@@ -52,7 +52,6 @@
   import resize from 'vue-resize-directive';
   import BootstrapVue from 'bootstrap-vue';
   import sjcl from 'sjcl';
-  import gsap from 'gsap';
   import ConnectingPopup from '@/components/Connection/ConnectingPopup.vue';
   import ReportDialog from '@/components/ReportDialog.vue';
   import MessagePane from '@/components/Panes/MessagePane.vue';
