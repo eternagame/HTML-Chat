@@ -6,12 +6,15 @@ const md = new MarkdownIt({
   linkify: true,
   typographer: true,
 }).disable('image');
+
 // Via https://github.com/markdown-it/markdown-it/blob/e6f19eab4204122e85e4a342e0c1c8486ff40c2d/docs/architecture.md
-const defaultRender = md.renderer.rules.link_open
-                      || function renderToken(tokens: any, idx: any, options: any,
-                        env: any, self: any) {
-                        return self.renderToken(tokens, idx, options);
-                      };
+const defaultRender = (
+  md.renderer.rules.link_open
+  || function renderToken(tokens: any, idx: any, options: any, env: any, self: any) {
+    return self.renderToken(tokens, idx, options);
+  }
+);
+
 md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: any,
   env: any, self: any) {
   // If you are sure other plugins can't add `target` - drop check below
