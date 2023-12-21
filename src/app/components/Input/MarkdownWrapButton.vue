@@ -1,5 +1,6 @@
 <template>
   <button
+    type="button"
     id='md-wrap-button-container'
     class='
     md-button
@@ -20,20 +21,20 @@
   </button>
 </template>
 <script lang='ts'>
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import getStyles from './Styles';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import getStyles from './Styles';
 
-  @Component
-  export default class MarkdownWrapButton extends Vue {
-    @Prop({ required: true })
+@Component
+export default class MarkdownWrapButton extends Vue {
+  @Prop({ required: true })
     type !: string;
 
-    typeIs(type:string):boolean {
-      return this.type.includes(type);
-    }
+  typeIs(type:string):boolean {
+    return this.type.includes(type);
+  }
 
-    get buttonLetter() {
-      switch (this.type) {
+  get buttonLetter() {
+    switch (this.type) {
       case 'italics': return 'T';
       case 'action': return 'me';
       case 'question': return '?';
@@ -42,23 +43,23 @@
       case 'serif': return 'F';
       case 'cursive': return 'F';
       default: return this.type.substring(0, 1).toUpperCase();
-      }
-    }
-
-    get style() {
-      return getStyles(this.type);
-    }
-
-    get classes() {
-      return {
-        highlight: this.typeIs('highlight'),
-      };
-    }
-
-    clicked() {
-      this.$emit('md', this.type);
     }
   }
+
+  get style() {
+    return getStyles(this.type);
+  }
+
+  get classes() {
+    return {
+      highlight: this.typeIs('highlight'),
+    };
+  }
+
+  clicked() {
+    this.$emit('md', this.type);
+  }
+}
 </script>
 <style scoped>
   .md-button {

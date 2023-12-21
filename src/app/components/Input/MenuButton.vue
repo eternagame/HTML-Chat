@@ -1,5 +1,6 @@
 <template>
   <button
+    type="button"
     class='menu-button border-0 text-white float-left'
     :style="style"
     @click="$emit('button', name)"
@@ -9,24 +10,24 @@
   </button>
 </template>
 <script lang='ts'>
-  import {
-    Component, Prop, Vue, Watch,
-  } from 'vue-property-decorator';
-  import getStyles from './Styles';
+import {
+  Component, Prop, Vue,
+} from 'vue-property-decorator';
+import getStyles from './Styles';
 
-  @Component
-  export default class MenuButton extends Vue {
-    @Prop({ required: true })
+@Component
+export default class MenuButton extends Vue {
+  @Prop({ required: true })
     name !: string;
 
-    @Prop({ required: true })
+  @Prop({ required: true })
     styles !: string;
 
-    get style() {
-      const normal = getStyles(this.styles);
-      return normal;
-    }
+  get style() {
+    const normal = getStyles(this.styles);
+    return normal;
   }
+}
 </script>
 <style scoped>
 .menu-button {

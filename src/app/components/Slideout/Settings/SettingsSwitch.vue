@@ -3,7 +3,7 @@
     class="switch"
     @keypress.enter="$emit('input', !$event.target.checked)"
     :aria-label="label"
-    >
+  >
     <input
       type="checkbox"
       :checked="value"
@@ -14,17 +14,17 @@
   </label>
 </template>
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-  @Component
-  export default class SettingsSwitch extends Vue {
-    @Prop({ required: true })
+@Component
+export default class SettingsSwitch extends Vue {
+  @Prop({ required: true })
     value !: boolean;
 
-    get label() {
-      return `Switch that is ${this.value ? 'on' : 'off'}`;
-    }
+  get label() {
+    return `Switch that is ${this.value ? 'on' : 'off'}`;
   }
+}
 </script>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";

@@ -1,24 +1,24 @@
 <template>
-  <div
-    id='emoticon-button-container'
-    class='emoticon-button text-white border-left-0 border-top-0  pt-1 text-center float-left'
+  <button
+    type="button"
+    class='emoticon-button emoticon-button-container text-white border-left-0 border-top-0 text-center float-left'
     @click="clicked"
   >
-    <p id='emoticon-text-container' class='align-middle h-100'>{{emoticon}}</p>
-  </div>
+    <span class='align-middle h-100 emoticon-text-container'>{{emoticon}}</span>
+  </button>
 </template>
 <script lang='ts'>
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-  @Component
-  export default class EmoticonButton extends Vue {
-    @Prop({ required: true })
+@Component
+export default class EmoticonButton extends Vue {
+  @Prop({ required: true })
     emoticon !: string;
 
-    clicked() {
-      this.$emit('emote', this.emoticon);
-    }
+  clicked() {
+    this.$emit('emote', this.emoticon);
   }
+}
 </script>
 <style scoped>
   .emoticon-button {
@@ -26,12 +26,14 @@
     position: relative;
     width:30px;
     height:25px;
+    border: none;
   }
-  #emoticon-button-container:hover {
+  .emoticon-button-container:hover {
     background-color: #21508c;
   }
-  #emoticon-text-container {
+  .emoticon-text-container {
     font-size:14px;
+    user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
   }

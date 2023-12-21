@@ -1,14 +1,15 @@
 <template>
-  <SettingsSection title="Operator" >
+  <SettingsSection title="Operator">
     <li>
       <span>You are {{isOper ? '' : 'not'}} an operator</span>
       <span class="float-right w-100">
         <button
+          type="button"
           aria-label="Log in as operator"
           @click="$emit('auth')"
           class="btn btn-primary btn-sm w-100"
-          v-show="!isOper" >
-            Log in
+          v-show="!isOper">
+          Log in
         </button>
       </span>
     </li>
@@ -21,42 +22,42 @@
   </SettingsSection>
 </template>
 <script lang="ts">
-  import {
-    Component, Watch, Prop, Vue,
-  } from 'vue-property-decorator';
-  import SettingsSection from '../SettingsSection.vue';
+import {
+  Component, Vue,
+} from 'vue-property-decorator';
+import SettingsSection from '../SettingsSection.vue';
 
-  @Component({
-    components: {
-      SettingsSection,
-    },
-  })
-  export default class OperSection extends Vue {
-    validateNick(nick:string) {
-      // eslint-disable-next-line no-useless-escape
-      return nick.match(/^[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*$/i);
-    }
+@Component({
+  components: {
+    SettingsSection,
+  },
+})
+export default class OperSection extends Vue {
+  validateNick(nick:string) {
+    // eslint-disable-next-line no-useless-escape
+    return nick.match(/^[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*$/i);
+  }
 
-    setNick(e:Event) {
-      const { value } = e.target as HTMLInputElement;
-      if (!this.validateNick(value)) return;
-      this.$vxm.chat.changeNick(value);
-    }
+  setNick(e:Event) {
+    const { value } = e.target as HTMLInputElement;
+    if (!this.validateNick(value)) return;
+    this.$vxm.chat.changeNick(value);
+  }
 
-    opernick = '';
+  opernick = '';
 
-    get isOper() {
-      return this.$vxm.chat.oper;
-    }
+  get isOper() {
+    return this.$vxm.chat.oper;
+  }
 
-    created() {
-      if (localStorage.chat_nick) {
-        this.opernick = localStorage.chat_nick;
-      } else {
-        this.opernick = this.$vxm.chat.customNick;
-      }
+  created() {
+    if (localStorage.chat_nick) {
+      this.opernick = localStorage.chat_nick;
+    } else {
+      this.opernick = this.$vxm.chat.customNick;
     }
   }
+}
 </script>
 <style lang="scss" scoped>
 input {

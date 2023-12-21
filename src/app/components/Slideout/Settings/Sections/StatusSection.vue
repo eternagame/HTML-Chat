@@ -1,5 +1,5 @@
 <template>
-  <SettingsSection title="Status" >
+  <SettingsSection title="Status">
     <li>
       <span
         class="align-middle">
@@ -20,7 +20,7 @@
           @input="changeStatus"
           onText="ONLINE"
           offText="AWAY"
-          :width="120"/>
+          :width="120" />
       </span>
     </li>
     <li>
@@ -36,66 +36,67 @@
       </span>
     </li>
     <li>
-      <span
-      >
-        Reason
-        <SettingsTooltip
-          text="When others see the away indicator, they will see the reason you are away"
-        />
-      </span>
-      <span class="float-right">
-        <input type=text v-model="reason" style="width: 115px">
-      </span>
+      <label style="width: 100%">
+        <span>
+          Reason
+          <SettingsTooltip
+            text="When others see the away indicator, they will see the reason you are away"
+          />
+        </span>
+        <span class="float-right">
+          <input type=text v-model="reason" style="width: 115px">
+        </span>
+      </label>
     </li>
   </SettingsSection>
 </template>
 <script lang="ts">
-  import {
-    Component, Watch, Prop, Vue,
-  } from 'vue-property-decorator';
-  import SettingsSection from '../SettingsSection.vue';
-  import SettingsEnableDisable from '../SettingsEnableDisable.vue';
-  import SettingsTooltip from '../SettingsTooltip.vue';
-  import SettingsSwitch from '../SettingsSwitch.vue';
+import {
+  Component, Watch, Vue,
+} from 'vue-property-decorator';
+import SettingsSection from '../SettingsSection.vue';
+import SettingsEnableDisable from '../SettingsEnableDisable.vue';
+import SettingsTooltip from '../SettingsTooltip.vue';
+import SettingsSwitch from '../SettingsSwitch.vue';
 
-  @Component({
-    components: {
-      SettingsSection,
-      SettingsEnableDisable,
-      SettingsTooltip,
-      SettingsSwitch,
-    },
-  })
-  export default class StatusSection extends Vue {
-    changeStatus(to:boolean) {
-      if (to) {
-        this.$vxm.chat.setUnaway();
-      } else {
-        this.$vxm.chat.autoUpdateStatus = false;
-        this.$vxm.chat.setAway(this.reason);
-      }
-    }
-
-    get userStatus() {
-      return this.$vxm.chat.userStatus;
-    }
-
-    reason = '';
-
-    created() {
-      if (localStorage.chat_awayReason) {
-        this.reason = localStorage.chat_awayReason;
-      } else {
-        this.reason = this.$vxm.settings.awayReason;
-      }
-    }
-
-    @Watch('reason')
-    updateReason() {
-      localStorage.chat_awayReason = this.reason;
-      this.$vxm.settings.awayReason = this.reason;
+@Component({
+  components: {
+    SettingsSection,
+    SettingsEnableDisable,
+    SettingsTooltip,
+    SettingsSwitch,
+  },
+})
+export default class StatusSection extends Vue {
+  changeStatus(to:boolean) {
+    if (to) {
+      this.$vxm.chat.setUnaway();
+    } else {
+      this.$vxm.chat.autoUpdateStatus = false;
+      this.$vxm.chat.setAway(this.reason);
     }
   }
+
+  get userStatus() {
+    return this.$vxm.chat.userStatus;
+  }
+
+  reason = '';
+
+  created() {
+    if (localStorage.chat_awayReason) {
+      this.reason = localStorage.chat_awayReason;
+    } else {
+      this.reason = this.$vxm.settings.awayReason;
+    }
+  }
+
+  @Watch('reason')
+  updateReason() {
+    localStorage.chat_awayReason = this.reason;
+    this.$vxm.settings.awayReason = this.reason;
+  }
+}
 </script>
 <style lang="scss" scoped>
 li {

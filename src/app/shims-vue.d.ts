@@ -6,7 +6,4 @@ declare module '*.vue' {
 
 // TS wasn't recognizing attempts to declare these in their own files
 declare module 'vue-resize-directive';
-declare class clipboard {
-  writeText(value:string): void;
-}
 declare module 'sjcl';

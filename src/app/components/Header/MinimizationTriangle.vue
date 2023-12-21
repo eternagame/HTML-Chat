@@ -1,32 +1,32 @@
 <template>
   <button
+    type="button"
     :aria-label="label"
     class="minimization-triangle float-right border-0 "
     :class="{
-      'flipped': value && !settings,
+      flipped: value && !settings,
       'settings-flipped': value && settings,
-      'settings':settings,
+      settings: settings,
     }"
     @click="$emit('input', !value)"
-  >
-  </button>
+  />
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-  @Component
-  export default class MinimizationTriangle extends Vue {
-    @Prop({ required: true })
+@Component
+export default class MinimizationTriangle extends Vue {
+  @Prop({ required: true })
     value!: boolean;
 
-    @Prop({ default: false })
+  @Prop({ default: false })
     settings !: boolean;
 
-    get label() {
-      return `${this.value ? 'Show' : 'Hide'}`;
-    }
+  get label() {
+    return `${this.value ? 'Show' : 'Hide'}`;
   }
+}
 </script>
 
 <style lang="scss" scoped>

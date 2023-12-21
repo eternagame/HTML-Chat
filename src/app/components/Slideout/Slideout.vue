@@ -2,13 +2,13 @@
   <div
     style="position:relative; width:70%"
     class="slideout-container text-white"
-    :class="{ slideoutContainerHidden: !checked, tall:checked}"
+    :class="{ slideoutContainerHidden: !checked, tall: checked }"
   >
-    <HamburgerMenuButton v-model="checked" :notification="notifications" :mention="mentions"/>
+    <HamburgerMenuButton v-model="checked" :notification="notifications" :mention="mentions" />
     <span v-show="checked">
       <span
-      id="slideout-header"
-      class='align-items-center d-inline-flex'
+        id="slideout-header"
+        class='align-items-center d-inline-flex'
       >
         <SlideoutButton
           :selected="chatSelected"
@@ -33,124 +33,124 @@
         v-if="chatSelected"
       />
       <SlideoutUser v-if="userSelected" />
-      <SlideoutSettings v-if="settingsSelected" @auth="$emit('auth')"/>
+      <SlideoutSettings v-if="settingsSelected" @auth="$emit('auth')" />
     </span>
   </div>
 </template>
 
 <script lang="ts">
-  import {
-    Vue, Component, Prop, Watch,
-  } from 'vue-property-decorator';
-  import SlideoutChats from './Chat/SlideoutChats.vue';
-  import SlideoutUser from './Users/SlideoutUser.vue';
-  import SlideoutSettings from './Settings/SlideoutSettings.vue';
-  import SlideoutButton from './SlideoutButton.vue';
-  import HamburgerMenuButton from './HamburgerMenuButton.vue';
-  import { Channel } from '../../store/chat.vuex';
+import {
+  Vue, Component, Prop, Watch,
+} from 'vue-property-decorator';
+import SlideoutChats from './Chat/SlideoutChats.vue';
+import SlideoutUser from './Users/SlideoutUser.vue';
+import SlideoutSettings from './Settings/SlideoutSettings.vue';
+import SlideoutButton from './SlideoutButton.vue';
+import HamburgerMenuButton from './HamburgerMenuButton.vue';
 
-  @Component({
-    components: {
-      SlideoutChats,
-      SlideoutUser,
-      SlideoutSettings,
-      SlideoutButton,
-      HamburgerMenuButton,
-    },
-  })
-  export default class Slideout extends Vue {
-    activeTab = 0;
+@Component({
+  components: {
+    SlideoutChats,
+    SlideoutUser,
+    SlideoutSettings,
+    SlideoutButton,
+    HamburgerMenuButton,
+  },
+})
+export default class Slideout extends Vue {
+  activeTab = 0;
 
-    // For hamburger
-    checked = false;
+  // For hamburger
+  checked = false;
 
-    @Prop({ required: true }) // Whether chat is minimized
+  @Prop({ required: true }) // Whether chat is minimized
     minimizedValue !: boolean;
 
-    get tabbing() { // If the tab key has been pressed - used to conditionally enable focus rings
-      return this.$vxm.chat.tabbing;
-    }
+  get tabbing() { // If the tab key has been pressed - used to conditionally enable focus rings
+    return this.$vxm.chat.tabbing;
+  }
 
-    // Each of the functions below tells whether a given tab is selected
-    get chatSelected() {
-      return this.activeTab === 0;
-    }
+  // Each of the functions below tells whether a given tab is selected
+  get chatSelected() {
+    return this.activeTab === 0;
+  }
 
-    get userSelected() {
-      return this.activeTab === 1;
-    }
+  get userSelected() {
+    return this.activeTab === 1;
+  }
 
-    get settingsSelected() {
-      return this.activeTab === 2;
-    }
+  get settingsSelected() {
+    return this.activeTab === 2;
+  }
 
-    get currentTab() {
-      return this.$vxm.chat.chatChannel;
-    }
+  get currentTab() {
+    return this.$vxm.chat.chatChannel;
+  }
 
-    get vxmOpen() { // Checks to see if the slideout should be closed (click outside)
-      return this.$vxm.chat.slideoutOpen;
-    }
+  get vxmOpen() { // Checks to see if the slideout should be closed (click outside)
+    return this.$vxm.chat.slideoutOpen;
+  }
 
-    @Watch('vxmOpen')
-    close() {
-      if (!this.vxmOpen) { // If it should be closed, do so
-        this.checked = false;
-      }
-    }
-
-    get notifications() {
-      // If any channels have notifications
-      // eslint-disable-next-line max-len
-      const anyNotifications = Object.values(this.$vxm.chat.channels).some(item => item?.notifications);
-      return anyNotifications;
-    }
-
-    get mentions() {
-      // If any channels have mentions
-      // eslint-disable-next-line max-len
-      const anyMentions = Object.values(this.$vxm.chat.channels).some(item => item?.mentioned);
-      return anyMentions;
-    }
-
-    @Watch('notifications')
-    notificationsChanged() {
-      // Notifications indicator in the page title that shows if there are unread messages
-      const notificationIndicator: string = ` ${this.$vxm.settings.indicator}`;
-      if (this.notifications) { // If notifications were just changed to true
-        document.title = `html-chat${notificationIndicator}`;
-      } else { // If notifications just read
-        document.title = 'html-chat';
-      }
-    }
-
-    // Slideout slides back when minimized
-    @Watch('minimizedValue')
-    minimzationChanged() {
-      if (!this.minimizedValue) {
-        this.checked = false;
-      }
-    }
-
-    @Watch('checked') // Slideout checked
-    checkedChanged() {
-      this.$vxm.chat.slideoutOpen = Boolean(this.checked);
-      if (!this.checked) { // If slideout is closing
-        // Set current tab (what user is looking at) to read
-        this.$vxm.chat.readChannel(this.currentTab);
-      }
-    }
-
-    created() {
-      /* Prevents all the text from being highlighted
-      if the slideout is opened and closed too quickly */
-      document.addEventListener('mousedown', (e) => {
-        if (e.detail > 1) {
-          e.preventDefault();
-        }
-      }, false);
+  @Watch('vxmOpen')
+  close() {
+    if (!this.vxmOpen) { // If it should be closed, do so
+      this.checked = false;
     }
   }
+
+  get notifications() {
+    // If any channels have notifications
+    // eslint-disable-next-line max-len
+    const anyNotifications = Object.values(this.$vxm.chat.channels)
+      .some(item => item?.notifications);
+    return anyNotifications;
+  }
+
+  get mentions() {
+    // If any channels have mentions
+    // eslint-disable-next-line max-len
+    const anyMentions = Object.values(this.$vxm.chat.channels).some(item => item?.mentioned);
+    return anyMentions;
+  }
+
+  @Watch('notifications')
+  notificationsChanged() {
+    // Notifications indicator in the page title that shows if there are unread messages
+    const notificationIndicator: string = ` ${this.$vxm.settings.indicator}`;
+    if (this.notifications) { // If notifications were just changed to true
+      document.title = `html-chat${notificationIndicator}`;
+    } else { // If notifications just read
+      document.title = 'html-chat';
+    }
+  }
+
+  // Slideout slides back when minimized
+  @Watch('minimizedValue')
+  minimzationChanged() {
+    if (!this.minimizedValue) {
+      this.checked = false;
+    }
+  }
+
+  @Watch('checked') // Slideout checked
+  checkedChanged() {
+    this.$vxm.chat.slideoutOpen = Boolean(this.checked);
+    if (!this.checked) { // If slideout is closing
+      // Set current tab (what user is looking at) to read
+      this.$vxm.chat.readChannel(this.currentTab);
+    }
+  }
+
+  created() {
+    /* Prevents all the text from being highlighted
+      if the slideout is opened and closed too quickly */
+    document.addEventListener('mousedown', (e) => {
+      if (e.detail > 1) {
+        e.preventDefault();
+      }
+    }, false);
+  }
+}
 </script>
 
 <style scoped>

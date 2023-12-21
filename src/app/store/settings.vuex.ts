@@ -1,10 +1,4 @@
-import { ActionTree, MutationTree, CommitOptions } from 'vuex';
-import * as Irc from 'irc-framework';
-import {
-  createModule, mutation, action, extractVuexModule,
-} from 'vuex-class-component';
-import Vue from 'vue';
-import { Watch } from 'vue-property-decorator';
+import { createModule } from 'vuex-class-component';
 
 const VuexModule = createModule({
   strict: false,

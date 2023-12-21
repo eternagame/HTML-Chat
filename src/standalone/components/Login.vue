@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <div class="trans-panel-bg rounded-10"></div>
+    <div class="trans-panel-bg rounded-10" />
     <div class="trans-panel rounded-10">
       <form>
         <div class="form-group">
@@ -51,33 +51,33 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
-  @Component({
-    components: {},
-  })
-  export default class Login extends Vue {
-    uid: string = '';
+@Component({
+  components: {},
+})
+export default class Login extends Vue {
+  uid: string = '';
 
-    username: string = '';
+  username: string = '';
 
-    remember: boolean = false;
+  remember: boolean = false;
 
-    get idError() {
-      if (!parseInt(this.uid, 10)) return 'Must be a number';
-      if (this.uid.trim() === '') return 'Must provide a user id';
-      return '';
-    }
-
-    get nameError() {
-      if (this.uid.trim() === '') return 'Must provide a username';
-      return '';
-    }
-
-    anonLogin() {
-      this.$emit('login', { uid: '0', username: 'Anonymous', remember: this.remember });
-    }
+  get idError() {
+    if (!parseInt(this.uid, 10)) return 'Must be a number';
+    if (this.uid.trim() === '') return 'Must provide a user id';
+    return '';
   }
+
+  get nameError() {
+    if (this.uid.trim() === '') return 'Must provide a username';
+    return '';
+  }
+
+  anonLogin() {
+    this.$emit('login', { uid: '0', username: 'Anonymous', remember: this.remember });
+  }
+}
 </script>
 
 <style lang="scss">

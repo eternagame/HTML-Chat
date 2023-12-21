@@ -14,11 +14,13 @@
       Reports will be sent to our current chat moderators,
       <a
         target="_blank"
+        rel="noopener noreferrer"
         href="http://www.eternagame.org/web/player/36921/"
       >Hoglahoo</a>
       and
       <a
         target="_blank"
+        rel="noopener noreferrer"
         href="http://www.eternagame.org/web/player/48290/"
       >LFP6</a>.
     </p>
@@ -52,75 +54,81 @@
       />
     </div>
     <div style="margin-top: 15px;">
-      <div
-        class="blue-button"
+      <button
+        type="button"
+        class="btn btn-secondary"
         style="width: 40%; display: inline-block; vertical-align: middle;"
         @click="closeModal"
       >
         Cancel
-      </div>
-      <div
-        class="green-button"
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
         style="width: 40%; display: inline-block; float: right; vertical-align: middle;"
         @click="submit"
       >
         Continue
-      </div>
+      </button>
     </div>
   </Modal>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { Client } from 'irc-framework';
-  import User from '@/types/user';
-  import Message from '@/types/message';
+import { Component, Vue } from 'vue-property-decorator';
+import User from '@/types/user';
+import Message from '@/types/message';
 
-  @Component({})
-  export default class ReportDialog extends Vue {
-    report: boolean = false;
+@Component({})
+export default class ReportDialog extends Vue {
+  report: boolean = false;
 
-    ignore: boolean = false;
+  ignore: boolean = false;
 
-    message: Message | null = null;
+  message: Message | null = null;
 
-    get userToReport(): User {
-      return this.message ? this.message.user : User.annonymous;
-    }
-
-    $refs!: {
-      reportModal: HTMLFormElement;
-    };
-
-    reportComments: string = '';
-
-    submit() {
-      if (this.ignore) {
-        this.$vxm.chat.ignoreUser({ username: this.userToReport.username });
-      }
-      const client = this.$vxm.chat.client!;
-      if (this.report) {
-        this.$vxm.chat.reportUser({
-          userToReport: this.userToReport,
-          message: this.message,
-          reportComments: this.reportComments,
-        });
-      }
-      this.closeModal();
-    }
-
-    open({ message, defaults }: {message: Message, defaults: {report: boolean, ignore: boolean}}) {
-      this.message = message;
-      this.report = defaults.report;
-      this.ignore = defaults.ignore;
-      this.$modal.show('reportModal');
-    }
-
-    closeModal() {
-      this.$modal.hide('reportModal');
-      this.reportComments = '';
-    }
+  get userToReport(): User {
+    return this.message ? this.message.user : User.annonymous;
   }
+
+  $refs!: {
+    reportModal: HTMLFormElement;
+  };
+
+  reportComments: string = '';
+
+  submit() {
+    if (this.ignore) {
+      this.$vxm.chat.ignoreUser({ username: this.userToReport.username });
+    }
+    if (this.report) {
+      this.$vxm.chat.reportUser({
+        userToReport: this.userToReport,
+        message: this.message,
+        reportComments: this.reportComments,
+      });
+    }
+    this.closeModal();
+  }
+
+  open({
+    message,
+    defaults,
+  }: {
+    message: Message,
+    defaults: { report: boolean, ignore: boolean }
+  }) {
+    this.message = message;
+    this.report = defaults.report;
+    this.ignore = defaults.ignore;
+    this.$modal.show('reportModal');
+  }
+
+  closeModal() {
+    this.$modal.hide('reportModal');
+    this.reportComments = '';
+  }
+}
 </script>
 
 <style scoped lang="scss">

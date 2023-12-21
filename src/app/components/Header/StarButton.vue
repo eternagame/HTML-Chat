@@ -1,22 +1,22 @@
 <template>
   <button
+    type="button"
     class="star-button border-0"
     style="float: right;"
     @click="$emit('input', !value);"
-    :class="{ active: value}"
+    :class="{ active: value }"
     aria-label="Show/hide starred messages"
-   >
-  </button>
+  />
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-  @Component
-  export default class StarButton extends Vue {
-    @Prop({ required: true })
+@Component
+export default class StarButton extends Vue {
+  @Prop({ required: true })
     value !: boolean;
-  }
+}
 </script>
 
 <style lang="scss" scoped>

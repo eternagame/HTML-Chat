@@ -1,5 +1,5 @@
 <template>
-  <div id="user-wrapper" :style="{ fontSize:`${fontSize}px` }">
+  <div id="user-wrapper" :style="{ fontSize: `${fontSize}px` }">
     <h4>Online ({{userCount}})</h4>
     <ul class="list-group list-style-type-none">
       <SlideoutUsername
@@ -10,36 +10,33 @@
   </div>
 </template>
 <script lang="ts">
-  import {
-    Vue, Component, Prop, Watch,
-  } from 'vue-property-decorator';
-  import Message from '@/types/message';
-  import User from '@/types/user';
-  import Slideout from '../Slideout.vue';
-  import Username from '../../Messages/Username.vue';
-  import ActionMenu from '../../Messages/ActionMenu.vue';
-  import SlideoutUsername from './SlideoutUsername.vue';
+import {
+  Vue, Component,
+} from 'vue-property-decorator';
+import Username from '../../Messages/Username.vue';
+import ActionMenu from '../../Messages/ActionMenu.vue';
+import SlideoutUsername from './SlideoutUsername.vue';
 
-  @Component({
-    components: {
-      Username,
-      ActionMenu,
-      SlideoutUsername,
-    },
-  })
-  export default class SlideoutUser extends Vue {
-    get connectedUsers() {
-      return this.$vxm.chat.connectedUsers;
-    }
-
-    get userCount() {
-      return Object.keys(this.$vxm.chat.connectedUsers).length;
-    }
-
-    get fontSize() {
-      return this.$vxm.settings.fontSize;
-    }
+@Component({
+  components: {
+    Username,
+    ActionMenu,
+    SlideoutUsername,
+  },
+})
+export default class SlideoutUser extends Vue {
+  get connectedUsers() {
+    return this.$vxm.chat.connectedUsers;
   }
+
+  get userCount() {
+    return Object.keys(this.$vxm.chat.connectedUsers).length;
+  }
+
+  get fontSize() {
+    return this.$vxm.settings.fontSize;
+  }
+}
 </script>
 <style scoped>
 #user-wrapper {

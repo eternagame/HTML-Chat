@@ -1,30 +1,18 @@
 <template>
-  <span
-    class="settings-tooltip"
-    :id="`settings-tooltip-${text.split(' ').slice(0, 3).join('_')}...`"
-  ><pre class="d-inline"> </pre>
-    <b-tooltip
-      :target="`settings-tooltip-${text.split(' ').slice(0, 3).join('_')}...`"
-      variant="light"
-      triggers="hover focus"
-    >
-      {{ text }}
-    </b-tooltip>
-  </span>
+  <span class="settings-tooltip" v-b-tooltip.v-light :title="text">?</span>
 </template>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
 
-  @Component
-  export default class SettingsTooltip extends Vue {
-    @Prop({ required: true })
-    text !: string;
-  }
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
+
+@Component
+export default class SettingsTooltip extends Vue {
+  @Prop({ required: true }) text!: string;
+}
 </script>
+
 <style>
-.settings-tooltip:before {
-  content:"?";
+.settings-tooltip {
   font-size: 12px;
   line-height: 1;
   width: 1rem;

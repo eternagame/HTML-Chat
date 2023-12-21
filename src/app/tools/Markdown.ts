@@ -15,8 +15,13 @@ const defaultRender = (
   }
 );
 
-md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: any,
-  env: any, self: any) {
+md.renderer.rules.link_open = function linkOpen(
+  tokens: any,
+  idx: any,
+  options: any,
+  env: any,
+  self: any,
+) {
   // If you are sure other plugins can't add `target` - drop check below
   const aIndex = tokens[idx].attrIndex('target');
 
@@ -48,7 +53,7 @@ md.renderer.rules.link_open = function linkOpen(tokens: any, idx: any, options: 
   // pass token to default renderer.
   // return defaultRender(tokens, idx, options, env, self);
 };
-md.renderer.rules.text = (tokens, idx, options, env, self) => {
+md.renderer.rules.text = (tokens, idx) => {
   let { content } = tokens[idx];
   if (!content) return '';
   // Detects instances of :: or : indicating fonts

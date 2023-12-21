@@ -1,17 +1,19 @@
 <template>
   <div class="link panel rounded p-2" v-if="openModal" tabindex=0>
     <span>
-      This link goes to <a target="_blank" :href="url">{{url}}</a>.
+      This link goes to <a target="_blank" rel="noopener noreferrer" :href="url">{{url}}</a>.
     </span>
     <button
+      type="button"
       class="btn link-button btn-primary w-100 mt-2 text-white"
       style="left: 50%"
       @click="openModal = false"
     >
-    <a :href="url" target="_blank">Continue</a>
+      <a :href="url" target="_blank" rel="noopener noreferrer">Continue</a>
     </button>
     <span class="text-muted">Travel to the link you clicked on</span>
     <button
+      type="button"
       class="btn link-button btn-primary w-100 mt-2"
       style="left: 50%;"
       @click="openModal = false;"
@@ -23,21 +25,21 @@
 </template>
 
 <script lang="ts">
-  import {
-    Component, Vue, Prop, Watch,
-  } from 'vue-property-decorator';
+import {
+  Component, Vue,
+} from 'vue-property-decorator';
 
-  @Component
-  export default class LinkModal extends Vue {
-    url !: string;
+@Component
+export default class LinkModal extends Vue {
+  url !: string;
 
-    openModal: boolean = false;
+  openModal: boolean = false;
 
-    open(url: string) {
-      this.openModal = true;
-      this.url = url;
-    }
+  open(url: string) {
+    this.openModal = true;
+    this.url = url;
   }
+}
 </script>
 
 <style lang="scss">

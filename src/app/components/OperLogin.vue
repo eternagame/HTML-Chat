@@ -3,30 +3,32 @@
     <div class="trans-panel rounded-10" v-show="showsMessage">
       <p> {{message}}</p>
       <button
-          class="btn"
-          style="width: 100%; left: 50%; margin-top:10px"
-          @click="showsMessage = false; $emit('cancel')"
-        >
+        type="button"
+        class="btn"
+        style="width: 100%; left: 50%; margin-top:10px"
+        @click="showsMessage = false; $emit('cancel')"
+      >
         Continue
       </button>
     </div>
     <div class="trans-panel rounded-10" v-show="!showsMessage">
       <table>
         <tr>
-          <td><label for="username">User:</label></td>
-          <td><input name="username" type="text" id="username" v-model="username"/></td>
+          <td><label for="username">User</label></td>
+          <td><input name="username" type="text" id="username" v-model="username" aria-labelledby="username" /></td>
         </tr>
         <tr>
-          <td><label for="password">Password:</label></td>
-          <td><input name="password" type="password" id="password" v-model="password"/></td>
+          <td><label for="password">Password</label></td>
+          <td><input name="password" type="password" id="password" v-model="password" aria-labelledby="password" /></td>
         </tr>
         <tr>
-          <td><label for="remember">Remember:</label></td>
-          <td><input type="checkbox" name="remember" id="remember" v-model="remember"/></td>
+          <td><label for="remember">Remember</label></td>
+          <td><input type="checkbox" name="remember" id="remember" v-model="remember" aria-labelledby="remember" /></td>
         </tr>
       </table>
       <p v-show="authFailed">Username or password incorrect</p>
       <button
+        type="button"
         class="btn login-button btn-primary"
         style="width: 100%; left: 50%; margin-top:10px"
         @click="$emit('login', { password, username, remember })"
@@ -34,6 +36,7 @@
         Continue
       </button>
       <button
+        type="button"
         class="btn login-button btn-primary"
         style="width: 100%; left: 50%; margin-top:10px;"
         @click="$emit('cancel')"
@@ -45,28 +48,28 @@
 </template>
 
 <script lang="ts">
-  import BootstrapVue from 'bootstrap-vue';
-  import { Component, Vue, Prop } from 'vue-property-decorator';
+import BootstrapVue from 'bootstrap-vue';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
-  Vue.use(BootstrapVue);
+Vue.use(BootstrapVue);
 
-  @Component({
-    components: {},
-  })
-  export default class OperLogin extends Vue {
-    remember = false;
+@Component({
+  components: {},
+})
+export default class OperLogin extends Vue {
+  remember = false;
 
-    password: string = '';
+  password: string = '';
 
-    username: string = '';
+  username: string = '';
 
-    @Prop({ default: false })
+  @Prop({ default: false })
     showsMessage !: boolean;
 
-    message = '';
+  message = '';
 
-    authFailed = false;
-  }
+  authFailed = false;
+}
 </script>
 
 <style lang="scss">

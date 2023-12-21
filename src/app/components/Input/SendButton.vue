@@ -1,25 +1,25 @@
 <template>
   <button
+    type="button"
     class="send-button border-0"
-    :class="{animated: animationValue}"
+    :class="{ animated: animationValue }"
     @click="sendMessage"
     aria-label="send"
-  >
-  </button>
+  />
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
-  @Component
-  export default class SendButton extends Vue {
-    animationValue = false;
+@Component
+export default class SendButton extends Vue {
+  animationValue = false;
 
-    sendMessage() {
-      this.animationValue = true;
-      this.$emit('send');
-    }
+  sendMessage() {
+    this.animationValue = true;
+    this.$emit('send');
   }
+}
 </script>
 
 <style lang="scss" scoped>

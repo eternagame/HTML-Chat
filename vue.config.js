@@ -9,9 +9,9 @@ module.exports = {
         '@': path.resolve(__dirname, 'src/app/'),
       },
       fallback: {
-        "crypto": require.resolve("crypto-browserify"),
-        "stream": require.resolve("stream-browserify")
-      }
+        crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
+      },
     },
   },
 };

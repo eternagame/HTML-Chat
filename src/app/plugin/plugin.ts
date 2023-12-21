@@ -6,7 +6,7 @@ import ChatStore from '../store/chat.vuex';
 import SettingsStore from '../store/settings.vuex';
 
 export default {
-  install(Vue: any, options: {store: Store<any> }) {
+  install(Vue: any, options: { store: Store<any> }) {
     if (!options.store) {
       throw new Error('Please provide vuex store.');
     }

@@ -211,25 +211,25 @@ declare module 'irc-framework' {
     message: string;
     time: number;
   }
-  export interface RawEventArgs{
+  export interface RawEventArgs {
     from_server: boolean;
     line: string;
   }
-  export interface RegisteredEventArgs{
+  export interface RegisteredEventArgs {
     nick: string;
   }
-  export interface QuitEventArgs{
+  export interface QuitEventArgs {
     hostname: string;
     ident: string;
     message: string;
     nick: string;
     time?: any;
   }
-  interface Mode{
+  interface Mode {
     mode: string;
     param: string;
   }
-  export interface ModeEventArgs{
+  export interface ModeEventArgs {
     modes: Mode[];
     nick: string;
     raw_modes: string;
@@ -268,8 +268,8 @@ declare module 'irc-framework' {
   //   /**A set() instance with your current message modes.*/
   //   modes: Set<string>;
   // }
-// TODO: what to call it? why is it channel.users empty after join?
-  interface IrcUser{
+  // TODO: what to call it? why is it channel.users empty after join?
+  interface IrcUser {
     hostname: string;
     ident: string;
     modes: string[]; // any[]
@@ -320,21 +320,21 @@ declare module 'irc-framework' {
 
     on(eventType: string | symbol, cb: (event: any) => any): this;
   }
-  export interface ChannelInfoEventArgs{
+  export interface ChannelInfoEventArgs {
     channel: string;
     created_at?: number;
     modes?: Mode[]; // TODO: check type
     url?: string;
   }
-  export interface UserListEventArgs{
+  export interface UserListEventArgs {
     channel: string;
     users: IrcUser[]; // TODO: check type
   }
-  export interface WhoListEventArgs{
+  export interface WhoListEventArgs {
     target: string;
     users: IrcUser[]; // TODO: check type
   }
-  export interface BanlistEventArgs{
+  export interface BanlistEventArgs {
     channel: string;
     bans: BanlistBanObject[]; // TODO: check type
   }
@@ -342,13 +342,13 @@ declare module 'irc-framework' {
     banned: string;
     channel: string;
   }
-  export interface TopicEventArgs{
+  export interface TopicEventArgs {
     channel: string;
     topic: string;
     nick?: string;
     time?: number;
   }
-  export interface TopicSetByEventArgs{
+  export interface TopicSetByEventArgs {
     channel: string;
     nick: string;
     ident: string;

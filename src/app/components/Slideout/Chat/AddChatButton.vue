@@ -1,6 +1,7 @@
 <template>
   <div class="add-chat-container">
     <button
+      type="button"
       @click="addChat"
       class='btn btn-primary text-center border-0 rounded mt-0 p-0 d-inline-block align-top'
     >+</button>
@@ -10,30 +11,27 @@
         class='h-100 float-right'
         v-model="chatName"
         aria-label="Add channel"
-    ></span>
+      ></span>
   </div>
 </template>
 
 <script lang="ts">
-  import {
-    Component, Prop, Vue, Watch,
-  } from 'vue-property-decorator';
-  import chat, { Channel } from '@/store/chat.vuex';
-  import SlideoutChats from './SlideoutChats.vue';
-  import BanStatus from '../../../types/BanStatus';
+import {
+  Component, Vue,
+} from 'vue-property-decorator';
 
-  @Component
-  export default class AddChatButton extends Vue {
-    chatName: string = '';
+@Component
+export default class AddChatButton extends Vue {
+  chatName: string = '';
 
-    addChat() {
-      const name = `#${this.chatName.replace('#', '')}`;
-      this.$vxm.chat.joinChannel(name);
-      this.$nextTick(() => {
-        if (this.$parent) this.$parent.$el.scrollTop = this.$parent.$el.scrollHeight;
-      });
-    }
+  addChat() {
+    const name = `#${this.chatName.replace('#', '')}`;
+    this.$vxm.chat.joinChannel(name);
+    this.$nextTick(() => {
+      if (this.$parent) this.$parent.$el.scrollTop = this.$parent.$el.scrollHeight;
+    });
   }
+}
 </script>
 
 <style lang="scss" scoped>

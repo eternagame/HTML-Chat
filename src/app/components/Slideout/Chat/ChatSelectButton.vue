@@ -1,49 +1,48 @@
 <template>
   <button
+    type="button"
     class="chat-select border-0 font-weight-bold text-white d-block w-100"
-    :class="{active: isActive}"
+    :class="{ active: isActive }"
     @click="$emit('input');"
     :aria-label="`Open ${name.substring(1)}`"
   >
     <p class='channel-name text-justify ml-1 mb-2'>{{ name }}</p>
     <p class='channel-description text-justify ml-1'>{{ description }}</p>
-    <button class="channel-close" @click="close" v-show="joined">X</button>
+    <button type="button" class="channel-close" @click="close" v-show="joined">X</button>
     <slot />
   </button>
 </template>
 
 <script lang="ts">
-  import {
-    Component, Prop, Vue, Watch,
-  } from 'vue-property-decorator';
-  import chat from '@/store/chat.vuex';
-  import SlideoutChats from './SlideoutChats.vue';
+import {
+  Component, Prop, Vue,
+} from 'vue-property-decorator';
 
-  @Component
-  export default class ChatSelectButton extends Vue {
-    @Prop({ required: true })
+@Component
+export default class ChatSelectButton extends Vue {
+  @Prop({ required: true })
     name !: string;
 
-    @Prop({ required: true })
+  @Prop({ required: true })
     description !: string;
 
-    get isActive() {
-      return this.$vxm.chat.chatChannel.includes(this.name);
-    }
-
-    close(e: Event) {
-      e.stopImmediatePropagation();
-      this.$vxm.chat.leaveChannel(this.name);
-    }
-
-    get joined() {
-      let joined = [];
-      if (localStorage.chat_joinedChannels) {
-        joined = JSON.parse(localStorage.chat_joinedChannels);
-      }
-      return joined.includes(this.name);
-    }
+  get isActive() {
+    return this.$vxm.chat.chatChannel.includes(this.name);
   }
+
+  close(e: Event) {
+    e.stopImmediatePropagation();
+    this.$vxm.chat.leaveChannel(this.name);
+  }
+
+  get joined() {
+    let joined = [];
+    if (localStorage.chat_joinedChannels) {
+      joined = JSON.parse(localStorage.chat_joinedChannels);
+    }
+    return joined.includes(this.name);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

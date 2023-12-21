@@ -1,4 +1,4 @@
-export default function getStyles(type: string): { [name:string]:string | boolean} {
+export default function getStyles(type: string): { [name:string]:string | boolean } {
   const bold = type.includes('bold') || type.includes('action');
   const italics = type.includes('italics') || type.includes('action');
   const strikethrough = type.includes('strikethrough');

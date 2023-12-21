@@ -297,7 +297,7 @@ export default class ChatModule extends VuexModule {
       ssl: this.connectionData.ssl,
     });
     client
-      .on('registered', (e) => {
+      .on('registered', () => {
         Object.values(this.channels).forEach((c) => {
           const channel = client.channel(c!.name);
           channel.join();
@@ -387,7 +387,8 @@ export default class ChatModule extends VuexModule {
       trueChannel.notifications = true;
       if (this.desktopNotifications) {
         const msg = trueChannel.postedMessages[trueChannel.postedMessages.length - 1];
-        const notification = new Notification(`New message in ${channel}`, {
+        // eslint-disable-next-line no-new
+        new Notification(`New message in ${channel}`, {
           body: `${msg.user.username}: ${msg.message}`,
           tag: `new-message-${msg.target}`,
         });
@@ -442,8 +443,10 @@ export default class ChatModule extends VuexModule {
 
   @mutation
   openReportModal({
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     message,
     defaults,
+    /* eslint-enable @typescript-eslint/no-unused-vars */
   }: {
     message: Message;
     defaults: { ignore: boolean; report: boolean };
@@ -571,7 +574,7 @@ export default class ChatModule extends VuexModule {
     const postMessage = (
       message: string,
       {
-        user = User.annonymous, isHistory = false, isAction = false,
+        user = User.annonymous, isAction = false,
       } = {},
     ) => {
       this.postMessage(new Message(message, channel, user, isAction));
@@ -1333,9 +1336,9 @@ export default class ChatModule extends VuexModule {
         if (post) {
           if (!this.channels[channel]?.banned && !banned && !quieted) {
             if (isAction) {
-                this.client!.action(channel, `${message.replace(/ \[#.+\]$/, '')}`);
+              this.client!.action(channel, `${message.replace(/ \[#.+\]$/, '')}`);
             } else {
-                this.client!.say(channel, message);
+              this.client!.say(channel, message);
             }
             const name = User.parseUsername(channel);
             // If it's a private message, send to the username, not the nick
@@ -1372,7 +1375,7 @@ export default class ChatModule extends VuexModule {
    * @param param0 - An object containing the message and the channel (user) to send it to
    */
   @action()
-  async privateMessage({ message, channel }: { message:string, channel:string}) {
+  async privateMessage({ message, channel }: { message:string, channel:string }) {
     /* Splits argument into message and channel
     Will only cause issues if people are putting | in their nick */
     const post = true;
@@ -1469,7 +1472,7 @@ export default class ChatModule extends VuexModule {
    * @param param0 - An object containing the reason for the ban and the nick to send it to
    */
   @action()
-  async giveReason({ reason, nick }: {reason: string, nick: string}) {
+  async giveReason({ reason, nick }: { reason: string, nick: string }) {
     this.client?.say(nick, reason);
   }
 
@@ -1610,7 +1613,7 @@ export default class ChatModule extends VuexModule {
    * @param arg - An object containing the user, channel, and a callback.
    */
   @action()
-  async bans(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
+  async bans(arg: { user: User, channel: string, cb: (b:boolean) => void }) {
     const { username } = arg.user;
     const { channel, cb } = arg;
     if (channel === '*') {
@@ -1633,7 +1636,7 @@ export default class ChatModule extends VuexModule {
    * @param arg - An object containing the user, channel, and a callback.
    */
   @action()
-  async quiets(arg: {user: User, channel: string, cb: (b:boolean) => void}) {
+  async quiets(arg: { user: User, channel: string, cb: (b:boolean) => void }) {
     const { username } = arg.user;
     const { channel, cb } = arg;
     if (channel === '*') {
@@ -1711,7 +1714,7 @@ export default class ChatModule extends VuexModule {
   // API calls
 
   @action()
-  async getUserInfo(arg: { user: User, callback: (data: any | undefined) => any}) {
+  async getUserInfo(arg: { user: User, callback: (data: any | undefined) => any }) {
     const { uid } = arg.user || { uid: 0 }; // UID needed for get request
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function cb() {
@@ -1724,7 +1727,7 @@ export default class ChatModule extends VuexModule {
   }
 
   @action()
-  async getPuzzleInfo(arg: { pid: number, callback: (data: any | undefined) => any}) {
+  async getPuzzleInfo(arg: { pid: number, callback: (data: any | undefined) => any }) {
     const { pid } = arg || { pid: 0 }; // UID needed for get request
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function cb() {
@@ -1740,7 +1743,7 @@ export default class ChatModule extends VuexModule {
 
   @action()
   async onNoticeReceived({
-    message, target, time, nick, type,
+    message, target, time, nick,
   }: Irc.MessageEventArgs) {
     const user = this.connectedUsers[User.parseUsername(nick)];
     const msg = new Message(message, target, user, false, true);
@@ -1751,7 +1754,7 @@ export default class ChatModule extends VuexModule {
   // TODO: Insert messages based on id order
   @action()
   async onMessageReceived({
-    message, nick, tags, time, type, target,
+    message, nick, time, type, target,
   }: Irc.MessageEventArgs) {
     let channel = this.channels[target];
     if (message === 'is typing...' && type === 'action') {

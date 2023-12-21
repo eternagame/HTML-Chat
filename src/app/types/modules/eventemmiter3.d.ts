@@ -43,7 +43,7 @@ declare class EventEmitter<EventTypes extends string | symbol = string | symbol>
    * Remove the listeners of a given params.
    */
   removeListener(event: EventTypes, fn?: EventEmitter.ListenerFn,
-                 context?: any, once?: boolean): this;
+    context?: any, once?: boolean): this;
 
   off(event: EventTypes, fn?: EventEmitter.ListenerFn, context?: any, once?: boolean): this;
 

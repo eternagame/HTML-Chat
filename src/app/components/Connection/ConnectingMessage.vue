@@ -7,6 +7,7 @@
     <img
       src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
       class="loading-icon mr-auto ml-auto align-middle mb-1"
+      alt=""
     >
     <span
       v-show="connectionData.tryingToConnect"
@@ -23,18 +24,18 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
-  @Component({ components: { } })
-  export default class ConnectingMessage extends Vue {
-    get connectionData() {
-      return this.$vxm.chat.connectionData;
-    }
-
-    get disconnected() {
-      return this.$vxm.chat.disconnected;
-    }
+@Component({ components: { } })
+export default class ConnectingMessage extends Vue {
+  get connectionData() {
+    return this.$vxm.chat.connectionData;
   }
+
+  get disconnected() {
+    return this.$vxm.chat.disconnected;
+  }
+}
 </script>
 
 <style lang="scss">

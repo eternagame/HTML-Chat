@@ -7,7 +7,7 @@ class Message {
 
   target!: string;
 
-  tags!: {[key: string] : string};
+  tags!: { [key: string] : string };
 
   isAction!: boolean;
 
@@ -17,7 +17,7 @@ class Message {
 
   starred = false;
 
-  constructor(message: string, target = '*', user: User = User.annonymous, isAction: boolean = false, isNotice: boolean = false, tags: {[key: string] : string} = {}) {
+  constructor(message: string, target = '*', user: User = User.annonymous, isAction: boolean = false, isNotice: boolean = false, tags: { [key: string] : string } = {}) {
     this.message = message;
     this.target = target;
     this.tags = tags;

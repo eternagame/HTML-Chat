@@ -1,13 +1,14 @@
 <template>
   <div
-    v-show="!connectionData.connected &&
-      connectionData.firstConnection"
+    v-show="!connectionData.connected
+      && connectionData.firstConnection"
     class="connecting-popup text-center text-white"
   >
     <img
       src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
       class="loading-icon"
       style="display: block"
+      alt=""
     >
     <span
       v-show="connectionData.tryingToConnect"
@@ -24,14 +25,14 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
-  @Component({ components: {} })
-  export default class ConnectingPopup extends Vue {
-    get connectionData() {
-      return this.$vxm.chat.connectionData;
-    }
+@Component({ components: {} })
+export default class ConnectingPopup extends Vue {
+  get connectionData() {
+    return this.$vxm.chat.connectionData;
   }
+}
 </script>
 
 <style lang="scss" scoped>
