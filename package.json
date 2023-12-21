@@ -62,7 +62,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-vue": "^9.19.2",
     "jest": "^27.5.1",
-    "lint-staged": "^10.5.4",
+    "lint-staged": "^15.2.0",
     "sass": "^1.69.5",
     "sass-loader": "^13.3.2",
     "ts-jest": "^27.1.5",
