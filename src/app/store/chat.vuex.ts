@@ -1714,29 +1714,22 @@ export default class ChatModule extends VuexModule {
   // API calls
 
   @action()
-  async getUserInfo(arg: { user: User, callback: (data: any | undefined) => any }) {
-    const { uid } = arg.user || { uid: 0 }; // UID needed for get request
-    const xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function cb() {
-      if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-        arg.callback(xmlHttp.responseText); // Calls callback after response
-      }
-    };
-    xmlHttp.open('GET', `https://eternagame.org/get/?type=user&uid=${uid}`, true);
-    xmlHttp.send(null);
+  async getUserInfo(arg: { user: User }) {
+    const { uid } = arg.user ?? { uid: 0 }; // UID needed for get request
+    const response = await fetch(`https://eternagame.org/get/?type=user&uid=${uid}`, { method: 'GET' });
+    return response.json();
   }
 
   @action()
   async getPuzzleInfo(arg: { pid: number, callback: (data: any | undefined) => any }) {
-    const { pid } = arg || { pid: 0 }; // UID needed for get request
-    const xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function cb() {
-      if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-        arg.callback(xmlHttp.responseText); // Calls callback after response
-      }
-    };
-    xmlHttp.open('GET', `https://eternagame.org/get/?type=puzzle&nid=${pid}`, true);
-    xmlHttp.send(null);
+    const { pid } = arg ?? { pid: 0 }; // UID needed for get request
+    const response = await fetch(`https://eternagame.org/get/?type=puzzle&nid=${pid}`, { method: 'GET' });
+    const text = await response.text();
+    if (!response.ok) {
+      console.warn(text);
+    }
+    arg.callback(text);
+    return text;
   }
 
   // Message handlers

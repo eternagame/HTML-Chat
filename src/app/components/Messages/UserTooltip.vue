@@ -8,8 +8,7 @@
     }">
     <div class="user-tooltip-heading-container pr-2 pl-2 pt-2 mb-1">
       <div class="user-profile text-center">
-        <img v-if="profileImage" :src="profileImage" alt="">
-        <InlineLoadingSpinner v-else />
+        <img :src="profileImage" alt="" />
       </div>
       <span class="user-name text-center w-100 d-inline-block">
         <span style="color:yellow; font-size:1.25em" v-show="user.away">● </span>
@@ -65,6 +64,7 @@ import {
   Component, Prop, Vue,
 } from 'vue-property-decorator';
 import User from '@/types/user';
+import DefaultAvatar from '@/assets/default-avatar.svg';
 import InlineLoadingSpinner from './InlineLoadingSpinner.vue';
 import Message from '../../types/message';
 
@@ -87,23 +87,28 @@ export default class UserTooltip extends Vue {
 
   rank: string | null = null;
 
-  profileImage: string | null = null;
+  profileImage: string = DefaultAvatar;
 
   $refs !: {
     container: HTMLDivElement;
   };
 
   fillProfile() {
-    this.$vxm.chat.getUserInfo({
-      user: this.user,
-      callback: (d) => {
-        const data = JSON.parse(d);
-        if (data.data !== undefined) {
+    if (this.user.uid === 'anon' || this.user.uid === '0') {
+      console.warn('Cannot fetch anonymous chatters');
+      this.rank = 'Unranked';
+      this.desc = 'User has not added a description to their profile';
+    } else {
+      this.$vxm.chat.getUserInfo({ user: this.user })
+        .then((data) => {
+          if (!data.data) {
+            return;
+          }
+
           if (data.data.user.Profile) {
-            let desc = data.data.user.Profile;
+            let desc: string = data.data.user.Profile;
             if (desc.length > 150) {
-              desc = desc.slice(0, 147)
-                .trim();
+              desc = desc.slice(0, 147).trim();
               desc += '&hellip;';
             }
             this.desc = desc;
@@ -117,12 +122,13 @@ export default class UserTooltip extends Vue {
           }
           if (data.data.user.picture) {
             this.profileImage = `https://eternagame.org/${data.data.user.picture}`;
-          } else {
-            this.profileImage = '';
           }
-        }
-      },
-    });
+        }).catch(err => {
+          console.error(err);
+          this.rank ??= 'Unranked';
+          this.desc ??= 'User has not added a description to their profile';
+        });
+    }
 
     /*
       These are currently taken from the Discord/Slack roles
