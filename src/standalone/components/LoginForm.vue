@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names TODO: Rename file -->
 <template>
   <div class="login">
     <div class="trans-panel-bg rounded-10" />

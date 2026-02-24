@@ -3,7 +3,7 @@
     id="app1"
     style="height:100%; overflow-y:hidden;"
   >
-    <Login v-if="!logged" @login="login" />
+    <LoginForm v-if="!logged" @login="login" />
     <ChatApp
       v-if="logged"
       :username="username"
@@ -16,7 +16,7 @@
 <script lang="ts" setup>
 import ChatApp from '@/App.vue';
 import { onMounted, ref } from 'vue';
-import Login from './components/Login.vue';
+import LoginForm from './components/LoginForm.vue';
 
 const username = ref<string>('');
 const uid = ref<string>('');
