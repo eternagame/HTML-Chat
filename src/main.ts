@@ -4,7 +4,7 @@ import App from './standalone/App.vue';
 import store from './standalone/store';
 
 Vue.config.productionTip = false;
-Vue.use(chatPlugin, { store });
+Vue.use(chatPlugin);
 
 new Vue({
   render: h => h(App),
