@@ -1,10 +1,11 @@
+<!-- eslint-disable vue/multi-word-component-names TODO: Rename file -->
 <template>
   <div class="login">
     <div class="trans-panel-bg rounded-10" />
     <div class="trans-panel rounded-10">
       <form>
         <div class="form-group">
-          <label class="forn-control-label" for="username">Username</label>
+          <label class="form-control-label" for="username">Username</label>
           <input
             type="text"
             id="username"
@@ -34,7 +35,7 @@
         <button
           class="btn btn-primary w-100"
           type="submit"
-          @click="$emit('login', { uid, username, remember })"
+          @click="emit('login', { uid, username, remember })"
         >
           Continue
         </button>
@@ -50,33 +51,29 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
 
-@Component({
-  components: {},
-})
-export default class Login extends Vue {
-  uid: string = '';
+const emit = defineEmits<{
+  (event: 'login', input: { uid: string, username: string, remember: boolean }): void
+}>();
 
-  username: string = '';
+const uid = ref<string>('');
+const username = ref<string>('');
+const remember = ref<boolean>(false);
 
-  remember: boolean = false;
+const idError = computed<string>(() => {
+  if (!parseInt(uid.value, 10)) return 'Must be a number';
+  if (uid.value.trim() === '') return 'Must provide a user id';
+  return '';
+});
+const nameError = computed<string>(() => {
+  if (username.value.trim() === '') return 'Must provide a username';
+  return '';
+});
 
-  get idError() {
-    if (!parseInt(this.uid, 10)) return 'Must be a number';
-    if (this.uid.trim() === '') return 'Must provide a user id';
-    return '';
-  }
-
-  get nameError() {
-    if (this.uid.trim() === '') return 'Must provide a username';
-    return '';
-  }
-
-  anonLogin() {
-    this.$emit('login', { uid: '0', username: 'Anonymous', remember: this.remember });
-  }
+function anonLogin() {
+  emit('login', { uid: '0', username: 'Anonymous', remember: remember.value });
 }
 </script>
 

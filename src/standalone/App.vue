@@ -3,8 +3,8 @@
     id="app1"
     style="height:100%; overflow-y:hidden;"
   >
-    <login v-if="!logged" @login="login" />
-    <chat-app
+    <Login v-if="!logged" @login="login" />
+    <ChatApp
       v-if="logged"
       :username="username"
       :uid="uid"
@@ -13,40 +13,30 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script lang="ts" setup>
 import ChatApp from '@/App.vue';
+import { onMounted, ref } from 'vue';
 import Login from './components/Login.vue';
 
-@Component({
-  components: {
-    ChatApp,
-    Login,
-  },
-})
-export default class App extends Vue {
-  logged = false;
+const username = ref<string>('');
+const uid = ref<string>('');
+const logged = ref<boolean>(false);
 
-  username!: string;
-
-  uid!: string;
-
-  created() {
-    if (localStorage.chat_username) {
-      this.username = localStorage.chat_username;
-      this.uid = localStorage.chat_uid;
-      this.logged = true;
-    }
+onMounted(() => {
+  if (localStorage.chat_username) {
+    username.value = localStorage.chat_username;
+    uid.value = localStorage.chat_uid;
+    logged.value = true;
   }
+});
 
-  login({ username, uid, remember }: { username: string, uid: string, remember: boolean }) {
-    this.username = username;
-    this.uid = uid;
-    this.logged = true;
-    if (remember) {
-      localStorage.chat_username = username;
-      localStorage.chat_uid = uid;
-    }
+function login(input: { username: string, uid: string, remember: boolean }) {
+  username.value = input.username;
+  uid.value = input.uid;
+  logged.value = true;
+  if (input.remember) {
+    localStorage.chat_username = username;
+    localStorage.chat_uid = uid;
   }
 }
 </script>

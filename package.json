@@ -21,6 +21,7 @@
     "gsap": "^3.12.4",
     "irc-framework": "^4.13.1",
     "lodash": "^4.17.21",
+    "loglevel": "^1.9.2",
     "markdown-it": "^14.0.0",
     "sjcl": "^1.0.8",
     "stream-browserify": "^3.0.0",

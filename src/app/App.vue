@@ -97,7 +97,8 @@ export default class App extends Vue {
   }
 
   get minimized() {
-    if (this.$refs && this.$refs.draggable) this.$refs.draggable.minimize();
+    // @ts-expect-error TODO: Fix type for SFC format
+    this.$refs?.draggable?.minimize();
     return this.minimization;
   }
 
