@@ -2,29 +2,33 @@
   <button
     type="button"
     class="hamburger d-inline-block border-0 align-top"
-    @click="$emit('input', !value)"
+    @click="emit('input', !value)"
     :class="{
       notified: notification,
       mentioned: mention,
     }"
-    :aria-label="`${this.value ? 'Close' : 'Open'} slideout`"
+    :aria-label="`${value ? 'Close' : 'Open'} slideout`"
   />
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-
-@Component
-export default class HamburgerMenuButton extends Vue {
-  @Prop({ required: true })
-    value!: boolean;
-
-  @Prop({ default: false })
-    notification!: boolean;
-
-  @Prop({ default: false })
-    mention!: boolean;
-}
+<script lang="ts" setup>
+defineProps({
+  value: {
+    type: Boolean,
+    required: true,
+  },
+  notification: {
+    type: Boolean,
+    default: false,
+  },
+  mention: {
+    type: Boolean,
+    default: false,
+  },
+});
+const emit = defineEmits<{
+  (event: 'input', value: boolean): void;
+}>();
 </script>
 <style scoped>
 .hamburger { /* Normal hamburger icon */

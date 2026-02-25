@@ -9,27 +9,19 @@
     <ItemOptions :user="user" :hover="hover" />
   </li>
 </template>
-<script lang="ts">
-import {
-  Vue, Component, Prop,
-} from 'vue-property-decorator';
-import ActionMenu from '@/components/Messages/ActionMenu.vue';
+<script lang="ts" setup>
 import User from '@/types/user';
 import Username from '@/components/Messages/Username.vue';
 import ItemOptions from '@/components/ItemOptions.vue';
+import { ref } from 'vue';
 
-@Component({
-  components: {
-    Username,
-    ActionMenu,
-    ItemOptions,
+defineProps({
+  user: {
+    type: User,
+    required: true,
   },
-})
-export default class SlideoutUsername extends Vue {
-  @Prop({ required: true }) user!: User;
-
-  hover = false;
-}
+});
+const hover = ref(false);
 </script>
 <style scoped>
   li {

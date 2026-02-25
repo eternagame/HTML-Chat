@@ -15,50 +15,48 @@
     <span
       class="text"
       :class="classes"
-      :id="typeIs('strikethrough') ? 's' : ''"
-      :style="style">{{buttonLetter}}
-    </span>
+      :style="style">{{buttonLetter}}</span>
   </button>
 </template>
-<script lang='ts'>
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script lang='ts' setup>
+import { computed } from 'vue';
 import getStyles from './Styles';
 
-@Component
-export default class MarkdownWrapButton extends Vue {
-  @Prop({ required: true })
-    type !: string;
+const props = defineProps({
+  type: {
+    type: String,
+    required: true,
+  },
+});
+const emit = defineEmits<{
+  (event: 'md', type: string): void
+}>();
 
-  typeIs(type:string):boolean {
-    return this.type.includes(type);
+const buttonLetter = computed(() => {
+  switch (props.type) {
+    case 'italics': return 'T';
+    case 'action': return 'me';
+    case 'question': return '?';
+    case 'italicsbold': return 'E';
+    case 'quote': return '""';
+    case 'serif': return 'F';
+    case 'cursive': return 'F';
+    default: return props.type.substring(0, 1).toUpperCase();
   }
+});
+const style = computed(() => getStyles(props.type));
 
-  get buttonLetter() {
-    switch (this.type) {
-      case 'italics': return 'T';
-      case 'action': return 'me';
-      case 'question': return '?';
-      case 'italicsbold': return 'E';
-      case 'quote': return '""';
-      case 'serif': return 'F';
-      case 'cursive': return 'F';
-      default: return this.type.substring(0, 1).toUpperCase();
-    }
-  }
+function typeIs(type: string) {
+  return props.type.includes(type);
+}
 
-  get style() {
-    return getStyles(this.type);
-  }
+const classes = computed(() => ({
+  highlight: typeIs('highlight'),
+  strikethrough: typeIs('strikethrough'),
+}));
 
-  get classes() {
-    return {
-      highlight: this.typeIs('highlight'),
-    };
-  }
-
-  clicked() {
-    this.$emit('md', this.type);
-  }
+function clicked() {
+  emit('md', props.type);
 }
 </script>
 <style scoped>
@@ -75,17 +73,17 @@ export default class MarkdownWrapButton extends Vue {
     vertical-align: middle;
     height:100%;
     font-size:16px;
+    user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
   }
-  #s {
+  .strikethrough {
     text-decoration: line-through;
     font-size:12px;
     padding-top:5px;
   }
-
-  #s:before,
-  #s:after {
+  .strikethrough:before,
+  .strikethrough:after {
     content: "-";
   }
   .highlight {

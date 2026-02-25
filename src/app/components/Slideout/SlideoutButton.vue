@@ -3,15 +3,15 @@
   <button
     type="button"
     class='border-0'
-    @click="$emit('input')"
+    @click="emit('input')"
     :aria-label="`${name} tab`"
   >
     <center
       class='border-0 font-weight-bold text-white d-inline-block'
-      @click="$emit('input')"
+      @click="emit('input')"
     >
       <img
-        :alt="`${this.selected ? 'Selected' : 'Unselected'} ${name} tab`"
+        :alt="`${selected ? 'Selected' : 'Unselected'} ${name} tab`"
         :src="require(`@/assets/${name}-icon-${selected ? 'green' : 'white'}.png`)"
       >
       <slot />
@@ -19,17 +19,20 @@
   </button>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-
-@Component
-export default class SlideoutButton extends Vue {
-  @Prop({ required: true })
-    name!: string;
-
-  @Prop({ required: true })
-    selected!: boolean;
-}
+<script lang="ts" setup>
+defineProps({
+  name: {
+    type: String,
+    required: true,
+  },
+  selected: {
+    type: Boolean,
+    required: true,
+  },
+});
+const emit = defineEmits<{
+  (event: 'input'): void;
+}>();
 </script>
 
 <style lang="scss" scoped>

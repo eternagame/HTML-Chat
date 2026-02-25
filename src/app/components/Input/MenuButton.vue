@@ -3,31 +3,32 @@
     type="button"
     class='menu-button border-0 text-white float-left'
     :style="style"
-    @click="$emit('button', name)"
-    @dblclick="$emit('close')"
+    @click="emit('button', name)"
+    @dblclick="emit('close')"
   >
     {{name}}
   </button>
 </template>
-<script lang='ts'>
-import {
-  Component, Prop, Vue,
-} from 'vue-property-decorator';
+<script lang='ts' setup>
+import { computed } from 'vue';
 import getStyles from './Styles';
 
-@Component
-export default class MenuButton extends Vue {
-  @Prop({ required: true })
-    name !: string;
+const props = defineProps({
+  name: {
+    type: String,
+    required: true,
+  },
+  styles: {
+    type: String,
+    required: true,
+  },
+});
+const emit = defineEmits<{
+  (event: 'button', name: string): void
+  (event: 'close'): void
+}>();
 
-  @Prop({ required: true })
-    styles !: string;
-
-  get style() {
-    const normal = getStyles(this.styles);
-    return normal;
-  }
-}
+const style = computed(() => getStyles(props.styles));
 </script>
 <style scoped>
 .menu-button {

@@ -7,17 +7,19 @@
     <span class='align-middle h-100 emoticon-text-container'>{{emoticon}}</span>
   </button>
 </template>
-<script lang='ts'>
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script lang='ts' setup>
+const props = defineProps({
+  emoticon: {
+    type: String,
+    required: true,
+  },
+});
+const emit = defineEmits<{
+  (event: 'emote', emoticon: string): void
+}>();
 
-@Component
-export default class EmoticonButton extends Vue {
-  @Prop({ required: true })
-    emoticon !: string;
-
-  clicked() {
-    this.$emit('emote', this.emoticon);
-  }
+function clicked() {
+  emit('emote', props.emoticon);
 }
 </script>
 <style scoped>

@@ -24,25 +24,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  Component, Vue,
-} from 'vue-property-decorator';
+<script lang="ts" setup>
+import { ref } from 'vue';
 
-@Component
-export default class LinkModal extends Vue {
-  url !: string;
+const openModal = ref<boolean>(false);
+const url = ref<string>();
 
-  openModal: boolean = false;
-
-  open(url: string) {
-    this.openModal = true;
-    this.url = url;
-  }
-}
+defineExpose({
+  open(externalUrl: string) {
+    openModal.value = true;
+    url.value = externalUrl;
+  },
+});
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .link {
     position: fixed;
     left: 50%;

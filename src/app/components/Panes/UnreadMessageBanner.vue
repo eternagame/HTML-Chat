@@ -3,18 +3,15 @@
     {{messages}} new message{{messages === 1 ? 's' : ''}}
   </button>
 </template>
-<script lang="ts">
-import {
-  Component, Prop, Vue,
-} from 'vue-property-decorator';
-
-@Component
-export default class UnreadMessageBanner extends Vue {
-  @Prop({ required: true })
-    messages!: number;
-}
+<script lang="ts" setup>
+defineProps({
+  messages: {
+    type: Number,
+    required: true,
+  },
+});
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .unread-banner-container {
   position:sticky;
   bottom:0;

@@ -23,19 +23,12 @@
   </li>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
+import { computed } from 'vue';
 
-@Component({ components: { } })
-export default class ConnectingMessage extends Vue {
-  get connectionData() {
-    return this.$vxm.chat.connectionData;
-  }
-
-  get disconnected() {
-    return this.$vxm.chat.disconnected;
-  }
-}
+const connectionData = computed(() => vxm.chat.connectionData);
+const disconnected = computed(() => vxm.chat.disconnected);
 </script>
 
 <style lang="scss">

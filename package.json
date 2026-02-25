@@ -10,6 +10,9 @@
     "lint": "vue-cli-service lint",
     "start": "npm run serve"
   },
+  "imports": {
+    "#store/*": "./src/store/*"
+  },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.6.2",

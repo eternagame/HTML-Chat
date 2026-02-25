@@ -1,18 +1,21 @@
 <template>
-  <div
-    id="reconnect"
-    :class="{ active: $vxm.chat.connectionData.tryingToConnect }"
+  <button
+    type="button"
+    :class="{ active: tryingToConnect }"
     class="connect-button btn btn-primary w-100 font-weight-bolder"
     style="font-size:13px;"
-    @click="$vxm.chat.connect"
+    @click="connect"
   >
     Reconnect
-  </div>
+  </button>
 </template>
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
+import { computed } from 'vue';
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+const tryingToConnect = computed(() => vxm.chat.connectionData.tryingToConnect);
 
-@Component({})
-export default class ConnectButton extends Vue { }
+function connect() {
+  vxm.chat.connect();
+}
 </script>

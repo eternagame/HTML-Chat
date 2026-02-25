@@ -3,20 +3,22 @@
     type="button"
     class="star-button border-0"
     style="float: right;"
-    @click="$emit('input', !value);"
+    @click="emit('input', !value);"
     :class="{ active: value }"
     aria-label="Show/hide starred messages"
   />
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-
-@Component
-export default class StarButton extends Vue {
-  @Prop({ required: true })
-    value !: boolean;
-}
+<script lang="ts" setup>
+defineProps({
+  value: {
+    type: Boolean,
+    required: true,
+  },
+});
+const emit = defineEmits<{
+  (event: 'input', value: boolean): void
+}>();
 </script>
 
 <style lang="scss" scoped>

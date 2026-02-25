@@ -24,15 +24,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
+import { computed } from 'vue';
 
-@Component({ components: {} })
-export default class ConnectingPopup extends Vue {
-  get connectionData() {
-    return this.$vxm.chat.connectionData;
-  }
-}
+const connectionData = computed(() => vxm.chat.connectionData);
 </script>
 
 <style lang="scss" scoped>

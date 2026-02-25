@@ -4,12 +4,11 @@
       type="button"
       class="chat-message-options border-0 text-white font-weight-bold"
       ref="chatOptions"
-      aria-label="open message options"
+      aria-label="Open message options"
       @click.prevent="openContextMenu"
       v-show="hovered && user.username"
       @blur="hovered = false"
       @keypress.enter.prevent="openContextMenuWithKey"
-      tabindex=0
     >
       &vellip; <!-- ⋮ -->
     </button>
@@ -36,13 +35,13 @@ import Username from '@/components/Messages/Username.vue';
 })
 export default class ItemOptions extends Vue {
   @Prop({ required: true })
-    user !: User;
+    user!: User;
 
   @Prop({ required: false })
-    message !: Message;
+    message!: Message;
 
-  @Prop({ required: true })
-    hover = false;
+  @Prop({ required: true, default: false })
+    hover!: boolean;
 
   @Watch('hover')
   updateData() {

@@ -8,25 +8,27 @@
       'settings-flipped': value && settings,
       settings: settings,
     }"
-    @click="$emit('input', !value)"
+    @click="emit('input', !value)"
   />
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script lang="ts" setup>
+import { computed, defineProps } from 'vue';
 
-@Component
-export default class MinimizationTriangle extends Vue {
-  @Prop({ required: true })
-    value!: boolean;
-
-  @Prop({ default: false })
-    settings !: boolean;
-
-  get label() {
-    return `${this.value ? 'Show' : 'Hide'}`;
-  }
-}
+const props = defineProps({
+  value: {
+    type: Boolean,
+    required: true,
+  },
+  settings: {
+    type: Boolean,
+    default: false,
+  },
+});
+const emit = defineEmits<{
+  (event: 'input', value: boolean): void
+}>();
+const label = computed(() => (props.value ? 'Show' : 'Hide'));
 </script>
 
 <style lang="scss" scoped>

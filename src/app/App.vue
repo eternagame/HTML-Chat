@@ -97,8 +97,8 @@ export default class App extends Vue {
   }
 
   get minimized() {
-    // @ts-expect-error TODO: Fix type for SFC format
-    this.$refs?.draggable?.minimize();
+    // @ts-expect-error TODO: Fix type for Composition API
+    this.$refs.draggable?.minimize();
     return this.minimization;
   }
 

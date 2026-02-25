@@ -1,5 +1,5 @@
 <template>
-  <div id="user-wrapper" :style="{ fontSize: `${fontSize}px` }">
+  <div class="user-wrapper" :style="{ fontSize: `${fontSize}px` }">
     <h4>Online ({{userCount}})</h4>
     <ul class="list-group list-style-type-none">
       <SlideoutUsername
@@ -9,37 +9,17 @@
     </ul>
   </div>
 </template>
-<script lang="ts">
-import {
-  Vue, Component,
-} from 'vue-property-decorator';
-import Username from '../../Messages/Username.vue';
-import ActionMenu from '../../Messages/ActionMenu.vue';
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
+import { computed } from 'vue';
 import SlideoutUsername from './SlideoutUsername.vue';
 
-@Component({
-  components: {
-    Username,
-    ActionMenu,
-    SlideoutUsername,
-  },
-})
-export default class SlideoutUser extends Vue {
-  get connectedUsers() {
-    return this.$vxm.chat.connectedUsers;
-  }
-
-  get userCount() {
-    return Object.keys(this.$vxm.chat.connectedUsers).length;
-  }
-
-  get fontSize() {
-    return this.$vxm.settings.fontSize;
-  }
-}
+const connectedUsers = computed(() => vxm.chat.connectedUsers);
+const userCount = computed(() => Object.keys(vxm.chat.connectedUsers).length);
+const fontSize = computed(() => vxm.settings.fontSize);
 </script>
 <style scoped>
-#user-wrapper {
+.user-wrapper {
   padding:5px;
   padding-left:20px;
   overflow: auto;

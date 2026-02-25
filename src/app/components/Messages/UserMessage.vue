@@ -48,7 +48,7 @@
       </span>
     </div>
     <ItemOptions :user="message.user" :message="message" :hover="hover" class="options" />
-    <LinkModal ref="linkModal" url='' />
+    <LinkModal ref="linkModal" />
   </li>
 </template>
 
@@ -196,7 +196,10 @@ export default class UserMessage extends Vue {
         const e = el as HTMLAnchorElement;
         e.addEventListener('click', ev => {
           ev.preventDefault();
-          if (e.href.trim() !== '' && !e.href.match(/(https?:\/\/)?eternagame\.org\/(game\/)?puzzles?\/\d+\/?/)) this.$refs.linkModal.open(e.href);
+          if (e.href.trim() !== '' && !e.href.match(/(https?:\/\/)?eternagame\.org\/(game\/)?puzzles?\/\d+\/?/)) {
+            // @ts-expect-error TODO: Fix type for Composition API
+            this.$refs.linkModal?.open(e.href);
+          }
         });
       });
   }

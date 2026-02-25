@@ -3,19 +3,24 @@
     type="button"
     class="open-window border-0"
     style="float: right;"
-    @click="$emit('input', !value)"
-    :aria-label="`Make chat ${value ? 'fullscreen' : 'normal size'}`"
+    @click="emit('input', !value)"
+    :aria-label="label"
   />
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script lang="ts" setup>
+import { computed } from 'vue';
 
-@Component
-export default class OpenWindowButton extends Vue {
-  @Prop({ required: true })
-    value !: boolean;
-}
+const props = defineProps({
+  value: {
+    type: Boolean,
+    required: true,
+  },
+});
+const emit = defineEmits<{
+  (event: 'input', value: boolean): void,
+}>();
+const label = computed(() => `Make chat ${props.value ? 'fullscreen' : 'normal size'}`);
 </script>
 
 <style lang="scss" scoped>
