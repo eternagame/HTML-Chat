@@ -4,8 +4,7 @@
     :aria-label="label"
     class="minimization-triangle float-right border-0 "
     :class="{
-      flipped: value && !settings,
-      'settings-flipped': value && settings,
+      flipped: value,
       settings: settings,
     }"
     @click="emit('input', !value)"
@@ -40,30 +39,15 @@ const label = computed(() => (props.value ? 'Show' : 'Hide'));
     height: 34px;
     width: 35px;
     transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
     transition: transform 0.2s;
     background-color: transparent;
   }
 
-  .minimization-triangle.settings-flipped {
-    transform: rotate(-90deg);
-    -webkit-transform: rotate(-90deg);
-    // animation: minimization-triangle-rotation-from-settings 0.2s !important;
-    transition: transform 0.2s;
-  }
-
-  .settings {
-    // animation: minimization-triangle-rotation-to-settings 0.2s !important;
-    transition: transform 0.2s;
-  }
-
   .minimization-triangle.flipped { /* Button in minimized state */
     transform: rotate(90deg);
-    -webkit-transform: rotate(90deg);
-    transition: transform 0.2s;
   }
 
-  .minimization-triangle:hover {
-    cursor: pointer;
+  .minimization-triangle.flipped.settings {
+    transform: rotate(-90deg);
   }
 </style>

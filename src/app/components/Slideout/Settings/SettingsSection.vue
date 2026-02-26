@@ -1,13 +1,13 @@
 <template>
   <section>
-    <li class="settings-section-header">
+    <div class="settings-section-header">
       <h5 class="heading mt-1 mb-1 ml-0 d-inline-block">{{title}}</h5>
       <MinimizationTriangle
         class="d-inline-block"
-        settings="true"
+        :settings="true"
         @input="update($event)"
         v-model="open" />
-    </li>
+    </div>
     <transition name="settings-slide">
       <div v-show="!open" class="settings-content-container">
         <slot />
@@ -16,46 +16,43 @@
   </section>
 </template>
 
-<script lang="ts">
-import {
-  Component, Prop, Vue,
-} from 'vue-property-decorator';
+<script lang="ts" setup>
 import MinimizationTriangle from '@/components/Header/MinimizationTriangle.vue';
+import { onMounted, ref } from 'vue';
 
-@Component({
-  components: {
-    MinimizationTriangle,
-  },
-})
-export default class SettingsSection extends Vue {
-  open = false;
+const props = defineProps<{ title: string }>();
+const open = ref<boolean>(false);
 
-  @Prop({ required: true })
-    title !: string;
-
-  mounted() {
-    if (localStorage && localStorage.chat_openMenus) {
-      const menus = JSON.parse(localStorage.chat_openMenus);
-      if (menus[this.title] !== undefined) {
-        this.open = menus[this.title];
-      }
-    }
+onMounted(() => {
+  // TODO: Extract localStorage interaction
+  if (!localStorage?.chat_openMenus) {
+    return;
   }
 
-  // Updates self and localStorage when shown/hidden
-  update(newValue: boolean) {
-    this.open = newValue; // Update self
-    const { title } = this;
-    if (localStorage) {
-      let menus: any = {};
-      if (localStorage.chat_openMenus) { // If the object exists, modify it
-        menus = JSON.parse(localStorage.chat_openMenus);
-      }
-      menus[title] = newValue;
-      localStorage.chat_openMenus = JSON.stringify(menus); // Update localStorage
-    }
+  const menus = JSON.parse(localStorage.chat_openMenus);
+  if (menus[props.title]) {
+    open.value = menus[props.title];
   }
+});
+
+/**
+ * Updates self and localStorage when shown/hidden
+ * TODO: Extract localStorage interaction
+ */
+function update(newValue: boolean) {
+  open.value = newValue; // Update self
+
+  if (!localStorage) {
+    return;
+  }
+  let menus: any = {};
+  if (localStorage.chat_openMenus) { // If the object exists, modify it
+    menus = JSON.parse(localStorage.chat_openMenus);
+  }
+  menus[props.title] = newValue;
+  localStorage.chat_openMenus = JSON.stringify(menus); // Update localStorage
 }
+
 </script>
 <style scoped>
 section { /* 'Block' of settings */
@@ -75,9 +72,6 @@ section { /* 'Block' of settings */
 }
 .settings-content-container {
   overflow:hidden;
-}
-li {
-  list-style-type: none;
 }
 .minimization-triangle {
   height:30px;
