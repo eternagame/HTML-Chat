@@ -18,60 +18,44 @@
     />
   </div>
 </template>
-<script lang="ts">
-import {
-  Vue, Component, Prop, Watch,
-} from 'vue-property-decorator';
+<script lang="ts" setup>
 import ActionMenu from '@/components/Messages/ActionMenu.vue';
 import Message from '@/types/message';
 import User from '@/types/user';
-import Username from '@/components/Messages/Username.vue';
+import { computed, ref, watch } from 'vue';
 
-@Component({
-  components: {
-    Username,
-    ActionMenu,
-  },
-})
-export default class ItemOptions extends Vue {
-  @Prop({ required: true })
-    user!: User;
+const props = defineProps<{
+  user: User;
+  message?: Message;
+  hover: boolean;
+}>();
 
-  @Prop({ required: false })
-    message!: Message;
+const contextMenu = ref<ActionMenu>();
+const chatOptions = ref<HTMLButtonElement>();
+const hovered = ref<boolean>(false);
+watch(() => props.hover, (hover => {
+  hovered.value = hover;
+}));
 
-  @Prop({ required: true, default: false })
-    hover!: boolean;
+const msg = computed(() => props.message ?? new Message('Reporting user', '*', props.user));
 
-  @Watch('hover')
-  updateData() {
-    this.hovered = this.hover;
-  }
+function openContextMenu(e: MouseEvent) {
+  setTimeout(() => {
+    // @ts-expect-error TODO: Fix type for Composition API
+    contextMenu.value?.open(e);
+  });
+}
 
-  hovered = false;
-
-  get msg() {
-    if (this.message) return this.message;
-    return new Message('Reporting user', '*', this.user);
-  }
-
-  $refs!: {
-    contextMenu: HTMLFormElement;
-    chatOptions: HTMLButtonElement;
-  };
-
-  openContextMenu(e: MouseEvent) {
-    setTimeout(() => this.$refs.contextMenu.open(e));
-  }
-
-  openContextMenuWithKey(e: KeyboardEvent) {
-    const rect = (e.target as Element).getBoundingClientRect();
-    const event = new MouseEvent('click', {
-      clientX: rect.x,
-      clientY: rect.y,
-    });
-    setTimeout(() => this.$refs.contextMenu.open(event));
-  }
+function openContextMenuWithKey(e: KeyboardEvent) {
+  const rect = (e.target as Element).getBoundingClientRect();
+  const event = new MouseEvent('click', {
+    clientX: rect.x,
+    clientY: rect.y,
+  });
+  setTimeout(() => {
+    // @ts-expect-error TODO: Fix type for Composition API
+    contextMenu.value?.open(event);
+  });
 }
 </script>
 <style scoped>

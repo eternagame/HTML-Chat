@@ -1,33 +1,22 @@
 import User from './user';
 
 class Message {
-  message!: string;
+  public time!: Date;
 
-  user!: User;
+  public starred = false;
 
-  target!: string;
-
-  tags!: { [key: string] : string };
-
-  isAction!: boolean;
-
-  isNotice !: boolean;
-
-  time!: Date;
-
-  starred = false;
-
-  constructor(message: string, target = '*', user: User = User.annonymous, isAction: boolean = false, isNotice: boolean = false, tags: { [key: string] : string } = {}) {
-    this.message = message;
-    this.target = target;
-    this.tags = tags;
-    this.isAction = isAction;
-    this.isNotice = isNotice;
-    this.user = user;
+  constructor(
+    public message: string,
+    public target: string = '*',
+    public user: User = User.anonymous,
+    public isAction: boolean = false,
+    public isNotice: boolean = false,
+    public tags: { [key: string]: string } = {},
+  ) {
     this.parseTime();
   }
 
-  parseTime() {
+  private parseTime() {
     if (this.tags.time) {
       const timeString = this.tags.time;
       this.time = new Date(Date.parse(timeString));

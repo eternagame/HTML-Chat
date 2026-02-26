@@ -88,7 +88,7 @@ export default class ReportDialog extends Vue {
   message: Message | null = null;
 
   get userToReport(): User {
-    return this.message ? this.message.user : User.annonymous;
+    return this.message ? this.message.user : User.anonymous;
   }
 
   $refs!: {

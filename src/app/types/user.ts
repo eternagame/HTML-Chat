@@ -1,25 +1,18 @@
 export default class User {
-  static annonymous = new User();
+  public static readonly anonymous = new User();
 
-  nicks: string[];
+  public nicks: string[] = [];
 
-  uid: string;
+  public away: boolean = false;
 
-  username: string;
-
-  away: boolean;
-
-  awayReason: string;
+  public awayReason: string = '';
 
   static parseUsername(nick: string) {
-    return nick.substr(0, nick.indexOf('^') === -1 ? nick.length : nick.indexOf('^'));
+    if (nick.includes('^')) {
+      return nick.split('^')[0];
+    }
+    return nick;
   }
 
-  constructor(username: string = '', uid: string = '0') {
-    this.nicks = [];
-    this.uid = uid;
-    this.username = username;
-    this.away = false;
-    this.awayReason = '';
-  }
+  constructor(public username: string = '', public uid: string = '0') {}
 }

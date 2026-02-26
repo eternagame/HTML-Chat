@@ -574,7 +574,7 @@ export default class ChatModule extends VuexModule {
     const postMessage = (
       message: string,
       {
-        user = User.annonymous, isAction = false,
+        user = User.anonymous, isAction = false,
       } = {},
     ) => {
       this.postMessage(new Message(message, channel, user, isAction));
