@@ -6,46 +6,60 @@
     role='checkbox'
     :aria-checked="checked"
   >
-    <button type="button" @click="$emit('input', false)" :disabled="value === 2" class="disable">
+    <button type="button" @click="emit('input', false)" :disabled="value === 2" class="disable">
       {{offText}}
     </button>
-    <button type="button" @click="$emit('input', true)" :disabled="value === 0" class="enable">
+    <button type="button" @click="emit('input', true)" :disabled="value === 0" class="enable">
       {{onText}}
     </button>
   </div>
 </template>
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script lang="ts" setup>
+import { computed } from 'vue';
 
-enum States {
-  ALL_ON,
-  SOME_ON,
-  ALL_OFF,
-}
+const props = defineProps({
+  value: {
+    /** @type {'ALL_ON' | 'MIXED' | 'ALL_OFF'} */
+    type: String,
+    required: true,
+  },
+  offText: {
+    type: String,
+    default: 'OFF',
+  },
+  onText: {
+    type: String,
+    default: 'ON',
+  },
+  width: {
+    type: Number,
+    default: 80,
+  },
+});
+const emit = defineEmits<{
+  (event: 'input', value: boolean): void;
+}>();
 
-@Component
-export default class SettingsEnableDisable extends Vue {
-  @Prop({ required: true }) value!: States;
-
-  @Prop({ default: 'OFF' }) offText!: string;
-
-  @Prop({ default: 'ON' }) onText!: string;
-
-  @Prop({ default: 80 }) width!: number;
-
-  get label() {
-    let stateDescription = 'neither';
-    if (this.value === States.ALL_ON) stateDescription = this.onText;
-    else if (this.value === States.ALL_OFF) stateDescription = this.offText;
-    return `State is ${stateDescription}; possible states ${this.onText}, ${this.offText}, and neither`;
+const label = computed(() => {
+  let stateDescription = 'neither';
+  if (props.value === 'ALL_ON') {
+    stateDescription = props.onText;
+  } else if (props.value === 'ALL_OFF') {
+    stateDescription = props.offText;
   }
+  return `State is ${stateDescription}; possible states ${props.onText}, ${props.offText}, and neither`;
+});
 
-  get checked() {
-    if (this.value === States.ALL_ON) return 'true';
-    if (this.value === States.ALL_OFF) return 'false';
-    return 'mixed';
+const checked = computed(() => {
+  switch (props.value) {
+    case 'ALL_ON':
+      return 'true';
+    case 'ALL_OFF':
+      return 'false';
+    default:
+      return 'mixed';
   }
-}
+});
 </script>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";

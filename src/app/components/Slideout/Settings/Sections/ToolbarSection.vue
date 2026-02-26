@@ -85,11 +85,11 @@ export default class ToolbarSection extends Vue {
   get allChatFeatures() {
     if (this.emoticonChatFeatures
         && this.markdownChatFeatures
-        && this.previewChatFeatures) return true;
+        && this.previewChatFeatures) return 'ALL_ON';
     if (!this.emoticonChatFeatures
         && !this.markdownChatFeatures
-        && !this.previewChatFeatures) return false;
-    return null;
+        && !this.previewChatFeatures) return 'ALL_OFF';
+    return 'MIXED';
   }
 
   allChatFeaturesChanged(to:boolean) {

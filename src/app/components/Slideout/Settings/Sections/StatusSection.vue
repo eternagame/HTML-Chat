@@ -16,7 +16,7 @@
         /></span>
       <span class="float-right">
         <SettingsEnableDisable
-          :value="!userStatus"
+          :value="userStatus ? 'ALL_ON' : 'ALL_OFF'"
           @input="changeStatus"
           onText="ONLINE"
           offText="AWAY"
@@ -78,7 +78,7 @@ export default class StatusSection extends Vue {
   }
 
   get userStatus() {
-    return this.$vxm.chat.userStatus;
+    return this.$vxm.chat.userStatus ?? false;
   }
 
   reason = '';

@@ -68,12 +68,6 @@ import SettingsSwitch from '../SettingsSwitch.vue';
 import SettingsEnableDisable from '../SettingsEnableDisable.vue';
 import SettingsTooltip from '../SettingsTooltip.vue';
 
-enum States {
-  ALL_ENABLED,
-  SOME_ENABLED,
-  ALL_DISABLED,
-}
-
 @Component({
   components: {
     SettingsSection,
@@ -112,9 +106,13 @@ export default class NotificationsSection extends Vue {
 
   get allEnabled() {
     const channels = Object.values(this.$vxm.chat.channels);
-    if (channels.every(e => e!.notificationsEnabled)) return States.ALL_ENABLED;
-    if (channels.every(e => !e!.notificationsEnabled)) return States.ALL_DISABLED;
-    return States.SOME_ENABLED;
+    if (channels.every(e => e!.notificationsEnabled)) {
+      return 'ALL_ON';
+    }
+    if (channels.every(e => !e!.notificationsEnabled)) {
+      return 'ALL_OFF';
+    }
+    return 'MIXED';
   }
 
   updateAll(to: boolean) {
