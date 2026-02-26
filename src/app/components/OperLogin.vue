@@ -6,7 +6,7 @@
         type="button"
         class="btn"
         style="width: 100%; left: 50%; margin-top:10px"
-        @click="showsMessage = false; $emit('cancel')"
+        @click="showsMessage = false; emit('cancel')"
       >
         Continue
       </button>
@@ -31,7 +31,7 @@
         type="button"
         class="btn login-button btn-primary"
         style="width: 100%; left: 50%; margin-top:10px"
-        @click="$emit('login', { password, username, remember })"
+        @click="emit('login', { password, username, remember })"
       >
         Continue
       </button>
@@ -39,7 +39,7 @@
         type="button"
         class="btn login-button btn-primary"
         style="width: 100%; left: 50%; margin-top:10px;"
-        @click="$emit('cancel')"
+        @click="emit('cancel')"
       >
         Cancel
       </button>
@@ -47,29 +47,31 @@
   </div>
 </template>
 
-<script lang="ts">
-import BootstrapVue from 'bootstrap-vue';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+<script lang="ts" setup>
+import { ref } from 'vue';
 
-Vue.use(BootstrapVue);
+const emit = defineEmits<{
+  (event: 'login', login: { password: string; username: string; remember: boolean }): void;
+  (event: 'cancel'): void;
+}>();
 
-@Component({
-  components: {},
-})
-export default class OperLogin extends Vue {
-  remember = false;
+const remember = ref<boolean>(false);
+const password = ref<string>('');
+const username = ref<string>('');
 
-  password: string = '';
+const showsMessage = ref<boolean>(false);
+const authFailed = ref<boolean>(false);
+const message = ref<string>('');
 
-  username: string = '';
+defineExpose({
+  // TODO: Clear on failed login internally
+  password,
 
-  @Prop({ default: false })
-    showsMessage !: boolean;
-
-  message = '';
-
-  authFailed = false;
-}
+  // TODO: Change these fields to props if they have to be externally modified
+  showsMessage,
+  authFailed,
+  message,
+});
 </script>
 
 <style lang="scss">

@@ -192,10 +192,14 @@ export default class App extends Vue {
   operLoginStatus() {
     if (this.$refs.login) {
       if (this.isOper) {
+        // @ts-expect-error
         this.$refs.login.message = 'Login succeeded'; // Success message
+        // @ts-expect-error
         this.$refs.login.showsMessage = true; // Modal shows success message
       } else {
+        // @ts-expect-error
         this.$refs.login.authFailed = true; // Sets 'incorrect user/pass' message
+        // @ts-expect-error
         this.$refs.login.password = ''; // Resets password field
       }
     } else {
@@ -381,7 +385,7 @@ export default class App extends Vue {
       const channelMsgs = this.$vxm.chat.channels[this.currentTab]?.postedMessages;
       let recent = channelMsgs?.filter(
         m => m.user.username === this.username,
-      ).reverse()[0].message;
+      ).reverse()[0]?.message;
       if (recent?.match(/\[#[a-f0-9]{6}\]$/)) { // Remove the color
         recent = recent.substring(0, recent.length - 10);
       }
