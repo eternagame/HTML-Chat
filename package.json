@@ -37,7 +37,6 @@
     "vue-perfect-scrollbar": "^0.2.1",
     "vue-property-decorator": "^9.1.2",
     "vue-resize-directive": "^1.2.0",
-    "vue-resource": "^1.5.3",
     "vuex": "^3.6.2",
     "vuex-class-component": "^2.3.6"
   },
