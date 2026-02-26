@@ -1,30 +1,28 @@
 <template>
   <label
     class="switch"
-    @keypress.enter="$emit('input', !$event.target.checked)"
+    @keypress.enter="emit('input', !$event.target.checked)"
     :aria-label="label"
   >
     <input
       type="checkbox"
       :checked="value"
-      @change="$emit('input', $event.target.checked)"
-      :class="{ tabbing: $vxm.chat.tabbing }"
+      @change="emit('input', $event.target.checked)"
+      :class="{ tabbing: tabbing }"
     >
     <span class="slider round" />
   </label>
 </template>
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
+import { computed } from 'vue';
 
-@Component
-export default class SettingsSwitch extends Vue {
-  @Prop({ required: true })
-    value !: boolean;
-
-  get label() {
-    return `Switch that is ${this.value ? 'on' : 'off'}`;
-  }
-}
+const props = defineProps<{ value: boolean }>();
+const emit = defineEmits<{
+  (event: 'input', value: boolean): void;
+}>();
+const label = computed(() => `Switch that is ${props.value ? 'on' : 'off'}`);
+const tabbing = computed(() => vxm.chat.tabbing);
 </script>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";
@@ -53,7 +51,6 @@ export default class SettingsSwitch extends Vue {
   right: 0;
   bottom: 0;
   background-color: $gray-500;
-  -webkit-transition: .4s;
   transition: .4s;
   border-radius:35px;
 }
@@ -66,7 +63,6 @@ export default class SettingsSwitch extends Vue {
   left: 2px;
   bottom: 2px;
   background-color: white;
-  -webkit-transition: .4s;
   transition: .4s;
   border-radius: 50%;
 }
@@ -76,8 +72,6 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(16px);
-  -ms-transform: translateX(16px);
   transform: translateX(16px);
 }
 

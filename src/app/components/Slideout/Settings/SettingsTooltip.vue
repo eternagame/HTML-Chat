@@ -2,13 +2,8 @@
   <span class="settings-tooltip" v-b-tooltip.v-light :title="text">?</span>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-
-@Component
-export default class SettingsTooltip extends Vue {
-  @Prop({ required: true }) text!: string;
-}
+<script lang="ts" setup>
+defineProps<{ text: string }>();
 </script>
 
 <style>

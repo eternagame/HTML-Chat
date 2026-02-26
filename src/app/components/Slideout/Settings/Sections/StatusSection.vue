@@ -1,6 +1,6 @@
 <template>
   <SettingsSection title="Status">
-    <li>
+    <div class="setting">
       <span
         class="align-middle">
         You are currently {{userStatus ? 'away' : 'online'}}
@@ -8,8 +8,8 @@
           text="When others view your username, they will see an indicator if you are away"
         />
       </span>
-    </li>
-    <li>
+    </div>
+    <div class="setting">
       <span aria-label="set status">Set
         <SettingsTooltip
           text="Change your status"
@@ -22,8 +22,8 @@
           offText="AWAY"
           :width="120" />
       </span>
-    </li>
-    <li>
+    </div>
+    <div class="setting">
       <span>Auto Update
         <SettingsTooltip
           text="Whether your status will update when you leave or come back to the tab"
@@ -34,8 +34,8 @@
           v-model="$vxm.chat.autoUpdateStatus"
         />
       </span>
-    </li>
-    <li>
+    </div>
+    <div class="setting">
       <label style="width: 100%">
         <span>
           Reason
@@ -47,60 +47,46 @@
           <input type=text v-model="reason" style="width: 115px">
         </span>
       </label>
-    </li>
+    </div>
   </SettingsSection>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
 import {
-  Component, Watch, Vue,
-} from 'vue-property-decorator';
-import SettingsSection from '../SettingsSection.vue';
+  computed, onMounted, ref, watch,
+} from 'vue';
 import SettingsEnableDisable from '../SettingsEnableDisable.vue';
-import SettingsTooltip from '../SettingsTooltip.vue';
+import SettingsSection from '../SettingsSection.vue';
 import SettingsSwitch from '../SettingsSwitch.vue';
+import SettingsTooltip from '../SettingsTooltip.vue';
 
-@Component({
-  components: {
-    SettingsSection,
-    SettingsEnableDisable,
-    SettingsTooltip,
-    SettingsSwitch,
-  },
-})
-export default class StatusSection extends Vue {
-  changeStatus(to:boolean) {
-    if (to) {
-      this.$vxm.chat.setUnaway();
-    } else {
-      this.$vxm.chat.autoUpdateStatus = false;
-      this.$vxm.chat.setAway(this.reason);
-    }
-  }
+const reason = ref<string>('');
+const userStatus = computed(() => vxm.chat.userStatus ?? false);
 
-  get userStatus() {
-    return this.$vxm.chat.userStatus ?? false;
-  }
-
-  reason = '';
-
-  created() {
-    if (localStorage.chat_awayReason) {
-      this.reason = localStorage.chat_awayReason;
-    } else {
-      this.reason = this.$vxm.settings.awayReason;
-    }
-  }
-
-  @Watch('reason')
-  updateReason() {
-    localStorage.chat_awayReason = this.reason;
-    this.$vxm.settings.awayReason = this.reason;
+function changeStatus(to: boolean) {
+  if (to) {
+    vxm.chat.setUnaway();
+  } else {
+    vxm.chat.autoUpdateStatus = false;
+    vxm.chat.setAway(reason.value);
   }
 }
+
+onMounted(() => {
+  if (localStorage.chat_awayReason) {
+    reason.value = localStorage.chat_awayReason;
+  } else {
+    reason.value = vxm.settings.awayReason;
+  }
+});
+
+watch(reason, updatedReason => {
+  localStorage.chat_awayReason = updatedReason;
+  vxm.settings.awayReason = updatedReason;
+});
 </script>
 <style lang="scss" scoped>
-li {
-  list-style-type: none;
+.setting {
   width: calc(100% - 40px);
   margin-bottom: 10px;
 }

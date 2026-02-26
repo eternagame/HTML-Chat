@@ -100,6 +100,7 @@ export default class ChatModule extends VuexModule {
   usernameColor: string = '';
 
   // Whether user has clicked the tab key - used for enabling outlines for accesibility
+  /** @deprecated Use `:focus-visible` */
   tabbing = false;
 
   customEmoticons = ['😜', '🤔', '😮'];

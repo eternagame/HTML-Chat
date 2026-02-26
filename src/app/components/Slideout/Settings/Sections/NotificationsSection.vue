@@ -9,7 +9,7 @@
         <span class="align-baseline">{{channel.name}}</span>
         <span class="switch">
           <SettingsSwitch
-            v-model="$vxm.chat.channels[channel.name].notificationsEnabled"
+            :value="channelIsEnabled(channel.name)"
             @input="updateNotifications(channel.name)"
           />
         </span>
@@ -21,7 +21,8 @@
         </span>
       </li>
     </ul>
-    <li>
+
+    <div class="setting">
       <label style="width: 100%;">
         <span
           class="align-baseline d-inline-block"
@@ -32,16 +33,16 @@
           <input type=text v-model="indicator" style="padding:1px;">
         </span>
       </label>
-    </li>
-    <li>
+    </div>
+    <div class="setting">
       <span class="align-baseline d-inline-block">Desktop Notifications</span>
       <span
         class="switch"
       >
         <SettingsSwitch v-model="desktopNotifications" />
       </span>
-    </li>
-    <li>
+    </div>
+    <div class="setting">
       <label style="width: 100%;">
         <span
           class="align-baseline d-inline-block;"
@@ -55,139 +56,131 @@
           <input type=text v-model="keywords" style="padding:1px;">
         </span>
       </label>
-    </li>
+    </div>
   </SettingsSection>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
 import {
-  Component, Watch, Vue,
-} from 'vue-property-decorator';
-import { Channel } from '@/store/chat.vuex';
+  computed, onMounted, ref, watch,
+} from 'vue';
+import { vxm } from '#store/vxm';
 import SettingsSection from '../SettingsSection.vue';
 import SettingsSwitch from '../SettingsSwitch.vue';
 import SettingsEnableDisable from '../SettingsEnableDisable.vue';
 import SettingsTooltip from '../SettingsTooltip.vue';
 
-@Component({
-  components: {
-    SettingsSection,
-    SettingsSwitch,
-    SettingsEnableDisable,
-    SettingsTooltip,
-  },
-})
-export default class NotificationsSection extends Vue {
-  keywords = '';
-
-  @Watch('keywords')
-  keywordsChanged() {
-    const keywordsArray = this.keywords.split(/, ?/);
-    if (keywordsArray[0] === '') {
-      return;
-    }
-    if (localStorage) {
-      localStorage.chat_notificationsKeywords = JSON.stringify(keywordsArray);
-    }
+const keywords = ref<string>('');
+watch(keywords, (currentKeywords) => {
+  const list = currentKeywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
+  if (list.length === 0) {
+    return;
   }
 
-  // Toggle whether notifications are enabled for a specific channel
-  updateNotifications(channel:string) {
-    const trueChannel = this.$vxm.chat.channels[channel];
-    if (trueChannel) {
-      if (!trueChannel.notificationsEnabled) {
-        trueChannel.notifications = false;
-      }
-    }
-    this.$vxm.chat.ignoredChannels[channel] = (trueChannel as Channel).notificationsEnabled;
-    if (localStorage && this.$vxm.chat.ignoredChannels) {
-      localStorage.chat_ignoredChannels = JSON.stringify(this.$vxm.chat.ignoredChannels);
-    }
+  // TODO: Extract localStorage interaction
+  if (localStorage) {
+    localStorage.chat_notificationsKeywords = JSON.stringify(list);
   }
+});
 
-  get allEnabled() {
-    const channels = Object.values(this.$vxm.chat.channels);
-    if (channels.every(e => e!.notificationsEnabled)) {
-      return 'ALL_ON';
-    }
-    if (channels.every(e => !e!.notificationsEnabled)) {
-      return 'ALL_OFF';
-    }
-    return 'MIXED';
+const indicator = ref<string>('(!)');
+watch(indicator, (currentIndicator) => {
+  if (localStorage) {
+    localStorage.chat_indicator = JSON.stringify(currentIndicator);
   }
+  vxm.settings.indicator = currentIndicator;
+});
 
-  updateAll(to: boolean) {
-    Object.values(this.$vxm.chat.channels).forEach(e => {
-      e!.notificationsEnabled = to;
+const desktopNotifications = ref<boolean>(false);
+function requestDesktopNotifications() {
+  Notification.requestPermission()
+    .then((result) => {
+      const hasPermission = result === 'granted';
+      desktopNotifications.value = hasPermission;
+      vxm.chat.desktopNotifications = hasPermission;
+      localStorage.chat_desktopNotifications = JSON.stringify(hasPermission);
     });
+}
+watch(desktopNotifications, enableNotifications => {
+  if (enableNotifications) {
+    requestDesktopNotifications();
+  } else {
+    vxm.chat.desktopNotifications = false;
+    localStorage.chat_desktopNotifications = JSON.stringify(false);
+  }
+});
+
+/** Return list of channels */
+const channels = computed(() => vxm.chat.channels);
+const allEnabled = computed(() => {
+  const channelList = Object.values(vxm.chat.channels);
+  if (channelList.every(e => e!.notificationsEnabled)) {
+    return 'ALL_ON';
+  }
+  if (channelList.every(e => !e!.notificationsEnabled)) {
+    return 'ALL_OFF';
+  }
+  return 'MIXED';
+});
+
+function channelIsEnabled(channel: string): boolean {
+  return vxm.chat.channels[channel]?.notificationsEnabled ?? false;
+}
+
+/**
+ * Toggle whether notifications are enabled for a specific channel
+ * TODO: Revisit since it was previously updated via v-model incorrectly
+ */
+function updateNotifications(channel: string) {
+  const trueChannel = vxm.chat.channels[channel];
+  if (!trueChannel) {
+    return;
   }
 
-  // Return list of channels
-  get channels() {
-    return this.$vxm.chat.channels;
+  if (!trueChannel.notificationsEnabled) {
+    trueChannel.notifications = false;
   }
 
-  indicator:string = '(!)';
-
-  desktopNotifications = false;
-
-  @Watch('desktopNotifications')
-  desktopNotificationsChanged() {
-    if (this.desktopNotifications) {
-      this.requestDesktopNotifications();
-    } else {
-      this.$vxm.chat.desktopNotifications = false;
-      localStorage.chat_desktopNotifications = JSON.stringify(false);
-    }
-  }
-
-  requestDesktopNotifications() {
-    Notification.requestPermission(((result) => {
-      if (result === 'granted') {
-        this.desktopNotifications = true;
-        this.$vxm.chat.desktopNotifications = true;
-        localStorage.chat_desktopNotifications = JSON.stringify(true);
-      } else {
-        this.desktopNotifications = false;
-        this.$vxm.chat.desktopNotifications = false;
-        localStorage.chat_desktopNotifications = JSON.stringify(false);
-      }
-    }));
-  }
-
-  @Watch('indicator')
-  indicatorChanged() {
-    if (localStorage) {
-      localStorage.chat_indicator = JSON.stringify(this.indicator);
-    }
-    this.$vxm.settings.indicator = this.indicator;
-  }
-
-  created() {
-    if (localStorage.chat_notificationsKeywords) {
-      this.keywords = JSON.parse(localStorage.chat_notificationsKeywords).join(', ');
-    } else if (this.$vxm.chat.notificationsKeywords) {
-      this.keywords = this.$vxm.chat.notificationsKeywords.join(', ');
-    } else {
-      this.keywords = '';
-    }
-    if (localStorage.chat_indicator) {
-      this.indicator = JSON.parse(localStorage.chat_indicator);
-    } else {
-      this.indicator = this.$vxm.settings.indicator;
-    }
-    if (localStorage.chat_desktopNotifications) {
-      this.desktopNotifications = JSON.parse(localStorage.chat_desktopNotifications);
-      this.$vxm.chat.desktopNotifications = this.desktopNotifications;
-    }
+  vxm.chat.ignoredChannels[channel] = trueChannel.notificationsEnabled;
+  if (localStorage && vxm.chat.ignoredChannels) {
+    localStorage.chat_ignoredChannels = JSON.stringify(vxm.chat.ignoredChannels);
   }
 }
+
+function updateAll(to: boolean) {
+  Object.values(vxm.chat.channels).forEach(e => {
+    if (e) {
+      e.notificationsEnabled = to;
+    }
+  });
+}
+
+onMounted(() => {
+  if (localStorage.chat_notificationsKeywords) {
+    keywords.value = JSON.parse(localStorage.chat_notificationsKeywords).join(', ');
+  } else if (vxm.chat.notificationsKeywords) {
+    keywords.value = vxm.chat.notificationsKeywords.join(', ');
+  } else {
+    keywords.value = '';
+  }
+
+  if (localStorage.chat_indicator) {
+    indicator.value = JSON.parse(localStorage.chat_indicator);
+  } else {
+    indicator.value = vxm.settings.indicator;
+  }
+
+  if (localStorage.chat_desktopNotifications) {
+    desktopNotifications.value = JSON.parse(localStorage.chat_desktopNotifications);
+    vxm.chat.desktopNotifications = desktopNotifications.value;
+  }
+});
 </script>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";
 .settings-button {
   background-color:$green;
 }
-li {
+li, .setting {
   width: calc(100% - 40px);
   height:1.5rem;
   margin-bottom:10px;

@@ -23,30 +23,19 @@
     </ul>
   </SettingsSection>
 </template>
-<script lang="ts">
-import {
-  Component, Vue,
-} from 'vue-property-decorator';
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
+import { computed } from 'vue';
 import SettingsSection from '../SettingsSection.vue';
 
-@Component({
-  components: {
-    SettingsSection,
-  },
-})
-export default class IgnoredSection extends Vue {
-  get ignoredUsers() {
-    return this.$vxm.chat.ignoredUsers;
-  }
+const ignoredUsers = computed(() => vxm.chat.ignoredUsers);
+const anyIgnoredUsers = computed(() => ignoredUsers.value.length > 0);
 
-  get anyIgnoredUsers() {
-    return this.ignoredUsers.length > 0;
-  }
-
-  // Unignore user on list
-  unignore(user:string) {
-    this.$vxm.chat.unignoreUser(user);
-  }
+/**
+ * Unignore user on list
+ */
+function unignore(user: string) {
+  vxm.chat.unignoreUser(user);
 }
 </script>
 <style lang="scss" scoped>
