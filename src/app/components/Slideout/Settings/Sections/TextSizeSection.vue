@@ -1,9 +1,9 @@
 <template>
   <SettingsSection title="Text Size">
-    <input v-model="size" type=number min=10 max=18 aria-label="Change text size">
+    <input v-model="size" type="number" min="10" max="18" aria-label="Text size">
     <p
-      id='font-warning'
-      v-show="size < 10 || size > 18">
+      class='font-warning'
+      v-show="fontSize < MIN_SIZE || fontSize > MAX_SIZE">
       Font size must be a number between 10 and 18
     </p>
     <SettingsTooltip
@@ -12,50 +12,39 @@
     />
   </SettingsSection>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
 import {
-  Component, Watch, Vue,
-} from 'vue-property-decorator';
+  computed, onMounted, ref, watch,
+} from 'vue';
 import SettingsSection from '../SettingsSection.vue';
 import SettingsTooltip from '../SettingsTooltip.vue';
 
-@Component({
-  components: {
-    SettingsSection,
-    SettingsTooltip,
-  },
-})
-export default class TextSizeSection extends Vue {
-  size:string = '14'; // font size
+const MIN_SIZE = 10;
+const MAX_SIZE = 18;
 
-  // Updates global font size when input changes
-  @Watch('size')
-  updateFontSize() {
-    // Only update if valid font size
-    if (parseInt(this.size, 10) >= 10 && parseInt(this.size, 10) <= 18) {
-      this.$vxm.settings.font = parseInt(this.size, 10);
-      localStorage.chat_fontSize = JSON.stringify(this.size);
-    }
+/** Font size (string) */
+const size = ref<string>('14');
+const fontSize = computed(() => Number.parseInt(size.value, 10));
+watch(fontSize, (value) => {
+  if (Number.isNaN(value) || value < MIN_SIZE || value > MAX_SIZE) {
+    return;
   }
 
-  get fontSize() {
-    return this.$vxm.settings.fontSize;
-  }
+  vxm.settings.font = value;
+  localStorage.chat_fontSize = JSON.stringify(value);
+});
 
-  created() {
-    if (localStorage.chat_fontSize) {
-      this.size = String(Number(JSON.parse(localStorage.chat_fontSize)));
-    } else {
-      this.size = this.$vxm.settings.fontSize.toString();
-    }
+onMounted(() => {
+  if (localStorage.chat_fontSize) {
+    size.value = Number(JSON.parse(localStorage.chat_fontSize)).toString();
+  } else {
+    size.value = vxm.settings.fontSize.toString();
   }
-}
+});
 </script>
 <style scoped>
-#font-size-p { /* 'Default is 14' text */
-  margin-left:2px;
-}
-#font-warning {
+.font-warning {
   color:#f39c12;
 }
 input {

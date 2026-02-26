@@ -1,63 +1,57 @@
 <template>
   <SettingsSection title="Operator">
-    <li>
+    <div class="setting">
       <span>You are {{isOper ? '' : 'not'}} an operator</span>
       <span class="float-right w-100">
         <button
           type="button"
           aria-label="Log in as operator"
-          @click="$emit('auth')"
+          @click="emit('auth')"
           class="btn btn-primary btn-sm w-100"
           v-show="!isOper">
           Log in
         </button>
       </span>
-    </li>
-    <li>
+    </div>
+    <div class="setting">
       <span v-show="isOper" class="align-sub">Nick</span>
       <span class="float-right">
         <input v-show="isOper" @input="setNick" :value="opernick">
       </span>
-    </li>
+    </div>
   </SettingsSection>
 </template>
-<script lang="ts">
-import {
-  Component, Vue,
-} from 'vue-property-decorator';
+<script lang="ts" setup>
+import { vxm } from '#store/vxm';
+import { computed, onMounted, ref } from 'vue';
 import SettingsSection from '../SettingsSection.vue';
 
-@Component({
-  components: {
-    SettingsSection,
-  },
-})
-export default class OperSection extends Vue {
-  validateNick(nick:string) {
-    // eslint-disable-next-line no-useless-escape
-    return nick.match(/^[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*$/i);
-  }
+const emit = defineEmits<{
+  (event: 'auth'): void;
+}>();
 
-  setNick(e:Event) {
-    const { value } = e.target as HTMLInputElement;
-    if (!this.validateNick(value)) return;
-    this.$vxm.chat.changeNick(value);
-  }
+const isOper = computed(() => vxm.chat.oper);
 
-  opernick = '';
-
-  get isOper() {
-    return this.$vxm.chat.oper;
-  }
-
-  created() {
-    if (localStorage.chat_nick) {
-      this.opernick = localStorage.chat_nick;
-    } else {
-      this.opernick = this.$vxm.chat.customNick;
-    }
+const opernick = ref<string>('');
+function validateNick(nick:string) {
+  // eslint-disable-next-line no-useless-escape
+  return nick.match(/^[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*$/i);
+}
+function setNick(e:Event) {
+  const { value } = e.target as HTMLInputElement;
+  opernick.value = value;
+  if (validateNick(value)) {
+    vxm.chat.changeNick(value);
   }
 }
+
+onMounted(() => {
+  if (localStorage.chat_nick) {
+    opernick.value = localStorage.chat_nick;
+  } else {
+    opernick.value = vxm.chat.customNick;
+  }
+});
 </script>
 <style lang="scss" scoped>
 input {
@@ -65,9 +59,8 @@ input {
   font-size: 0.85rem;
   max-width:150px; /* Big screens don't have arbitrarily large input */
 }
-li {
+.setting {
   width: calc(100% - 40px);
-  list-style-type: none;
   margin-bottom: 10px;
 }
 </style>

@@ -64,136 +64,115 @@
     </li>
   </SettingsSection>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
+import { Vue } from 'vue-property-decorator';
 import {
-  Component, Watch, Vue,
-} from 'vue-property-decorator';
+  computed, onMounted, ref, watch,
+} from 'vue';
+import { vxm } from '#store/vxm';
 import SettingsSection from '../SettingsSection.vue';
 import SettingsSwitch from '../SettingsSwitch.vue';
 import SettingsEnableDisable from '../SettingsEnableDisable.vue';
 import SettingsTooltip from '../SettingsTooltip.vue';
 
-@Component({
-  components: {
-    SettingsSection,
-    SettingsSwitch,
-    SettingsEnableDisable,
-    SettingsTooltip,
-  },
-})
-export default class ToolbarSection extends Vue {
-  get allChatFeatures() {
-    if (this.emoticonChatFeatures
-        && this.markdownChatFeatures
-        && this.previewChatFeatures) return 'ALL_ON';
-    if (!this.emoticonChatFeatures
-        && !this.markdownChatFeatures
-        && !this.previewChatFeatures) return 'ALL_OFF';
-    return 'MIXED';
+const emoticonChatFeatures = ref<boolean>(true);
+watch(emoticonChatFeatures, (enabled) => {
+  localStorage.chat_emoticonChatFeatures = JSON.stringify(enabled);
+  vxm.settings.emoticonChatFeatures = enabled;
+});
+
+const markdownChatFeatures = ref<boolean>(true);
+watch(markdownChatFeatures, (enabled) => {
+  localStorage.chat_markdownChatFeatures = JSON.stringify(enabled);
+  vxm.settings.markdownChatFeatures = enabled;
+});
+
+const previewChatFeatures = ref<boolean>(true);
+watch(previewChatFeatures, (enabled) => {
+  localStorage.chat_previewChatFeatures = JSON.stringify(enabled);
+  vxm.settings.previewChatFeatures = enabled;
+});
+
+const allChatFeatures = computed(() => {
+  const features = [
+    emoticonChatFeatures.value,
+    markdownChatFeatures.value,
+    previewChatFeatures.value,
+  ];
+
+  if (features.every(f => f === true)) {
+    return 'ALL_ON';
   }
-
-  allChatFeaturesChanged(to:boolean) {
-    this.emoticonChatFeatures = to;
-    this.markdownChatFeatures = to;
-    this.previewChatFeatures = to;
+  if (features.every(f => f === false)) {
+    return 'ALL_OFF';
   }
+  return 'MIXED';
+});
 
-  emoticonChatFeatures = true;
-
-  @Watch('emoticonChatFeatures')
-  emoticonChatFeaturesChanged() {
-    localStorage.chat_emoticonChatFeatures = JSON.stringify(this.emoticonChatFeatures);
-    this.$vxm.settings.emoticonChatFeatures = this.emoticonChatFeatures;
-  }
-
-  markdownChatFeatures = true;
-
-  @Watch('markdownChatFeatures')
-  markdownChatFeaturesChanged() {
-    localStorage.chat_markdownChatFeatures = JSON.stringify(this.markdownChatFeatures);
-    this.$vxm.settings.markdownChatFeatures = this.markdownChatFeatures;
-  }
-
-  previewChatFeatures = true;
-
-  @Watch('previewChatFeatures')
-  previewChatFeaturesChanged() {
-    localStorage.chat_previewChatFeatures = JSON.stringify(this.previewChatFeatures);
-    this.$vxm.settings.previewChatFeatures = this.previewChatFeatures;
-  }
-
-  // Custom emoticons
-
-  update(e: Event) {
-    const targ = e.target as HTMLInputElement;
-    const id = Number(targ.id);
-    let { value } = targ;
-    value = value.trim();
-    while ([...value].length > 1) {
-      value = value.substring(0, value.length - 1);
-    }
-    const emoticonRegex = /[^\w\d\p{P}\p{S}]/;
-    if (value.match(emoticonRegex)) {
-      if (this.customEmoticons.some(j => j === value)) {
-        this.emoticonErrorMessage = 'You are using that emoticon in another slot';
-        return;
-      }
-      Vue.set(this.$vxm.chat.customEmoticons, id, value);
-      if (localStorage) {
-        localStorage.chat_customEmoticons = JSON.stringify(
-          this.$vxm.chat.customEmoticons,
-        );
-      }
-      this.emoticonErrorMessage = '';
-    } else {
-      this.emoticonErrorMessage = `${value} is not a valid emoticon`;
-    }
-    if (value.trim() === '') {
-      this.emoticonErrorMessage = '';
-    }
-    targ.value = '';
-  }
-
-  emoticonErrorMessage = '';
-
-  get customEmoticons() {
-    return this.$vxm.chat.customEmoticons;
-  }
-
-  created() {
-    if (localStorage.chat_emoticonChatFeatures) {
-      this.emoticonChatFeatures = JSON.parse(localStorage.chat_emoticonChatFeatures);
-    } else {
-      this.emoticonChatFeatures = this.$vxm.settings.emoticonChatFeatures;
-    }
-    if (localStorage.chat_markdownChatFeatures) {
-      this.markdownChatFeatures = JSON.parse(localStorage.chat_markdownChatFeatures);
-    } else {
-      this.markdownChatFeatures = this.$vxm.settings.markdownChatFeatures;
-    }
-    if (localStorage.chat_previewChatFeatures) {
-      this.previewChatFeatures = JSON.parse(localStorage.chat_previewChatFeatures);
-    } else {
-      this.previewChatFeatures = this.$vxm.settings.previewChatFeatures;
-    }
-
-    if (localStorage.chat_typingMessages) {
-      this.typingMessages = JSON.parse(localStorage.chat_typingMessages);
-    } else {
-      this.typingMessages = this.$vxm.settings.typingMessages;
-    }
-  }
-
-  typingMessages = true;
-
-  @Watch('typingMessages')
-  typingMessageSettingsUpdated() {
-    this.$vxm.settings.typingMessages = this.typingMessages;
-    if (localStorage) {
-      localStorage.chat_typingMessages = JSON.stringify(this.typingMessages);
-    }
-  }
+function allChatFeaturesChanged(to: boolean) {
+  emoticonChatFeatures.value = to;
+  markdownChatFeatures.value = to;
+  previewChatFeatures.value = to;
 }
+
+// Custom emoticons
+const emoticonErrorMessage = ref<string>('');
+const customEmoticons = computed(() => vxm.chat.customEmoticons);
+// TODO: Refactor to not use HTML id attribute to track index of list
+function update(e: InputEvent) {
+  const target = e.target as HTMLInputElement;
+  const id = Number(target.id);
+  let { value } = target;
+  value = value.trim();
+  while ([...value].length > 1) {
+    value = value.substring(0, value.length - 1);
+  }
+  const emoticonRegex = /[^\w\d\p{P}\p{S}]/;
+  if (value.match(emoticonRegex)) {
+    if (customEmoticons.value.some(j => j === value)) {
+      emoticonErrorMessage.value = 'You are using that emoticon in another slot';
+      return;
+    }
+    Vue.set(vxm.chat.customEmoticons, id, value);
+    localStorage.chat_customEmoticons = JSON.stringify(vxm.chat.customEmoticons);
+    emoticonErrorMessage.value = '';
+  } else {
+    emoticonErrorMessage.value = `${value} is not a valid emoticon`;
+  }
+  if (value.trim() === '') {
+    emoticonErrorMessage.value = '';
+  }
+  target.value = '';
+}
+
+const typingMessages = ref<boolean>(true);
+watch(typingMessages, (viewTyping) => {
+  vxm.settings.typingMessages = viewTyping;
+  localStorage.chat_typingMessages = JSON.stringify(viewTyping);
+});
+
+onMounted(() => {
+  if (localStorage.chat_emoticonChatFeatures) {
+    emoticonChatFeatures.value = JSON.parse(localStorage.chat_emoticonChatFeatures);
+  } else {
+    emoticonChatFeatures.value = vxm.settings.emoticonChatFeatures;
+  }
+  if (localStorage.chat_markdownChatFeatures) {
+    markdownChatFeatures.value = JSON.parse(localStorage.chat_markdownChatFeatures);
+  } else {
+    markdownChatFeatures.value = vxm.settings.markdownChatFeatures;
+  }
+  if (localStorage.chat_previewChatFeatures) {
+    previewChatFeatures.value = JSON.parse(localStorage.chat_previewChatFeatures);
+  } else {
+    previewChatFeatures.value = vxm.settings.previewChatFeatures;
+  }
+  if (localStorage.chat_typingMessages) {
+    typingMessages.value = JSON.parse(localStorage.chat_typingMessages);
+  } else {
+    typingMessages.value = vxm.settings.typingMessages;
+  }
+});
 </script>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";
