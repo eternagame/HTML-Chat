@@ -72,14 +72,8 @@ import SettingsTooltip from '../SettingsTooltip.vue';
 const keywords = ref<string>('');
 watch(keywords, (currentKeywords) => {
   const list = currentKeywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
-  if (list.length === 0) {
-    return;
-  }
-
   // TODO: Extract localStorage interaction
-  if (localStorage) {
-    localStorage.chat_notificationsKeywords = JSON.stringify(list);
-  }
+  localStorage.chat_notificationsKeywords = JSON.stringify(list);
 });
 
 const indicator = ref<string>('(!)');
