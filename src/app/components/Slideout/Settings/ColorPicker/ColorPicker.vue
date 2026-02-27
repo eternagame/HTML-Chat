@@ -1,30 +1,27 @@
 <template>
-  <div id='picker'>
+  <div>
     <ColorSlider
-      aria-label="red"
-      id='red'
+      colorID="red"
+      :intensity="redIntensity"
       gradientStart="#300"
       gradientEnd="#c00"
       @sliderChanged="redChanged"
-      colorID="red"
-      ref="red" />
+    />
     <ColorSlider
-      aria-label="green"
-      id='green'
+      colorID="green"
+      :intensity="greenIntensity"
       gradientStart='#030'
       gradientEnd='#0c0'
       @sliderChanged="greenChanged"
-      colorID="green"
-      ref="green" />
+    />
     <ColorSlider
-      aria-label="blue"
-      id='blue'
+      colorID="blue"
+      :intensity="blueIntensity"
       gradientStart='#003'
       gradientEnd='#00c'
       @sliderChanged="blueChanged"
-      colorID="blue"
-      ref="blue" />
-    <div id='swatch-container'>
+    />
+    <div class='swatch-container'>
       <button
         type="button"
         v-for="(color, i) in defaultColors"
@@ -35,142 +32,100 @@
         @click="setColor(color)" />
     </div>
     <p
-      id='preview'
+      class='preview'
       style='background-color:#05224b;'
-      :style="{ color: color, fontSize: fontSize }">
+      :style="{ color: previewColor, fontSize: fontSize }">
       Preview
     </p>
-    <p v-show='!validColor' id='warning' :style="{ fontSize: fontSize }">Not enough contrast</p>
+    <p v-show='!validColor' class='warning' :style="{ fontSize: fontSize }">Not enough contrast</p>
   </div>
 </template>
-<script lang='ts'>
+<script lang='ts' setup>
+import { vxm } from '#store/vxm';
 import {
-  Component, Vue,
-} from 'vue-property-decorator';
+  computed, onMounted, ref, watch,
+} from 'vue';
 import ColorSlider from './ColorSlider.vue';
 
-@Component({
-  components: {
-    ColorSlider,
-  },
-})
-export default class ColorPicker extends Vue {
-  $refs!: {
-    red: ColorSlider,
-    green: ColorSlider,
-    blue: ColorSlider,
-  };
+/** Colors that appear in the swatches */
+const defaultColors = ['#f3a891', '#f3c491', '#f3df91', '#e2f391', '#bef391', '#91f3bc', '#f391ba', '#f39196'];
 
-  red: string = '127';
+const redIntensity = ref<number>(127);
+const greenIntensity = ref<number>(127);
+const blueIntensity = ref<number>(127);
+const previewColor = computed(() => `rgb(${redIntensity.value}, ${greenIntensity.value}, ${blueIntensity.value})`);
+const fontSize = computed(() => `${vxm.settings.fontSize}px`);
 
-  blue: string = '127';
-
-  green: string = '127';
-
-  // Colors that appear in the swatches
-  defaultColors = ['#f3a891', '#f3c491', '#f3df91', '#e2f391', '#bef391', '#91f3bc', '#f391ba', '#f39196'];
-
-  // For preview
-  get color() {
-    // If color contrasts well enough with background
-    if (this.validColor) {
-      // Update vuex
-      this.$vxm.chat.usernameColor = `#${this.colorToHexValue(this.red)}${this.colorToHexValue(this.green)}${this.colorToHexValue(this.blue)}`;
-      // Set value to localStorage if available
-      if (localStorage) {
-        localStorage.chat_usernameColor = this.$vxm.chat.usernameColor;
-      }
-    }
-    // Sets color of preview test
-    return `rgb(${this.red}, ${this.green}, ${this.blue})`;
-  }
-
-  // Converts an rgb value (number, 0-255) to a hexadecimal
-  colorToHexValue(value:string) {
-    return this.int(value).toString(16).padStart(2, '0');
-  }
-
-  // Convenience function to help avoid 100+ character in line errors
-  int(from:string) {
-    return parseInt(from, 10);
-  }
-
-  // Gets brightness of a color. Used in contrast calculation
-  brightness(r:number, g:number, b:number) {
-    return (299 * r + 587 * g + 114 * b) / 1000;
-  }
-
-  // Determines whether color contrasts well with background
-  get validColor() {
-    const backgroundValue = this.brightness(4, 52, 104);
-    const colorValue = this.brightness(
-      parseInt(this.red, 10),
-      parseInt(this.green, 10),
-      parseInt(this.blue, 10),
-    );
-    return Math.abs((colorValue + 0.05) / (backgroundValue + 0.05)) > 4;
-  }
-
-  // Sets color to a hex string. Used by color swatches.
-  setColor(hex:string) {
-    this.red = parseInt(hex.substring(1, 3), 16).toString();
-    this.$refs.red.sliderValue = parseInt(hex.substring(1, 3), 16);
-    this.green = parseInt(hex.substring(3, 5), 16).toString();
-    this.$refs.green.sliderValue = parseInt(hex.substring(3, 5), 16);
-    this.blue = parseInt(hex.substring(5, 7), 16).toString();
-    this.$refs.blue.sliderValue = parseInt(hex.substring(5, 7), 16);
-  }
-
-  redChanged(e:string) {
-    this.red = e;
-  }
-
-  greenChanged(e:string) {
-    this.green = e;
-  }
-
-  blueChanged(e:string) {
-    this.blue = e;
-  }
-
-  // Gets value from localStorage or vuex when created
-  created() {
-    let color;
-    // If value saved in localStorage, use that
-    if (localStorage.chat_usernameColor) {
-      color = localStorage.chat_usernameColor;
-    } else if (this.$vxm.chat.usernameColor !== '' && this.$vxm.chat.usernameColor !== undefined) {
-      // If value not in localStorage, check vuex
-      color = this.$vxm.chat.usernameColor;
-    } else { // If not, make it a random color from the defaults. Then, it saves in localStorage
-      color = this.defaultColors[Math.ceil(Math.random() * 8)];
-    }
-    // Converting hex to decimal
-    this.red = parseInt(color.substring(1, 3), 16).toString();
-    this.green = parseInt(color.substring(3, 5), 16).toString();
-    this.blue = parseInt(color.substring(5, 7), 16).toString();
-  }
-
-  get fontSize() {
-    return `${this.$vxm.settings.fontSize}px`;
-  }
+/** Gets brightness of a color. Used in contrast calculation */
+function brightness(r:number, g:number, b:number) {
+  return (299 * r + 587 * g + 114 * b) / 1000;
 }
+/** Determines whether color contrasts well with background */
+const validColor = computed(() => {
+  const backgroundValue = brightness(4, 52, 104);
+  const colorValue = brightness(
+    redIntensity.value,
+    greenIntensity.value,
+    blueIntensity.value,
+  );
+  return Math.abs((colorValue + 0.05) / (backgroundValue + 0.05)) > 4;
+});
+watch([validColor, redIntensity, greenIntensity, blueIntensity], ([isValid, r, g, b]) => {
+  if (!isValid) {
+    return;
+  }
+  const toHex = (value: number) => value.toString(16).padStart(2, '0');
+  const value = `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  vxm.chat.usernameColor = value;
+  localStorage.chat_usernameColor = value;
+});
+
+function redChanged(intensity: number) {
+  redIntensity.value = intensity;
+}
+function greenChanged(intensity: number) {
+  greenIntensity.value = intensity;
+}
+function blueChanged(intensity: number) {
+  blueIntensity.value = intensity;
+}
+
+/**
+ * Sets color from a hex string (ex. #aabbcc).
+ */
+function setColor(hex: string) {
+  redIntensity.value = parseInt(hex.substring(1, 3), 16);
+  greenIntensity.value = parseInt(hex.substring(3, 5), 16);
+  blueIntensity.value = parseInt(hex.substring(5, 7), 16);
+}
+
+onMounted(() => {
+  let initialColor: string;
+  if (localStorage.chat_usernameColor && localStorage.chat_usernameColor !== '') {
+    initialColor = localStorage.chat_usernameColor;
+  } else if (typeof vxm.chat.usernameColor === 'string' && vxm.chat.usernameColor !== '') {
+    initialColor = vxm.chat.usernameColor;
+  } else {
+    initialColor = defaultColors[Math.ceil(Math.random() * defaultColors.length)];
+  }
+  setColor(initialColor);
+});
 </script>
 <style>
-  #preview { /* Preview text */
+  .preview { /* Preview text */
     width: fit-content;
-    padding:2px;
-    margin-top:5px;
-    transition:color 200ms;
+    padding: 2px;
+    margin-top: 5px;
+    transition: color 200ms;
   }
-  #warning { /* Not enough contrast text */
-    color:#f39c12;
+  .warning { /* Not enough contrast text */
+    color: #f39c12;
   }
   .swatch { /* Swatch colors */
-    width:25px;
-    height:15px;
+    width: 25px;
+    height: 15px;
   }
-  #swatch-container { /* Container for swatches */
+  .swatch-container { /* Container for swatches */
     display: grid;
     grid-template-columns: 35px 35px 35px 35px;
     grid-template-rows: 25px 25px;

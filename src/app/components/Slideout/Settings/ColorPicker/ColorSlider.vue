@@ -3,81 +3,58 @@
     <input
       :aria-label="colorID"
       class="slider border-0"
-      v-model="sliderValue"
-      type=range
-      min=0
-      max=255
-      :style='{ background: getGradient() }'
+      v-model="sliderValueText"
+      type="range"
+      min="0"
+      max="255"
+      :style='{ background: gradientBg }'
       :name="colorID">
     <span
       class="value-thumb text-center overflow-hidden d-inline-block"
-      :style="{ left: calculateOffset }"
+      :style="{ left: thumbOffset }"
     >{{sliderValue}}</span>
-    <input type=number v-model="sliderValue" class="slider-input-number" :aria-label="colorID">
+    <input type="number" v-model="sliderValueText" class="slider-input-number" min="0" max="255" :aria-label="colorID">
   </div>
 </template>
-<script lang='ts'>
-import {
-  Component, Watch, Prop, Vue,
-} from 'vue-property-decorator';
-import ColorPicker from './ColorPicker.vue';
+<script lang='ts' setup>
+import { computed, ref, watch } from 'vue';
 
-@Component
-export default class ColorSlider extends Vue {
-  sliderValue = 127;
+const MIN_VALUE = 0;
+const MAX_VALUE = 255;
 
-  @Prop({ required: true }) // Starting color for slider gradient
-    gradientStart !: string;
+const props = defineProps<{
+  /** 0 - 255 */
+  intensity?: number;
+  gradientStart: string;
+  gradientEnd: string;
+  colorID: string;
+}>();
+const emit = defineEmits<{
+  (event: 'sliderChanged', value: number): void;
+}>();
 
-  @Prop({ required: true }) // Ending color for slider gradient
-    gradientEnd !: string;
-
-  @Prop({ required: true }) // Red, green, or blue. Used to fetch value from localStorage/vuex
-    colorID!: string;
-
-  defaultColors = ['#f3a891', '#f3c491', '#f3df91', '#e2f391', '#bef391', '#91f3bc', '#f391ba', '#f39196'];
-
-  get calculateOffset() { // Position of text on slider thumb
-    const percent = this.sliderValue / (255); // Slider value as percent
-    // Range = slider width - thumb width. Means slider can go from 0 to 80 pixels
-    const range = (120 - 40);
-    const percentPixels = percent * range; //
-    return `${percentPixels + 1}px`;
+const sliderValueText = ref<string>('127');
+const sliderValue = computed(() => Number.parseInt(sliderValueText.value, 10));
+watch(() => props.intensity, intensity => {
+  if (typeof intensity === 'number') {
+    sliderValueText.value = Math.min(Math.max(intensity, MIN_VALUE), MAX_VALUE).toString();
   }
+});
+watch(sliderValue, (value) => {
+  emit('sliderChanged', value);
+});
 
-  @Watch('sliderValue') // Updates parent, ColorPicker
-  sliderChanged() {
-    this.$emit('sliderChanged', this.sliderValue);
-  }
+/** Position of text on slider thumb */
+const thumbOffset = computed(() => {
+  // Slider value as percent
+  const percent = sliderValue.value / 255;
+  // Range = slider width - thumb width. Means slider can go from 0 to 80 pixels
+  const range = (120 - 40);
+  const percentPixels = percent * range;
+  return `${percentPixels + 1}px`;
+});
 
-  getGradient() { // Applies color gradient
-    return `-webkit-linear-gradient(left,${this.gradientStart},${this.gradientEnd})`;
-  }
-
-  // Gets value from localStorage, parent, or vuex when created
-  created() {
-    let color;
-    if (localStorage.chat_usernameColor) {
-      color = localStorage.chat_usernameColor;
-    } else if (this.$vxm.chat.usernameColor !== '' && this.$vxm.chat.usernameColor !== undefined) {
-      color = this.$vxm.chat.usernameColor;
-    } else {
-      color = (this.$parent as ColorPicker).color;
-    }
-    switch (this.colorID) {
-      case 'red':
-        this.sliderValue = parseInt(color.substring(1, 3), 16);
-        break;
-      case 'green':
-        this.sliderValue = parseInt(color.substring(3, 5), 16);
-        break;
-      case 'blue':
-        this.sliderValue = parseInt(color.substring(5, 7), 16);
-        break;
-      default: break;
-    }
-  }
-}
+const gradientBg = computed(() => `linear-gradient(to right, ${props.gradientStart}, ${props.gradientEnd})`);
 </script>
 <style scoped>
   .color-slider-container { /* Container */
