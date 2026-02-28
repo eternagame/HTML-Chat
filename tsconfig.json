@@ -16,6 +16,7 @@
       "jest"
     ],
     "paths": {
+      "#stores/*": ["src/stores/*"],
       "#store/*": ["src/store/*"],
       "*": ["types/*"],
       "@/*": [

@@ -11,9 +11,11 @@
     "start": "npm run serve"
   },
   "imports": {
+    "#stores/*": "./src/stores/*",
     "#store/*": "./src/store/*"
   },
   "dependencies": {
+    "@vueuse/core": "^11.3.0",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.23.1",
@@ -26,6 +28,7 @@
     "lodash": "^4.17.21",
     "loglevel": "^1.9.2",
     "markdown-it": "^14.0.0",
+    "pinia": "^2.3.1",
     "sjcl": "^1.0.8",
     "stream-browserify": "^3.0.0",
     "tslib": "^2.6.2",
@@ -70,7 +73,7 @@
     "sass": "^1.69.5",
     "sass-loader": "^13.3.2",
     "ts-jest": "^27.1.5",
-    "typescript": "~4.9.5",
+    "typescript": "^4.9.5",
     "vue-eslint-parser": "^9.3.2",
     "vue-template-compiler": "^2.7.15"
   },
