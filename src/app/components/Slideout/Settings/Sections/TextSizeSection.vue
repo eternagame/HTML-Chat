@@ -13,15 +13,15 @@
   </SettingsSection>
 </template>
 <script lang="ts" setup>
-import { vxm } from '#store/vxm';
-import {
-  computed, onMounted, ref, watch,
-} from 'vue';
+import useSettingsStore from '#stores/settings';
+import { computed, ref, watch } from 'vue';
 import SettingsSection from '../SettingsSection.vue';
 import SettingsTooltip from '../SettingsTooltip.vue';
 
 const MIN_SIZE = 10;
 const MAX_SIZE = 18;
+
+const settings = useSettingsStore();
 
 /** Font size (string) */
 const size = ref<string>('14');
@@ -31,16 +31,7 @@ watch(fontSize, (value) => {
     return;
   }
 
-  vxm.settings.font = value;
-  localStorage.chat_fontSize = JSON.stringify(value);
-});
-
-onMounted(() => {
-  if (localStorage.chat_fontSize) {
-    size.value = Number(JSON.parse(localStorage.chat_fontSize)).toString();
-  } else {
-    size.value = vxm.settings.fontSize.toString();
-  }
+  settings.font = value;
 });
 </script>
 <style scoped>

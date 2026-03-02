@@ -31,7 +31,7 @@
       </span>
       <span class="float-right">
         <SettingsSwitch
-          v-model="$vxm.chat.autoUpdateStatus"
+          v-model="vxm.chat.autoUpdateStatus"
         />
       </span>
     </div>
@@ -44,7 +44,7 @@
           />
         </span>
         <span class="float-right">
-          <input type=text v-model="reason" style="width: 115px">
+          <input type=text v-model="settings.awayReason" style="width: 115px">
         </span>
       </label>
     </div>
@@ -52,15 +52,14 @@
 </template>
 <script lang="ts" setup>
 import { vxm } from '#store/vxm';
-import {
-  computed, onMounted, ref, watch,
-} from 'vue';
+import useSettingsStore from '#stores/settings';
+import { computed } from 'vue';
 import SettingsEnableDisable from '../SettingsEnableDisable.vue';
 import SettingsSection from '../SettingsSection.vue';
 import SettingsSwitch from '../SettingsSwitch.vue';
 import SettingsTooltip from '../SettingsTooltip.vue';
 
-const reason = ref<string>('');
+const settings = useSettingsStore();
 const userStatus = computed(() => vxm.chat.userStatus ?? false);
 
 function changeStatus(to: boolean) {
@@ -68,22 +67,9 @@ function changeStatus(to: boolean) {
     vxm.chat.setUnaway();
   } else {
     vxm.chat.autoUpdateStatus = false;
-    vxm.chat.setAway(reason.value);
+    vxm.chat.setAway(settings.awayReason);
   }
 }
-
-onMounted(() => {
-  if (localStorage.chat_awayReason) {
-    reason.value = localStorage.chat_awayReason;
-  } else {
-    reason.value = vxm.settings.awayReason;
-  }
-});
-
-watch(reason, updatedReason => {
-  localStorage.chat_awayReason = updatedReason;
-  vxm.settings.awayReason = updatedReason;
-});
 </script>
 <style lang="scss" scoped>
 .setting {

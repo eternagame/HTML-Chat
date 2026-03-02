@@ -42,10 +42,13 @@
 </template>
 <script lang='ts' setup>
 import { vxm } from '#store/vxm';
+import useSettingsStore from '#stores/settings';
 import {
   computed, onMounted, ref, watch,
 } from 'vue';
 import ColorSlider from './ColorSlider.vue';
+
+const settings = useSettingsStore();
 
 /** Colors that appear in the swatches */
 const defaultColors = ['#f3a891', '#f3c491', '#f3df91', '#e2f391', '#bef391', '#91f3bc', '#f391ba', '#f39196'];
@@ -54,7 +57,7 @@ const redIntensity = ref<number>(127);
 const greenIntensity = ref<number>(127);
 const blueIntensity = ref<number>(127);
 const previewColor = computed(() => `rgb(${redIntensity.value}, ${greenIntensity.value}, ${blueIntensity.value})`);
-const fontSize = computed(() => `${vxm.settings.fontSize}px`);
+const fontSize = computed(() => `${settings.fontSize}px`);
 
 /** Gets brightness of a color. Used in contrast calculation */
 function brightness(r:number, g:number, b:number) {

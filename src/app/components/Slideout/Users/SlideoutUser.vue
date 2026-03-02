@@ -11,12 +11,14 @@
 </template>
 <script lang="ts" setup>
 import { vxm } from '#store/vxm';
+import useSettingsStore from '#stores/settings';
 import { computed } from 'vue';
 import SlideoutUsername from './SlideoutUsername.vue';
 
+const settings = useSettingsStore();
 const connectedUsers = computed(() => vxm.chat.connectedUsers);
 const userCount = computed(() => Object.keys(vxm.chat.connectedUsers).length);
-const fontSize = computed(() => vxm.settings.fontSize);
+const fontSize = computed(() => settings.fontSize);
 </script>
 <style scoped>
 .user-wrapper {

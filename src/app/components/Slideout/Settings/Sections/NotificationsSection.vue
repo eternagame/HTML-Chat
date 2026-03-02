@@ -30,7 +30,7 @@
           Indicator <SettingsTooltip text="Appears in the page title if you have notifications" />
         </span>
         <span style="width: 40%" class='float-right'>
-          <input type=text v-model="indicator" style="padding:1px;">
+          <input type=text v-model="settings.indicator" style="padding:1px;">
         </span>
       </label>
     </div>
@@ -64,24 +64,19 @@ import {
   computed, onMounted, ref, watch,
 } from 'vue';
 import { vxm } from '#store/vxm';
+import useSettingsStore from '#stores/settings';
 import SettingsSection from '../SettingsSection.vue';
 import SettingsSwitch from '../SettingsSwitch.vue';
 import SettingsEnableDisable from '../SettingsEnableDisable.vue';
 import SettingsTooltip from '../SettingsTooltip.vue';
+
+const settings = useSettingsStore();
 
 const keywords = ref<string>('');
 watch(keywords, (currentKeywords) => {
   const list = currentKeywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
   // TODO: Extract localStorage interaction
   localStorage.chat_notificationsKeywords = JSON.stringify(list);
-});
-
-const indicator = ref<string>('(!)');
-watch(indicator, (currentIndicator) => {
-  if (localStorage) {
-    localStorage.chat_indicator = JSON.stringify(currentIndicator);
-  }
-  vxm.settings.indicator = currentIndicator;
 });
 
 const desktopNotifications = ref<boolean>(false);
@@ -155,12 +150,6 @@ onMounted(() => {
     keywords.value = vxm.chat.notificationsKeywords.join(', ');
   } else {
     keywords.value = '';
-  }
-
-  if (localStorage.chat_indicator) {
-    indicator.value = JSON.parse(localStorage.chat_indicator);
-  } else {
-    indicator.value = vxm.settings.indicator;
   }
 
   if (localStorage.chat_desktopNotifications) {

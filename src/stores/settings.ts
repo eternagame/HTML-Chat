@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import { computed } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 
-// @ts-expect-error TypeScript 4 issue not inferring store type from function
 const useSettingsStore = defineStore('settings', () => {
   const font = useLocalStorage('chat_fontSize', 14);
   const indicator = useLocalStorage('chat_indicator', ' (!)');

@@ -6,21 +6,21 @@
           Emoticons
           <SettingsTooltip text="Whether the emoticons menu in the toolbar is visible" />
         </span>
-        <span class="float-right"><SettingsSwitch v-model="emoticonChatFeatures" /></span>
+        <span class="float-right"><SettingsSwitch v-model="settings.emoticonChatFeatures" /></span>
       </li>
       <li>
         <span class="align-sub">
           Markdown
           <SettingsTooltip text="Whether the markdown menu in the toolbar is visible" />
         </span>
-        <span class="float-right"><SettingsSwitch v-model="markdownChatFeatures" /></span>
+        <span class="float-right"><SettingsSwitch v-model="settings.markdownChatFeatures" /></span>
       </li>
       <li>
         <span class="align-sub">
           Preview
           <SettingsTooltip text="Whether the markdown preview menu in the toolbar is visible" />
         </span>
-        <span class="float-right"><SettingsSwitch v-model="previewChatFeatures" /></span>
+        <span class="float-right"><SettingsSwitch v-model="settings.previewChatFeatures" /></span>
       </li>
       <li>
         <span class="align-sub">All</span>
@@ -59,45 +59,27 @@
       Typing messages
       <SettingsTooltip text="Whether you see messages above the toolbar when people are typing" />
       <span class="float-right">
-        <SettingsSwitch v-model="typingMessages" />
+        <SettingsSwitch v-model="settings.typingMessages" />
       </span>
     </li>
   </SettingsSection>
 </template>
 <script lang="ts" setup>
 import { Vue } from 'vue-property-decorator';
-import {
-  computed, onMounted, ref, watch,
-} from 'vue';
+import { computed, ref } from 'vue';
 import { vxm } from '#store/vxm';
+import useSettingsStore from '#stores/settings';
 import SettingsSection from '../SettingsSection.vue';
 import SettingsSwitch from '../SettingsSwitch.vue';
 import SettingsEnableDisable from '../SettingsEnableDisable.vue';
 import SettingsTooltip from '../SettingsTooltip.vue';
 
-const emoticonChatFeatures = ref<boolean>(true);
-watch(emoticonChatFeatures, (enabled) => {
-  localStorage.chat_emoticonChatFeatures = JSON.stringify(enabled);
-  vxm.settings.emoticonChatFeatures = enabled;
-});
-
-const markdownChatFeatures = ref<boolean>(true);
-watch(markdownChatFeatures, (enabled) => {
-  localStorage.chat_markdownChatFeatures = JSON.stringify(enabled);
-  vxm.settings.markdownChatFeatures = enabled;
-});
-
-const previewChatFeatures = ref<boolean>(true);
-watch(previewChatFeatures, (enabled) => {
-  localStorage.chat_previewChatFeatures = JSON.stringify(enabled);
-  vxm.settings.previewChatFeatures = enabled;
-});
-
+const settings = useSettingsStore();
 const allChatFeatures = computed(() => {
   const features = [
-    emoticonChatFeatures.value,
-    markdownChatFeatures.value,
-    previewChatFeatures.value,
+    settings.emoticonChatFeatures,
+    settings.markdownChatFeatures,
+    settings.previewChatFeatures,
   ];
 
   if (features.every(f => f === true)) {
@@ -110,9 +92,9 @@ const allChatFeatures = computed(() => {
 });
 
 function allChatFeaturesChanged(to: boolean) {
-  emoticonChatFeatures.value = to;
-  markdownChatFeatures.value = to;
-  previewChatFeatures.value = to;
+  settings.emoticonChatFeatures = to;
+  settings.markdownChatFeatures = to;
+  settings.previewChatFeatures = to;
 }
 
 // Custom emoticons
@@ -144,35 +126,6 @@ function update(e: InputEvent) {
   }
   target.value = '';
 }
-
-const typingMessages = ref<boolean>(true);
-watch(typingMessages, (viewTyping) => {
-  vxm.settings.typingMessages = viewTyping;
-  localStorage.chat_typingMessages = JSON.stringify(viewTyping);
-});
-
-onMounted(() => {
-  if (localStorage.chat_emoticonChatFeatures) {
-    emoticonChatFeatures.value = JSON.parse(localStorage.chat_emoticonChatFeatures);
-  } else {
-    emoticonChatFeatures.value = vxm.settings.emoticonChatFeatures;
-  }
-  if (localStorage.chat_markdownChatFeatures) {
-    markdownChatFeatures.value = JSON.parse(localStorage.chat_markdownChatFeatures);
-  } else {
-    markdownChatFeatures.value = vxm.settings.markdownChatFeatures;
-  }
-  if (localStorage.chat_previewChatFeatures) {
-    previewChatFeatures.value = JSON.parse(localStorage.chat_previewChatFeatures);
-  } else {
-    previewChatFeatures.value = vxm.settings.previewChatFeatures;
-  }
-  if (localStorage.chat_typingMessages) {
-    typingMessages.value = JSON.parse(localStorage.chat_typingMessages);
-  } else {
-    typingMessages.value = vxm.settings.typingMessages;
-  }
-});
 </script>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";

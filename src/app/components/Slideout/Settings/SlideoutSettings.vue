@@ -13,7 +13,7 @@
 </template>
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { vxm } from '#store/vxm';
+import useSettingsStore from '#stores/settings';
 import TextSizeSection from './Sections/TextSizeSection.vue';
 import IgnoredSection from './Sections/IgnoredSection.vue';
 import NotificationsSection from './Sections/NotificationsSection.vue';
@@ -22,10 +22,11 @@ import ToolbarSection from './Sections/ToolbarSection.vue';
 import StatusSection from './Sections/StatusSection.vue';
 import OperSection from './Sections/OperSection.vue';
 
+const settings = useSettingsStore();
 const emit = defineEmits<{
   (event: 'auth'): void;
 }>();
-const fontSize = computed(() => vxm.settings.fontSize);
+const fontSize = computed(() => settings.fontSize);
 </script>
 <style lang="scss" scoped>
 @import "@/assets/_custom.scss";
