@@ -1,12 +1,11 @@
 // Eterna theme
 // Bootswatch
 
-
 // Variables ===================================================================
 
-$web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic" !default;
+$web-font-path: 'https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic' !default;
 @import url($web-font-path);
-@import "./variables";
+@import './variables';
 
 // Navbar =======================================================================
 
@@ -38,9 +37,6 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   color: $dark;
 }
 
-
-
-
 // Buttons =====================================================================
 
 .btn {
@@ -63,7 +59,7 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   }
   &-outline-primary {
     border-color: $green;
-    color: $green
+    color: $green;
   }
   &-outline-primary:hover {
     background-color: $dark-green;
@@ -71,12 +67,16 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   }
 }
 
-.btn-primary.disabled, .btn-primary:disabled, .btn-primary.disabled:hover {
+.btn-primary.disabled,
+.btn-primary:disabled,
+.btn-primary.disabled:hover {
   background-color: $green;
   border-color: $green;
 }
 
-.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
+.btn-primary:not(:disabled):not(.disabled):active,
+.btn-primary:not(:disabled):not(.disabled).active,
+.show > .btn-primary.dropdown-toggle {
   background-color: $dark-green;
   border-color: $dark-green;
 }
@@ -88,7 +88,8 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   margin-top: 1rem;
 }
 
-.nav-link, .btn {
+.nav-link,
+.btn {
   font-weight: 600;
 }
 
@@ -106,130 +107,167 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   }
 
   &-primary {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $primary;
     }
   }
 
   &-secondary {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $secondary;
     }
   }
 
   &-light {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $light;
       color: $dark;
     }
   }
 
   &-dark {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $dark;
     }
   }
 
   &-success {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $success;
     }
   }
 
   &-info {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $info;
     }
   }
 
   &-danger {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $danger;
     }
   }
 
   &-warning {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $warning;
     }
   }
 
   &-active {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $table-active-bg;
     }
   }
 
   &-hover {
     :hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         color: $light;
       }
     }
 
     .table-primary:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($primary, 5%);
         color: $light;
       }
     }
 
     .table-secondary:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($secondary, 5%);
         color: $light;
       }
     }
 
     .table-light:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($light, 5%);
         color: $black;
       }
     }
 
     .table-dark:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($dark, 5%);
         color: $light;
       }
     }
 
     .table-success:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($success, 5%);
         color: $light;
       }
     }
 
     .table-info:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($info, 5%);
         color: $light;
       }
     }
 
     .table-danger:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($danger, 5%);
         color: $light;
       }
     }
 
     .table-warning:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($warning, 5%);
         color: $light;
       }
     }
 
     .table-active:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: $table-active-bg;
         color: $light;
       }
     }
-
   }
 }
 
@@ -276,7 +314,6 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   color: $white;
 }
 
-
 // Indicators ==================================================================
 
 .close {
@@ -309,7 +346,9 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   @each $color, $value in $theme-colors {
     &-#{$color} {
       @if $enable-gradients {
-        background: $value linear-gradient(180deg, mix($body-bg, $value, 15%), $value) repeat-x;
+        background: $value
+          linear-gradient(180deg, mix($body-bg, $value, 15%), $value)
+          repeat-x;
       } @else {
         background-color: $value;
       }
@@ -328,7 +367,7 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
 // Progress bars ===============================================================
 
 // Containers ==================================================================
-.modal .close{
+.modal .close {
   color: $black;
 
   &:not(:disabled):not(.disabled):hover,
@@ -341,11 +380,14 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   background-color: $primary;
 }
 
-.modal-header, .modal-footer {
+.modal-header,
+.modal-footer {
   border-color: $dark-blue;
 }
 
-.jumbotron, .list-group-item, .card {
+.jumbotron,
+.list-group-item,
+.card {
   background-color: $med-dark-blue;
 }
 
@@ -353,7 +395,8 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   font-weight: 700;
 }
 
-
-.alert-light, .alert-light a, .alert-light .alert-link {
+.alert-light,
+.alert-light a,
+.alert-light .alert-link {
   color: $dark;
 }

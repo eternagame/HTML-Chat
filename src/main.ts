@@ -1,17 +1,9 @@
-import { createPinia, PiniaVuePlugin } from 'pinia';
-import Vue from 'vue';
-import chatPlugin from './app/plugin/plugin';
-import App from './standalone/App.vue';
-import store from './standalone/store';
-
-Vue.config.productionTip = false;
-Vue.use(chatPlugin);
-Vue.use(PiniaVuePlugin);
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
+import App from './App.vue';
+import './style.scss';
 
 const pinia = createPinia();
-
-new Vue({
-  render: h => h(App),
-  store,
-  pinia,
-}).$mount('#app');
+const app = createApp(App);
+app.use(pinia)
+app.mount('#app');
