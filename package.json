@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --fix",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "prepare": "husky"
   },
   "imports": {
     "#components/*": "./src/components/*",
@@ -41,6 +42,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.4.0",
+    "husky": "^9.1.7",
     "jiti": "^2.6.1",
     "lint-staged": "^16.3.2",
     "prettier": "^3.8.1",
@@ -48,12 +50,9 @@
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
   },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
   "lint-staged": {
     "*.{js,vue,ts}": [
-      "vue-cli-service lint"
+      "eslint --fix"
     ]
   }
 }
