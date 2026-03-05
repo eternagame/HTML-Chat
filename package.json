@@ -4,10 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "npm run dev",
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --fix",
-    "start": "npm run dev",
+    "test": "npm run test:unit",
+    "test:unit": "vitest",
+    "lint": "run-s lint:*",
+    "lint:oxlint": "oxlint . --fix",
+    "lint:eslint": "eslint . --fix --cache",
     "prepare": "husky"
   },
   "imports": {
@@ -33,26 +37,27 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.19.13",
     "@vitejs/plugin-vue": "^6.0.4",
+    "@vitest/eslint-plugin": "^1.6.9",
     "@vue/eslint-config-typescript": "^14.7.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.9.0",
     "autoprefixer": "^10.4.27",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-oxlint": "^1.51.0",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.4.0",
     "husky": "^9.1.7",
     "jiti": "^2.6.1",
+    "jsdom": "^28.1.0",
     "lint-staged": "^16.3.2",
+    "npm-run-all2": "^8.0.4",
+    "oxlint": "^1.51.0",
     "prettier": "^3.8.1",
     "sass": "^1.97.3",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
-  },
-  "lint-staged": {
-    "*.{js,vue,ts}": [
-      "eslint --fix"
-    ]
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
   }
 }

@@ -1,6 +1,6 @@
 <template>
-  <div class="login">
-    <div class="login-container">
+  <div class="login-container">
+    <div class="login">
       <BForm @submit.prevent="onSubmit">
         <BFormGroup
           label="Username"
@@ -70,14 +70,14 @@
   }
 </script>
 <style scoped>
-  .login {
+  .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100dvh;
   }
 
-  .login-container {
+  .login {
     padding: 0.75rem;
     background-color: #043468;
   }

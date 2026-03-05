@@ -1,7 +1,9 @@
-import { globalIgnores } from 'eslint/config';
+import pluginVitest from '@vitest/eslint-plugin';
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
-import pluginVue from 'eslint-plugin-vue';
+import pluginOxlint from 'eslint-plugin-oxlint';
 import prettier from 'eslint-plugin-prettier/recommended';
+import pluginVue from 'eslint-plugin-vue';
+import { globalIgnores } from 'eslint/config';
 
 export default defineConfigWithVueTs(
   {
@@ -15,5 +17,10 @@ export default defineConfigWithVueTs(
   globalIgnores(['**/dist/**', '**/coverage/**']),
   ...pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
+  {
+    ...pluginVitest.configs.recommended,
+    files: ['src/**/__tests__/*'],
+  },
+  ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
   prettier,
 );
