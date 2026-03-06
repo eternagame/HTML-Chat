@@ -16,8 +16,14 @@
   },
   "imports": {
     "#components/*": "./src/components/*",
+    "#constants": "./src/constants/index.ts",
+    "#constants/*": "./src/constants/*",
+    "#models": "./src/models/index.ts",
+    "#models/*": "./src/models/*",
+    "#stores": "./src/stores/index.ts",
     "#stores/*": "./src/stores/*",
-    "#store/*": "./src/store/*"
+    "#utils": "./src/utils/index.ts",
+    "#utils/*": "./src/utils/*"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
@@ -30,6 +36,7 @@
     "loglevel": "^1.9.2",
     "markdown-it": "^14.1.1",
     "pinia": "^3.0.4",
+    "stream-browserify": "^3.0.0",
     "vue": "^3.5.29"
   },
   "devDependencies": {
@@ -58,6 +65,7 @@
     "sass": "^1.97.3",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
+    "vite-plugin-node-polyfills": "^0.25.0",
     "vitest": "^4.0.18"
   }
 }
