@@ -20,6 +20,8 @@
     "#constants/*": "./src/constants/*",
     "#models": "./src/models/index.ts",
     "#models/*": "./src/models/*",
+    "#services": "./src/services/index.ts",
+    "#services/*": "./src/services/*",
     "#stores": "./src/stores/index.ts",
     "#stores/*": "./src/stores/*",
     "#utils": "./src/utils/index.ts",
