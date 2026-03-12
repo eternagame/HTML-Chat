@@ -2,13 +2,15 @@ declare module 'irc-framework' {
   import { EventEmitter } from 'eventemitter3';
   import { DuplexStream } from 'stream';
   import Connection from 'irc-framework/src/transports/websocket';
+  import MiddlewareHandler from 'middleware-handler';
 
   export class Client extends EventEmitter {
     constructor(options: ClientConstructorParameters);
 
-    static setDefaultTransport(transport: any): void;
+    static setDefaultTransport<Transport extends typeof BaseTransport>(transport: Transport): void;
 
-    // get Message(): ClassDecorator;//TODO
+    get Message(): typeof IrcMessage;
+
     /** Applies the default options to the options object given as impot, and returns it. */
     _applyDefaultOptions(user_options: ClientConstructorParameters): ClientConstructorParameters;
 
@@ -17,15 +19,21 @@ declare module 'irc-framework' {
     /** Is connected to the IRC network and successfully registered. */
     connected: boolean;
 
-    // TODO
-    /** The object for the connected message, as long as the client is connected. */ user: IrcUser;
+    /** The object for the connected message, as long as the client is connected. */
+    user: User;
 
-    // TODO
-    /** Request */ requestCap(capability: string): void;
+    /** Request */
+    requestCap(cap: string | string[]): void;
 
-    use(a: any): any;
+    use(
+      middleware_fn: (
+        client: this,
+        raw_middleware: MiddlewareHandler,
+        parsed_middleware: MiddlewareHandler,
+      ) => void,
+    ): this;
 
-    connect(connect_options?: Object): void;
+    connect(connect_options?: unknown): void;
 
     /**
      * Proxy the command handler events onto the client object, with some added sugar
@@ -43,10 +51,9 @@ declare module 'irc-framework' {
 
     startPeriodicPing(): void;
 
-    raw(raw_data_line: string): void;
+    raw(input: string | IrcMessage): void;
 
     rawString(...parameters: Array<string>): string;
-
     rawString(parameters: Array<string>): string;
 
     quit(quit_message?: string): void;
@@ -55,11 +62,11 @@ declare module 'irc-framework' {
 
     changeNick(nick: string): void;
 
-    sendMessage(commandName: string, target: string, message: string): string[];
+    sendMessage(commandName: string, target: string, message: string): void;
 
-    say(target: string, message: string): string[];
+    say(target: string, message: string): void;
 
-    notice(target: string, message: string): string[];
+    notice(target: string, message: string): void;
 
     join(channel: string, key?: string): void;
 
@@ -67,16 +74,15 @@ declare module 'irc-framework' {
 
     mode(channel: string, mode: string, extra_args?: string[]): void;
 
-    inviteList(channel: string, cb: (e: Event) => any): void;
+    inviteList(channel: string, cb: (e: Event) => void): void;
 
-    // TODO: typeof e?
     invite(channel: string, nick: string): void;
 
-    addInvite(channel: String, mask: string): void;
+    addInvite(channel: string, mask: string): void;
 
     removeInvite(channel: string, mask: string): void;
 
-    banlist(channel: string, cb: (e: BanlistEventArgs) => any): void;
+    banlist(channel: string, cb: (e: BanlistEventArgs) => void): void;
 
     ban(channel: string, mask: string): void;
 
@@ -90,16 +96,19 @@ declare module 'irc-framework' {
 
     action(target: string, message: string): string[];
 
-    whowas(target: string, cb: (event: Event) => any): void;
+    whowas(target: string, cb: (event: WhoWasEventArgs) => void): void;
 
-    whois(nick: string, cb: (event: any) => void): void;
+    whois(target: string, cb: (event: WhoIsEventArgs) => void): void;
 
     /**
      * WHO requests are queued up to run serially.
      * This is mostly because networks will only reply serially and it makes
      * it easier to include the correct replies to callbacks
      */
-    who(target: string, cb: (event: any) => void): void;
+    who(
+      target: string,
+      cb: (event: { target: string; users: WhoListEventArgs['users'] }) => void,
+    ): void;
 
     list(/* params: Array<string> */): void;
 
@@ -107,82 +116,110 @@ declare module 'irc-framework' {
 
     match(
       match_regex: string,
-      cb: (event: Event) => any,
-      message_type: string
+      cb: (event: Event) => void,
+      message_type: string,
     ): { stop: () => void };
 
-    matchNotice(match_regex: string, cb: (event: Event) => any): void;
+    matchNotice(match_regex: string, cb: (event: Event) => void): void;
 
-    matchMessage(match_regex: string, cb: (event: Event) => any): void;
+    matchMessage(match_regex: string, cb: (event: Event) => void): void;
 
-    matchAction(match_regex: string, cb: (event: Event) => any): void;
+    matchAction(match_regex: string, cb: (event: Event) => void): void;
 
     stringToBlocks(str: string, block_size?: number): string[];
 
-    on(eventType: string | symbol, cb: (event: any) => void): this;
+    on(eventType: string | symbol, cb: (event: unknown) => void): this;
 
     on(eventType: 'raw', cb: (event: RawEventArgs) => void): this;
 
     on(eventType: 'join', cb: (event: JoinEventArgs) => void): this;
 
+    on(eventType: 'userlist', cb: (event: UserListEventArgs) => void): this;
+
+    on(eventType: 'monitorList', cb: (event: MonitorListEventArgs) => void): this;
+    on(eventType: 'whowas', cb: (event: WhoIsEventArgs) => void): this;
+    on(eventType: 'whowas', cb: (event: WhoWasEventArgs) => void): this;
+
     on(eventType: 'registered', cb: (event: RegisteredEventArgs) => void): this;
 
     on(eventType: 'quit', cb: (event: QuitEventArgs) => void): this;
-
     on(eventType: 'part', cb: (event: QuitEventArgs) => void): this;
+    on(eventType: 'kick', cb: (event: KickEventArgs) => void): this;
 
-    on(eventType: 'kick', cb: (event: QuitEventArgs) => void): this;
+    on(eventType: 'away', cb: (event: AwayEventArgs) => void): this;
+    on(eventType: 'back', cb: (event: BackEventArgs) => void): this;
 
-    on(eventType: 'message', cb: (event: MessageEventArgs) => any): this;
+    on(eventType: 'message', cb: (event: MessageEventArgs) => void): this;
+    on(eventType: 'privmsg', cb: (event: MessageEventArgs<'privmsg'>) => void): this;
+    on(eventType: 'notice', cb: (event: MessageEventArgs<'notice'>) => void): this;
+    on(eventType: 'action', cb: (event: MessageEventArgs<'action'>) => void): this;
 
-    on(eventType: 'notice', cb: (event: MessageEventArgs/* TODO */) => any): this;
+    on(eventType: 'mode', cb: (event: ModeEventArgs) => void): this;
 
-    on(eventType: 'mode', cb: (event: ModeEventArgs) => any): this;
+    on(eventType: 'socket close', cb: (event: Error | false) => void): this;
 
-    on(eventType: 'socket close', cb: (event: {}) => any): this;
+    on(eventType: 'socket connected', cb: () => void): this;
 
-    on(eventType: 'socket connected', cb: (event: {}) => any): this;
+    on(eventType: 'raw socket connected', cb: () => void): this;
 
-    on(eventType: 'raw socket connected', cb: (event: {}) => any): this;
+    on(eventType: 'server options', cb: (event: ServerOptionsEventArgs) => void): this;
 
-    on(eventType: 'server options', cb: (event: ServerOptionsEventArgs) => any): this;
+    on(eventType: 'debug', cb: (message: string) => void): this;
 
-    on(eventType: 'debug', cb: (message: string) => any): this;
+    on(eventType: 'nick in use', cb: (event: NickInUseEventArgs) => void): this;
 
-    on(eventType: 'nick in use', cb: (event: NickInUseEventArgs) => any): this;
+    on(eventType: 'nick invalid', cb: (event: NickInvalidEventArgs) => void): this;
 
-    on(eventType: 'nick invalid', cb: (event: NickInvalidEventArgs) => any): this;
-
-    on(eventType: 'irc error', cb: (event: IrcErrorEventArgs) => any): this;
+    on(eventType: 'irc error', cb: (event: IrcErrorEventArgs) => void): this;
   }
-  export class Message {
-    // TODO: What is actually in it and what was in the event?
-    constructor(command?: string, ...args: string[]);
-
-    account?: IrcUser;
-
-    group?: any;
-
-    hostname: string;
-
-    ident: string;
-
-    message: string;
-
+  export class NetworkInfo {
+    name: string;
+    server: string;
+    ircd: string;
+    options: Record<string, unknown>;
+    cap: {
+      negotiating: boolean;
+      requested: string[];
+      enabled: string[];
+      available: Map<string, unknown>;
+      isEnabled: (cap_name: string) => boolean;
+    };
+    time_offsets: number[];
+    time_offset: number;
+    timeToLocal(serverTimeMs: number): number;
+    timeToServer(localTimeMs: number): number;
+    getServerTimeOffset(): number;
+    addServerTimeOffset(time: number): void;
+    supports(support_name: string): boolean;
+    supportsTag(tag_name: string): boolean;
+    isChannelName(channel_name: string): boolean;
+    extractTargetGroup(target: string): null | { target: string; target_group: string };
+  }
+  export class IrcMessage {
+    tags: Record<string, string>;
+    prefix: string;
     nick: string;
+    ident: string;
+    hostname: string;
+    command: string;
+    params: string[];
 
-    reply(e: any): any;
+    constructor(command?: IrcMessage['command'], ...args: IrcMessage['params']);
 
-    tags: Object;
-
-    // any
-    time?: any;
-
-    type: string;
+    to1459(): string[];
+    toJson(): {
+      tags: IrcMessage['tags'];
+      source: IrcMessage['prefix'];
+      command: IrcMessage['command'];
+      params: IrcMessage['params'];
+    };
   }
-  export interface MessageEventArgs {
-    account?: any;
-    group?: any;
+
+  export interface MessageEventArgs<
+    Type extends 'privmsg' | 'action' | 'notice' = 'privmsg' | 'action' | 'notice',
+  > {
+    account?: string;
+    group?: string;
     hostname: string;
     ident: string;
     message: string;
@@ -190,17 +227,29 @@ declare module 'irc-framework' {
     reply: (message: string) => void;
     tags: { [key: string]: string };
     target: string;
-    time?: any;
-    type: 'privmsg' | 'action'; // TODO
+    time?: number;
+    type: Type;
   }
-  export interface JoinEventArgs {// todo: is that wrong?
-    account: boolean;
+  export interface JoinEventArgs {
+    account: string;
     channel: string;
     gecos: string;
     hostname: string;
     ident: string;
     nick: string;
-    time?: any;
+    time?: number;
+  }
+  export interface AwayEventArgs {
+    self: boolean;
+    nick: string;
+    message: string;
+    time: number;
+  }
+  export interface BackEventArgs {
+    self: boolean;
+    nick: string;
+    message: string;
+    time: number;
   }
   export interface KickEventArgs {
     kicked: string;
@@ -215,6 +264,43 @@ declare module 'irc-framework' {
     from_server: boolean;
     line: string;
   }
+  export interface MonitorListEventArgs {
+    nicks: string[];
+  }
+  export interface WhoIsEventArgs {
+    away: string;
+    nick: string;
+    hostname: string;
+    actual_ip: string;
+    actual_hostname: string;
+    real_name: string;
+    helpop: string;
+    bot: string;
+    server: string;
+    server_info: string;
+    operator: string;
+    modes: string;
+    idel: string;
+    logon: string;
+    registered_nick: string;
+    account: string;
+    secure: string;
+    special: string;
+  }
+  export interface WhoWasEventArgs {
+    nick: string;
+    ident: string;
+    hostname: string;
+    actual_ip: string;
+    actual_hostname: string;
+    actual_username: string;
+    real_name: string;
+    server: string;
+    server_info: string;
+    account: string;
+    error: string;
+    whowas: Array<{ nick: string; ident: string; hostname: string; real_name: string }>[];
+  }
   export interface RegisteredEventArgs {
     nick: string;
   }
@@ -223,7 +309,7 @@ declare module 'irc-framework' {
     ident: string;
     message: string;
     nick: string;
-    time?: any;
+    time?: number;
   }
   interface Mode {
     mode: string;
@@ -235,11 +321,12 @@ declare module 'irc-framework' {
     raw_modes: string;
     raw_params: string[];
     target: string;
-    time?: any;
+    time?: number;
   }
   export interface ServerOptionsEventArgs {
-    options: any;
-    cap: any;
+    options: Record<string, unknown>;
+    cap: string[];
+    tags: Record<string, string>;
   }
   export interface NickInvalidEventArgs {
     nick: string;
@@ -254,71 +341,67 @@ declare module 'irc-framework' {
     channel: string;
     reason: string;
   }
-  // interface IrcUser {
-  //   /**The current nick you are currently using.*/
-  //   nick: string;
-  //   /**Your username (ident) that the network sees you as using.*/
-  //   username: string;
-  //   /**Your current gecos (realname).*/
-  //   gecos: string;
-  //   /**On supported servers, the hostname that the networksees you are using.*/
-  //   host: string;
-  //   /**Your current away status. Empty for not away.*/
-  //   away: string;
-  //   /**A set() instance with your current message modes.*/
-  //   modes: Set<string>;
-  // }
-  // TODO: what to call it? why is it channel.users empty after join?
-  interface IrcUser {
-    hostname: string;
-    ident: string;
-    modes: string[]; // any[]
-    away: string;
+
+  class User {
+    //   /**The current nick you are currently using.*/
     nick: string;
+    username: string;
+    gecos: string;
+    host: string;
+    away: boolean;
+    modes: Set<string>;
+
+    constructor(
+      opts?: Partial<{
+        nick: string;
+        username: string;
+        gecos: string;
+        host: string;
+        away: boolean;
+        modes: Set<string> | string[];
+      }>,
+    );
+
+    toggleModes(modestr: string[]): void;
   }
-  class IrcChannel extends EventEmitter {
+
+  export interface IrcChannelUser {
+    nick: string;
+    ident: string;
+    hostname: string;
+    modes: string[];
+    tags: Record<string, string>;
+  }
+
+  class IrcChannel {
+    irc_client: Client;
+    name: string;
+    users: IrcChannelUser[];
+
     constructor(irc_client: Client, channel_name: string, key: string);
 
-    irc_client: Client;
-
-    name: string;
-
-    say(message: string): string[];
-
-    notice(message: string): string[];
-
-    join(key?: string): void;
-
-    part(message?: string): void;
-
-    mode(mode: string, extra_args?: string[]): void;
-
-    banlist(cb: (event: BanlistEventArgs) => any): void;
-
-    ban(mask: string): void;
-
-    unban(mask: string): void;
-
-    users: IrcUser[];
+    say(message: string): ReturnType<Client['say']>;
+    notice(message: string): ReturnType<Client['notice']>;
+    action(message: string): ReturnType<Client['action']>;
+    part(message?: string): ReturnType<Client['part']>;
+    join(key?: string): ReturnType<Client['join']>;
+    mode(mode: string, extra_args?: string[]): ReturnType<Client['mode']>;
+    banlist(cb: (event: BanlistEventArgs) => void): ReturnType<Client['banlist']>;
+    ban(mask: string): ReturnType<Client['ban']>;
+    unban(mask: string): ReturnType<Client['unban']>;
 
     /**
      * Relay messages between this channel to another
-     * @param  {IrcChannel|String} target_chan Target channel
-     * @param  {Object} opts        Extra options
-     *
-     * opts may contain the following properties:
-     * one_way (false) Only relay messages to target_chan, not the reverse
-     * replay_nicks (true) Include the sending nick as part of the relayed message
+     * @param {object} opts Extra options
+     * @param {object} opts.one_way [Default: false] Only relay messages to target_chan, not the reverse
+     * @param {object} opts.replay_nicks [Default: true] Include the sending nick as part of the relayed message
      */
-    relay(target_chan: IrcChannel | String, opts: Object): void;
-
-    stream(stream_ops: Object): DuplexStream;
-
-    updateUsers(cb: (channel: IrcChannel) => any): void;
-
-    on(eventType: 'channel info', cb: (event: ChannelInfoEventArgs) => any): this;
-
-    on(eventType: string | symbol, cb: (event: any) => any): this;
+    relay(
+      target_chan: IrcChannel | string,
+      opts?: Partial<{ one_way: boolean; replay_nicks: boolean }>,
+    ): void;
+    stream(stream_ops: { replay_nicks?: boolean }): DuplexStream;
+    updateUsers(cb?: (channel: this) => void): void;
   }
   export interface ChannelInfoEventArgs {
     channel: string;
@@ -328,11 +411,13 @@ declare module 'irc-framework' {
   }
   export interface UserListEventArgs {
     channel: string;
-    users: IrcUser[]; // TODO: check type
+    users: IrcChannelUser[];
+    tags: Record<string, string>;
   }
   export interface WhoListEventArgs {
     target: string;
-    users: IrcUser[]; // TODO: check type
+    users: User[];
+    tags: Record<string, string>;
   }
   export interface BanlistEventArgs {
     channel: string;
@@ -370,7 +455,7 @@ declare module 'irc-framework' {
     auto_reconnect_max_retries?: number;
     ping_interval?: number;
     ping_timeout?: number;
-    transport?: new (options: any) => Connection;
+    transport?: typeof BaseTransport;
     ssl?: boolean;
     webirc?: {
       password?: string;
@@ -378,5 +463,14 @@ declare module 'irc-framework' {
       hostname?: string;
       ip?: string;
     };
+  }
+
+  abstract class BaseTransport extends EventEmitter {
+    isConnected(): boolean;
+    writeLine(line: string, cb: () => void);
+    debugOut(out: string);
+    connect(): void;
+    close(): void;
+    setEncoding(encoding: string): void;
   }
 }
