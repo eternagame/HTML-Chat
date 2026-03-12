@@ -9,7 +9,7 @@ const useNotificationsStore = defineStore('notifications', () => {
   const indicatorText = useLocalStorage('chat_indicatorText', '(!)');
   const notificationKeywords = useLocalStorage<string[]>('chat_notificationKeywords', []);
   const notificationsEnabled = useLocalStorage('chat_notificationsEnabled', false);
-  const { isSupported, ensurePermissions, permissionGranted } = useWebNotification({
+  const { isSupported, ensurePermissions, permissionGranted, show } = useWebNotification({
     requestPermissions: false,
   });
 
@@ -49,11 +49,22 @@ const useNotificationsStore = defineStore('notifications', () => {
     }
   }
 
+  /** Sends device notification only if granted permission */
+  async function sendNotification(title: string, body: string, tag: string) {
+    if (!notificationsEnabled.value) {
+      return null;
+    }
+
+    const notification = await show({ title, body, tag });
+    return notification ?? null;
+  }
+
   return {
     indicatorText,
     notificationKeywords,
     notificationsEnabled: computed(() => notificationsEnabled.value),
     toggleNotifications,
+    sendNotification,
   };
 });
 

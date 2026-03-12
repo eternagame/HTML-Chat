@@ -5,7 +5,7 @@ import { Client } from 'irc-framework';
 import Connection from 'irc-framework/src/transports/websocket';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
-import { computed, ref, shallowRef } from 'vue';
+import { computed, markRaw, ref, shallowRef } from 'vue';
 
 export interface InitClientConfig {
   username: string;
@@ -43,11 +43,12 @@ const useIrcStore = defineStore('irc', () => {
     currentUser.value.username = username;
     currentUser.value.uid = uid;
 
-    client.value = new Client({
+    const ircClient = new Client({
       host: import.meta.env.VITE_APP_SERVER_URL!,
       ssl: import.meta.env.VITE_APP_SSL === 'true',
       nick,
-      username,
+      username: uid,
+      gecos: username,
       transport: CustomConnection,
     })
       .on('nick in use', (event) => {
@@ -61,6 +62,7 @@ const useIrcStore = defineStore('irc', () => {
       })
       .on('registered', () => {
         isRegistered.value = true;
+        console.log(ircClient);
       })
       .on('debug', (message) => {
         log.debug(message);
@@ -68,7 +70,9 @@ const useIrcStore = defineStore('irc', () => {
       .on('raw', (event) => {
         log.debug(event);
       });
-    client.value.connect();
+
+    ircClient.connect();
+    client.value = markRaw(ircClient);
   }
 
   /** Sign in with saved login (if remembered) */
@@ -97,8 +101,9 @@ const useIrcStore = defineStore('irc', () => {
   }
 
   return {
-    client: computed(() => client.value),
-    isConnected: computed(() => client.value !== null && isRegistered.value),
+    client: computed(() => (isRegistered.value ? client.value : null)),
+    isConnected: computed(() => isRegistered.value && client.value !== null),
+    currentUser: computed(() => currentUser.value),
     initClient,
     quit,
     autoSignIn,

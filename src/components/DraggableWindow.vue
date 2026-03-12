@@ -2,7 +2,7 @@
 <template>
   <!-- TODO: Figure out keyboard accessibility... -->
   <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
-  <div ref="draggableContainer" id="draggable-container" @click="internalClick">
+  <div ref="draggableContainer" class="draggable-container" @click="internalClick">
     <div class="handle handle-l" @mousedown="resizeMouseDown($event, 'l')" />
     <div class="handle handle-tl" @mousedown="resizeMouseDown($event, 'tl')" />
     <div class="handle handle-t" @mousedown="resizeMouseDown($event, 't')" />
@@ -11,7 +11,7 @@
     <div class="handle handle-br" @mousedown="resizeMouseDown($event, 'br')" />
     <div class="handle handle-b" @mousedown="resizeMouseDown($event, 'b')" />
     <div class="handle handle-bl" @mousedown="resizeMouseDown($event, 'bl')" />
-    <div id="draggable-header" @mousedown="dragMouseDown">
+    <div class="draggable-header" @mousedown="dragMouseDown">
       <slot name="header" />
     </div>
     <slot name="main" />
@@ -21,8 +21,8 @@
 
 <script lang="ts" setup>
   import gsap from 'gsap';
-  import throttle from 'lodash/throttle';
-  import { computed, onMounted, ref, watch } from 'vue';
+  import { throttle } from 'lodash';
+  import { computed, onMounted, reactive, ref, watch } from 'vue';
 
   const props = defineProps({
     enabled: {
@@ -40,19 +40,19 @@
     (event: 'closeDragElement'): void;
   }>();
 
-  const positions = {
+  const positions = reactive({
     clientX: 0,
     clientY: 0,
     movementX: 0,
     movementY: 0,
-  };
-  const resizePositions = {
+  });
+  const resizePositions = reactive({
     clientX: 0,
     clientY: 0,
     movementX: 0,
     movementY: 0,
     dir: '',
-  };
+  });
 
   const draggableContainer = ref<HTMLDivElement>();
   /**
@@ -300,12 +300,12 @@
   defineExpose({ minimize });
 </script>
 
-<style>
-  #draggable-container {
+<style scoped>
+  .draggable-container {
     position: absolute;
     z-index: 9;
   }
-  #draggable-header {
+  .draggable-header {
     z-index: 10;
   }
 
