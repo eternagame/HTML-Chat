@@ -19,6 +19,11 @@ export class CustomConnection extends Connection {
 }
 
 const useIrcStore = defineStore('irc', () => {
+  /**
+   * Tracking if the client has started the connection.
+   * Keeps the chat view visible until client manually signs out.
+   */
+  const isInitialized = ref(false);
   const client = shallowRef<Client | null>(null);
   const savedUser = useLocalStorage<Record<'username' | 'uid', string> | null>('chat_user', null);
 
@@ -97,6 +102,7 @@ const useIrcStore = defineStore('irc', () => {
 
     ircClient.connect();
     client.value = markRaw(ircClient);
+    isInitialized.value = true;
     console.log('IRC Client:', ircClient);
   }
 
@@ -123,10 +129,12 @@ const useIrcStore = defineStore('irc', () => {
 
   function signOut() {
     savedUser.value = null;
+    isInitialized.value = false;
     quit();
   }
 
   return {
+    isInitialized: readonly(isInitialized),
     client: computed(() => (isRegistered.value ? client.value : null)),
     isConnected: computed(
       () => isRegistered.value && client.value !== null && connectionStatus.value === 'connected',

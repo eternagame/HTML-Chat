@@ -2,7 +2,7 @@
   <BApp>
     <h1>Connection status: {{ irc.connectionStatus }}</h1>
 
-    <ChatApp v-if="irc.isConnected" />
+    <ChatApp v-if="irc.isInitialized" />
     <LoginForm v-else @login="irc.signIn" />
   </BApp>
 </template>
