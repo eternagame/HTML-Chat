@@ -1,6 +1,5 @@
 declare module 'irc-framework/src/transports/websocket' {
   import type { BaseTransport } from 'irc-framework';
-  import { EventEmitter } from 'eventemitter3';
 
   export default class Connection extends BaseTransport {
     socket: WebSocket | null;
