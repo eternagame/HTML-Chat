@@ -1,11 +1,11 @@
-import type { User } from '#models';
+import type { ConnectionStatus, ReconnectionStatus, User } from '#models';
 import { createNick } from '#utils';
-import { useLocalStorage } from '@vueuse/core';
+import { useCountdown, useLocalStorage } from '@vueuse/core';
 import { Client } from 'irc-framework';
 import Connection from 'irc-framework/src/transports/websocket';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
-import { computed, markRaw, ref, shallowRef } from 'vue';
+import { computed, markRaw, reactive, readonly, ref, shallowRef } from 'vue';
 
 export interface InitClientConfig {
   username: string;
@@ -22,15 +22,22 @@ const useIrcStore = defineStore('irc', () => {
   const client = shallowRef<Client | null>(null);
   const savedUser = useLocalStorage<Record<'username' | 'uid', string> | null>('chat_user', null);
 
-  const currentUser = ref<User>({
+  const currentUser = reactive<User>({
     username: '',
     uid: '',
     away: false,
     awayReason: '',
-    nicks: [],
+    nicks: new Set<string>(),
   });
   const currentNick = ref('');
   const isRegistered = ref(false);
+  const connectionStatus = ref<ConnectionStatus>('disconnected');
+  const reconnectCountdown = useCountdown(0);
+  const reconnectStatus = reactive<ReconnectionStatus>({
+    isReconnecting: false,
+    retryCount: 0,
+    maxRetryCount: 0,
+  });
 
   function initClient(username: string, uid: string) {
     if (client.value) {
@@ -39,9 +46,9 @@ const useIrcStore = defineStore('irc', () => {
 
     const nick = createNick(username);
     currentNick.value = nick;
-    currentUser.value.nicks.push(nick);
-    currentUser.value.username = username;
-    currentUser.value.uid = uid;
+    currentUser.nicks.add(nick);
+    currentUser.username = username;
+    currentUser.uid = uid;
 
     const ircClient = new Client({
       host: import.meta.env.VITE_APP_SERVER_URL!,
@@ -53,16 +60,33 @@ const useIrcStore = defineStore('irc', () => {
     })
       .on('nick in use', (event) => {
         // Remove used nick
-        currentUser.value.nicks.splice(currentUser.value.nicks.indexOf(event.nick));
+        currentUser.nicks.delete(event.nick);
         currentNick.value = '';
 
         // Retry connection with new nickname
         quit();
         initClient(username, uid);
       })
+      .on('connecting', () => {
+        connectionStatus.value = 'connecting';
+      })
       .on('registered', () => {
         isRegistered.value = true;
-        console.log(ircClient);
+      })
+      .on('connected', () => {
+        connectionStatus.value = 'connected';
+        reconnectStatus.isReconnecting = false;
+        reconnectCountdown.stop();
+      })
+      .on('reconnecting', (event) => {
+        reconnectStatus.isReconnecting = true;
+        reconnectStatus.retryCount = event.attempt;
+        reconnectStatus.maxRetryCount = event.max_retries;
+        reconnectCountdown.start(event.wait / 1_000);
+      })
+      .on('close', () => {
+        connectionStatus.value = 'reconnect failed';
+        reconnectStatus.isReconnecting = false;
       })
       .on('debug', (message) => {
         log.debug(message);
@@ -73,6 +97,7 @@ const useIrcStore = defineStore('irc', () => {
 
     ircClient.connect();
     client.value = markRaw(ircClient);
+    console.log('IRC Client:', ircClient);
   }
 
   /** Sign in with saved login (if remembered) */
@@ -89,22 +114,27 @@ const useIrcStore = defineStore('irc', () => {
     initClient(login.username, login.uid);
   }
 
+  function quit() {
+    isRegistered.value = false;
+    connectionStatus.value = 'disconnected';
+    client.value?.quit();
+    client.value = null;
+  }
+
   function signOut() {
     savedUser.value = null;
     quit();
   }
 
-  function quit() {
-    isRegistered.value = false;
-    client.value?.quit();
-    client.value = null;
-  }
-
   return {
     client: computed(() => (isRegistered.value ? client.value : null)),
-    isConnected: computed(() => isRegistered.value && client.value !== null),
-    currentUser: computed(() => currentUser.value),
-    initClient,
+    isConnected: computed(
+      () => isRegistered.value && client.value !== null && connectionStatus.value === 'connected',
+    ),
+    connectionStatus: readonly(connectionStatus),
+    reconnectStatus: readonly(reconnectStatus),
+    reconnectCountdown: readonly(reconnectCountdown.remaining),
+    currentUser: readonly(currentUser),
     quit,
     autoSignIn,
     signIn,

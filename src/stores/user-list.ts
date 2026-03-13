@@ -14,13 +14,14 @@ const useUserListStore = defineStore('userList', () => {
   function addUser(nick: string, uid: string) {
     const username = parseNick(nick);
     if (connectedUsers.has(username)) {
+      connectedUsers.get(username)?.nicks.add(nick);
       return;
     }
 
     connectedUsers.set(username, {
       username,
       uid,
-      nicks: [nick],
+      nicks: new Set([nick]),
       away: false,
       awayReason: '',
     });
@@ -34,8 +35,8 @@ const useUserListStore = defineStore('userList', () => {
       return;
     }
 
-    user.nicks = user.nicks.filter((n) => n !== nick);
-    if (user.nicks.length === 0) {
+    user.nicks.delete(nick);
+    if (user.nicks.size === 0) {
       connectedUsers.delete(username);
     }
   }

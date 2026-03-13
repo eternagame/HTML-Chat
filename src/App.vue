@@ -1,6 +1,6 @@
 <template>
   <BApp>
-    <h1>You are {{ irc.isConnected ? 'connected' : 'not connected' }}</h1>
+    <h1>Connection status: {{ irc.connectionStatus }}</h1>
 
     <ChatApp v-if="irc.isConnected" />
     <LoginForm v-else @login="irc.signIn" />
