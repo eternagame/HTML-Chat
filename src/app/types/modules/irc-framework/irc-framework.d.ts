@@ -5,7 +5,7 @@ declare module 'irc-framework' {
   import MiddlewareHandler from 'middleware-handler';
 
   export class Client extends EventEmitter {
-    constructor(options: ClientConstructorParameters);
+    constructor(options?: ClientConstructorParameters);
 
     static setDefaultTransport<Transport extends typeof BaseTransport>(transport: Transport): void;
 
@@ -33,7 +33,7 @@ declare module 'irc-framework' {
       ) => void,
     ): this;
 
-    connect(connect_options?: unknown): void;
+    connect(connect_options?: ClientConstructorParameters): void;
 
     /**
      * Proxy the command handler events onto the client object, with some added sugar
@@ -137,10 +137,16 @@ declare module 'irc-framework' {
     on(eventType: 'userlist', cb: (event: UserListEventArgs) => void): this;
 
     on(eventType: 'monitorList', cb: (event: MonitorListEventArgs) => void): this;
-    on(eventType: 'whowas', cb: (event: WhoIsEventArgs) => void): this;
+    on(eventType: 'whois', cb: (event: WhoIsEventArgs) => void): this;
     on(eventType: 'whowas', cb: (event: WhoWasEventArgs) => void): this;
 
     on(eventType: 'registered', cb: (event: RegisteredEventArgs) => void): this;
+    on(eventType: 'connected', cb: (event: RegisteredEventArgs) => void): this;
+    on(eventType: 'connecting', cb: () => void): this;
+    on(
+      eventType: 'reconnecting',
+      cb: (event: { attempt: number; max_retries: number; wait: number }) => void,
+    ): this;
 
     on(eventType: 'quit', cb: (event: QuitEventArgs) => void): this;
     on(eventType: 'part', cb: (event: QuitEventArgs) => void): this;
@@ -451,7 +457,7 @@ declare module 'irc-framework' {
     enable_echomessage?: boolean;
     message_max_length?: number;
     auto_reconnect?: boolean;
-    auto_reconnect_wait?: number;
+    auto_reconnect_max_wait?: number;
     auto_reconnect_max_retries?: number;
     ping_interval?: number;
     ping_timeout?: number;

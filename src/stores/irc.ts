@@ -37,13 +37,17 @@ const useIrcStore = defineStore('irc', () => {
   const currentNick = ref('');
   const isRegistered = ref(false);
   const connectionStatus = ref<ConnectionStatus>('disconnected');
-  const reconnectCountdown = useCountdown(0);
-  const reconnectStatus = reactive<ReconnectionStatus>({
+  const reconnectionCountdown = useCountdown(0);
+  const reconnectionStatus = reactive<ReconnectionStatus>({
     isReconnecting: false,
     retryCount: 0,
+    retryDelay: 0,
     maxRetryCount: 0,
   });
 
+  /**
+   * Creates new IRC client with a unique nick
+   */
   function initClient(username: string, uid: string) {
     if (client.value) {
       return;
@@ -62,6 +66,8 @@ const useIrcStore = defineStore('irc', () => {
       username: uid,
       gecos: username,
       transport: CustomConnection,
+      auto_reconnect_max_retries: 10,
+      auto_reconnect_max_wait: 300_000,
     })
       .on('nick in use', (event) => {
         // Remove used nick
@@ -80,18 +86,19 @@ const useIrcStore = defineStore('irc', () => {
       })
       .on('connected', () => {
         connectionStatus.value = 'connected';
-        reconnectStatus.isReconnecting = false;
-        reconnectCountdown.stop();
+        reconnectionStatus.isReconnecting = false;
+        reconnectionCountdown.stop();
       })
       .on('reconnecting', (event) => {
-        reconnectStatus.isReconnecting = true;
-        reconnectStatus.retryCount = event.attempt;
-        reconnectStatus.maxRetryCount = event.max_retries;
-        reconnectCountdown.start(event.wait / 1_000);
+        reconnectionStatus.isReconnecting = true;
+        reconnectionStatus.retryCount = event.attempt;
+        reconnectionStatus.retryDelay = event.wait;
+        reconnectionStatus.maxRetryCount = event.max_retries;
+        reconnectionCountdown.start(event.wait / 1_000);
       })
       .on('close', () => {
         connectionStatus.value = 'reconnect failed';
-        reconnectStatus.isReconnecting = false;
+        reconnectionStatus.isReconnecting = false;
       })
       .on('debug', (message) => {
         log.debug(message);
@@ -120,6 +127,22 @@ const useIrcStore = defineStore('irc', () => {
     initClient(login.username, login.uid);
   }
 
+  /**
+   * Manually reconnect IRC client on unexpected disconnect.
+   * Client must first be initialized by {@link autoSignIn} or {@link signIn}
+   */
+  function reconnect() {
+    if (
+      !isInitialized.value ||
+      !client.value ||
+      connectionStatus.value === 'connecting' ||
+      connectionStatus.value === 'connected'
+    ) {
+      return;
+    }
+    client.value.connect();
+  }
+
   function quit() {
     isRegistered.value = false;
     connectionStatus.value = 'disconnected';
@@ -140,12 +163,13 @@ const useIrcStore = defineStore('irc', () => {
       () => isRegistered.value && client.value !== null && connectionStatus.value === 'connected',
     ),
     connectionStatus: readonly(connectionStatus),
-    reconnectStatus: readonly(reconnectStatus),
-    reconnectCountdown: readonly(reconnectCountdown.remaining),
+    reconnectionStatus: readonly(reconnectionStatus),
+    reconnectionCountdown: readonly(reconnectionCountdown.remaining),
     currentUser: readonly(currentUser),
     quit,
-    autoSignIn,
     signIn,
+    autoSignIn,
+    reconnect,
     signOut,
   };
 });

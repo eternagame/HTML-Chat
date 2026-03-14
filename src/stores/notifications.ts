@@ -21,7 +21,7 @@ const useNotificationsStore = defineStore('notifications', () => {
 
     if (!isSupported) {
       notificationsEnabled.value = false;
-      toast.show({
+      toast.create({
         title: 'Notifications Unsupported',
         body: 'Your browser does not support notifications.',
         variant: 'warning',
@@ -40,7 +40,7 @@ const useNotificationsStore = defineStore('notifications', () => {
       notificationsEnabled.value = true;
     } else {
       notificationsEnabled.value = false;
-      toast.show({
+      toast.create({
         title: 'Permission Denied',
         body: 'Browser notifications are blocked.',
         variant: 'warning',

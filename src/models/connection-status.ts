@@ -2,5 +2,6 @@ export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 're
 export interface ReconnectionStatus {
   isReconnecting: boolean;
   retryCount: number;
+  retryDelay: number;
   maxRetryCount: number;
 }

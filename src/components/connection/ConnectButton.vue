@@ -1,21 +1,22 @@
 <template>
-  <button
+  <BButton
+    class="w-100"
     type="button"
-    :class="{ active: tryingToConnect }"
-    class="connect-button btn btn-primary w-100 font-weight-bolder"
-    style="font-size:13px;"
-    @click="connect"
+    variant="primary"
+    @click="reconnect"
+    :loading="tryingToConnect"
+    loading-text="Connecting..."
+    >Reconnect</BButton
   >
-    Reconnect
-  </button>
 </template>
-<script lang="ts" setup>
-import { vxm } from '#store/vxm';
-import { computed } from 'vue';
+<script setup lang="ts">
+  import { useIrcStore } from '#stores';
+  import { BButton } from 'bootstrap-vue-next';
+  import { computed } from 'vue';
 
-const tryingToConnect = computed(() => vxm.chat.connectionData.tryingToConnect);
-
-function connect() {
-  vxm.chat.connect();
-}
+  const irc = useIrcStore();
+  const tryingToConnect = computed(() => irc.connectionStatus === 'connecting');
+  function reconnect() {
+    irc.reconnect();
+  }
 </script>
