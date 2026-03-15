@@ -1,35 +1,48 @@
-import { ANONYMOUS_USER } from '#constants';
+import { ANONYMOUS_USER, DEFAULT_COLORS } from '#constants';
 import type { User } from '#models';
-import { parseNick } from '#utils';
+import { parseNick, parseUid } from '#utils';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
-import { computed, reactive, watch } from 'vue';
+import { computed, reactive, readonly, watch } from 'vue';
 import useIrcStore from './irc';
+import { getUserProfile as fetchUserProfile } from '#services';
 
 const useUserListStore = defineStore('userList', () => {
   const irc = useIrcStore();
-  const connectedUsers = reactive(new Map<string, User>());
-  const users = computed(() => Array.from(connectedUsers.values()));
+  const knownUsers = reactive(new Map<string, User>());
+  const users = computed(() => Array.from(knownUsers.values()));
 
-  function addUser(nick: string, uid: string) {
+  function addUser(nick: string, ident: string) {
+    const uid = parseUid(nick, ident);
     const username = parseNick(nick);
-    if (connectedUsers.has(username)) {
-      connectedUsers.get(username)?.nicks.add(nick);
+    if (knownUsers.has(username)) {
+      const user = knownUsers.get(username)!;
+      user.status = 'online';
+      user.nicks.add(nick);
       return;
     }
 
-    connectedUsers.set(username, {
+    const parsedUID = Number.parseInt(uid, 10);
+    const color =
+      Number.isNaN(parsedUID) || parsedUID === 0
+        ? '#ffffff'
+        : DEFAULT_COLORS[parsedUID % DEFAULT_COLORS.length];
+
+    knownUsers.set(username, {
       username,
       uid,
       nicks: new Set([nick]),
-      away: false,
+      status: 'online',
       awayReason: '',
+      color,
+      profile: null,
+      isFetchingProfile: false,
     });
   }
 
   function removeUser(nick: string) {
     const username = parseNick(nick);
-    const user = connectedUsers.get(username);
+    const user = knownUsers.get(username);
     if (!user) {
       log.warn(`Tried to remove user "${nick}" but they weren't in the user list.`);
       return;
@@ -37,42 +50,60 @@ const useUserListStore = defineStore('userList', () => {
 
     user.nicks.delete(nick);
     if (user.nicks.size === 0) {
-      connectedUsers.delete(username);
+      user.status = 'offline';
     }
   }
 
   function getUser(nick: string) {
     const username = parseNick(nick);
-    const user = connectedUsers.get(username);
+    const user = knownUsers.get(username);
     if (!user) {
       log.warn(`Could not find user "${nick}" in the user list`);
-      return ANONYMOUS_USER;
+      return readonly(ANONYMOUS_USER);
     }
-    return user;
+    return readonly(user);
   }
 
   function setUserAway(nick: string, awayReason: string) {
     const username = parseNick(nick);
-    const user = connectedUsers.get(username);
+    const user = knownUsers.get(username);
     if (!user) {
       log.warn(`Tried to mark user "${nick}" as away, but they weren't in the user list.`);
       return;
     }
-    user.away = true;
+    user.status = 'away';
     user.awayReason = awayReason;
   }
 
   function setUserBack(nick: string) {
     const username = parseNick(nick);
-    const user = connectedUsers.get(username);
+    const user = knownUsers.get(username);
     if (!user) {
       log.warn(
         `Tried to mark user "${nick}" as back (not away), but they weren't in the user list.`,
       );
       return;
     }
-    user.away = false;
+    user.status = 'online';
     user.awayReason = '';
+  }
+
+  async function loadProfile(nick: string) {
+    const username = parseNick(nick);
+    const user = knownUsers.get(username);
+    if (!user || user.isFetchingProfile || user.profile !== null) {
+      return;
+    }
+
+    user.isFetchingProfile = true;
+    try {
+      const profile = await fetchUserProfile(user.uid);
+      user.profile = profile;
+    } catch (error) {
+      log.error(error);
+    } finally {
+      user.isFetchingProfile = false;
+    }
   }
 
   watch(
@@ -114,6 +145,7 @@ const useUserListStore = defineStore('userList', () => {
   return {
     getUser,
     users,
+    loadProfile,
   };
 });
 

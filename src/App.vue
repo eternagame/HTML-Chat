@@ -1,7 +1,5 @@
 <template>
   <BApp>
-    <h1>Connection status: {{ irc.connectionStatus }}</h1>
-
     <ChatApp v-if="irc.isInitialized" />
     <LoginForm v-else @login="irc.signIn" />
   </BApp>
@@ -12,6 +10,11 @@
   import LoginForm from '#components/LoginForm.vue';
   import { useIrcStore } from '#stores';
   import { BApp } from 'bootstrap-vue-next';
+  import { onMounted } from 'vue';
 
   const irc = useIrcStore();
+
+  onMounted(() => {
+    irc.autoSignIn();
+  });
 </script>

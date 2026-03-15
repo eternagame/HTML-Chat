@@ -25,14 +25,20 @@ const useIrcStore = defineStore('irc', () => {
    */
   const isInitialized = ref(false);
   const client = shallowRef<Client | null>(null);
-  const savedUser = useLocalStorage<Record<'username' | 'uid', string> | null>('chat_user', null);
+  const savedUser = useLocalStorage<Record<'username' | 'uid', string>>('chat_user', {
+    username: '',
+    uid: '',
+  });
 
   const currentUser = reactive<User>({
     username: '',
     uid: '',
-    away: false,
+    status: 'online',
     awayReason: '',
     nicks: new Set<string>(),
+    color: '#ffffff',
+    profile: null,
+    isFetchingProfile: false,
   });
   const currentNick = ref('');
   const isRegistered = ref(false);
@@ -115,7 +121,7 @@ const useIrcStore = defineStore('irc', () => {
 
   /** Sign in with saved login (if remembered) */
   function autoSignIn() {
-    if (savedUser.value) {
+    if (savedUser.value.username && savedUser.value.uid) {
       initClient(savedUser.value.username, savedUser.value.uid);
     }
   }

@@ -61,13 +61,14 @@ const useChannelStore = defineStore('channel', () => {
   }
 
   async function addMessageNotification(channelName: string, message: Message) {
+    const user = userList.getUser(message.nick);
     const channel = getChannel(channelName);
     channel.hasNotification = true;
 
     try {
       const notification = await notifications.sendNotification(
         `New message in ${channel.name}`,
-        `${message.user.username}: ${message.message}`,
+        `${user.username}: ${message.message}`,
         `new-message-${message.target}`,
       );
       notification?.addEventListener('click', () => {
@@ -113,6 +114,7 @@ const useChannelStore = defineStore('channel', () => {
           irc.currentUser.username === parseNick(target);
         const channel = isPrivateMessage ? getChannel(username) : getChannel(target);
 
+        // TODO: Read from 'raw' events to get replayed messages
         // TODO: Use `typing` client tag if `message-tags` capability is available
         // Handling typing status updates
         if (type === 'action' && message === 'is typing...') {
@@ -125,7 +127,6 @@ const useChannelStore = defineStore('channel', () => {
           return;
         }
 
-        const user = userList.getUser(nick);
         const highlightedMessage = highlightKeywords(message);
         const newMessage: Message = {
           // TODO: Read from server time, if available
@@ -133,11 +134,12 @@ const useChannelStore = defineStore('channel', () => {
           starred: false,
           message: highlightedMessage,
           target,
-          user,
+          nick,
           type: 'message',
           tags: tags ?? {},
         };
         // TODO: Cap messages per channel (50)
+        log.debug(newMessage);
         channel.messages.push(newMessage);
 
         // If the user has allows for notifications on channel or keywords

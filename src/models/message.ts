@@ -1,5 +1,3 @@
-import type { User } from './user';
-
 export type MessageType = 'message' | 'action' | 'system';
 
 export interface Message {
@@ -7,7 +5,7 @@ export interface Message {
   starred: boolean;
   message: string;
   target: string;
-  user: User;
+  nick: string;
   type: MessageType;
   tags: Record<string, string>;
 }

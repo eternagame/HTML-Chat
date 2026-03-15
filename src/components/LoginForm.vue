@@ -66,7 +66,7 @@
   }
 
   function anonLogin() {
-    emit('login', { username: 'anonymous', uid: '0', remember: false });
+    emit('login', { username: 'Anonymous', uid: '0', remember: false });
   }
 </script>
 <style scoped>

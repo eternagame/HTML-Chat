@@ -1,11 +1,9 @@
 import { useLocalStorage, useWebNotification } from '@vueuse/core';
-import { useToast } from 'bootstrap-vue-next';
+import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed } from 'vue';
 
 const useNotificationsStore = defineStore('notifications', () => {
-  const toast = useToast();
-
   const indicatorText = useLocalStorage('chat_indicatorText', '(!)');
   const notificationKeywords = useLocalStorage<string[]>('chat_notificationKeywords', []);
   const notificationsEnabled = useLocalStorage('chat_notificationsEnabled', false);
@@ -21,12 +19,7 @@ const useNotificationsStore = defineStore('notifications', () => {
 
     if (!isSupported) {
       notificationsEnabled.value = false;
-      toast.create({
-        title: 'Notifications Unsupported',
-        body: 'Your browser does not support notifications.',
-        variant: 'warning',
-        position: 'bottom-center',
-      });
+      log.warn('Notifications Unsupported');
       return;
     }
 
@@ -40,12 +33,7 @@ const useNotificationsStore = defineStore('notifications', () => {
       notificationsEnabled.value = true;
     } else {
       notificationsEnabled.value = false;
-      toast.create({
-        title: 'Permission Denied',
-        body: 'Browser notifications are blocked.',
-        variant: 'warning',
-        position: 'bottom-center',
-      });
+      log.warn('Notification permission denied');
     }
   }
 

@@ -1,6 +1,7 @@
 <template>
   <DraggableWindow>
     <template v-slot:main>
+      <OnlineUsers />
       <Transition name="fade"> </Transition>
     </template>
   </DraggableWindow>
@@ -8,7 +9,26 @@
 
 <script setup lang="ts">
   import DraggableWindow from './DraggableWindow.vue';
+  import OnlineUsers from './user/OnlineUsers.vue';
+  import { useChannelStore, useIrcStore } from '#stores';
+  import { DEFAULT_CHANNELS } from '#constants';
+  import { ref, watch } from 'vue';
   // TODO: Re-implement resizing tracking
+
+  const irc = useIrcStore();
+  const channels = useChannelStore();
+  const joined = ref(false);
+
+  watch([joined, () => irc.connectionStatus], ([hasJoined, connectionStatus]) => {
+    if (hasJoined || connectionStatus !== 'connected') {
+      return;
+    }
+
+    for (const channel of DEFAULT_CHANNELS) {
+      channels.joinChannel(channel);
+    }
+    channels.changeActiveChannel(DEFAULT_CHANNELS[0]);
+  });
 </script>
 
 <style scoped>
