@@ -1,7 +1,7 @@
 import type { Channel, Message } from '#models';
 import { parseNick } from '#utils';
 import { defineStore } from 'pinia';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, readonly, ref, watch } from 'vue';
 import useIrcStore from './irc';
 import { useWindowFocus } from '@vueuse/core';
 import useNotificationsStore from './notifications';
@@ -27,7 +27,7 @@ const useChannelStore = defineStore('channel', () => {
         name: channelName,
         banStatus: 'normal',
         messages: [],
-        usersTyping: [],
+        usersTyping: new Set(),
         notificationsEnabled: true,
         hasMention: false,
         hasNotification: false,
@@ -37,7 +37,6 @@ const useChannelStore = defineStore('channel', () => {
   }
 
   const activeTarget = ref('#general');
-  const activeChannel = computed(() => getChannel(activeTarget.value));
 
   function changeActiveChannel(channel: string) {
     activeTarget.value = channel;
@@ -47,7 +46,6 @@ const useChannelStore = defineStore('channel', () => {
       return;
     }
     const newChannel = irc.client.channel(channel);
-    newChannel.join();
     newChannel.updateUsers();
     getChannel(channel);
   }
@@ -106,70 +104,66 @@ const useChannelStore = defineStore('channel', () => {
         return;
       }
 
-      client.on('message', ({ message, nick, type, target, tags }) => {
-        const username = parseNick(nick);
-        const isPrivateMessage =
-          type === 'privmsg' &&
-          !target.startsWith('#') &&
-          irc.currentUser.username === parseNick(target);
-        const channel = isPrivateMessage ? getChannel(username) : getChannel(target);
+      client
+        .on('action', (event) => {
+          log.debug('Action', event);
+          // TODO: Use typing client-tag
+          // See https://ircv3.net/specs/client-tags/typing
+        })
+        .on('notice', (event) => {
+          log.debug('Notice', event);
+        })
+        .on('privmsg', (event) => {
+          log.debug('PRIVMSG', event);
+          const { message, nick, target, tags } = event;
+          const username = parseNick(nick);
+          const isPrivateMessage =
+            !target.startsWith('#') && irc.currentUser.username === parseNick(target);
+          const channel = isPrivateMessage ? getChannel(username) : getChannel(target);
 
-        // TODO: Read from 'raw' events to get replayed messages
-        // TODO: Use `typing` client tag if `message-tags` capability is available
-        // Handling typing status updates
-        if (type === 'action' && message === 'is typing...') {
-          if (!channel.usersTyping.includes(username)) {
-            channel.usersTyping.push(username);
-          }
-          return;
-        } else if (type === 'action' && message === 'is not typing...') {
-          channel.usersTyping = channel.usersTyping.filter((u) => u !== username);
-          return;
-        }
+          const highlightedMessage = highlightKeywords(message);
+          const newMessage: Message = {
+            // TODO: Read from server time, if available
+            time: new Date(),
+            starred: false,
+            message: highlightedMessage,
+            target,
+            nick,
+            type: 'message',
+            tags: tags ?? {},
+          };
+          // TODO: Cap messages per channel (50)
+          log.debug(newMessage);
+          channel.messages.push(newMessage);
 
-        const highlightedMessage = highlightKeywords(message);
-        const newMessage: Message = {
-          // TODO: Read from server time, if available
-          time: new Date(),
-          starred: false,
-          message: highlightedMessage,
-          target,
-          nick,
-          type: 'message',
-          tags: tags ?? {},
-        };
-        // TODO: Cap messages per channel (50)
-        log.debug(newMessage);
-        channel.messages.push(newMessage);
+          // If the user has allows for notifications on channel or keywords
+          // Display/send notifications if user is in another channel or has browser blurred
+          // Otherwise mark channel as read if user is actively viewing the channel
+          const isOtherChannel = channel.name !== activeTarget.value;
+          if (!isFocusedWindow || isOtherChannel) {
+            if (channel.notificationsEnabled) {
+              addMessageNotification(channel.name, newMessage);
 
-        // If the user has allows for notifications on channel or keywords
-        // Display/send notifications if user is in another channel or has browser blurred
-        // Otherwise mark channel as read if user is actively viewing the channel
-        const isOtherChannel = channel.name !== activeTarget.value;
-        if (!isFocusedWindow || isOtherChannel) {
-          if (channel.notificationsEnabled) {
-            addMessageNotification(channel.name, newMessage);
-
-            if (
-              message.toLocaleLowerCase().includes(irc.currentUser.username.toLocaleLowerCase())
+              if (
+                message.toLocaleLowerCase().includes(irc.currentUser.username.toLocaleLowerCase())
+              ) {
+                channel.hasMention = true;
+              }
+            } else if (
+              notifications.notificationKeywords.some((keyword) => message.includes(keyword))
             ) {
-              channel.hasMention = true;
+              addMessageNotification(channel.name, newMessage);
             }
-          } else if (
-            notifications.notificationKeywords.some((keyword) => message.includes(keyword))
-          ) {
-            addMessageNotification(channel.name, newMessage);
+          } else {
+            markAsRead(channel.name);
           }
-        } else {
-          markAsRead(channel.name);
-        }
-      });
+        });
     },
   );
 
   return {
     channelList,
-    activeChannel,
+    activeChannel: computed(() => readonly(getChannel(activeTarget.value))),
     changeActiveChannel,
     joinChannel,
     leaveChannel,

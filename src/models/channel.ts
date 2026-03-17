@@ -4,7 +4,7 @@ import type { Message } from './message';
 export interface Channel {
   name: string;
   messages: Message[];
-  usersTyping: string[];
+  usersTyping: Set<string>;
   banStatus: BanStatus;
   notificationsEnabled: boolean;
   /** User is mentioned. Cleared when channel is read. */

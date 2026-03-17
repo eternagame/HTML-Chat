@@ -106,11 +106,26 @@ const useIrcStore = defineStore('irc', () => {
         connectionStatus.value = 'reconnect failed';
         reconnectionStatus.isReconnecting = false;
       })
-      .on('debug', (message) => {
-        log.debug(message);
+      .on('batch start chathistory', (event) => {
+        log.debug('BATCH (start):', event);
+      })
+      .on('batch end chathistory', (event) => {
+        log.debug('BATCH (end)  :', event);
       })
       .on('raw', (event) => {
-        log.debug(event);
+        if (event.from_server) {
+          log.debug(
+            `%c↓%c ${event.line}`,
+            'color: #f00;background-color: #000',
+            'color: #fff;background-color: #000',
+          );
+        } else {
+          log.debug(
+            `%c↑%c ${event.line}`,
+            'color: #0f0;background-color: #000',
+            'color: #fff;background-color: #000',
+          );
+        }
       });
 
     ircClient.connect();

@@ -1,3 +1,5 @@
+export const AUTO_JOIN_CHANNELS = ['#test'];
+
 export const DEFAULT_CHANNELS = ['#general', '#off-topic', '#help', '#labs', '#test'];
 
 export const CHANNEL_DESCRIPTIONS: Record<string, string> = {

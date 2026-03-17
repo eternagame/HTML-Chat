@@ -11,7 +11,7 @@
   import DraggableWindow from './DraggableWindow.vue';
   import OnlineUsers from './user/OnlineUsers.vue';
   import { useChannelStore, useIrcStore } from '#stores';
-  import { DEFAULT_CHANNELS } from '#constants';
+  import { AUTO_JOIN_CHANNELS } from '#constants';
   import { ref, watch } from 'vue';
   // TODO: Re-implement resizing tracking
 
@@ -24,10 +24,10 @@
       return;
     }
 
-    for (const channel of DEFAULT_CHANNELS) {
+    for (const channel of AUTO_JOIN_CHANNELS) {
       channels.joinChannel(channel);
     }
-    channels.changeActiveChannel(DEFAULT_CHANNELS[0]);
+    channels.changeActiveChannel(AUTO_JOIN_CHANNELS[0]);
   });
 </script>
 
