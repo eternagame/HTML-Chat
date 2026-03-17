@@ -19,7 +19,7 @@ export default defineConfigWithVueTs(
   vueTsConfigs.recommended,
   {
     ...pluginVitest.configs.recommended,
-    files: ['src/**/__tests__/*'],
+    files: ['src/**/__tests__/*', 'src/**/*.{spec,test}.*'],
   },
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
   prettier,
