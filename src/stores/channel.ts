@@ -82,6 +82,14 @@ const useChannelStore = defineStore('channel', () => {
     channel.hasNotification = false;
   }
 
+  function getTargetChannel(nick: string, target: string) {
+    const username = parseNick(nick);
+    if (target.startsWith('#')) {
+      return getChannel(target);
+    }
+    return getChannel(username);
+  }
+
   function highlightKeywords(message: string): string {
     if (notifications.notificationKeywords.length === 0) {
       return message;
@@ -104,9 +112,25 @@ const useChannelStore = defineStore('channel', () => {
 
       client
         .on('tagmsg', (event) => {
-          log.debug('TAGMSG', event);
-          // TODO: Use '+typing' client-tag
           // See https://ircv3.net/specs/client-tags/typing
+          const typing = event.tags['+typing'];
+          if (typeof typing !== 'string') {
+            return;
+          }
+
+          const username = parseNick(event.nick);
+          const channel = getTargetChannel(event.nick, event.target);
+          switch (typing) {
+            case 'active':
+              channel.usersTyping.add(username);
+              break;
+
+            case 'paused':
+            case 'done':
+            default:
+              channel.usersTyping.delete(username);
+              break;
+          }
         })
         .on('action', (event) => {
           log.debug('ACTION', event);
@@ -118,9 +142,9 @@ const useChannelStore = defineStore('channel', () => {
           log.debug('PRIVMSG', event);
           const { message, nick, target, tags } = event;
           const username = parseNick(nick);
-          const isPrivateMessage =
-            !target.startsWith('#') && irc.currentUser.username === parseNick(target);
-          const channel = isPrivateMessage ? getChannel(username) : getChannel(target);
+          const channel = getTargetChannel(nick, target);
+          // Remove typing status if user sent something
+          channel.usersTyping.delete(username);
 
           const highlightedMessage = highlightKeywords(message);
           const newMessage: Message = {
