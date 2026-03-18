@@ -1,11 +1,11 @@
 import { ANONYMOUS_USER, DEFAULT_COLORS } from '#constants';
 import type { User } from '#models';
-import { parseNick, parseUid } from '#utils';
+import { getUserProfile } from '#services';
+import { isValidHexColor, parseNick, parseUid } from '#utils';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, watch } from 'vue';
 import useIrcStore from './irc';
-import { getUserProfile as fetchUserProfile } from '#services';
 
 const useUserListStore = defineStore('userList', () => {
   const irc = useIrcStore();
@@ -88,6 +88,16 @@ const useUserListStore = defineStore('userList', () => {
     user.awayReason = '';
   }
 
+  function updateUserColor(nick: string, color: string) {
+    const username = parseNick(nick);
+    const user = knownUsers.get(username);
+    if (!user) {
+      log.warn(`Tried to update color for user "${nick}", but they weren't in the user list.`);
+      return;
+    }
+    user.color = color;
+  }
+
   async function loadProfile(nick: string) {
     const username = parseNick(nick);
     const user = knownUsers.get(username);
@@ -97,7 +107,7 @@ const useUserListStore = defineStore('userList', () => {
 
     user.isFetchingProfile = true;
     try {
-      const profile = await fetchUserProfile(user.uid);
+      const profile = await getUserProfile(user.uid);
       user.profile = profile;
     } catch (error) {
       log.error(error);
@@ -138,6 +148,15 @@ const useUserListStore = defineStore('userList', () => {
             return;
           }
           setUserBack(event.nick);
+        })
+        .on('tagmsg', (event) => {
+          // Using '+color' client-tag for updating username color
+          // See https://ircv3.net/specs/extensions/message-tags
+          const nick = event.nick;
+          const color = event.tags['+color'];
+          if (typeof color === 'string' && isValidHexColor(color)) {
+            updateUserColor(nick, color);
+          }
         });
     },
   );

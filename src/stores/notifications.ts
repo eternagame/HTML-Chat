@@ -1,4 +1,4 @@
-import { useLocalStorage, useWebNotification } from '@vueuse/core';
+import { useLocalStorage, useWebNotification, type WebNotificationOptions } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed } from 'vue';
@@ -38,13 +38,22 @@ const useNotificationsStore = defineStore('notifications', () => {
   }
 
   /** Sends device notification only if granted permission */
-  async function sendNotification(title: string, body: string, tag: string) {
+  async function sendNotification(
+    { title, body, tag }: WebNotificationOptions,
+    onClick?: () => void,
+  ) {
     if (!notificationsEnabled.value) {
-      return null;
+      return;
     }
 
-    const notification = await show({ title, body, tag });
-    return notification ?? null;
+    try {
+      const notification = await show({ title, body, tag });
+      if (notification && onClick) {
+        notification.addEventListener('click', onClick);
+      }
+    } catch (error) {
+      log.error('Notification error', error);
+    }
   }
 
   return {

@@ -47,7 +47,7 @@ const useChannelStore = defineStore('channel', () => {
     }
     const newChannel = irc.client.channel(channel);
     newChannel.updateUsers();
-    getChannel(channel);
+    changeActiveChannel(channel);
   }
   function leaveChannel(channel: string) {
     if (!irc.client) {
@@ -63,19 +63,17 @@ const useChannelStore = defineStore('channel', () => {
     const channel = getChannel(channelName);
     channel.hasNotification = true;
 
-    try {
-      const notification = await notifications.sendNotification(
-        `New message in ${channel.name}`,
-        `${user.username}: ${message.message}`,
-        `new-message-${message.target}`,
-      );
-      notification?.addEventListener('click', () => {
-        // View channel if notification is clicked
+    notifications.sendNotification(
+      {
+        title: `New message in ${channel.name}`,
+        body: `${user.username}: ${message.message}`,
+        tag: `new-message-${message.target}`,
+      },
+      () => {
+        // Open channel if notification is clicked
         changeActiveChannel(channel.name);
-      });
-    } catch (err) {
-      log.error('Notification error:', err);
-    }
+      },
+    );
   }
 
   function markAsRead(channelName: string) {
@@ -105,13 +103,16 @@ const useChannelStore = defineStore('channel', () => {
       }
 
       client
-        .on('action', (event) => {
-          log.debug('Action', event);
-          // TODO: Use typing client-tag
+        .on('tagmsg', (event) => {
+          log.debug('TAGMSG', event);
+          // TODO: Use '+typing' client-tag
           // See https://ircv3.net/specs/client-tags/typing
         })
+        .on('action', (event) => {
+          log.debug('ACTION', event);
+        })
         .on('notice', (event) => {
-          log.debug('Notice', event);
+          log.debug('NOTICE', event);
         })
         .on('privmsg', (event) => {
           log.debug('PRIVMSG', event);
@@ -123,17 +124,19 @@ const useChannelStore = defineStore('channel', () => {
 
           const highlightedMessage = highlightKeywords(message);
           const newMessage: Message = {
-            // TODO: Read from server time, if available
-            time: new Date(),
+            id: event.tags.msgid ?? crypto.randomUUID(),
+            time: event.time ?? Date.now(),
             starred: false,
             message: highlightedMessage,
             target,
             nick,
-            type: 'message',
+            type: 'privmsg',
             tags: tags ?? {},
           };
-          // TODO: Cap messages per channel (50)
-          log.debug(newMessage);
+          // TODO: Cap messages per channel (100)
+          // TODO: Sort-insert messages based on `time` value
+          // TODO: Prevent duplicate message insertions with `id` value
+          log.debug('new message:', newMessage);
           channel.messages.push(newMessage);
 
           // If the user has allows for notifications on channel or keywords

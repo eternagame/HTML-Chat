@@ -1,11 +1,14 @@
-export type MessageType = 'message' | 'action' | 'system';
+import type { Tags } from 'irc-framework';
+
+export type MessageType = 'privmsg' | 'action' | 'notice' | 'system';
 
 export interface Message {
-  time: Date;
+  id: string;
+  time: number;
   starred: boolean;
   message: string;
   target: string;
   nick: string;
   type: MessageType;
-  tags: Record<string, string>;
+  tags: Tags;
 }
