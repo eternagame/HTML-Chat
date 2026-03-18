@@ -9,7 +9,8 @@ describe('user', () => {
   });
 
   it('parses UID from ident or former nick format', () => {
-    expect(parseUid('AnotherUser', 'anon')).toBe('anon');
+    expect(parseUid('AnotherUser', 'anon')).toBe('0');
+    expect(parseUid('Someone', '~987')).toBe('987');
     expect(parseUid('Anonymous^456', '67890')).toBe('67890');
     expect(parseUid('Chatter__123^1', 'anon')).toBe('123');
   });
