@@ -1,5 +1,5 @@
+import presetEnv from 'postcss-preset-env';
+
 export default {
-  plugins: {
-    autoprefixer: {},
-  },
+  plugins: [presetEnv()],
 };
