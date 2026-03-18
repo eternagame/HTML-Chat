@@ -107,7 +107,7 @@ declare module 'irc-framework' {
      */
     who(
       target: string,
-      cb: (event: { target: string; users: WhoListEventArgs['users'] }) => void,
+      cb: (event: { target: string; users: WhoListEvent['users'] }) => void,
     ): void;
 
     list(/* params: Array<string> */): void;
@@ -128,54 +128,97 @@ declare module 'irc-framework' {
 
     stringToBlocks(str: string, block_size?: number): string[];
 
+    // Reference: https://github.com/kiwiirc/irc-framework/blob/master/docs/events.md
     on(eventType: string | symbol, cb: (event: unknown) => void): this;
 
-    on(eventType: 'raw', cb: (event: RawEventArgs) => void): this;
-
-    on(eventType: 'join', cb: (event: JoinEventArgs) => void): this;
-
-    on(eventType: 'userlist', cb: (event: UserListEventArgs) => void): this;
-
-    on(eventType: 'monitorList', cb: (event: MonitorListEventArgs) => void): this;
-    on(eventType: 'whois', cb: (event: WhoIsEventArgs) => void): this;
-    on(eventType: 'whowas', cb: (event: WhoWasEventArgs) => void): this;
-
-    on(eventType: 'registered', cb: (event: RegisteredEventArgs) => void): this;
-    on(eventType: 'connected', cb: (event: RegisteredEventArgs) => void): this;
+    // Registration
+    on(eventType: 'registered', cb: (event: RegisteredEvent) => void): this;
+    on(eventType: 'connected', cb: (event: RegisteredEvent) => void): this;
     on(eventType: 'connecting', cb: () => void): this;
     on(
       eventType: 'reconnecting',
       cb: (event: { attempt: number; max_retries: number; wait: number }) => void,
     ): this;
-
-    on(eventType: 'quit', cb: (event: QuitEventArgs) => void): this;
-    on(eventType: 'part', cb: (event: QuitEventArgs) => void): this;
-    on(eventType: 'kick', cb: (event: KickEventArgs) => void): this;
-
-    on(eventType: 'away', cb: (event: AwayEventArgs) => void): this;
-    on(eventType: 'back', cb: (event: BackEventArgs) => void): this;
-
-    on(eventType: 'message', cb: (event: MessageEventArgs) => void): this;
-    on(eventType: 'privmsg', cb: (event: MessageEventArgs<'privmsg'>) => void): this;
-    on(eventType: 'notice', cb: (event: MessageEventArgs<'notice'>) => void): this;
-    on(eventType: 'action', cb: (event: MessageEventArgs<'action'>) => void): this;
-
-    on(eventType: 'mode', cb: (event: ModeEventArgs) => void): this;
-
+    on(eventType: 'close', cb: () => void): this;
     on(eventType: 'socket close', cb: (event: Error | false) => void): this;
-
     on(eventType: 'socket connected', cb: () => void): this;
-
     on(eventType: 'raw socket connected', cb: () => void): this;
-
     on(eventType: 'server options', cb: (event: ServerOptionsEventArgs) => void): this;
 
+    // Raw connection and debugging
+    on(eventType: 'raw', cb: (event: RawEventArgs) => void): this;
+    on(eventType: 'unknown command', cb: (event: IrcCommand) => void): this;
     on(eventType: 'debug', cb: (message: string) => void): this;
 
+    // Channels
+    on(eventType: 'channel info', cb: (event: unknown) => void): this;
+    on(eventType: 'channel list start', cb: () => void): this;
+    on(eventType: 'channel list', cb: (event: unknown[]) => void): this;
+    on(eventType: 'channel list end', cb: () => void): this;
+    on(eventType: 'wholist', cb: (event: WhoListEvent) => void): this;
+    on(eventType: 'userlist', cb: (event: UserListEventArgs) => void): this;
+    on(eventType: 'invitelist', cb: (event: unknown) => void): this;
+    on(eventType: 'banlist', cb: (event: BanlistEventArgs) => void): this;
+    on(eventType: 'exceptlist', cb: (event: unknown) => void): this;
+    on(eventType: 'topic', cb: (event: unknown) => void): this;
+    on(eventType: 'topicsetby', cb: (event: unknown) => void): this;
+    on(eventType: 'join', cb: (event: JoinEvent) => void): this;
+    on(eventType: 'part', cb: (event: PartEvent) => void): this;
+    on(eventType: 'kick', cb: (event: KickEvent) => void): this;
+    on(eventType: 'quit', cb: (event: QuitEvent) => void): this;
+    on(eventType: 'invited', cb: (event: unknown) => void): this;
+
+    // Messaging
+    on(eventType: 'message', cb: (event: MessageEventArgs) => void): this;
+    on(eventType: 'notice', cb: (event: MessageEvent) => void): this;
+    on(eventType: 'action', cb: (event: MessageEvent) => void): this;
+    on(eventType: 'privmsg', cb: (event: MessageEvent) => void): this;
+    on(eventType: 'tagmsg', cb: (event: TagMessageEvent) => void): this;
+    on(eventType: 'ctcp response', cb: (event: unknown) => void): this;
+    on(eventType: 'ctcp request', cb: (event: unknown) => void): this;
+    on(eventType: 'wallops', cb: (event: unknown) => void): this;
+
+    // Users
+    on(eventType: 'nick', cb: (event: unknown) => void): this;
+    on(eventType: 'account', cb: (event: unknown) => void): this;
+    on(eventType: 'user info', cb: (event: unknown) => void): this;
+    on(eventType: 'away', cb: (event: AwayEvent) => void): this;
+    on(eventType: 'back', cb: (event: BackEvent) => void): this;
+    on(eventType: 'monitorList', cb: (event: MonitorListEventArgs) => void): this;
     on(eventType: 'nick in use', cb: (event: NickInUseEventArgs) => void): this;
-
     on(eventType: 'nick invalid', cb: (event: NickInvalidEventArgs) => void): this;
+    on(eventType: 'users online', cb: (event: unknown) => void): this;
+    on(eventType: 'users offline', cb: (event: unknown) => void): this;
+    on(eventType: 'whois', cb: (event: WhoIsEventArgs) => void): this;
+    on(eventType: 'whowas', cb: (event: WhoWasEventArgs) => void): this;
+    on(eventType: 'user updated', cb: (event: unknown) => void): this;
 
+    // Misc
+    on(eventType: 'motd', cb: (event: unknown) => void): this;
+    on(eventType: 'info', cb: (event: unknown) => void): this;
+    on(eventType: 'help', cb: (event: unknown) => void): this;
+    on(eventType: 'batch start', cb: (event: unknown) => void): this;
+    on<BatchType extends string>(
+      eventType: `batch start ${BatchType}`,
+      cb: (event: unknown) => void,
+    ): this;
+    on(eventType: 'batch end', cb: (event: unknown) => void): this;
+    on<BatchType extends string>(
+      eventType: `batch end ${BatchType}`,
+      cb: (event: unknown) => void,
+    ): this;
+    on(
+      eventType: `cap ${'ls' | 'ack' | 'nak' | 'list' | 'new' | 'del'}`,
+      cb: (event: unknown) => void,
+    ): this;
+
+    // SASL
+    on(eventType: 'loggedin', cb: (event: unknown) => void): this;
+    on(eventType: 'loggedout', cb: (event: unknown) => void): this;
+    on(eventType: 'sasl failed', cb: (event: unknown) => void): this;
+
+    // Undocumented
+    on(eventType: 'mode', cb: (event: ModeEvent) => void): this;
     on(eventType: 'irc error', cb: (event: IrcErrorEventArgs) => void): this;
   }
   export class NetworkInfo {
@@ -202,7 +245,7 @@ declare module 'irc-framework' {
     extractTargetGroup(target: string): null | { target: string; target_group: string };
   }
   export class IrcMessage {
-    tags: Record<string, string>;
+    tags: Tags;
     prefix: string;
     nick: string;
     ident: string;
@@ -221,50 +264,57 @@ declare module 'irc-framework' {
     };
   }
 
-  export interface MessageEventArgs<
-    Type extends 'privmsg' | 'action' | 'notice' = 'privmsg' | 'action' | 'notice',
-  > {
-    account?: string;
-    group?: string;
-    hostname: string;
-    ident: string;
-    message: string;
+  type Tags = Partial<Record<string, string | boolean>> &
+    Partial<{
+      account: string;
+      batch: string;
+      msgid: string;
+      time: string;
+    }>;
+
+  interface MessageEvent {
+    from_server: boolean;
     nick: string;
-    reply: (message: string) => void;
-    tags: { [key: string]: string };
+    ident: string;
+    hostname: string;
     target: string;
+    group?: string;
+    message: string;
+    tags: Tags;
     time?: number;
-    type: Type;
+    account?: string;
+    batch?: string;
+    reply(message: string): void;
   }
-  export interface JoinEventArgs {
-    account: string;
+  export type MessageEventArgs =
+    | (MessageEvent & { type: 'privmsg' })
+    | (MessageEvent & { type: 'action' })
+    | (MessageEvent & { type: 'notice' });
+
+  export type TagMessageEvent = Pick<
+    MessageEvent,
+    'from_server' | 'nick' | 'ident' | 'hostname' | 'target' | 'tags' | 'time' | 'account' | 'batch'
+  >;
+
+  export interface JoinEvent extends Pick<
+    MessageEvent,
+    'nick' | 'ident' | 'hostname' | 'message' | 'time' | 'tags' | 'account' | 'batch'
+  > {
     channel: string;
     gecos: string;
-    hostname: string;
-    ident: string;
-    nick: string;
-    time?: number;
   }
-  export interface AwayEventArgs {
+  export interface AwayEvent extends Pick<MessageEvent, 'nick' | 'message' | 'time' | 'tags'> {
     self: boolean;
-    nick: string;
-    message: string;
-    time: number;
   }
-  export interface BackEventArgs {
-    self: boolean;
-    nick: string;
-    message: string;
-    time: number;
+  export interface BackEvent extends AwayEvent {
+    message: '';
   }
-  export interface KickEventArgs {
-    kicked: string;
-    nick: string;
-    ident: string;
-    hostname: string;
-    channel: string;
-    message: string;
-    time: number;
+  class IrcCommand implements Pick<MessageEvent, 'tags' | 'nick' | 'ident' | 'hostname'> {
+    command: string;
+    params: string[];
+    prefix: string;
+    getTag<Tag extends string>(tag_name: Tag): Tags[Tag];
+    getServerTime(): number | undefined;
   }
   export interface RawEventArgs {
     from_server: boolean;
@@ -307,27 +357,36 @@ declare module 'irc-framework' {
     error: string;
     whowas: Array<{ nick: string; ident: string; hostname: string; real_name: string }>[];
   }
-  export interface RegisteredEventArgs {
+  export interface RegisteredEvent {
     nick: string;
   }
-  export interface QuitEventArgs {
-    hostname: string;
-    ident: string;
-    message: string;
-    nick: string;
-    time?: number;
+  export interface PartEvent extends Pick<
+    MessageEvent,
+    'nick' | 'ident' | 'hostname' | 'message' | 'time'
+  > {
+    channel: string;
   }
+  export interface KickEvent extends Pick<
+    MessageEvent,
+    'nick' | 'ident' | 'hostname' | 'message' | 'time'
+  > {
+    kicked: string;
+    channel: string;
+  }
+  export type QuitEvent = Pick<MessageEvent, 'nick' | 'ident' | 'hostname' | 'message' | 'time'>;
+
   interface Mode {
     mode: string;
-    param: string;
+    param: string | null;
   }
-  export interface ModeEventArgs {
+  export interface ModeEvent extends Pick<
+    MessageEvent,
+    'target' | 'nick' | 'time' | 'tags' | 'batch'
+  > {
     modes: Mode[];
-    nick: string;
+
     raw_modes: string;
     raw_params: string[];
-    target: string;
-    time?: number;
   }
   export interface ServerOptionsEventArgs {
     options: Record<string, unknown>;
@@ -420,7 +479,7 @@ declare module 'irc-framework' {
     users: IrcChannelUser[];
     tags: Record<string, string>;
   }
-  export interface WhoListEventArgs {
+  export interface WhoListEvent {
     target: string;
     users: User[];
     tags: Record<string, string>;
@@ -447,7 +506,8 @@ declare module 'irc-framework' {
     when?: number;
   }
   interface ClientConstructorParameters {
-    host: string; // host?: (?)
+    host: string;
+    port?: string;
     nick?: string;
     username?: string;
     gecos?: string;

@@ -67,11 +67,13 @@ const useIrcStore = defineStore('irc', () => {
 
     const ircClient = new Client({
       host: import.meta.env.VITE_APP_SERVER_URL!,
+      port: import.meta.env.VITE_APP_SERVER_PORT!,
       ssl: import.meta.env.VITE_APP_SSL === 'true',
       nick,
       username: uid,
       gecos: username,
       transport: CustomConnection,
+      enable_echomessage: true,
       auto_reconnect_max_retries: 10,
       auto_reconnect_max_wait: 300_000,
     })
@@ -105,12 +107,6 @@ const useIrcStore = defineStore('irc', () => {
       .on('close', () => {
         connectionStatus.value = 'reconnect failed';
         reconnectionStatus.isReconnecting = false;
-      })
-      .on('batch start chathistory', (event) => {
-        log.debug('BATCH (start):', event);
-      })
-      .on('batch end chathistory', (event) => {
-        log.debug('BATCH (end)  :', event);
       })
       .on('raw', (event) => {
         if (event.from_server) {
