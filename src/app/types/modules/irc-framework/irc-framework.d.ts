@@ -264,13 +264,13 @@ declare module 'irc-framework' {
     };
   }
 
-  type Tags = Partial<Record<string, string | boolean>> &
-    Partial<{
-      account: string;
-      batch: string;
-      msgid: string;
-      time: string;
-    }>;
+  export type Tags = Partial<{
+    account: string;
+    batch: string;
+    msgid: string;
+    time: string;
+    [tagName: string]: string;
+  }>;
 
   interface MessageEvent {
     from_server: boolean;
