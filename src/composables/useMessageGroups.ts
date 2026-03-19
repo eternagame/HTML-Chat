@@ -1,6 +1,6 @@
 import type { Message } from '#models';
 import { parseNick } from '#utils';
-import { computed, type Ref } from 'vue';
+import { computed, toValue, type MaybeRefOrGetter, type DeepReadonly } from 'vue';
 
 export interface MessageGroup extends Pick<Message, 'nick' | 'type'> {
   id: string;
@@ -11,10 +11,10 @@ export interface MessageGroup extends Pick<Message, 'nick' | 'type'> {
  * Group consecutive messages from same user.
  * Does not group non-`privmsg` entries.
  */
-export function useMessageGroups(messages: Ref<Message[]>) {
+export function useMessageGroups(messages: MaybeRefOrGetter<Message[] | DeepReadonly<Message[]>>) {
   const messageGroups = computed(() => {
     const groups: MessageGroup[] = [];
-    for (const message of messages.value) {
+    for (const message of toValue(messages)) {
       const prevGroup = groups.at(-1) ?? null;
 
       if (

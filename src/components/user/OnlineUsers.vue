@@ -1,7 +1,7 @@
 <template>
   <ul>
     <li v-for="user in connectedUsers" :key="user.username">
-      <UsernameDisplay :username="user.username" />
+      <UsernameDisplay :nick="user.username" />
     </li>
   </ul>
 </template>

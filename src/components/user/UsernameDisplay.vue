@@ -43,15 +43,13 @@
   import { BPopover } from 'bootstrap-vue-next';
   import { computed } from 'vue';
 
-  const props = defineProps<{
-    username: string;
-  }>();
+  const props = defineProps<{ nick: string }>();
   const userList = useUserListStore();
-  const user = computed(() => userList.getUser(props.username));
+  const user = computed(() => userList.getUser(props.nick));
   const usernameColor = computed(() => user.value.color);
 
   function onShow() {
-    userList.loadProfile(props.username);
+    userList.loadProfile(props.nick);
   }
 </script>
 
