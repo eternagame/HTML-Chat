@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
-const userOperatorStore = defineStore('operator', () => {
+const useOperatorStore = defineStore('operator', () => {
   const isOperator = ref(false);
   // TODO: Add operator authentication, saving credentials, and operator actions here
   return {
@@ -9,4 +9,4 @@ const userOperatorStore = defineStore('operator', () => {
   };
 });
 
-export default userOperatorStore;
+export default useOperatorStore;

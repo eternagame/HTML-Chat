@@ -37,7 +37,6 @@ const useChannelStore = defineStore('channel', () => {
   }
 
   const activeTarget = ref('#general');
-
   function changeActiveChannel(channel: string) {
     activeTarget.value = channel;
   }
@@ -55,10 +54,14 @@ const useChannelStore = defineStore('channel', () => {
     }
 
     irc.client.part(channel);
-    channelMap.delete(channel);
+    const otherChannels = channelList.value.filter((c) => c !== channel);
+    if (otherChannels.length > 0) {
+      changeActiveChannel(otherChannels[0]);
+      channelMap.delete(channel);
+    }
   }
 
-  async function addMessageNotification(channelName: string, message: Message) {
+  async function sendMessageNotification(channelName: string, message: Message) {
     const user = userList.getUser(message.nick);
     const channel = getChannel(channelName);
     channel.hasNotification = true;
@@ -163,13 +166,17 @@ const useChannelStore = defineStore('channel', () => {
           log.debug('new message:', newMessage);
           channel.messages.push(newMessage);
 
+          if (typeof newMessage.tags.batch === 'string') {
+            // Don't trigger notifications on chat history playback
+            return;
+          }
           // If the user has allows for notifications on channel or keywords
           // Display/send notifications if user is in another channel or has browser blurred
           // Otherwise mark channel as read if user is actively viewing the channel
           const isOtherChannel = channel.name !== activeTarget.value;
           if (!isFocusedWindow || isOtherChannel) {
             if (channel.notificationsEnabled) {
-              addMessageNotification(channel.name, newMessage);
+              sendMessageNotification(channel.name, newMessage);
 
               if (
                 message.toLocaleLowerCase().includes(irc.currentUser.username.toLocaleLowerCase())
@@ -179,7 +186,7 @@ const useChannelStore = defineStore('channel', () => {
             } else if (
               notifications.notificationKeywords.some((keyword) => message.includes(keyword))
             ) {
-              addMessageNotification(channel.name, newMessage);
+              sendMessageNotification(channel.name, newMessage);
             }
           } else {
             markAsRead(channel.name);
@@ -188,6 +195,7 @@ const useChannelStore = defineStore('channel', () => {
     },
   );
 
+  // TODO: Add addSystemMessage method
   return {
     channelList,
     activeChannel: computed(() => readonly(getChannel(activeTarget.value))),
