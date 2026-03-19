@@ -1,5 +1,5 @@
 import type { Channel, Message } from '#models';
-import { parseNick } from '#utils';
+import { parseNick, sortedInsert } from '#utils';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, ref, watch } from 'vue';
 import useIrcStore from './irc';
@@ -161,10 +161,9 @@ const useChannelStore = defineStore('channel', () => {
             tags: tags ?? {},
           };
           // TODO: Cap messages per channel (100)
-          // TODO: Sort-insert messages based on `time` value
           // TODO: Prevent duplicate message insertions with `id` value
           log.debug('new message:', newMessage);
-          channel.messages.push(newMessage);
+          sortedInsert(channel.messages, newMessage, (a, b) => a.time - b.time);
 
           if (typeof newMessage.tags.batch === 'string') {
             // Don't trigger notifications on chat history playback

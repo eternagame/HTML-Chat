@@ -67,7 +67,7 @@ const useIrcStore = defineStore('irc', () => {
 
     const ircClient = new Client({
       host: import.meta.env.VITE_APP_SERVER_URL!,
-      port: import.meta.env.VITE_APP_SERVER_PORT!,
+      port: import.meta.env.VITE_APP_SERVER_PORT,
       ssl: import.meta.env.VITE_APP_SSL === 'true',
       nick,
       username: uid,
