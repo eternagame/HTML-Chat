@@ -16,7 +16,10 @@
   },
   "imports": {
     "#assets/*": "./src/assets/*",
+    "#commands": "./src/commands/index.ts",
+    "#commands/*": "./src/commands/*",
     "#components/*": "./src/components/*",
+    "#composables/*": "./src/composables/*",
     "#constants": "./src/constants/index.ts",
     "#constants/*": "./src/constants/*",
     "#models": "./src/models/index.ts",
