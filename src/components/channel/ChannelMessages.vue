@@ -5,12 +5,10 @@
 <script setup lang="ts">
   import { useMessageGroups } from '#composables/useMessageGroups.ts';
   import { useChannelStore } from '#stores';
-  import { computed } from 'vue';
   import MessageGroup from './MessageGroup.vue';
 
-  const { activeChannel } = useChannelStore();
-  const messages = computed(() => activeChannel.messages);
-  const { messageGroups } = useMessageGroups(messages);
+  const channel = useChannelStore();
+  const { messageGroups } = useMessageGroups(() => channel.activeMessages);
 </script>
 
 <style scoped></style>

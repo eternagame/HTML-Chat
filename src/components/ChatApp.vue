@@ -1,22 +1,28 @@
 <template>
   <DraggableWindow>
+    <template v-slot:header>
+      <span>{{ channel.activeChannelName }}</span>
+    </template>
     <template v-slot:main>
       <OnlineUsers />
-      <Transition name="fade"> </Transition>
+      <ChannelMessages />
+      <ChatInput />
     </template>
   </DraggableWindow>
 </template>
 
 <script setup lang="ts">
-  import DraggableWindow from './DraggableWindow.vue';
-  import OnlineUsers from './user/OnlineUsers.vue';
-  import { useChannelStore, useIrcStore } from '#stores';
   import { AUTO_JOIN_CHANNELS } from '#constants';
+  import { useChannelStore, useIrcStore } from '#stores';
   import { ref, watch } from 'vue';
+  import ChannelMessages from './channel/ChannelMessages.vue';
+  import DraggableWindow from './layout/DraggableWindow.vue';
+  import OnlineUsers from './user/OnlineUsers.vue';
+  import ChatInput from './chat/ChatInput.vue';
   // TODO: Re-implement resizing tracking
 
   const irc = useIrcStore();
-  const channels = useChannelStore();
+  const channel = useChannelStore();
   const joined = ref(false);
 
   watch([joined, () => irc.connectionStatus], ([hasJoined, connectionStatus]) => {
@@ -24,10 +30,10 @@
       return;
     }
 
-    for (const channel of AUTO_JOIN_CHANNELS) {
-      channels.joinChannel(channel);
+    for (const channelName of AUTO_JOIN_CHANNELS) {
+      channel.joinChannel(channelName);
     }
-    channels.changeActiveChannel(AUTO_JOIN_CHANNELS[0]);
+    channel.changeActiveChannel(AUTO_JOIN_CHANNELS[0]);
   });
 </script>
 

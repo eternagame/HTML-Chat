@@ -62,11 +62,11 @@ declare module 'irc-framework' {
 
     changeNick(nick: string): void;
 
-    sendMessage(commandName: string, target: string, message: string): void;
+    sendMessage(commandName: string, target: string, message: string, tags?: Tags): void;
 
-    say(target: string, message: string): void;
-
-    notice(target: string, message: string): void;
+    say(target: string, message: string, tags?: Tags): void;
+    notice(target: string, message: string, tags?: Tags): void;
+    tagmsg(target: string, tags?: Tags): void;
 
     join(channel: string, key?: string): void;
 
@@ -90,9 +90,9 @@ declare module 'irc-framework' {
 
     setTopic(channel: string, newTopic: string): void;
 
-    ctcpRequest(target: string, type: string /* , ...params: Array<any> */): void;
+    ctcpRequest(target: string, type: string, ...params: string[]): void;
 
-    ctcpResponse(target: string, type: string /* , params: Array<any> */): void;
+    ctcpResponse(target: string, type: string, ...params: string[]): void;
 
     action(target: string, message: string): string[];
 
@@ -265,9 +265,15 @@ declare module 'irc-framework' {
   }
 
   export type Tags = Partial<{
+    /** See https://ircv3.net/specs/extensions/account-tag */
     account: string;
+    /** See https://ircv3.net/specs/extensions/batch */
     batch: string;
+    /** See https://ircv3.net/specs/extensions/labeled-response */
+    label: string;
+    /** See https://ircv3.net/specs/extensions/message-ids */
     msgid: string;
+    /** See https://ircv3.net/specs/extensions/server-time */
     time: string;
     [tagName: string]: string;
   }>;

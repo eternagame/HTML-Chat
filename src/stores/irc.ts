@@ -124,6 +124,7 @@ const useIrcStore = defineStore('irc', () => {
         }
       });
 
+    ircClient.requestCap(['labeled-response']);
     ircClient.connect();
     client.value = markRaw(ircClient);
     isInitialized.value = true;
@@ -183,6 +184,7 @@ const useIrcStore = defineStore('irc', () => {
     reconnectionStatus: readonly(reconnectionStatus),
     reconnectionCountdown: readonly(reconnectionCountdown.remaining),
     currentUser: readonly(currentUser),
+    currentNick: readonly(currentNick),
     quit,
     signIn,
     autoSignIn,

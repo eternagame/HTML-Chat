@@ -1,8 +1,7 @@
 import type { Message } from '#models';
-import { parseNick } from '#utils';
 import { computed, toValue, type MaybeRefOrGetter, type DeepReadonly } from 'vue';
 
-export interface MessageGroup extends Pick<Message, 'nick' | 'type'> {
+export interface MessageGroup extends Pick<Message, 'nick' | 'username' | 'type'> {
   id: string;
   messages: Message[];
 }
@@ -21,13 +20,14 @@ export function useMessageGroups(messages: MaybeRefOrGetter<Message[] | DeepRead
         !prevGroup ||
         message.type !== 'privmsg' ||
         prevGroup.type !== 'privmsg' ||
-        parseNick(prevGroup.nick) !== parseNick(message.nick)
+        prevGroup.username !== message.username
       ) {
         groups.push({
-          id: `group-${message.time}-${message.nick}`,
+          id: `group-${message.username}-${message.time}`,
           type: message.type,
           messages: [message],
           nick: message.nick,
+          username: message.username,
         });
       } else {
         prevGroup.messages.push(message);
