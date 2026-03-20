@@ -12,12 +12,6 @@ export interface InitClientConfig {
   uid: string;
 }
 
-export class CustomConnection extends Connection {
-  override writeLine(line: string, cb: () => void): void {
-    super.writeLine(`${line}\r\n`, cb);
-  }
-}
-
 const useIrcStore = defineStore('irc', () => {
   /**
    * Tracking if the client has started the connection.
@@ -72,7 +66,7 @@ const useIrcStore = defineStore('irc', () => {
       nick,
       username: uid,
       gecos: username,
-      transport: CustomConnection,
+      transport: Connection,
       enable_echomessage: true,
       auto_reconnect_max_retries: 10,
       auto_reconnect_max_wait: 300_000,
