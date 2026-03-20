@@ -16,16 +16,28 @@ export function brightness(r: number, g: number, b: number) {
 
 const BACKGROUND_VALUE = brightness(4, 52, 104);
 /** Determines whether color contrasts well with background */
-export function isValidColor(r: number, g: number, b: number) {
+export function isAccessibleColor(r: number, g: number, b: number) {
   const colorValue = brightness(r, g, b);
   return Math.abs((colorValue + 0.05) / (BACKGROUND_VALUE + 0.05)) > 4;
 }
 
-/** See {@link isValidColor} */
-export function isValidHexColor(hex: string) {
-  if (hex.length !== 7) {
+/** See {@link isAccessibleColor} */
+export function isAccessibleHexColor(hex: string) {
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) {
     return false;
   }
   const { r, g, b } = hexToRGB(hex);
-  return isValidColor(r, g, b);
+  return isAccessibleColor(r, g, b);
+}
+
+export const NAMED_COLORS: Record<string, string> = {
+  orange: '#ffb400',
+  yellow: '#ffff00',
+  blue: '#00f8ff',
+  green: '#53ff00',
+  purple: '#ff76ff',
+};
+
+export function getNamedColor(colorName: string): string | null {
+  return NAMED_COLORS[colorName] ?? null;
 }

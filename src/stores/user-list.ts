@@ -1,7 +1,7 @@
 import { ANONYMOUS_USER, DEFAULT_COLORS } from '#constants';
 import type { User } from '#models';
 import { getUserProfile } from '#services';
-import { isValidHexColor, parseNick, parseUid } from '#utils';
+import { isAccessibleHexColor, parseNick, parseUid } from '#utils';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, watch } from 'vue';
@@ -88,7 +88,10 @@ const useUserListStore = defineStore('userList', () => {
     user.awayReason = '';
   }
 
-  function updateUserColor(nick: string, color: string) {
+  function updateUserColor(nick: string, color?: string) {
+    if (typeof color !== 'string' || !isAccessibleHexColor(color)) {
+      return;
+    }
     const username = parseNick(nick);
     const user = knownUsers.get(username);
     if (!user) {
@@ -152,11 +155,10 @@ const useUserListStore = defineStore('userList', () => {
         .on('tagmsg', (event) => {
           // Using '+color' client-tag for updating username color
           // See https://ircv3.net/specs/extensions/message-tags
-          const nick = event.nick;
-          const color = event.tags['+color'];
-          if (typeof color === 'string' && isValidHexColor(color)) {
-            updateUserColor(nick, color);
-          }
+          updateUserColor(event.nick, event.tags['+color']);
+        })
+        .on('message', (event) => {
+          updateUserColor(event.nick, event.tags['+color']);
         });
     },
   );
