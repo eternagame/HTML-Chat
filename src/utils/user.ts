@@ -6,6 +6,9 @@ export function createNick(username: string) {
 const LEGACY_USERNAME_REGEX = /^(.+)__\d+\^\d+$/i;
 const LEGACY_UID_REGEX = /^.+__(\d+)\^\d+$/i;
 
+/**
+ * Get username from nick
+ */
 export function parseNick(nick: string) {
   const match = LEGACY_USERNAME_REGEX.exec(nick);
   if (match) {

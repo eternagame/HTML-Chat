@@ -1,7 +1,7 @@
 <template>
   <DraggableWindow>
     <template v-slot:header>
-      <span>{{ channel.activeChannelName }}</span>
+      <span>{{ channel.currentChannelName }}</span>
     </template>
     <template v-slot:main>
       <OnlineUsers />
@@ -33,7 +33,7 @@
     for (const channelName of AUTO_JOIN_CHANNELS) {
       channel.joinChannel(channelName);
     }
-    channel.changeActiveChannel(AUTO_JOIN_CHANNELS[0]);
+    channel.goToChannel(AUTO_JOIN_CHANNELS[0]);
   });
 </script>
 

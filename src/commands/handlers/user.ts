@@ -1,10 +1,14 @@
-import type { TODO } from '#models';
+import type { CommandHandler, TODO } from '#models';
 
-/**
- * Post message as an action.
- * `/me <message>`
- */
-export const me: TODO = null;
+export const me: CommandHandler = {
+  name: 'me',
+  description: 'Posts message formatted as an action.',
+  usage: '/me <message>',
+  examples: ['/me laughs'],
+  execute({ target, fullText, sendMessage }) {
+    sendMessage(target, fullText, 'action');
+  },
+};
 /**
  * Hide messages from a user.
  * `/ignore <username>`
@@ -24,16 +28,23 @@ export const unignore: TODO = null;
  * `/disconnect`
  */
 export const disconnect: TODO = null;
-/**
- * Set self as away.
- *
- * `/away <reason>`
- * If `<reason>` is not given, the default away message is provided instead.
- */
-export const away: TODO = null;
-/**
- * Set self as back.
- *
- * `/unaway`
- */
-export const unaway: TODO = null;
+
+export const away: CommandHandler = {
+  name: 'away',
+  description: 'Set self as away. A default away message is sent if no reason is provide.',
+  usage: '/away [reason]',
+  examples: ['/away', '/away Lunch'],
+  execute({ fullText, stores }) {
+    stores.irc.client?.raw(`AWAY ${fullText.trim() || 'User is currently away'}`);
+  },
+};
+
+export const unaway: CommandHandler = {
+  name: 'unaway',
+  aliases: ['back'],
+  description: 'Set self as unaway/back.',
+  usage: '/unaway',
+  execute({ stores }) {
+    stores.irc.client?.raw('AWAY');
+  },
+};

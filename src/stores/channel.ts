@@ -16,17 +16,17 @@ const useChannelStore = defineStore('channel', () => {
   const userList = useUserListStore();
   const isFocusedWindow = useWindowFocus();
   const channelMap = reactive(new Map<string, Channel>());
-  const channelList = computed(() => Array.from(channelMap.keys()));
+  const channelList = computed(() => new Set(channelMap.keys()));
 
   /**
    * Gets channel from list.
    * Adds channel if not previously tracked.
    */
-  function createOrGetChannel(channelName: string) {
-    if (!channelMap.has(channelName)) {
+  function createOrGetChannel(channelOrUsername: string) {
+    if (!channelMap.has(channelOrUsername)) {
       // Add new channel if not found
-      channelMap.set(channelName, {
-        name: channelName,
+      channelMap.set(channelOrUsername, {
+        name: channelOrUsername,
         banStatus: 'normal',
         messages: [],
         usersTyping: new Set(),
@@ -35,19 +35,22 @@ const useChannelStore = defineStore('channel', () => {
         hasNotification: false,
       });
     }
-    return channelMap.get(channelName)!;
+    return channelMap.get(channelOrUsername)!;
   }
 
-  const activeTarget = ref('');
-  function changeActiveChannel(channel: string) {
-    activeTarget.value = channel;
+  const currentChannelName = ref('');
+  function goToChannel(channelOrUsername: string) {
+    currentChannelName.value = channelOrUsername;
   }
-  const activeChannel = computed(() => {
-    const channel = channelMap.get(activeTarget.value);
+  const currentChannel = computed(() => {
+    const channel = channelMap.get(currentChannelName.value);
     return channel ? readonly(channel) : null;
   });
-  const activeMessages = computed(() => activeChannel.value?.messages ?? []);
+  const currentMessages = computed(() => currentChannel.value?.messages ?? []);
 
+  /**
+   * @param channel
+   */
   function joinChannel(channel: string) {
     if (!irc.client) {
       return;
@@ -55,55 +58,58 @@ const useChannelStore = defineStore('channel', () => {
     createOrGetChannel(channel);
     const newChannel = irc.client.channel(channel);
     newChannel.updateUsers();
-    changeActiveChannel(channel);
+    goToChannel(channel);
   }
+  /**
+   * @param channel #channel
+   */
   function leaveChannel(channel: string) {
     if (!irc.client) {
       return;
     }
 
-    irc.client.part(channel);
-    const otherChannels = channelList.value.filter((c) => c !== channel);
+    // Avoid leaving last channel
+    const otherChannels = Array.from(channelList.value).filter((c) => c !== channel);
     if (otherChannels.length > 0) {
-      changeActiveChannel(otherChannels[0]);
+      goToChannel(otherChannels[0]);
       channelMap.delete(channel);
+      irc.client.part(channel);
     }
   }
 
-  async function sendMessageNotification(channelName: string, message: Message) {
-    const user = userList.getUser(message.nick);
-    const channel = createOrGetChannel(channelName);
+  async function sendMessageNotification(channelOrUsername: string, message: Message) {
+    const channel = createOrGetChannel(channelOrUsername);
     channel.hasNotification = true;
-
     notifications.sendNotification(
       {
         title: `New message in ${channel.name}`,
-        body: `${user.username}: ${message.message}`,
+        body: `${message.username}: ${message.message}`,
         tag: `new-message-${message.target}`,
       },
       () => {
         // Open channel if notification is clicked
-        changeActiveChannel(channel.name);
+        goToChannel(channel.name);
       },
     );
   }
 
-  function markAsRead(channelName: string) {
-    const channel = createOrGetChannel(channelName);
+  function markAsRead(channelOrUsername: string) {
+    const channel = createOrGetChannel(channelOrUsername);
     channel.hasMention = false;
     channel.hasNotification = false;
   }
 
   function getTargetChannel(nick: string, target: string) {
-    const username = parseNick(nick);
+    const user = userList.getUserByNick(nick);
+    const username = user?.username ?? parseNick(nick);
     if (target.startsWith('#')) {
       return createOrGetChannel(target);
     }
     return createOrGetChannel(username);
   }
 
-  function addMessageInternal(channelName: string, message: Message) {
-    const channel = createOrGetChannel(channelName);
+  function addMessageInternal(channelOrUsername: string, message: Message) {
+    const channel = createOrGetChannel(channelOrUsername);
     if (channel.messages.some((m) => m.id === message.id)) {
       // Do not add duplicate messages
       return;
@@ -115,39 +121,46 @@ const useChannelStore = defineStore('channel', () => {
     }
   }
 
-  function addSystemMessage(channelName: string, text: string) {
+  function addSystemMessage(channelOrUsername: string, text: string) {
     const systemMessage: Message = {
       id: `system-${crypto.randomUUID()}`,
       time: Date.now(),
-      starred: false,
       message: text,
-      target: channelName,
+      type: 'system',
+
+      // The rest of these fields are irrelevant for rendering system messages
+      // Only defining them for satisfying Message model type
+      starred: false,
+      target: channelOrUsername,
       nick: 'System',
       username: 'System',
-      type: 'system',
       tags: {},
     };
-    addMessageInternal(channelName, systemMessage);
+    addMessageInternal(channelOrUsername, systemMessage);
   }
 
   function addPendingMessage(
-    channelName: string,
+    channelOrUsername: string,
     text: string,
     messageType: Exclude<MessageType, 'system'> = 'privmsg',
   ) {
     const pendingId = `${crypto.randomUUID()}`;
-    addMessageInternal(channelName, {
+    addMessageInternal(channelOrUsername, {
       id: `pending-${pendingId}`,
       time: Date.now(),
-      starred: false,
       message: text,
-      target: channelName,
       nick: irc.currentNick,
       username: irc.currentUser.username,
       type: messageType,
-      status: 'pending',
+
+      // Necessary for tracking pending status later
       tags: { label: pendingId },
+      status: 'pending',
       pendingId,
+
+      // Irrelevant for rendering pending messages
+      starred: false,
+      target: channelOrUsername,
     });
     return pendingId;
   }
@@ -180,7 +193,8 @@ const useChannelStore = defineStore('channel', () => {
             return;
           }
 
-          const username = parseNick(event.nick);
+          const user = userList.getUserByNick(event.nick);
+          const username = user?.username ?? parseNick(event.nick);
           const channel = getTargetChannel(event.nick, event.target);
           switch (typing) {
             case 'active':
@@ -196,7 +210,8 @@ const useChannelStore = defineStore('channel', () => {
         })
         .on('message', (event) => {
           log.debug(`[${event.type}]`, event);
-          const username = parseNick(event.nick);
+          const user = userList.getUserByNick(event.nick);
+          const username = user?.username ?? parseNick(event.nick);
           const channel = getTargetChannel(event.nick, event.target);
           // Remove typing status if user sent something
           channel.usersTyping.delete(username);
@@ -242,8 +257,8 @@ const useChannelStore = defineStore('channel', () => {
           // If the user has allows for notifications on channel or keywords
           // Display/send notifications if user is in another channel or has browser blurred
           // Otherwise mark channel as read if user is actively viewing the channel
-          const isOtherChannel = channel.name !== activeTarget.value;
-          if (!isFocusedWindow || isOtherChannel) {
+          const isOtherChannel = channel.name !== currentChannelName.value;
+          if (!isFocusedWindow.value || isOtherChannel) {
             if (channel.notificationsEnabled) {
               sendMessageNotification(channel.name, newMessage);
 
@@ -270,10 +285,10 @@ const useChannelStore = defineStore('channel', () => {
 
   return {
     channelList,
-    activeChannelName: readonly(activeTarget),
-    activeChannel,
-    activeMessages,
-    changeActiveChannel,
+    currentChannelName: readonly(currentChannelName),
+    currentChannel,
+    currentMessages,
+    goToChannel,
     addSystemMessage,
     addPendingMessage,
     joinChannel,

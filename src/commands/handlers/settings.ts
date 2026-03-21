@@ -1,4 +1,4 @@
-import type { TODO } from '#models';
+import type { CommandHandler, TODO } from '#models';
 
 /**
  * Change custom emoticon slot.
@@ -20,7 +20,21 @@ export const indicator: TODO = null;
  * `/size <newFontSize>`
  * Aliases: `/textsize`, `/fontsize`
  */
-export const size: TODO = null;
+export const size: CommandHandler = {
+  name: 'size',
+  aliases: ['textsize', 'fontsize'],
+  description: 'Update font size (px). Min: 10; Max: 18.',
+  usage: '/size <number>',
+  examples: ['/size 14'],
+  execute({ target, args, stores }) {
+    const value = Number.parseInt(args[0], 10);
+    if (Number.isNaN(value)) {
+      stores.channel.addSystemMessage(target, `${args[0]} is not a number`);
+      return;
+    }
+    stores.settings.setFontSize(value);
+  },
+};
 /**
  * View/update notification keywords.
  * - `/keywords`

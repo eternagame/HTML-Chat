@@ -1,4 +1,4 @@
-import { ANONYMOUS_USER, DEFAULT_COLORS } from '#constants';
+import { DEFAULT_COLORS } from '#constants';
 import type { User } from '#models';
 import { getUserProfile } from '#services';
 import { isAccessibleHexColor, parseNick, parseUid } from '#utils';
@@ -9,25 +9,38 @@ import useIrcStore from './irc';
 
 const useUserListStore = defineStore('userList', () => {
   const irc = useIrcStore();
+  /** {Username, User} */
   const knownUsers = reactive(new Map<string, User>());
+  /** {Nick, Username} */
+  const nickToUsername = computed(() => {
+    const nickMap = new Map<string, string>();
+    for (const user of knownUsers.values()) {
+      for (const nick of user.nicks) {
+        nickMap.set(nick, user.username);
+      }
+    }
+    return nickMap;
+  });
   const users = computed(() => Array.from(knownUsers.values()));
 
-  function addUser(nick: string, ident: string) {
-    const uid = parseUid(nick, ident);
+  function addUserNick(nick: string, ident: string) {
     const username = parseNick(nick);
     if (knownUsers.has(username)) {
+      // This user existed before and has a new nick
       const user = knownUsers.get(username)!;
       user.status = 'online';
       user.nicks.add(nick);
       return;
     }
 
-    const parsedUID = Number.parseInt(uid, 10);
+    // Create new user to track
+    const uid = parseUid(nick, ident);
+    const uidAsNumber = Number.parseInt(uid, 10);
+    // Assigning default username color
     const color =
-      Number.isNaN(parsedUID) || parsedUID === 0
+      Number.isNaN(uidAsNumber) || uidAsNumber === 0
         ? '#ffffff'
-        : DEFAULT_COLORS[parsedUID % DEFAULT_COLORS.length];
-
+        : DEFAULT_COLORS[uidAsNumber % DEFAULT_COLORS.length];
     knownUsers.set(username, {
       username,
       uid,
@@ -40,33 +53,25 @@ const useUserListStore = defineStore('userList', () => {
     });
   }
 
-  function removeUser(nick: string) {
-    const username = parseNick(nick);
-    const user = knownUsers.get(username);
+  function removeUserNick(nick: string) {
+    const user = getUserByNickInternal(nick);
     if (!user) {
       log.warn(`Tried to remove user "${nick}" but they weren't in the user list.`);
       return;
     }
-
     user.nicks.delete(nick);
     if (user.nicks.size === 0) {
       user.status = 'offline';
     }
   }
 
-  function getUser(nick: string) {
-    const username = parseNick(nick);
-    const user = knownUsers.get(username);
-    if (!user) {
-      log.warn(`Could not find user "${nick}" in the user list`);
-      return readonly(ANONYMOUS_USER);
-    }
-    return readonly(user);
+  function getUserByNickInternal(nick: string): User | null {
+    const username = nickToUsername.value.get(nick);
+    return username ? knownUsers.get(username)! : null;
   }
 
   function setUserAway(nick: string, awayReason: string) {
-    const username = parseNick(nick);
-    const user = knownUsers.get(username);
+    const user = getUserByNickInternal(nick);
     if (!user) {
       log.warn(`Tried to mark user "${nick}" as away, but they weren't in the user list.`);
       return;
@@ -76,8 +81,7 @@ const useUserListStore = defineStore('userList', () => {
   }
 
   function setUserBack(nick: string) {
-    const username = parseNick(nick);
-    const user = knownUsers.get(username);
+    const user = getUserByNickInternal(nick);
     if (!user) {
       log.warn(
         `Tried to mark user "${nick}" as back (not away), but they weren't in the user list.`,
@@ -89,20 +93,14 @@ const useUserListStore = defineStore('userList', () => {
   }
 
   function updateUserColor(nick: string, color?: string) {
-    if (typeof color !== 'string' || !isAccessibleHexColor(color)) {
-      return;
-    }
-    const username = parseNick(nick);
-    const user = knownUsers.get(username);
-    if (!user) {
-      log.warn(`Tried to update color for user "${nick}", but they weren't in the user list.`);
+    const user = getUserByNickInternal(nick);
+    if (!user || typeof color !== 'string' || !isAccessibleHexColor(color)) {
       return;
     }
     user.color = color;
   }
 
-  async function loadProfile(nick: string) {
-    const username = parseNick(nick);
+  async function loadProfile(username: string) {
     const user = knownUsers.get(username);
     if (!user || user.isFetchingProfile || user.profile !== null) {
       return;
@@ -131,14 +129,14 @@ const useUserListStore = defineStore('userList', () => {
       client
         .on('userlist', (event) => {
           for (const ircUser of event.users) {
-            addUser(ircUser.nick, ircUser.ident);
+            addUserNick(ircUser.nick, ircUser.ident);
           }
         })
         .on('join', (event) => {
-          addUser(event.nick, event.ident);
+          addUserNick(event.nick, event.ident);
         })
         .on('quit', (event) => {
-          removeUser(event.nick);
+          removeUserNick(event.nick);
         })
         .on('away', (event) => {
           if (event.self) {
@@ -164,7 +162,14 @@ const useUserListStore = defineStore('userList', () => {
   );
 
   return {
-    getUser,
+    getUserByUsername(username: string) {
+      const user = knownUsers.get(username);
+      return user ? readonly(user) : null;
+    },
+    getUserByNick(nick: string) {
+      const user = getUserByNickInternal(nick);
+      return user ? readonly(user) : null;
+    },
     users,
     loadProfile,
   };

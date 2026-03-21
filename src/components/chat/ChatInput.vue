@@ -28,22 +28,14 @@
   const channel = useChannelStore();
   const chat = useChatStore();
   const inputBuffer = ref('');
-  const placeholder = computed(() => `Message ${channel.activeChannelName}`);
+  const placeholder = computed(() => `Message ${channel.currentChannelName}`);
 
   function onSubmit() {
     const text = inputBuffer.value.trim();
     if (!text) {
       return;
     }
-
-    const isCommand = text.startsWith('/');
-
-    if (isCommand) {
-      // TODO: Add command handler
-    } else {
-      chat.say(text);
-    }
-
+    chat.handleUserInput(inputBuffer.value);
     inputBuffer.value = '';
   }
 </script>

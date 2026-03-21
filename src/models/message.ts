@@ -8,6 +8,7 @@ export interface Message {
   time: number;
   starred: boolean;
   message: string;
+  /** Either channel or nick */
   target: string;
   username: string;
   nick: string;

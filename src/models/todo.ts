@@ -1,1 +1,1 @@
-export type TODO<T = unknown> = T;
+export type TODO<T = null> = T;

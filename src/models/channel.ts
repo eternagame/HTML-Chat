@@ -2,6 +2,10 @@ import type { BanStatus } from './ban-status';
 import type { Message } from './message';
 
 export interface Channel {
+  /**
+   * - `#channel`
+   * - `username`
+   */
   name: string;
   messages: Message[];
   usersTyping: Set<string>;

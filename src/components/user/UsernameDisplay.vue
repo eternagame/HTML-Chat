@@ -39,17 +39,17 @@
 
 <script setup lang="ts">
   import defaultAvatar from '#assets/default-avatar.svg';
+  import { ANONYMOUS_USER } from '#constants';
   import { useUserListStore } from '#stores';
   import { BPopover } from 'bootstrap-vue-next';
   import { computed } from 'vue';
 
-  const props = defineProps<{ nick: string }>();
+  const props = defineProps<{ username: string }>();
   const userList = useUserListStore();
-  const user = computed(() => userList.getUser(props.nick));
+  const user = computed(() => userList.getUserByUsername(props.username) ?? ANONYMOUS_USER);
   const usernameColor = computed(() => user.value.color);
-
   function onShow() {
-    userList.loadProfile(props.nick);
+    userList.loadProfile(props.username);
   }
 </script>
 

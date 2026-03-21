@@ -1,7 +1,7 @@
 import type { User } from '#models';
 
 export const ANONYMOUS_USER: User = {
-  username: 'anonymous',
+  username: 'Anonymous',
   uid: '0',
   nicks: new Set([]),
   status: 'offline',
