@@ -64,11 +64,11 @@ md.renderer.rules.text = (tokens, idx) => {
       content = content.replace(e[0], `<span class="serif">${e[0].slice(1, -1)} </span>`);
     }
   });
-  [...content.matchAll(/#\S+\s/g)].forEach(e => {
-    content = content.replace(e[0].trim(), `<mark class="channel-link">${e[0].trim()}</mark>`);
+  [...content.matchAll(/(^|\s)(#[a-z\d_-]+)/gi)].forEach(e => {
+    content = content.replace(e[0].trim(), `<mark class="channel-link">${e[2].trim()}</mark>`);
   });
-  [...content.matchAll(/@\S+\s/g)].forEach(e => {
-    content = content.replace(e[0].trim(), `<mark class="user-link">${e[0].trim()}</mark>`);
+  [...content.matchAll(/(^|\s)(@[a-z\d_-]+)/g)].forEach(e => {
+    content = content.replace(e[0].trim(), `<mark class="user-link">${e[2].trim()}</mark>`);
   });
   [...content.matchAll(/(https?:\/\/)?eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
     content = content.replace(e[0].trim(), `<a href="${e[0].trim()}" class="image-link" target="_blank"><img class="screenshot" src="${e[0].trim()}"></a>`);
