@@ -3,15 +3,15 @@
   <!-- TODO: Figure out keyboard accessibility... -->
   <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
   <div ref="draggableContainer" class="draggable-container" @click="internalClick">
-    <div class="handle handle-l" @mousedown="resizeMouseDown($event, 'l')" />
-    <div class="handle handle-tl" @mousedown="resizeMouseDown($event, 'tl')" />
-    <div class="handle handle-t" @mousedown="resizeMouseDown($event, 't')" />
-    <div class="handle handle-tr" @mousedown="resizeMouseDown($event, 'tr')" />
-    <div class="handle handle-r" @mousedown="resizeMouseDown($event, 'r')" />
-    <div class="handle handle-br" @mousedown="resizeMouseDown($event, 'br')" />
-    <div class="handle handle-b" @mousedown="resizeMouseDown($event, 'b')" />
-    <div class="handle handle-bl" @mousedown="resizeMouseDown($event, 'bl')" />
-    <div class="draggable-header" @mousedown="dragMouseDown">
+    <div class="handle handle-l" @mousedown.prevent="resizeMouseDown($event, 'l')" />
+    <div class="handle handle-tl" @mousedown.prevent="resizeMouseDown($event, 'tl')" />
+    <div class="handle handle-t" @mousedown.prevent="resizeMouseDown($event, 't')" />
+    <div class="handle handle-tr" @mousedown.prevent="resizeMouseDown($event, 'tr')" />
+    <div class="handle handle-r" @mousedown.prevent="resizeMouseDown($event, 'r')" />
+    <div class="handle handle-br" @mousedown.prevent="resizeMouseDown($event, 'br')" />
+    <div class="handle handle-b" @mousedown.prevent="resizeMouseDown($event, 'b')" />
+    <div class="handle handle-bl" @mousedown.prevent="resizeMouseDown($event, 'bl')" />
+    <div class="draggable-header" @mousedown.prevent="dragMouseDown">
       <slot name="header" />
     </div>
     <slot name="main" />
@@ -216,9 +216,6 @@
         top: windowHeight - 40,
       });
     }
-
-    // TODO
-    // TODO: Figure out what ^ that TODO comment refers to
   }
 
   function internalClick(event: MouseEvent) {
@@ -304,17 +301,22 @@
   .draggable-container {
     position: absolute;
     z-index: 9;
+
+    .handle {
+      display: none;
+    }
+    &.clicked-inside {
+      .handle {
+        display: block;
+        background-color: lightgray;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+      }
+    }
   }
   .draggable-header {
     z-index: 10;
-  }
-
-  .clicked-inside > .handle {
-    background-color: lightgray;
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    display: block;
   }
 
   .handle {

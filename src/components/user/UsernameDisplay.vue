@@ -17,22 +17,41 @@
 
     <template v-if="user.isFetchingProfile || !user.profile">Fetching player profile...</template>
     <template v-else>
-      <img :src="user.profile.avatar ?? defaultAvatar" alt="" />
+      <article class="profile d-flex flex-column">
+        <img
+          class="profile-avatar align-self-center"
+          :src="user.profile.avatar ?? defaultAvatar"
+          alt=""
+        />
 
-      <a v-if="user.profile.link" :href="user.profile.link" target="_blank">{{ user.username }}</a>
-      <span v-else>{{ user.username }}</span>
+        <div class="align-self-center">
+          <span
+            v-if="user.status !== 'online'"
+            class="indicator"
+            :class="{
+              'indicator--away': user.status === 'away',
+              'indicator--offline': user.status === 'offline',
+            }"
+            >●
+          </span>
+          <a v-if="user.profile.link" :href="user.profile.link" target="_blank">{{
+            user.username
+          }}</a>
+          <span v-else>{{ user.username }}</span>
+        </div>
 
-      <dl>
-        <dt>Rank</dt>
-        <dd v-if="user.profile.rank">#{{ user.profile.rank }}</dd>
-        <dd v-else>Unranked</dd>
+        <dl>
+          <dt>Rank</dt>
+          <dd v-if="user.profile.rank">#{{ user.profile.rank }}</dd>
+          <dd v-else>Unranked</dd>
 
-        <dt>Roles</dt>
-        <dd>{{ user.profile.roles.join(', ') }}</dd>
-      </dl>
+          <dt>Roles</dt>
+          <dd>{{ user.profile.roles.join(', ') }}</dd>
+        </dl>
 
-      <section v-if="user.profile.description" v-html="user.profile.description" />
-      <p v-else>User has not added a description to their profile.</p>
+        <section v-if="user.profile.description" v-html="user.profile.description" />
+        <p v-else>User has not added a description to their profile.</p>
+      </article>
     </template>
   </BPopover>
 </template>
@@ -62,5 +81,15 @@
   }
   .indicator--offline {
     color: gray;
+  }
+
+  .profile {
+    width: 250px;
+  }
+
+  .profile-avatar {
+    height: 75px;
+    object-fit: contain;
+    border-radius: 50%;
   }
 </style>

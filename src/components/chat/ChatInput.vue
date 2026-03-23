@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-input-container p3 border-top bg-light">
+  <div class="chat-input-container">
     <BForm @submit.prevent="onSubmit">
       <BInputGroup size="lg">
         <BFormInput

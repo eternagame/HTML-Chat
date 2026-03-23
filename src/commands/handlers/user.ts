@@ -5,8 +5,8 @@ export const me: CommandHandler = {
   description: 'Posts message formatted as an action.',
   usage: '/me <message>',
   examples: ['/me laughs'],
-  execute({ target, fullText, sendMessage }) {
-    sendMessage(target, fullText, 'action');
+  execute({ currentChannel, fullText, sendMessage }) {
+    sendMessage(currentChannel, fullText, 'action');
   },
 };
 /**
@@ -35,7 +35,7 @@ export const away: CommandHandler = {
   usage: '/away [reason]',
   examples: ['/away', '/away Lunch'],
   execute({ fullText, stores }) {
-    stores.irc.client?.raw(`AWAY ${fullText.trim() || 'User is currently away'}`);
+    stores.irc.client?.raw(`AWAY :${fullText.trim() || 'User is currently away'}`);
   },
 };
 

@@ -16,7 +16,7 @@ const useChannelStore = defineStore('channel', () => {
   const userList = useUserListStore();
   const isFocusedWindow = useWindowFocus();
   const channelMap = reactive(new Map<string, Channel>());
-  const channelList = computed(() => new Set(channelMap.keys()));
+  const channelList = computed(() => Array.from(channelMap.keys()));
 
   /**
    * Gets channel from list.
@@ -40,7 +40,12 @@ const useChannelStore = defineStore('channel', () => {
 
   const currentChannelName = ref('');
   function goToChannel(channelOrUsername: string) {
-    currentChannelName.value = channelOrUsername;
+    const channel = channelList.value.find(
+      (c) => channelOrUsername.localeCompare(c, undefined, { sensitivity: 'accent' }) === 0,
+    );
+    if (channel) {
+      currentChannelName.value = channel;
+    }
   }
   const currentChannel = computed(() => {
     const channel = channelMap.get(currentChannelName.value);
@@ -48,31 +53,55 @@ const useChannelStore = defineStore('channel', () => {
   });
   const currentMessages = computed(() => currentChannel.value?.messages ?? []);
 
-  /**
-   * @param channel
-   */
   function joinChannel(channel: string) {
     if (!irc.client) {
       return;
     }
+
+    if (
+      channelList.value.some(
+        (c) => channel.localeCompare(c, undefined, { sensitivity: 'accent' }) === 0,
+      )
+    ) {
+      // Channel already exists
+      goToChannel(channel);
+      return;
+    }
+
+    const isIRCChannel = channel.startsWith('#');
     createOrGetChannel(channel);
-    const newChannel = irc.client.channel(channel);
-    newChannel.updateUsers();
+    if (isIRCChannel) {
+      const newChannel = irc.client.channel(channel);
+      newChannel.updateUsers();
+    }
     goToChannel(channel);
   }
-  /**
-   * @param channel #channel
-   */
+
   function leaveChannel(channel: string) {
     if (!irc.client) {
       return;
     }
 
-    // Avoid leaving last channel
-    const otherChannels = Array.from(channelList.value).filter((c) => c !== channel);
-    if (otherChannels.length > 0) {
-      goToChannel(otherChannels[0]);
-      channelMap.delete(channel);
+    const isIRCChannel = channel.startsWith('#');
+    const isCurrentChannel =
+      channel.localeCompare(currentChannelName.value, undefined, { sensitivity: 'accent' }) === 0;
+
+    if (isCurrentChannel) {
+      // Avoid leaving last channel
+      const otherChannels = Array.from(channelMap.keys()).filter(
+        (c) => channel.localeCompare(c, undefined, { sensitivity: 'accent' }) !== 0,
+      );
+
+      if (otherChannels.length > 0) {
+        goToChannel(otherChannels[0]);
+      } else {
+        addSystemMessage(currentChannelName.value, 'Join another channel before leaving this one.');
+        return;
+      }
+    }
+
+    channelMap.delete(channel);
+    if (isIRCChannel) {
       irc.client.part(channel);
     }
   }

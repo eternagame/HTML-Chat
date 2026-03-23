@@ -2,7 +2,7 @@ import type { useChannelStore, useIrcStore, useSettingsStore, useUserListStore }
 import type { MessageType } from './message';
 
 export interface CommandContext {
-  target: string;
+  currentChannel: string;
   fullText: string;
   args: string[];
   sendMessage(channelOrUsername: string, text: string, type?: Exclude<MessageType, 'system'>): void;

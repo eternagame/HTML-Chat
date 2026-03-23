@@ -7,9 +7,9 @@
       {{ props.message.message }}
     </p>
   </div>
-  <div v-else class="message-container d-flex flex-row flex-nowrap justify-content-between">
+  <div v-else class="message-container d-flex flex-row flex-nowrap">
     <div
-      class="message-content"
+      class="message-content flex-grow-1"
       :class="{
         'message-status--error': message.status === 'error',
         'message-status--pending': message.status === 'pending',
@@ -20,6 +20,7 @@
       }"
       v-html="formattedMessage"
     />
+
     <time v-if="message.type !== 'notice'" class="message-timestamp flex-shrink-0"
       >[{{ formatTime(message.time) }}]</time
     >
@@ -54,8 +55,16 @@
   .message-type--action {
     font-style: italic;
   }
+  .message-type--notice,
   .message-type--system {
     font-style: italic;
+  }
+  .message-type--notice {
+    text-align: center;
+    &::before,
+    &::after {
+      content: ' * ';
+    }
   }
 
   :deep(.message-content) {

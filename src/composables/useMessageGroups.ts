@@ -8,7 +8,7 @@ export interface MessageGroup extends Pick<Message, 'nick' | 'username' | 'type'
 
 /**
  * Group consecutive messages from same user.
- * Does not group non-`privmsg` entries.
+ * Does not group `notice` messages.
  */
 export function useMessageGroups(messages: MaybeRefOrGetter<Message[] | DeepReadonly<Message[]>>) {
   const messageGroups = computed(() => {
@@ -18,8 +18,8 @@ export function useMessageGroups(messages: MaybeRefOrGetter<Message[] | DeepRead
 
       if (
         !prevGroup ||
-        message.type !== 'privmsg' ||
-        prevGroup.type !== 'privmsg' ||
+        prevGroup.type !== message.type ||
+        message.type === 'notice' ||
         prevGroup.username !== message.username
       ) {
         groups.push({

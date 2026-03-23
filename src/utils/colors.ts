@@ -17,6 +17,10 @@ export function brightness(r: number, g: number, b: number) {
 const BACKGROUND_VALUE = brightness(4, 52, 104);
 /** Determines whether color contrasts well with background */
 export function isAccessibleColor(r: number, g: number, b: number) {
+  if ([r, g, b].some((value) => Number.isNaN(value))) {
+    return false;
+  }
+
   const colorValue = brightness(r, g, b);
   return Math.abs((colorValue + 0.05) / (BACKGROUND_VALUE + 0.05)) > 4;
 }

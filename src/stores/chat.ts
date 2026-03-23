@@ -74,13 +74,14 @@ const useChatStore = defineStore('chat', () => {
     const isCommand = rawInput.startsWith('/');
 
     if (isCommand) {
-      const [rawCommand, ...args] = rawInput.split(' ');
+      const [rawCommand, ...args] = rawInput.split(/\s+/g);
       // Remove `/` for matching against registry
       const commandName = rawCommand.substring(1).toLowerCase();
       const handler = commandRegistry.get(commandName);
       if (handler) {
+        // TODO: Check if user is operator for operator-only commands
         handler.execute({
-          target: channel.currentChannelName,
+          currentChannel: channel.currentChannelName,
           args,
           fullText: args.join(' '),
           sendMessage,

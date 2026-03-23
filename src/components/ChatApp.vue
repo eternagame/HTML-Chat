@@ -1,28 +1,31 @@
 <template>
-  <DraggableWindow>
-    <template v-slot:header>
-      <span>{{ channel.currentChannelName }}</span>
-    </template>
-    <template v-slot:main>
-      <OnlineUsers />
-      <ChannelMessages />
-      <ChatInput />
-    </template>
-  </DraggableWindow>
+  <div class="chat-app" :style="{ fontSize: `${settings.fontSize}px` }">
+    <DraggableWindow>
+      <template v-slot:header>
+        <span>{{ channel.currentChannelName }}</span>
+      </template>
+      <template v-slot:main>
+        <div class="channel d-flex flex-column">
+          <ChannelMessages class="flex-grow-1 flex-shrink-1" />
+          <ChatInput class="flex-grow-1 flex-shrink-0" />
+        </div>
+      </template>
+    </DraggableWindow>
+  </div>
 </template>
 
 <script setup lang="ts">
   import { AUTO_JOIN_CHANNELS } from '#constants';
-  import { useChannelStore, useIrcStore } from '#stores';
+  import { useChannelStore, useIrcStore, useSettingsStore } from '#stores';
   import { ref, watch } from 'vue';
   import ChannelMessages from './channel/ChannelMessages.vue';
   import DraggableWindow from './layout/DraggableWindow.vue';
-  import OnlineUsers from './user/OnlineUsers.vue';
   import ChatInput from './chat/ChatInput.vue';
   // TODO: Re-implement resizing tracking
 
   const irc = useIrcStore();
   const channel = useChannelStore();
+  const settings = useSettingsStore();
   const joined = ref(false);
 
   watch([joined, () => irc.connectionStatus], ([hasJoined, connectionStatus]) => {
