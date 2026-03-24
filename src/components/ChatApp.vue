@@ -15,29 +15,14 @@
 </template>
 
 <script setup lang="ts">
-  import { AUTO_JOIN_CHANNELS } from '#constants';
-  import { useChannelStore, useIrcStore, useSettingsStore } from '#stores';
-  import { ref, watch } from 'vue';
+  import { useChannelStore, useSettingsStore } from '#stores';
   import ChannelMessages from './channel/ChannelMessages.vue';
   import DraggableWindow from './layout/DraggableWindow.vue';
   import ChatInput from './chat/ChatInput.vue';
   // TODO: Re-implement resizing tracking
 
-  const irc = useIrcStore();
   const channel = useChannelStore();
   const settings = useSettingsStore();
-  const joined = ref(false);
-
-  watch([joined, () => irc.connectionStatus], ([hasJoined, connectionStatus]) => {
-    if (hasJoined || connectionStatus !== 'connected') {
-      return;
-    }
-
-    for (const channelName of AUTO_JOIN_CHANNELS) {
-      channel.joinChannel(channelName);
-    }
-    channel.goToChannel(AUTO_JOIN_CHANNELS[0]);
-  });
 </script>
 
 <style scoped>

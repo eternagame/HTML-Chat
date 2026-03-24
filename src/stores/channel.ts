@@ -1,6 +1,7 @@
+import { AUTO_JOIN_CHANNELS } from '#constants';
 import type { Channel, Message, MessageType } from '#models';
 import { parseNick, sortedInsert } from '#utils';
-import { useWindowFocus } from '@vueuse/core';
+import { useLocalStorage, useWindowFocus } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, ref, watch } from 'vue';
@@ -17,6 +18,7 @@ const useChannelStore = defineStore('channel', () => {
   const isFocusedWindow = useWindowFocus();
   const channelMap = reactive(new Map<string, Channel>());
   const channelList = computed(() => Array.from(channelMap.keys()));
+  const joinedChannels = useLocalStorage<Set<string>>('chat_joinedChannels', AUTO_JOIN_CHANNELS);
 
   /**
    * Gets channel from list.
@@ -53,12 +55,21 @@ const useChannelStore = defineStore('channel', () => {
   });
   const currentMessages = computed(() => currentChannel.value?.messages ?? []);
 
-  function joinChannel(channel: string) {
+  function requestChatHistory(channelOrUsername: string) {
+    if (!irc.client || !channelOrUsername.startsWith('#')) {
+      // Skip requests for user channels
+      return;
+    }
+    irc.client.raw(`CHATHISTORY LATEST ${channelOrUsername} * ${MAX_MESSAGES_PER_CHANNEL}`);
+  }
+
+  function joinChannel(channel: string, options: Partial<{ force: boolean }> = { force: false }) {
     if (!irc.client) {
       return;
     }
 
     if (
+      !options.force &&
       channelList.value.some(
         (c) => channel.localeCompare(c, undefined, { sensitivity: 'accent' }) === 0,
       )
@@ -68,13 +79,30 @@ const useChannelStore = defineStore('channel', () => {
       return;
     }
 
+    joinedChannels.value.add(channel);
     const isIRCChannel = channel.startsWith('#');
     createOrGetChannel(channel);
     if (isIRCChannel) {
       const newChannel = irc.client.channel(channel);
       newChannel.updateUsers();
+      requestChatHistory(channel);
     }
     goToChannel(channel);
+  }
+
+  /**
+   * Re-JOIN channels on application start or on client reconnection
+   */
+  function rejoinChannels() {
+    if (joinedChannels.value.size === 0) {
+      return;
+    }
+
+    const channels = Array.from(joinedChannels.value);
+    for (const channel of channels) {
+      joinChannel(channel, { force: true });
+    }
+    goToChannel(channels[0]);
   }
 
   function leaveChannel(channel: string) {
@@ -100,6 +128,7 @@ const useChannelStore = defineStore('channel', () => {
       }
     }
 
+    joinedChannels.value.delete(channel);
     channelMap.delete(channel);
     if (isIRCChannel) {
       irc.client.part(channel);
@@ -261,18 +290,16 @@ const useChannelStore = defineStore('channel', () => {
           const isMe = username === irc.currentUser.username;
           if (isMe) {
             // Check if incoming message from self is the one sent recently
-            const pendingIndex = channel.messages.findLastIndex(
+            const pendingMessage = channel.messages.findLast(
               (m) =>
                 m.status === 'pending' &&
                 (m.pendingId === event.tags.label || m.message === event.message),
             );
 
-            if (pendingIndex !== -1) {
+            if (pendingMessage) {
               // Mark incoming message as successful sent if it was pending
-              newMessage.status = 'sent';
-              newMessage.pendingId = channel.messages[pendingIndex].pendingId;
-              // Remove pending version so that incoming message is inserted correctly
-              channel.messages.splice(pendingIndex, 1);
+              Object.assign(pendingMessage, newMessage, { status: 'sent' });
+              return;
             }
           }
 
@@ -308,7 +335,13 @@ const useChannelStore = defineStore('channel', () => {
           } else {
             markAsRead(channel.name);
           }
+        })
+        .on('connected', () => {
+          // After successful client reconnection
+          rejoinChannels();
         });
+
+      rejoinChannels();
     },
   );
 

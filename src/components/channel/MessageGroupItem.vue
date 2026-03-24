@@ -21,15 +21,22 @@
       v-html="formattedMessage"
     />
 
-    <time v-if="message.type !== 'notice'" class="message-timestamp flex-shrink-0"
-      >[{{ formatTime(message.time) }}]</time
-    >
+    <BPopover :delay="{ show: 250, hide: 100 }">
+      <template #target>
+        <time v-if="message.type !== 'notice'" class="message-timestamp flex-shrink-0"
+          >[{{ formatTime(message.time) }}]</time
+        >
+      </template>
+
+      {{ formateDateTime(message.time) }}
+    </BPopover>
   </div>
 </template>
 
 <script setup lang="ts">
   import type { Message } from '#models';
-  import { formatTime, md } from '#utils';
+  import { formateDateTime, formatTime, md } from '#utils';
+  import { BPopover } from 'bootstrap-vue-next';
   import { computed } from 'vue';
 
   const props = defineProps<{ message: Message }>();

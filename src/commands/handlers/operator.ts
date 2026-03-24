@@ -129,6 +129,7 @@ export const changenick: TODO = null;
 
 export const execute: CommandHandler = {
   name: 'execute',
+  aliases: ['exec'],
   description:
     'Allow operator to send an IRC command directly through the websocket. For using commands not yet available in the client.',
   usage: '/execute <IRC commands>',

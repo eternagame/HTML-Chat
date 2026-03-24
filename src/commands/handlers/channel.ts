@@ -8,6 +8,7 @@ export const join: CommandHandler = {
   execute({ currentChannel, args, stores }) {
     if (args.length === 0) {
       stores.channel.addSystemMessage(currentChannel, 'Select a channel using /join <channel>');
+      return;
     }
 
     const inputChannel = args[0];
