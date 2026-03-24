@@ -7,8 +7,10 @@
       <template v-slot:main>
         <div class="channel d-flex flex-column">
           <ChannelMessages class="flex-grow-1 flex-shrink-1" />
-          <ChatInput class="flex-grow-1 flex-shrink-0" />
         </div>
+      </template>
+      <template v-slot:footer>
+        <ChatInput class="flex-grow-1 flex-shrink-0" />
       </template>
     </DraggableWindow>
   </div>

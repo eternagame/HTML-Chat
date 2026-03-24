@@ -40,8 +40,4 @@
   }
 </script>
 
-<style scoped>
-  .chat-input-container {
-    min-height: 5em;
-  }
-</style>
+<style scoped></style>
