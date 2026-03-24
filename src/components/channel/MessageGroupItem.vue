@@ -75,7 +75,7 @@
   }
 
   :deep(.message-content) {
-    word-break: break-all;
+    word-break: break-word;
 
     .screenshot {
       object-fit: contain;

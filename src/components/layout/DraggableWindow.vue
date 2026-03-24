@@ -26,7 +26,13 @@
 </template>
 
 <script setup lang="ts">
-  import { onClickOutside, useDraggable, useEventListener } from '@vueuse/core';
+  import {
+    onClickOutside,
+    type Position,
+    useDraggable,
+    useEventListener,
+    useLocalStorage,
+  } from '@vueuse/core';
   import { computed, type CSSProperties, ref } from 'vue';
 
   const handles = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
@@ -38,16 +44,25 @@
   const headerRef = ref<HTMLDivElement>();
   const isActive = ref(false);
   const isResizing = ref(false);
-  const width = ref(400);
-  const height = ref(300);
+  const width = useLocalStorage('chat_windowWidth', 400);
+  const height = useLocalStorage('chat_windowHeight', 300);
+  const initialPosition = useLocalStorage<Position>(
+    'chat_windowPosition',
+    { x: 0, y: 0 },
+    { mergeDefaults: true },
+  );
 
   onClickOutside(containerRef, () => {
     isActive.value = false;
   });
 
   const { x, y } = useDraggable(containerRef, {
-    initialValue: { x: 100, y: 100 },
+    initialValue: initialPosition,
     handle: headerRef,
+    onEnd(endPosition) {
+      // Save position to localStorage
+      Object.assign(initialPosition.value, endPosition);
+    },
   });
 
   let currentHandle: Handle | null = null;
@@ -116,6 +131,9 @@
     isResizing.value = false;
     currentHandle = null;
     positionStart = null;
+    // Save position to localStorage
+    initialPosition.value.x = x.value;
+    initialPosition.value.y = y.value;
     cleanupMove?.();
     cleanupEnd?.();
   }
