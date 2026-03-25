@@ -40,3 +40,15 @@ export function parseUid(nick: string, uid: string): string {
 
   return '0';
 }
+
+/**
+ * @param mask Typically form of `username^*!*@*` (ban) or `m:username^*!*@*` (muted)
+ */
+export function isMaskMatch(nick: string, mask: string): boolean {
+  const nickMask = mask.replace(/!.+/, '');
+  // Match against ban or mute mask
+  const maskRegex = new RegExp(
+    `^${nickMask.replace(/^m:/, '(m:)?').replaceAll('*', '.+').replaceAll('^', '\\^')}$`,
+  );
+  return maskRegex.test(nick);
+}

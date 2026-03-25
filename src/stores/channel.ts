@@ -1,6 +1,6 @@
 import { AUTO_JOIN_CHANNELS } from '#constants';
 import type { Channel, Message, MessageType } from '#models';
-import { parseNick, sortedInsert } from '#utils';
+import { isMaskMatch, parseNick, sortedInsert } from '#utils';
 import { useLocalStorage, useWindowFocus } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
@@ -123,7 +123,7 @@ const useChannelStore = defineStore('channel', () => {
       if (otherChannels.length > 0) {
         goToChannel(otherChannels[0]);
       } else {
-        addSystemMessage(currentChannelName.value, 'Join another channel before leaving this one.');
+        addSystemMessage('Join another channel before leaving this one.');
         return;
       }
     }
@@ -179,7 +179,11 @@ const useChannelStore = defineStore('channel', () => {
     }
   }
 
-  function addSystemMessage(channelOrUsername: string, text: string) {
+  /**
+   * Display system message in channel messages
+   * @param channelOrUsername Defaults to current channel if not specified
+   */
+  function addSystemMessage(text: string, channelOrUsername: string = currentChannelName.value) {
     const systemMessage: Message = {
       id: `system-${crypto.randomUUID()}`,
       time: Date.now(),
@@ -339,6 +343,69 @@ const useChannelStore = defineStore('channel', () => {
         .on('connected', () => {
           // After successful client reconnection
           rejoinChannels();
+        })
+        .on('irc error', (event) => {
+          log.debug('[IRC Error]', event);
+        })
+        .on('kick', (event) => {
+          if (event.kicked !== irc.currentNick) {
+            return;
+          }
+
+          addSystemMessage(`You have been kicked from ${event.channel}`, event.channel);
+          addSystemMessage(
+            `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
+            event.channel,
+          );
+          createOrGetChannel(event.channel).banStatus = 'banned';
+        })
+        .on('mode', (event) => {
+          log.debug('[MODE]', event);
+          if (!event.target.startsWith('#')) {
+            // Only caring about channel-related mode events
+            return;
+          }
+
+          const channel = createOrGetChannel(event.target);
+
+          for (const mode of event.modes) {
+            // Listen for mode events only for the current user nick
+            if (!mode.param || !isMaskMatch(irc.currentNick, mode.param)) {
+              continue;
+            }
+
+            switch (mode.mode) {
+              case '+b': {
+                if (mode.param.startsWith('m:')) {
+                  // Muted
+                  addSystemMessage(`You have been muted.`, event.target);
+                  createOrGetChannel(event.target).banStatus = 'muted';
+                } else {
+                  // Banned
+                  addSystemMessage(`You have been banned.`, event.target);
+                  createOrGetChannel(event.target).banStatus = 'banned';
+                }
+
+                addSystemMessage(
+                  `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
+                  event.target,
+                );
+                break;
+              }
+
+              case '-b': {
+                if (mode.param.startsWith('m:')) {
+                  // Unmuted
+                  addSystemMessage(`You have been unmuted.`, event.target);
+                } else {
+                  // Unbanned
+                  addSystemMessage(`You have been unbanned.`, event.target);
+                }
+                channel.banStatus = 'normal';
+                break;
+              }
+            }
+          }
         });
 
       rejoinChannels();
@@ -350,6 +417,10 @@ const useChannelStore = defineStore('channel', () => {
     currentChannelName: readonly(currentChannelName),
     currentChannel,
     currentMessages,
+    getChannel(channelOrUsername: string) {
+      const channel = channelMap.get(channelOrUsername);
+      return channel ? readonly(channel) : null;
+    },
     goToChannel,
     addSystemMessage,
     addPendingMessage,

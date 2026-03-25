@@ -5,12 +5,14 @@ import type { Tags } from 'irc-framework';
 import { defineStore } from 'pinia';
 import useChannelStore from './channel';
 import useIrcStore from './irc';
+import useOperatorStore from './operator';
 import useSettingsStore from './settings';
 import useUserListStore from './user-list';
 
 const useChatStore = defineStore('chat', () => {
   const channel = useChannelStore();
   const irc = useIrcStore();
+  const operator = useOperatorStore();
   const settings = useSettingsStore();
   const userList = useUserListStore();
 
@@ -22,6 +24,15 @@ const useChatStore = defineStore('chat', () => {
     type: Exclude<MessageType, 'system'> = 'privmsg',
   ) {
     if (!irc.client) {
+      return;
+    }
+
+    const targetChannel = channel.getChannel(channelOrUsername);
+    if (targetChannel && targetChannel.banStatus !== 'normal') {
+      channel.addSystemMessage(`You cannot chat here. You have been ${targetChannel.banStatus}.`);
+      channel.addSystemMessage(
+        'Please read our [code of conduct](https://eternagame.org/about/conduct)',
+      );
       return;
     }
 
@@ -37,7 +48,7 @@ const useChatStore = defineStore('chat', () => {
       const targetUser = userList.getUserByUsername(channelOrUsername);
       if (!targetUser || targetUser.status === 'offline') {
         // Do not attempt to send message if the user is offline
-        channel.addSystemMessage(channelOrUsername, `${channelOrUsername} is currently offline.`);
+        channel.addSystemMessage(`${channelOrUsername} is currently offline.`);
         return;
       }
 
@@ -88,15 +99,13 @@ const useChatStore = defineStore('chat', () => {
           stores: {
             channel,
             irc,
+            operator,
             settings,
             userList,
           },
         });
       } else {
-        channel.addSystemMessage(
-          channel.currentChannelName,
-          `/${commandName} is not a recognized command.`,
-        );
+        channel.addSystemMessage(`/${commandName} is not a recognized command.`);
       }
     } else {
       sendMessage(channel.currentChannelName, rawInput, 'privmsg');

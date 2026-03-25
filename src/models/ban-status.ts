@@ -1,1 +1,1 @@
-export type BanStatus = 'normal' | 'quiet' | 'banned';
+export type BanStatus = 'normal' | 'muted' | 'banned';

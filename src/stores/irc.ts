@@ -118,7 +118,7 @@ const useIrcStore = defineStore('irc', () => {
         }
       });
 
-    ircClient.requestCap(['labeled-response']);
+    ircClient.requestCap(['labeled-response', 'draft/chathistory', 'draft/event-playback']);
     ircClient.connect();
     client.value = markRaw(ircClient);
     isInitialized.value = true;

@@ -33,10 +33,15 @@ export const size: CommandHandler = {
   description: 'Update font size (px). Min: 10; Max: 18.',
   usage: '/size <number>',
   examples: ['/size 14'],
-  execute({ currentChannel: target, args, stores }) {
+  execute({ args, stores }) {
+    if (args.length === 0) {
+      stores.channel.addSystemMessage(`"/size" requires a number`);
+      return;
+    }
+
     const value = Number.parseInt(args[0], 10);
     if (Number.isNaN(value)) {
-      stores.channel.addSystemMessage(target, `${args[0]} is not a number`);
+      stores.channel.addSystemMessage(`${args[0]} is not a number`);
       return;
     }
     stores.settings.setFontSize(value);
@@ -64,7 +69,7 @@ export const color: CommandHandler = {
   examples: ['/color #ffffff', '/color 255 255 255', '/color orange'],
   execute({ currentChannel, args, stores }) {
     if (args.length === 0) {
-      stores.channel.addSystemMessage(currentChannel, '"/color" requires a color input');
+      stores.channel.addSystemMessage('"/color" requires a color input');
       return;
     }
 
@@ -77,17 +82,14 @@ export const color: CommandHandler = {
 
       if (!isAccessibleColor(r, g, b)) {
         // RGB input
-        stores.channel.addSystemMessage(
-          currentChannel,
-          `${r}, ${g}, ${b} is not a readable color.`,
-        );
+        stores.channel.addSystemMessage(`${r}, ${g}, ${b} is not a readable color.`);
         return;
       }
       inputColor = rgbToHex(r, g, b);
     } else if (args[0].startsWith('#')) {
       // HEX input
       if (!isAccessibleHexColor(args[0])) {
-        stores.channel.addSystemMessage(currentChannel, `${args[0]} is not a readable color.`);
+        stores.channel.addSystemMessage(`${args[0]} is not a readable color.`);
         return;
       }
       inputColor = args[0];
@@ -95,9 +97,8 @@ export const color: CommandHandler = {
       // Named color input
       const namedColor = getNamedColor(args[0]);
       if (!namedColor) {
-        stores.channel.addSystemMessage(currentChannel, `${args[0]} is not a preset color.`);
+        stores.channel.addSystemMessage(`${args[0]} is not a preset color.`);
         stores.channel.addSystemMessage(
-          currentChannel,
           `Available colors: ${Object.keys(NAMED_COLORS).join(', ')}`,
         );
         return;

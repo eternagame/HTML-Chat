@@ -1,4 +1,10 @@
-import type { useChannelStore, useIrcStore, useSettingsStore, useUserListStore } from '#stores';
+import type {
+  useChannelStore,
+  useIrcStore,
+  useOperatorStore,
+  useSettingsStore,
+  useUserListStore,
+} from '#stores';
 import type { MessageType } from './message';
 
 export interface CommandContext {
@@ -9,6 +15,7 @@ export interface CommandContext {
   stores: {
     channel: ReturnType<typeof useChannelStore>;
     irc: ReturnType<typeof useIrcStore>;
+    operator: ReturnType<typeof useOperatorStore>;
     settings: ReturnType<typeof useSettingsStore>;
     userList: ReturnType<typeof useUserListStore>;
   };

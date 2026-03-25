@@ -3,9 +3,7 @@
     v-if="message.type === 'system'"
     class="message-container d-flex flex-row flex-nowrap justify-content-center"
   >
-    <p class="message-content m-0 message-type--system">
-      {{ props.message.message }}
-    </p>
+    <p class="message-content m-0 message-type--system" v-html="formattedMessage" />
   </div>
   <div v-else class="message-container d-flex flex-row flex-nowrap">
     <div
@@ -40,13 +38,8 @@
   import { computed } from 'vue';
 
   const props = defineProps<{ message: Message }>();
-  const formattedMessage = computed(() => {
-    if (props.message.type !== 'system') {
-      // TODO: Add event handlers via event delegation
-      return md.renderInline(props.message.message);
-    }
-    return '';
-  });
+  // TODO: Add event handlers via event delegation
+  const formattedMessage = computed(() => md.renderInline(props.message.message));
 </script>
 
 <style scoped lang="scss">
