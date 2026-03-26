@@ -1,7 +1,8 @@
 import type { Message } from '#models';
+import { isSameDay } from 'date-fns';
 import { ref, toValue, watch, type DeepReadonly, type MaybeRefOrGetter } from 'vue';
 
-export interface MessageGroup extends Pick<Message, 'nick' | 'username' | 'type'> {
+export interface MessageGroup extends Pick<Message, 'time' | 'nick' | 'username' | 'type'> {
   id: string;
   messages: Message[];
 }
@@ -79,10 +80,12 @@ export function useMessageGroups(messages: MaybeRefOrGetter<Message[] | DeepRead
           !prevGroup ||
           prevGroup.type !== message.type ||
           message.type === 'notice' ||
-          prevGroup.username !== message.username
+          prevGroup.username !== message.username ||
+          !isSameDay(prevGroup.time, message.time)
         ) {
           messageGroups.value.push({
             id: `group-${message.username}-${message.id}`,
+            time: message.time,
             type: message.type,
             messages: [message],
             nick: message.nick,
