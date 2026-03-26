@@ -4,7 +4,7 @@ import { isMaskMatch, parseNick, sortedInsert } from '#utils';
 import { useLocalStorage, useWindowFocus } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
-import { computed, reactive, readonly, ref, watch } from 'vue';
+import { computed, reactive, readonly, watch } from 'vue';
 import useIrcStore from './irc';
 import useNotificationsStore from './notifications';
 import useUserListStore from './user-list';
@@ -19,6 +19,10 @@ const useChannelStore = defineStore('channel', () => {
   const channelMap = reactive(new Map<string, Channel>());
   const channelList = computed(() => Array.from(channelMap.keys()));
   const joinedChannels = useLocalStorage<Set<string>>('chat_joinedChannels', AUTO_JOIN_CHANNELS);
+  const currentChannelName = useLocalStorage<string>(
+    'chat_currentChannelName',
+    Array.from(AUTO_JOIN_CHANNELS)[0],
+  );
   const hasNotification = computed(() =>
     Array.from(channelMap.values()).some((c) => c.hasNotification),
   );
@@ -44,7 +48,6 @@ const useChannelStore = defineStore('channel', () => {
     return channelMap.get(channelOrUsername)!;
   }
 
-  const currentChannelName = ref('');
   function goToChannel(channelOrUsername: string) {
     const channel = channelList.value.find(
       (c) => channelOrUsername.localeCompare(c, undefined, { sensitivity: 'accent' }) === 0,
@@ -103,11 +106,18 @@ const useChannelStore = defineStore('channel', () => {
       return;
     }
 
+    const lastActiveChannel = currentChannelName.value;
+
     const channels = Array.from(joinedChannels.value);
     for (const channel of channels) {
       joinChannel(channel, { force: true });
     }
-    goToChannel(channels[0]);
+
+    if (lastActiveChannel.length > 0) {
+      goToChannel(lastActiveChannel);
+    } else {
+      goToChannel(channels[0]);
+    }
   }
 
   function leaveChannel(channel: string) {
