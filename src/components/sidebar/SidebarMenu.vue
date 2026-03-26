@@ -7,7 +7,7 @@
       v-show="layout.isSidebarOpen"
       aria-label="Sidebar menu"
     >
-      <header class="sidebar-menu flex-shrink-0">
+      <header class="sidebar-nav flex-shrink-0">
         <nav class="d-flex flex-row justify-content-around w-100" aria-label="Sidebar Sections">
           <SidebarSectionButton
             @click="activeTab = 'chat'"
@@ -33,7 +33,7 @@
         </nav>
       </header>
 
-      <div class="sidebar-content">
+      <div class="sidebar-content flex-grow-1">
         <KeepAlive>
           <component :is="activeComponent" />
         </KeepAlive>
@@ -48,14 +48,24 @@
   import settingsIcon from '#assets/settings-icon-white.png';
   import userIconActive from '#assets/user-icon-green.png';
   import userIcon from '#assets/user-icon-white.png';
+  import LoadingSpinner from '#components/ui/LoadingSpinner.vue';
   import { useLayoutStore } from '#stores';
-  import { computed, defineAsyncComponent, ref } from 'vue';
-  import SidebarSectionButton from './SidebarSectionButton.vue';
   import { onClickOutside } from '@vueuse/core';
+  import { computed, defineAsyncComponent, ref, type Component } from 'vue';
+  import SidebarSectionButton from './SidebarSectionButton.vue';
 
-  const ChatsTab = defineAsyncComponent(() => import('./chats/SidebarMenuChats.vue'));
-  const UsersTab = defineAsyncComponent(() => import('./users/SidebarMenuUsers.vue'));
-  const SettingsTab = defineAsyncComponent(() => import('./settings/SidebarMenuSettings.vue'));
+  const ChatsTab = defineAsyncComponent({
+    loadingComponent: LoadingSpinner,
+    loader: () => import('./chats/SidebarMenuChats.vue'),
+  });
+  const UsersTab = defineAsyncComponent({
+    loadingComponent: LoadingSpinner,
+    loader: () => import('./users/SidebarMenuUsers.vue'),
+  });
+  const SettingsTab = defineAsyncComponent({
+    loadingComponent: LoadingSpinner,
+    loader: () => import('./settings/SidebarMenuSettings.vue'),
+  });
 
   const layout = useLayoutStore();
 
@@ -70,7 +80,7 @@
 
   type TabId = 'chat' | 'user' | 'setting';
   const activeTab = ref<TabId>('chat');
-  const tabs = [
+  const tabs: Array<{ id: TabId; component: Component }> = [
     { id: 'chat', component: ChatsTab },
     { id: 'user', component: UsersTab },
     { id: 'setting', component: SettingsTab },
@@ -80,6 +90,8 @@
 <style scoped>
   .sidebar {
     position: absolute;
+    display: flex;
+    flex-direction: column;
     top: 0;
     left: 0;
     width: 70%;
@@ -91,6 +103,7 @@
   }
 
   .sidebar-content {
+    padding: 1em;
     overflow-y: auto;
     position: relative;
   }
