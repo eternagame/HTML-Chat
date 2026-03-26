@@ -17,5 +17,8 @@
   .channel-messages {
     gap: 0.5em;
     padding: 1em 0.5em;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 </style>

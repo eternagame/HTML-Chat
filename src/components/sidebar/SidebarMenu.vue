@@ -8,7 +8,7 @@
       aria-label="Sidebar menu"
     >
       <header class="sidebar-menu flex-shrink-0">
-        <nav class="d-flex flex-row justify-between w-100" aria-label="Sidebar Sections">
+        <nav class="d-flex flex-row justify-content-around w-100" aria-label="Sidebar Sections">
           <SidebarSectionButton
             @click="activeTab = 'chat'"
             :active="activeTab === 'chat'"

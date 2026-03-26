@@ -15,6 +15,7 @@
 <style scoped>
   .section-button {
     background-color: transparent;
+    padding: 10px 20px;
   }
 
   .icon {

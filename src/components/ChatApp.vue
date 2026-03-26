@@ -20,8 +20,7 @@
       <template v-slot:main>
         <div class="channel d-flex flex-column">
           <SidebarMenu />
-
-          <ChannelMessages />
+          <ChannelMessages class="flex-grow-1" />
         </div>
       </template>
       <template v-slot:footer>

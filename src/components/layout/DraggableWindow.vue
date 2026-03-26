@@ -11,13 +11,7 @@
     :style="containerStyle"
     @pointerdown="isActive = true"
   >
-    <div
-      ref="headerRef"
-      class="header"
-      @dblclick="
-        layout.setWindowState(layout.windowState === 'fullscreen' ? 'normal' : 'fullscreen')
-      "
-    >
+    <div ref="headerRef" class="header" @dblclick="onHeaderDoubleClick">
       <slot name="header"></slot>
     </div>
 
@@ -92,6 +86,14 @@
         };
     }
   });
+
+  function onHeaderDoubleClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.closest('button')) {
+      return;
+    }
+    layout.setWindowState(layout.windowState === 'fullscreen' ? 'normal' : 'fullscreen');
+  }
 
   let currentHandle: WindowHandle | null = null;
   let startState: (WindowRect & Record<'pointerX' | 'pointerY', number>) | null = null;
@@ -207,8 +209,9 @@
 
   .body {
     flex: 1;
-    overflow-y: auto;
+    position: relative;
     min-height: 0;
+    overflow: hidden;
   }
 
   .footer {
