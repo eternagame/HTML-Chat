@@ -2,28 +2,28 @@
   <button
     type="button"
     class="star-button border-0"
-    style="float: right;"
-    @click="emit('input', !value);"
+    style="float: right"
+    @click="emit('toggle', !value)"
     :class="{ active: value }"
     aria-label="Show/hide starred messages"
   />
 </template>
 
 <script lang="ts" setup>
-defineProps({
-  value: {
-    type: Boolean,
-    required: true,
-  },
-});
-const emit = defineEmits<{
-  (event: 'input', value: boolean): void
-}>();
+  defineProps({
+    value: {
+      type: Boolean,
+      required: true,
+    },
+  });
+  const emit = defineEmits<{
+    (event: 'toggle', value: boolean): void;
+  }>();
 </script>
 
 <style lang="scss" scoped>
   .star-button {
-    background-image: url("~@/assets/star-outline.png");
+    background-image: url('~@/assets/star-outline.png');
     background-repeat: no-repeat;
     background-size: 60% 60%;
     background-position: center;
@@ -36,6 +36,6 @@ const emit = defineEmits<{
     cursor: pointer;
   }
   .star-button.active {
-    background-image: url("~@/assets/star.png");
+    background-image: url('~@/assets/star.png');
   }
 </style>

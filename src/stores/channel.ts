@@ -19,6 +19,10 @@ const useChannelStore = defineStore('channel', () => {
   const channelMap = reactive(new Map<string, Channel>());
   const channelList = computed(() => Array.from(channelMap.keys()));
   const joinedChannels = useLocalStorage<Set<string>>('chat_joinedChannels', AUTO_JOIN_CHANNELS);
+  const hasNotification = computed(() =>
+    Array.from(channelMap.values()).some((c) => c.hasNotification),
+  );
+  const hasMention = computed(() => Array.from(channelMap.values()).some((c) => c.hasMention));
 
   /**
    * Gets channel from list.
@@ -47,6 +51,7 @@ const useChannelStore = defineStore('channel', () => {
     );
     if (channel) {
       currentChannelName.value = channel;
+      markAsRead(channel);
     }
   }
   const currentChannel = computed(() => {
@@ -224,6 +229,7 @@ const useChannelStore = defineStore('channel', () => {
       starred: false,
       target: channelOrUsername,
     });
+    markAsRead(channelOrUsername);
     return pendingId;
   }
 
@@ -271,7 +277,6 @@ const useChannelStore = defineStore('channel', () => {
           }
         })
         .on('message', (event) => {
-          log.debug(`[${event.type}]`, event);
           const user = userList.getUserByNick(event.nick);
           const username = user?.username ?? parseNick(event.nick);
           const channel = getTargetChannel(event.nick, event.target);
@@ -291,7 +296,9 @@ const useChannelStore = defineStore('channel', () => {
             tags: event.tags ?? {},
           };
 
+          const isCurrentChannel = channel.name === currentChannelName.value;
           const isMe = username === irc.currentUser.username;
+
           if (isMe) {
             // Check if incoming message from self is the one sent recently
             const pendingMessage = channel.messages.findLast(
@@ -309,16 +316,19 @@ const useChannelStore = defineStore('channel', () => {
 
           addMessageInternal(channel.name, newMessage);
 
-          if (isMe || typeof newMessage.tags.batch === 'string') {
-            // Don't notify on self or chat history playback
-            return;
-          }
-
-          // If the user has allows for notifications on channel or keywords
-          // Display/send notifications if user is in another channel or has browser blurred
-          // Otherwise mark channel as read if user is actively viewing the channel
-          const isOtherChannel = channel.name !== currentChannelName.value;
-          if (!isFocusedWindow.value || isOtherChannel) {
+          // #region notification
+          if (
+            typeof newMessage.tags.batch === 'string' ||
+            isMe ||
+            (isCurrentChannel && isFocusedWindow.value)
+          ) {
+            // Don't notify on:
+            // - chat history playback
+            // - self
+            // - currently focused channel
+            markAsRead(channel.name);
+          } else {
+            // Notify if user is in another channel or has browser blurred
             if (channel.notificationsEnabled) {
               sendMessageNotification(channel.name, newMessage);
 
@@ -336,9 +346,8 @@ const useChannelStore = defineStore('channel', () => {
             ) {
               sendMessageNotification(channel.name, newMessage);
             }
-          } else {
-            markAsRead(channel.name);
           }
+          // #endregion
         })
         .on('connected', () => {
           // After successful client reconnection
@@ -360,7 +369,6 @@ const useChannelStore = defineStore('channel', () => {
           createOrGetChannel(event.channel).banStatus = 'banned';
         })
         .on('mode', (event) => {
-          log.debug('[MODE]', event);
           if (!event.target.startsWith('#')) {
             // Only caring about channel-related mode events
             return;
@@ -412,11 +420,21 @@ const useChannelStore = defineStore('channel', () => {
     },
   );
 
+  watch(isFocusedWindow, (isFocused) => {
+    // Auto-mark current channel as read when focusing window
+    if (isFocused) {
+      markAsRead(currentChannelName.value);
+    }
+  });
+
   return {
     channelList,
     currentChannelName: readonly(currentChannelName),
     currentChannel,
-    currentMessages,
+    currentMessages: readonly(currentMessages),
+    hasNotification: readonly(hasNotification),
+    hasMention,
+    markAsRead,
     getChannel(channelOrUsername: string) {
       const channel = channelMap.get(channelOrUsername);
       return channel ? readonly(channel) : null;

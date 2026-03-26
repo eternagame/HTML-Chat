@@ -2,44 +2,66 @@
   <div class="chat-app" :style="{ fontSize: `${settings.fontSize}px` }">
     <DraggableWindow>
       <template v-slot:header>
-        <span>{{ channel.currentChannelName }}</span>
+        <div class="header d-flex flex-row flex-nowrap align-items-center">
+          <SidebarMenuButton class="flex-shrink-0" />
+          <span class="channel-name flex-grow-1">{{ channel.currentChannelName }}</span>
+          <OpenWindowButton
+            class="flex-shrink-0"
+            :active="layout.windowState === 'fullscreen'"
+            @toggle="layout.setWindowState($event ? 'fullscreen' : 'normal')"
+          />
+          <MinimizationTriangle
+            class="flex-shrink-0"
+            :open="layout.windowState !== 'minimized'"
+            @toggle="layout.setWindowState($event ? 'normal' : 'minimized')"
+          />
+        </div>
       </template>
       <template v-slot:main>
         <div class="channel d-flex flex-column">
-          <ChannelMessages class="flex-grow-1 flex-shrink-1" />
+          <SidebarMenu />
+
+          <ChannelMessages />
         </div>
       </template>
       <template v-slot:footer>
-        <ChatInput class="flex-grow-1 flex-shrink-0" />
+        <ChatInput />
       </template>
     </DraggableWindow>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { useChannelStore, useSettingsStore } from '#stores';
+  import { useChannelStore, useLayoutStore, useSettingsStore } from '#stores';
   import ChannelMessages from './channel/ChannelMessages.vue';
   import DraggableWindow from './layout/DraggableWindow.vue';
   import ChatInput from './chat/ChatInput.vue';
-  // TODO: Re-implement resizing tracking
+  import MinimizationTriangle from './ui/MinimizationTriangle.vue';
+  import OpenWindowButton from './layout/header/OpenWindowButton.vue';
+  import SidebarMenuButton from './sidebar/SidebarMenuButton.vue';
+  import SidebarMenu from './sidebar/SidebarMenu.vue';
 
   const channel = useChannelStore();
+  const layout = useLayoutStore();
   const settings = useSettingsStore();
 </script>
 
 <style scoped>
-  .fade-enter-active,
-  .fade-leave-active {
-    transform-origin: top center;
-    @media (prefers-reduced-motion: no-preference) {
-      transition: transform 200ms;
+  .header {
+    gap: 1em;
+
+    .channel-name {
+      font-size: 1.25em;
+      line-height: 1.5;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
 
-  .fade-enter,
-  .fade-leave-to {
-    transform-origin: top center;
-    /* Moves everything up without interfering with top bar. */
-    transform: scaleY(0);
+  .channel {
+    position: relative;
+    height: 100%;
+    padding: 0.5em;
   }
 </style>

@@ -264,6 +264,7 @@ declare module 'irc-framework' {
     };
   }
 
+  /** See https://ircv3.net/specs/extensions/message-tags */
   export type Tags = Partial<{
     /** See https://ircv3.net/specs/extensions/account-tag */
     account: string;
@@ -275,6 +276,10 @@ declare module 'irc-framework' {
     msgid: string;
     /** See https://ircv3.net/specs/extensions/server-time */
     time: string;
+    /** See https://ircv3.net/specs/client-tags/typing */
+    '+typing': string;
+    /** See https://ircv3.net/specs/extensions/message-tags#client-only-tags */
+    [clientTagName: `+${string}`]: string;
     [tagName: string]: string;
   }>;
 

@@ -2,148 +2,171 @@
   <div
     ref="containerRef"
     class="draggable-window"
-    :class="{ 'is-active': isActive }"
+    :class="{
+      'draggable-window--active': isActive,
+      'draggable-window--resizing': isResizing,
+      'draggable-window--fullscreen': layout.windowState === 'fullscreen',
+      'draggable-window--minimized': layout.windowState === 'minimized',
+    }"
     :style="containerStyle"
-    @mousedown="isActive = true"
+    @pointerdown="isActive = true"
   >
-    <div ref="headerRef" class="header">
+    <div
+      ref="headerRef"
+      class="header"
+      @dblclick="
+        layout.setWindowState(layout.windowState === 'fullscreen' ? 'normal' : 'fullscreen')
+      "
+    >
       <slot name="header"></slot>
     </div>
-    <div class="body">
-      <slot name="main"></slot>
-    </div>
-    <div class="footer" v-if="$slots.footer">
-      <slot name="footer"></slot>
-    </div>
+
+    <template v-if="layout.windowState !== 'minimized'">
+      <div class="body">
+        <slot name="main"></slot>
+      </div>
+      <div class="footer" v-if="$slots.footer">
+        <slot name="footer"></slot>
+      </div>
+    </template>
 
     <div
-      v-for="handle in handles"
+      v-for="handle in WINDOW_HANDLES"
       :key="handle"
       :class="['handle', `handle-${handle}`]"
-      @pointerdown.stop.prevent="startResize($event, handle)"
+      @pointerdown.stop.prevent="onStartResize($event, handle)"
     ></div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import {
-    onClickOutside,
-    type Position,
-    useDraggable,
-    useEventListener,
-    useLocalStorage,
-  } from '@vueuse/core';
-  import { computed, type CSSProperties, ref } from 'vue';
+  import { WINDOW_HANDLES, WINDOW_MIN_HEIGHT, WINDOW_MIN_WIDTH } from '#constants';
+  import type { WindowHandle, WindowRect } from '#models';
+  import { useLayoutStore } from '#stores';
+  import { onClickOutside, useDraggable, useEventListener } from '@vueuse/core';
+  import { computed, type CSSProperties, onMounted, reactive, ref } from 'vue';
 
-  const handles = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
-  type Handle = (typeof handles)[number];
-  const MIN_WIDTH = 200;
-  const MIN_HEIGHT = 150;
+  const layout = useLayoutStore();
 
   const containerRef = ref<HTMLDivElement>();
   const headerRef = ref<HTMLDivElement>();
   const isActive = ref(false);
   const isResizing = ref(false);
-  const width = useLocalStorage('chat_windowWidth', 400);
-  const height = useLocalStorage('chat_windowHeight', 300);
-  const initialPosition = useLocalStorage<Position>(
-    'chat_windowPosition',
-    { x: 0, y: 0 },
-    { mergeDefaults: true },
-  );
+
+  // Size / position information
+  const draggableSize = reactive<Pick<WindowRect, 'width' | 'height'>>({ width: 400, height: 300 });
+  const { x, y } = useDraggable(containerRef, {
+    // Get initial position from store
+    initialValue: () => layout.windowRect,
+    handle: headerRef,
+    disabled: () => layout.windowState === 'fullscreen',
+    onEnd(endPosition) {
+      layout.saveWindowRect(endPosition);
+    },
+  });
+  onMounted(() => {
+    // Get initial size from store
+    draggableSize.width = layout.windowRect.width;
+    draggableSize.height = layout.windowRect.height;
+  });
+
+  const containerStyle = computed<CSSProperties>(() => {
+    switch (layout.windowState) {
+      case 'fullscreen':
+        return {
+          left: 0,
+          top: 0,
+          width: '100dvw',
+          height: '100dvh',
+        };
+
+      case 'minimized':
+        return { left: `${x.value}px`, top: `${y.value}px`, width: `${draggableSize.width}px` };
+
+      default:
+        return {
+          left: `${x.value}px`,
+          top: `${y.value}px`,
+          width: `${draggableSize.width}px`,
+          height: `${draggableSize.height}px`,
+        };
+    }
+  });
+
+  let currentHandle: WindowHandle | null = null;
+  let startState: (WindowRect & Record<'pointerX' | 'pointerY', number>) | null = null;
+  let cleanupOnResize: ReturnType<typeof useEventListener> | null = null;
+  let cleanupOnEndResize: ReturnType<typeof useEventListener> | null = null;
 
   onClickOutside(containerRef, () => {
     isActive.value = false;
   });
+  function onStartResize(event: PointerEvent, handle: WindowHandle) {
+    if (layout.windowState !== 'normal') {
+      // Prevent resizing if minimized or fullscreen
+      return;
+    }
 
-  const { x, y } = useDraggable(containerRef, {
-    initialValue: initialPosition,
-    handle: headerRef,
-    onEnd(endPosition) {
-      // Save position to localStorage
-      Object.assign(initialPosition.value, endPosition);
-    },
-  });
-
-  let currentHandle: Handle | null = null;
-  let positionStart: Record<
-    'x' | 'y' | 'width' | 'height' | 'pointerX' | 'pointerY',
-    number
-  > | null = null;
-
-  let cleanupMove: ReturnType<typeof useEventListener> | null = null;
-  let cleanupEnd: ReturnType<typeof useEventListener> | null = null;
-
-  function startResize(event: PointerEvent, handle: Handle) {
     isResizing.value = true;
     currentHandle = handle;
-    positionStart = {
+    startState = {
+      ...draggableSize,
       x: x.value,
       y: y.value,
-      width: width.value,
-      height: height.value,
       pointerX: event.clientX,
       pointerY: event.clientY,
     };
 
-    cleanupMove = useEventListener('pointermove', onResize);
-    cleanupEnd = useEventListener('pointerup', endResize);
+    cleanupOnResize = useEventListener('pointermove', onResize);
+    cleanupOnEndResize = useEventListener('pointerup', endResize);
   }
-
   function onResize(event: PointerEvent) {
-    if (!isResizing.value || !positionStart || !currentHandle) {
+    if (!isResizing.value || !startState || !currentHandle) {
       return;
     }
 
-    const deltaX = event.clientX - positionStart.pointerX;
-    const deltaY = event.clientY - positionStart.pointerY;
+    const deltaX = event.clientX - startState.pointerX;
+    const deltaY = event.clientY - startState.pointerY;
 
     // Handle horizontal resizes
     if (currentHandle.includes('e')) {
-      width.value = Math.max(MIN_WIDTH, positionStart.width + deltaX);
+      draggableSize.width = Math.max(WINDOW_MIN_WIDTH, startState.width + deltaX);
     } else if (currentHandle.includes('w')) {
-      const newWidth = positionStart.width - deltaX;
-      if (newWidth >= MIN_WIDTH) {
-        width.value = newWidth;
-        x.value = positionStart.x + deltaX;
+      // Changing width AND x position
+      const newWidth = startState.width - deltaX;
+      if (newWidth >= WINDOW_MIN_WIDTH) {
+        draggableSize.width = newWidth;
+        x.value = startState.x + deltaX;
       } else {
-        width.value = MIN_WIDTH;
-        x.value = positionStart.x + (positionStart.width - MIN_WIDTH);
+        draggableSize.width = WINDOW_MIN_WIDTH;
+        x.value = startState.x + (startState.width - WINDOW_MIN_WIDTH);
       }
     }
 
     // Handle vertical resizes
     if (currentHandle.includes('s')) {
-      height.value = Math.max(MIN_HEIGHT, positionStart.height + deltaY);
+      draggableSize.height = Math.max(WINDOW_MIN_HEIGHT, startState.height + deltaY);
     } else if (currentHandle.includes('n')) {
-      const newHeight = positionStart.height - deltaY;
-      if (newHeight >= MIN_HEIGHT) {
-        height.value = newHeight;
-        y.value = positionStart.y + deltaY;
+      // Changing height AND y position
+      const newHeight = startState.height - deltaY;
+      if (newHeight >= WINDOW_MIN_HEIGHT) {
+        draggableSize.height = newHeight;
+        y.value = startState.y + deltaY;
       } else {
-        height.value = MIN_HEIGHT;
-        y.value = positionStart.y + (positionStart.height - MIN_HEIGHT);
+        draggableSize.height = WINDOW_MIN_HEIGHT;
+        y.value = startState.y + (startState.height - WINDOW_MIN_HEIGHT);
       }
     }
   }
-
   function endResize() {
     isResizing.value = false;
     currentHandle = null;
-    positionStart = null;
+    startState = null;
     // Save position to localStorage
-    initialPosition.value.x = x.value;
-    initialPosition.value.y = y.value;
-    cleanupMove?.();
-    cleanupEnd?.();
+    layout.saveWindowRect({ ...draggableSize, x: x.value, y: y.value });
+    cleanupOnResize?.();
+    cleanupOnEndResize?.();
   }
-
-  const containerStyle = computed<CSSProperties>(() => ({
-    left: `${x.value}px`,
-    top: `${y.value}px`,
-    width: `${width.value}px`,
-    height: `${height.value}px`,
-  }));
 </script>
 
 <style scoped>
@@ -153,6 +176,21 @@
     flex-direction: column;
     z-index: 9;
     isolation: isolate;
+
+    &:not(.draggable-window--resizing) {
+      @media (prefers-reduced-motion: no-preference) {
+        transition-property: top, left, width, height;
+        transition-duration: 100ms;
+        transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      }
+    }
+  }
+
+  .draggable-window--fullscreen,
+  .draggable-window--minimized {
+    .handle {
+      display: none;
+    }
   }
 
   .header {
@@ -161,6 +199,7 @@
     background-color: #043468;
     color: #ffffff;
     user-select: none;
+    padding: 0.25em 0.5em;
     &:active {
       cursor: grabbing;
     }
@@ -170,12 +209,10 @@
     flex: 1;
     overflow-y: auto;
     min-height: 0;
-    padding: 1em;
   }
 
   .footer {
     flex-shrink: 0;
-    padding: 0.75em 1em;
   }
 
   .handle {
