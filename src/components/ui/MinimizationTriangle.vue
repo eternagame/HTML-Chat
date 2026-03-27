@@ -5,8 +5,8 @@
       'minimization-triangle--open': open,
       'minimization-triangle--closed': !open,
     }"
-    :style="{ backgroundImage: `url(${arrowImage})` }"
     type="button"
+    :style="{ backgroundImage: `url(${arrowImage})` }"
     :aria-label="label"
     :aria-pressed="open"
     @click="emit('toggle', !open)"

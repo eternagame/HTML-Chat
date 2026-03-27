@@ -63,7 +63,7 @@
   const inputBuffer = ref('');
 
   function onChannelJoin() {
-    const channelName = inputBuffer.value.trim().toLocaleLowerCase();
+    const channelName = inputBuffer.value.trim().toLocaleLowerCase().replaceAll(/\s+/g, '-');
 
     if (channelName.length > 0) {
       channel.joinChannel(channelName.startsWith('#') ? channelName : `#${channelName}`);

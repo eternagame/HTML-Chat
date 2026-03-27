@@ -2,40 +2,36 @@
   <button
     type="button"
     class="star-button border-0"
-    style="float: right"
-    @click="emit('toggle', !value)"
-    :class="{ active: value }"
-    aria-label="Show/hide starred messages"
+    :style="buttonStyle"
+    :aria-pressed="active"
+    :aria-label="label"
+    @click="emit('toggle', !active)"
   />
 </template>
 
-<script lang="ts" setup>
-  defineProps({
-    value: {
-      type: Boolean,
-      required: true,
-    },
-  });
+<script setup lang="ts">
+  import starImage from '#assets/star-outline.png';
+  import starActiveImage from '#assets/star.png';
+  import { computed, type CSSProperties } from 'vue';
+
+  const props = defineProps<{ active: boolean }>();
   const emit = defineEmits<{
     (event: 'toggle', value: boolean): void;
   }>();
+
+  const label = computed(() => `${props.active ? 'Hide' : 'Show'} starred messages.`);
+  const buttonStyle = computed<CSSProperties>(() => ({
+    backgroundImage: `url('${props.active ? starActiveImage : starImage}')`,
+  }));
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
   .star-button {
-    background-image: url('~@/assets/star-outline.png');
+    background-color: transparent;
     background-repeat: no-repeat;
     background-size: 60% 60%;
     background-position: center;
-    height: 35px;
-    width: 35px;
-    background-color: transparent;
-    transition: all 0.4s;
-  }
-  .star-button:hover {
-    cursor: pointer;
-  }
-  .star-button.active {
-    background-image: url('~@/assets/star.png');
+    height: 2em;
+    width: 2em;
   }
 </style>

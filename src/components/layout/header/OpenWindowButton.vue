@@ -3,9 +3,9 @@
     class="open-window border-0"
     type="button"
     :style="{ backgroundImage: `url(${openWindowImage})` }"
-    @click="emit('toggle', !active)"
     :aria-label="label"
     :aria-pressed="active"
+    @click="emit('toggle', !active)"
   />
 </template>
 
