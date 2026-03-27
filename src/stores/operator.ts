@@ -110,7 +110,7 @@ const useOperatorStore = defineStore('operator', () => {
     },
   );
 
-  watch([() => channel.channelList, isOperator], ([channelList]) => {
+  watch([() => channel.channelNameList, isOperator], ([channelList]) => {
     if (!isOperator.value) {
       return;
     }

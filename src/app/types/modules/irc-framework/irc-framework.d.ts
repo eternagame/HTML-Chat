@@ -379,7 +379,7 @@ declare module 'irc-framework' {
   }
   export interface KickEvent extends Pick<
     MessageEvent,
-    'nick' | 'ident' | 'hostname' | 'message' | 'time'
+    'nick' | 'ident' | 'hostname' | 'message' | 'time' | 'tags'
   > {
     kicked: string;
     channel: string;
@@ -416,6 +416,7 @@ declare module 'irc-framework' {
     error: string;
     channel: string;
     reason: string;
+    [key: string]: string;
   }
 
   class User {

@@ -4,7 +4,9 @@
       <template v-slot:header>
         <div class="header d-flex flex-row flex-nowrap align-items-center">
           <SidebarMenuButton class="flex-shrink-0" />
-          <span class="channel-name flex-grow-1">{{ channel.currentChannelName }}</span>
+          <span class="channel-name flex-grow-1">{{
+            channel.currentChannel?.displayName ?? channel.currentChannelName
+          }}</span>
           <OpenWindowButton
             class="flex-shrink-0"
             :active="layout.windowState === 'fullscreen'"

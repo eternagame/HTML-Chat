@@ -26,6 +26,7 @@ const useIrcStore = defineStore('irc', () => {
 
   const currentUser = reactive<User>({
     username: '',
+    displayName: '',
     uid: '',
     status: 'online',
     awayReason: '',
@@ -56,7 +57,8 @@ const useIrcStore = defineStore('irc', () => {
     const nick = createNick(username);
     currentNick.value = nick;
     currentUser.nicks.add(nick);
-    currentUser.username = username;
+    currentUser.username = username.toLocaleLowerCase();
+    currentUser.displayName = username;
     currentUser.uid = uid;
 
     const ircClient = new Client({

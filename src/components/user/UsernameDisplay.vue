@@ -11,7 +11,7 @@
           }"
           >●</span
         >
-        {{ user.username }}
+        {{ user.displayName }}
       </div>
     </template>
 
@@ -35,9 +35,9 @@
             >●
           </span>
           <a v-if="user.profile.link" :href="user.profile.link" target="_blank">{{
-            user.username
+            user.displayName
           }}</a>
-          <span v-else>{{ user.username }}</span>
+          <span v-else>{{ user.displayName }}</span>
         </div>
 
         <dl>

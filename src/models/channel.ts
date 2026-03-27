@@ -3,10 +3,13 @@ import type { Message } from './message';
 
 export interface Channel {
   /**
+   * Changed to lowercase
    * - `#channel`
    * - `username`
    */
   name: string;
+  /** Original casing */
+  displayName: string;
   messages: Message[];
   usersTyping: Set<string>;
   banStatus: BanStatus;

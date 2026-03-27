@@ -48,24 +48,13 @@
   import settingsIcon from '#assets/settings-icon-white.png';
   import userIconActive from '#assets/user-icon-green.png';
   import userIcon from '#assets/user-icon-white.png';
-  import LoadingSpinner from '#components/ui/LoadingSpinner.vue';
   import { useLayoutStore } from '#stores';
   import { onClickOutside } from '@vueuse/core';
-  import { computed, defineAsyncComponent, ref, type Component } from 'vue';
+  import { computed, ref, type Component } from 'vue';
   import SidebarSectionButton from './SidebarSectionButton.vue';
-
-  const ChatsTab = defineAsyncComponent({
-    loadingComponent: LoadingSpinner,
-    loader: () => import('./chats/SidebarMenuChats.vue'),
-  });
-  const UsersTab = defineAsyncComponent({
-    loadingComponent: LoadingSpinner,
-    loader: () => import('./users/SidebarMenuUsers.vue'),
-  });
-  const SettingsTab = defineAsyncComponent({
-    loadingComponent: LoadingSpinner,
-    loader: () => import('./settings/SidebarMenuSettings.vue'),
-  });
+  import SidebarMenuChats from './chats/SidebarMenuChats.vue';
+  import SidebarMenuSettings from './settings/SidebarMenuSettings.vue';
+  import SidebarMenuUsers from './users/SidebarMenuUsers.vue';
 
   const layout = useLayoutStore();
 
@@ -81,9 +70,9 @@
   type TabId = 'chat' | 'user' | 'setting';
   const activeTab = ref<TabId>('chat');
   const tabs: Array<{ id: TabId; component: Component }> = [
-    { id: 'chat', component: ChatsTab },
-    { id: 'user', component: UsersTab },
-    { id: 'setting', component: SettingsTab },
+    { id: 'chat', component: SidebarMenuChats },
+    { id: 'user', component: SidebarMenuUsers },
+    { id: 'setting', component: SidebarMenuSettings },
   ] as const;
   const activeComponent = computed(() => tabs.find((t) => t.id === activeTab.value)?.component);
 </script>
@@ -100,6 +89,7 @@
     background-color: #000000;
     color: white;
     box-shadow: 4px 0 1em rgba(0, 0, 0, 0.5);
+    z-index: 10;
   }
 
   .sidebar-content {

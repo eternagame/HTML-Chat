@@ -1,4 +1,8 @@
 <template>
+  <header>
+    <h4>Online ({{ connectedUsers.length }})</h4>
+  </header>
+
   <ul class="list-unstyled">
     <li v-for="user in connectedUsers" :key="user.username">
       <UsernameDisplay :username="user.username" />

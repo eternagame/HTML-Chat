@@ -16,7 +16,7 @@ const useUserListStore = defineStore('userList', () => {
     const nickMap = new Map<string, string>();
     for (const user of knownUsers.values()) {
       for (const nick of user.nicks) {
-        nickMap.set(nick, user.username);
+        nickMap.set(nick.toLocaleLowerCase(), user.username);
       }
     }
     return nickMap;
@@ -24,7 +24,8 @@ const useUserListStore = defineStore('userList', () => {
   const users = computed(() => Array.from(knownUsers.values()));
 
   function addUserNick(nick: string, ident: string) {
-    const username = parseNick(nick);
+    const displayName = parseNick(nick);
+    const username = displayName.toLocaleLowerCase();
     if (knownUsers.has(username)) {
       // This user existed before and has a new nick
       const user = knownUsers.get(username)!;
@@ -43,6 +44,7 @@ const useUserListStore = defineStore('userList', () => {
         : DEFAULT_COLORS[uidAsNumber % DEFAULT_COLORS.length];
     knownUsers.set(username, {
       username,
+      displayName,
       uid,
       nicks: new Set([nick]),
       status: 'online',
@@ -51,6 +53,11 @@ const useUserListStore = defineStore('userList', () => {
       profile: null,
       isFetchingProfile: false,
     });
+  }
+
+  function getUserByNickInternal(nick: string): User | null {
+    const username = nickToUsername.value.get(nick.toLocaleLowerCase());
+    return username ? knownUsers.get(username)! : null;
   }
 
   function removeUserNick(nick: string) {
@@ -63,11 +70,6 @@ const useUserListStore = defineStore('userList', () => {
     if (user.nicks.size === 0) {
       user.status = 'offline';
     }
-  }
-
-  function getUserByNickInternal(nick: string): User | null {
-    const username = nickToUsername.value.get(nick);
-    return username ? knownUsers.get(username)! : null;
   }
 
   function setUserAway(nick: string, awayReason: string) {
@@ -101,7 +103,7 @@ const useUserListStore = defineStore('userList', () => {
   }
 
   async function loadProfile(username: string) {
-    const user = knownUsers.get(username);
+    const user = knownUsers.get(username.toLocaleLowerCase());
     if (!user || user.isFetchingProfile || user.profile !== null) {
       return;
     }
@@ -157,13 +159,18 @@ const useUserListStore = defineStore('userList', () => {
         })
         .on('message', (event) => {
           updateUserColor(event.nick, event.tags['+color']);
+        })
+        .on('irc error', (event) => {
+          if (event.error === 'no_such_nick') {
+            removeUserNick(event.nick! as unknown as string);
+          }
         });
     },
   );
 
   return {
     getUserByUsername(username: string) {
-      const user = knownUsers.get(username);
+      const user = knownUsers.get(username.toLocaleLowerCase());
       return user ? readonly(user) : null;
     },
     getUserByNick(nick: string) {

@@ -1,6 +1,12 @@
 import { AUTO_JOIN_CHANNELS } from '#constants';
 import type { Channel, Message, MessageType } from '#models';
-import { isMaskMatch, parseNick, sortedInsert } from '#utils';
+import {
+  isCaseInsensitiveMatch,
+  isDefaultChannel,
+  isMaskMatch,
+  parseNick,
+  sortedInsert,
+} from '#utils';
 import { useLocalStorage, useWindowFocus } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
@@ -17,12 +23,18 @@ const useChannelStore = defineStore('channel', () => {
   const userList = useUserListStore();
   const isFocusedWindow = useWindowFocus();
   const channelMap = reactive(new Map<string, Channel>());
-  const channelList = computed(() => Array.from(channelMap.keys()));
+  const channelNameList = computed(() => Array.from(channelMap.keys()));
+  const channelList = computed(() => Array.from(channelMap.values()));
   const joinedChannels = useLocalStorage<Set<string>>('chat_joinedChannels', AUTO_JOIN_CHANNELS);
   const currentChannelName = useLocalStorage<string>(
     'chat_currentChannelName',
     Array.from(AUTO_JOIN_CHANNELS)[0],
   );
+  const currentChannel = computed(() => {
+    const channel = channelMap.get(currentChannelName.value);
+    return channel ? readonly(channel) : null;
+  });
+  const currentMessages = computed(() => currentChannel.value?.messages ?? []);
   const hasNotification = computed(() =>
     Array.from(channelMap.values()).some((c) => c.hasNotification),
   );
@@ -32,11 +44,14 @@ const useChannelStore = defineStore('channel', () => {
    * Gets channel from list.
    * Adds channel if not previously tracked.
    */
-  function createOrGetChannel(channelOrUsername: string) {
-    if (!channelMap.has(channelOrUsername)) {
+  function createOrGetChannel(channelOrUsername: string): Channel {
+    const displayName = channelOrUsername;
+    const channelName = displayName.toLocaleLowerCase();
+    if (!channelMap.has(channelName)) {
       // Add new channel if not found
-      channelMap.set(channelOrUsername, {
-        name: channelOrUsername,
+      channelMap.set(channelName, {
+        name: channelName,
+        displayName,
         banStatus: 'normal',
         messages: [],
         usersTyping: new Set(),
@@ -45,23 +60,18 @@ const useChannelStore = defineStore('channel', () => {
         hasNotification: false,
       });
     }
-    return channelMap.get(channelOrUsername)!;
+    return channelMap.get(channelName)!;
   }
 
   function goToChannel(channelOrUsername: string) {
-    const channel = channelList.value.find(
-      (c) => channelOrUsername.localeCompare(c, undefined, { sensitivity: 'accent' }) === 0,
-    );
-    if (channel) {
-      currentChannelName.value = channel;
-      markAsRead(channel);
+    const channelName = channelOrUsername.toLocaleLowerCase();
+    if (channelMap.has(channelName)) {
+      currentChannelName.value = channelName;
+      markAsRead(channelName);
+    } else {
+      addSystemMessage(`Unknown channel: ${channelOrUsername}`);
     }
   }
-  const currentChannel = computed(() => {
-    const channel = channelMap.get(currentChannelName.value);
-    return channel ? readonly(channel) : null;
-  });
-  const currentMessages = computed(() => currentChannel.value?.messages ?? []);
 
   function requestChatHistory(channelOrUsername: string) {
     if (!irc.client || !channelOrUsername.startsWith('#')) {
@@ -71,31 +81,32 @@ const useChannelStore = defineStore('channel', () => {
     irc.client.raw(`CHATHISTORY LATEST ${channelOrUsername} * ${MAX_MESSAGES_PER_CHANNEL}`);
   }
 
-  function joinChannel(channel: string, options: Partial<{ force: boolean }> = { force: false }) {
+  function joinChannel(
+    channelOrUsername: string,
+    opts: Partial<{ force: boolean; skipNavigation: boolean }> = {},
+  ) {
     if (!irc.client) {
       return;
     }
 
-    if (
-      !options.force &&
-      channelList.value.some(
-        (c) => channel.localeCompare(c, undefined, { sensitivity: 'accent' }) === 0,
-      )
-    ) {
-      // Channel already exists
-      goToChannel(channel);
-      return;
+    const options = { force: false, skipNavigation: false, ...opts };
+    const channelName = channelOrUsername.toLocaleLowerCase();
+
+    if (options.force || !channelMap.has(channelName)) {
+      createOrGetChannel(channelName);
+
+      if (channelName.startsWith('#')) {
+        // JOIN IRC channel and request users / chat history
+        const newChannel = irc.client.channel(channelName);
+        newChannel.updateUsers();
+        requestChatHistory(channelName);
+      }
     }
 
-    joinedChannels.value.add(channel);
-    const isIRCChannel = channel.startsWith('#');
-    createOrGetChannel(channel);
-    if (isIRCChannel) {
-      const newChannel = irc.client.channel(channel);
-      newChannel.updateUsers();
-      requestChatHistory(channel);
+    joinedChannels.value.add(channelName);
+    if (!options.skipNavigation) {
+      goToChannel(channelName);
     }
-    goToChannel(channel);
   }
 
   /**
@@ -110,43 +121,44 @@ const useChannelStore = defineStore('channel', () => {
 
     const channels = Array.from(joinedChannels.value);
     for (const channel of channels) {
-      joinChannel(channel, { force: true });
+      joinChannel(channel, { force: true, skipNavigation: true });
     }
 
-    if (lastActiveChannel.length > 0) {
-      goToChannel(lastActiveChannel);
-    } else {
+    if (lastActiveChannel.length === 0) {
       goToChannel(channels[0]);
     }
   }
 
-  function leaveChannel(channel: string) {
+  function leaveChannel(channelOrUsername: string) {
     if (!irc.client) {
       return;
     }
 
-    const isIRCChannel = channel.startsWith('#');
-    const isCurrentChannel =
-      channel.localeCompare(currentChannelName.value, undefined, { sensitivity: 'accent' }) === 0;
+    const channelName = channelOrUsername.toLocaleLowerCase();
+    const isCurrentChannel = currentChannelName.value === channelName;
+
+    // Avoid leaving default channels
+    if (isDefaultChannel(channelName)) {
+      addSystemMessage(`You cannot leave ${channelName}.`);
+      return;
+    }
 
     if (isCurrentChannel) {
-      // Avoid leaving last channel
-      const otherChannels = Array.from(channelMap.keys()).filter(
-        (c) => channel.localeCompare(c, undefined, { sensitivity: 'accent' }) !== 0,
-      );
-
-      if (otherChannels.length > 0) {
-        goToChannel(otherChannels[0]);
-      } else {
+      const otherChannels = channelNameList.value.filter((c) => c !== channelName);
+      if (otherChannels.length === 0) {
+        // Avoid leaving last channel
         addSystemMessage('Join another channel before leaving this one.');
         return;
       }
+
+      // Change to a different channel upon leaving
+      goToChannel(otherChannels[0]);
     }
 
-    joinedChannels.value.delete(channel);
-    channelMap.delete(channel);
-    if (isIRCChannel) {
-      irc.client.part(channel);
+    joinedChannels.value.delete(channelName);
+    channelMap.delete(channelName);
+    if (channelName.startsWith('#')) {
+      irc.client.part(channelName);
     }
   }
 
@@ -167,16 +179,26 @@ const useChannelStore = defineStore('channel', () => {
   }
 
   function markAsRead(channelOrUsername: string) {
-    const channel = createOrGetChannel(channelOrUsername);
-    channel.hasMention = false;
-    channel.hasNotification = false;
+    const channelName = channelOrUsername.toLocaleLowerCase();
+    const channel = channelMap.get(channelName);
+    if (channel) {
+      channel.hasMention = false;
+      channel.hasNotification = false;
+    }
   }
 
-  function getTargetChannel(nick: string, target: string) {
-    const user = userList.getUserByNick(nick);
-    const username = user?.username ?? parseNick(nick);
+  function getTargetChannel(nick: string, target: string): Channel {
     if (target.startsWith('#')) {
       return createOrGetChannel(target);
+    }
+
+    let username: string;
+    if (isCaseInsensitiveMatch(nick, irc.currentNick)) {
+      // This is an echo message from myself to another
+      username = userList.getUserByNick(target)?.username ?? irc.currentUser.username;
+    } else {
+      // Is a message from another user to myself
+      username = userList.getUserByNick(nick)?.username ?? parseNick(nick).toLocaleLowerCase();
     }
     return createOrGetChannel(username);
   }
@@ -272,7 +294,7 @@ const useChannelStore = defineStore('channel', () => {
           }
 
           const user = userList.getUserByNick(event.nick);
-          const username = user?.username ?? parseNick(event.nick);
+          const username = user?.username ?? parseNick(event.nick).toLocaleLowerCase();
           const channel = getTargetChannel(event.nick, event.target);
           switch (typing) {
             case 'active':
@@ -288,7 +310,7 @@ const useChannelStore = defineStore('channel', () => {
         })
         .on('message', (event) => {
           const user = userList.getUserByNick(event.nick);
-          const username = user?.username ?? parseNick(event.nick);
+          const username = user?.username ?? parseNick(event.nick).toLocaleLowerCase();
           const channel = getTargetChannel(event.nick, event.target);
           // Remove typing status if user sent something
           channel.usersTyping.delete(username);
@@ -365,9 +387,18 @@ const useChannelStore = defineStore('channel', () => {
         })
         .on('irc error', (event) => {
           log.debug('[IRC Error]', event);
+
+          if (event.error === 'banned_from_channel') {
+            addSystemMessage(`You have been banned.`, event.target);
+            addSystemMessage(
+              `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
+              event.target,
+            );
+            createOrGetChannel(event.channel).banStatus = 'banned';
+          }
         })
         .on('kick', (event) => {
-          if (event.kicked !== irc.currentNick) {
+          if (event.kicked !== irc.currentNick || typeof event.tags.batch === 'string') {
             return;
           }
 
@@ -396,30 +427,41 @@ const useChannelStore = defineStore('channel', () => {
               case '+b': {
                 if (mode.param.startsWith('m:')) {
                   // Muted
-                  addSystemMessage(`You have been muted.`, event.target);
+                  if (!event.batch) {
+                    addSystemMessage(`You have been muted.`, event.target);
+                    addSystemMessage(
+                      `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
+                      event.target,
+                    );
+                  }
                   createOrGetChannel(event.target).banStatus = 'muted';
                 } else {
                   // Banned
-                  addSystemMessage(`You have been banned.`, event.target);
+                  if (!event.batch) {
+                    addSystemMessage(`You have been banned.`, event.target);
+                    addSystemMessage(
+                      `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
+                      event.target,
+                    );
+                  }
                   createOrGetChannel(event.target).banStatus = 'banned';
                 }
 
-                addSystemMessage(
-                  `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
-                  event.target,
-                );
                 break;
               }
 
               case '-b': {
-                if (mode.param.startsWith('m:')) {
-                  // Unmuted
-                  addSystemMessage(`You have been unmuted.`, event.target);
-                } else {
-                  // Unbanned
-                  addSystemMessage(`You have been unbanned.`, event.target);
-                }
                 channel.banStatus = 'normal';
+
+                if (!event.batch) {
+                  if (mode.param.startsWith('m:')) {
+                    // Unmuted
+                    addSystemMessage(`You have been unmuted.`, event.target);
+                  } else {
+                    // Unbanned
+                    addSystemMessage(`You have been unbanned.`, event.target);
+                  }
+                }
                 break;
               }
             }
@@ -439,14 +481,15 @@ const useChannelStore = defineStore('channel', () => {
 
   return {
     channelList,
-    currentChannelName: readonly(currentChannelName),
+    channelNameList,
     currentChannel,
+    currentChannelName: readonly(currentChannelName),
     currentMessages: readonly(currentMessages),
     hasNotification: readonly(hasNotification),
     hasMention,
     markAsRead,
     getChannel(channelOrUsername: string) {
-      const channel = channelMap.get(channelOrUsername);
+      const channel = channelMap.get(channelOrUsername.toLocaleLowerCase());
       return channel ? readonly(channel) : null;
     },
     goToChannel,

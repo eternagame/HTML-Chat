@@ -11,7 +11,9 @@ export interface UserProfile {
 }
 
 export interface User {
+  /** Converted to lowercase */
   username: string;
+  displayName: string;
   /** User ID */
   uid: string;
   /** Tracks multiple opened clients for the same user */

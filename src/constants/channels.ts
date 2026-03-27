@@ -1,5 +1,3 @@
-export const AUTO_JOIN_CHANNELS = new Set<string>(['#test']);
-
 export const DEFAULT_CHANNELS = new Set<string>([
   '#general',
   '#off-topic',
@@ -7,6 +5,8 @@ export const DEFAULT_CHANNELS = new Set<string>([
   '#labs',
   '#test',
 ]);
+
+export const AUTO_JOIN_CHANNELS = new Set<string>(DEFAULT_CHANNELS);
 
 export const CHANNEL_DESCRIPTIONS: Record<string, string> = {
   '#general': 'General chat',

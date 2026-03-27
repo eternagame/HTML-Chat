@@ -1,5 +1,6 @@
 import { USER_ROLES } from '#constants';
 import type { UserProfile } from '#models';
+import { isCaseInsensitiveMatch } from '#utils';
 import log from 'loglevel';
 
 export async function getUserProfile(uid: string): Promise<UserProfile> {
@@ -19,11 +20,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile> {
   const roles: string[] = [];
   if (user && typeof user.name === 'string') {
     Object.entries(USER_ROLES).forEach(([role, usernames]) => {
-      if (
-        usernames.some(
-          (username) => username.toLocaleLowerCase() === (user.name as string).toLocaleLowerCase(),
-        )
-      ) {
+      if (usernames.some((username) => isCaseInsensitiveMatch(username, user.name as string))) {
         roles.push(role);
       }
     });

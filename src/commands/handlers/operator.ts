@@ -13,7 +13,7 @@ export const ban: CommandHandler = {
     }
 
     const [username, targetChannel, ...reasonParts] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelList : [targetChannel];
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
     stores.operator.ban(username, channels);
 
     if (reasonParts.length > 0) {
@@ -35,7 +35,7 @@ export const unban: CommandHandler = {
     }
 
     const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelList : [targetChannel];
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
     stores.operator.unban(username, channels);
   },
 };
@@ -54,7 +54,7 @@ export const mute: CommandHandler = {
     }
 
     const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelList : [targetChannel];
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
     stores.operator.mute(username, channels);
   },
 };
@@ -73,7 +73,7 @@ export const unmute: CommandHandler = {
     }
 
     const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelList : [targetChannel];
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
     stores.operator.unmute(username, channels);
   },
 };
@@ -93,7 +93,7 @@ export const notice: CommandHandler = {
     const text = args.slice(1).join(' ');
     const targetChannels: string[] = [];
     if (args[0] === '*') {
-      stores.channel.channelList.forEach((channel) => {
+      stores.channel.channelNameList.forEach((channel) => {
         targetChannels.push(channel);
       });
     } else {
@@ -173,7 +173,7 @@ export const kick: CommandHandler = {
     }
 
     const [username, targetChannel, ...reasonParts] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelList : [targetChannel];
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
     stores.operator.kick(username, channels);
 
     if (reasonParts.length > 0) {

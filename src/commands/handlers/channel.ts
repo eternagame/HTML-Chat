@@ -45,23 +45,16 @@ export const goto: CommandHandler = {
     if (args.length === 0) {
       stores.channel.addSystemMessage('Select a channel using /goto <channel>');
       stores.channel.addSystemMessage(
-        `Channels currently available are: ${stores.channel.channelList.join(', ')}`,
+        `Channels currently available are: ${stores.channel.channelNameList.join(', ')}`,
       );
       return;
     }
 
-    const inputChannel = args[0];
-    if (inputChannel.toLocaleLowerCase().localeCompare(currentChannel.toLocaleLowerCase()) === 0) {
-      stores.channel.addSystemMessage(`You are already in ${inputChannel}`);
+    const inputChannel = args[0].toLocaleLowerCase();
+    if (inputChannel === currentChannel) {
+      stores.channel.addSystemMessage(`You are already in ${inputChannel}.`);
       return;
     }
-    const targetChannel = stores.channel.channelList.find(
-      (c) => inputChannel.toLocaleLowerCase().localeCompare(c.toLocaleLowerCase()) === 0,
-    );
-    if (!targetChannel) {
-      stores.channel.addSystemMessage(`Unknown channel: ${inputChannel}`);
-      return;
-    }
-    stores.channel.goToChannel(targetChannel);
+    stores.channel.goToChannel(inputChannel);
   },
 };

@@ -28,7 +28,7 @@
   const channel = useChannelStore();
   const chat = useChatStore();
   const inputBuffer = ref('');
-  const placeholder = computed(() => `Message ${channel.currentChannelName}`);
+  const placeholder = computed(() => `Message ${channel.currentChannel?.displayName ?? ''}`);
 
   function onSubmit() {
     const text = inputBuffer.value.trim();
