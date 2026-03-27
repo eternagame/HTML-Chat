@@ -4,6 +4,7 @@
     class="draggable-window"
     :class="{
       'draggable-window--active': isActive,
+      'draggable-window--dragging': isDragging,
       'draggable-window--resizing': isResizing,
       'draggable-window--fullscreen': layout.windowState === 'fullscreen',
       'draggable-window--minimized': layout.windowState === 'minimized',
@@ -15,14 +16,12 @@
       <slot name="header"></slot>
     </div>
 
-    <template v-if="layout.windowState !== 'minimized'">
-      <div class="body">
-        <slot name="main"></slot>
-      </div>
-      <div class="footer" v-if="$slots.footer">
-        <slot name="footer"></slot>
-      </div>
-    </template>
+    <div v-show="layout.windowState !== 'minimized'" class="body">
+      <slot name="main"></slot>
+    </div>
+    <div v-if="$slots.footer" v-show="layout.windowState !== 'minimized'" class="footer">
+      <slot name="footer"></slot>
+    </div>
 
     <div
       v-for="handle in WINDOW_HANDLES"
@@ -49,10 +48,11 @@
 
   // Size / position information
   const draggableSize = reactive<Pick<WindowRect, 'width' | 'height'>>({ width: 400, height: 300 });
-  const { x, y } = useDraggable(containerRef, {
+  const { x, y, isDragging } = useDraggable(containerRef, {
     // Get initial position from store
     initialValue: () => layout.windowRect,
     handle: headerRef,
+    restrictInView: true,
     disabled: () => layout.windowState === 'fullscreen',
     onEnd(endPosition) {
       layout.saveWindowRect(endPosition);
@@ -178,8 +178,9 @@
     flex-direction: column;
     z-index: 9;
     isolation: isolate;
+    border: 1px solid #2f94d1e6;
 
-    &:not(.draggable-window--resizing) {
+    &:not(.draggable-window--resizing):not(.draggable-window--dragging) {
       @media (prefers-reduced-motion: no-preference) {
         transition-property: top, left, width, height;
         transition-duration: 100ms;

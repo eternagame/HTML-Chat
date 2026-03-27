@@ -40,4 +40,8 @@
   }
 </script>
 
-<style scoped></style>
+<style scoped>
+  .chat-input-container {
+    padding: 0 0.25em 0.25em;
+  }
+</style>

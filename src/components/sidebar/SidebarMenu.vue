@@ -8,7 +8,10 @@
       aria-label="Sidebar menu"
     >
       <header class="sidebar-nav flex-shrink-0">
-        <nav class="d-flex flex-row justify-content-around w-100" aria-label="Sidebar Sections">
+        <nav
+          class="d-flex flex-row flex-wrap justify-content-around w-100"
+          aria-label="Sidebar Sections"
+        >
           <SidebarSectionButton
             @click="activeTab = 'chat'"
             :active="activeTab === 'chat'"
@@ -83,6 +86,7 @@
     flex-direction: column;
     top: 0;
     left: 0;
+    min-width: fit-content;
     width: 70%;
     max-width: 350px;
     height: 100%;

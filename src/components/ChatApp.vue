@@ -63,6 +63,5 @@
   .channel {
     position: relative;
     height: 100%;
-    padding: 0.5em;
   }
 </style>
