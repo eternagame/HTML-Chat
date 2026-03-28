@@ -82,7 +82,7 @@ declare module 'irc-framework' {
 
     removeInvite(channel: string, mask: string): void;
 
-    banlist(channel: string, cb: (e: BanlistEventArgs) => void): void;
+    banlist(channel: string, cb?: (e: BanlistEventArgs) => void): void;
 
     ban(channel: string, mask: string): void;
 
@@ -498,11 +498,14 @@ declare module 'irc-framework' {
   }
   export interface BanlistEventArgs {
     channel: string;
-    bans: BanlistBanObject[]; // TODO: check type
+    bans: BanInfo[];
   }
-  export interface BanlistBanObject {
+  export interface BanInfo {
     banned: string;
+    banned_at: string;
+    banned_by: string;
     channel: string;
+    tags: Tags;
   }
   export interface TopicEventArgs {
     channel: string;

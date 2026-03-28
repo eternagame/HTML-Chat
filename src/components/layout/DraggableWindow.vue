@@ -183,7 +183,7 @@
     &:not(.draggable-window--resizing):not(.draggable-window--dragging) {
       @media (prefers-reduced-motion: no-preference) {
         transition-property: top, left, width, height;
-        transition-duration: 100ms;
+        transition-duration: 150ms;
         transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
       }
     }

@@ -1,11 +1,11 @@
 import { createCommandRegistry } from '#commands';
 import type { MessageType } from '#models';
-import { isAccessibleHexColor } from '#utils';
 import type { Tags } from 'irc-framework';
 import { defineStore } from 'pinia';
 import useChannelStore from './channel';
 import useIrcStore from './irc';
 import useOperatorStore from './operator';
+import useProfileStore from './profile';
 import useSettingsStore from './settings';
 import useUserListStore from './user-list';
 
@@ -13,6 +13,7 @@ const useChatStore = defineStore('chat', () => {
   const channel = useChannelStore();
   const irc = useIrcStore();
   const operator = useOperatorStore();
+  const profile = useProfileStore();
   const settings = useSettingsStore();
   const userList = useUserListStore();
 
@@ -61,8 +62,8 @@ const useChatStore = defineStore('chat', () => {
     const tags: Tags = {};
     const pendingId = channel.addPendingMessage(channelOrUsername, text, type);
     tags['label'] = pendingId;
-    if (settings.usernameColor && isAccessibleHexColor(settings.usernameColor)) {
-      tags['+color'] = settings.usernameColor;
+    if (profile.usernameColor) {
+      tags['+color'] = profile.usernameColor;
     }
 
     for (const target of targets) {
@@ -90,7 +91,12 @@ const useChatStore = defineStore('chat', () => {
       const commandName = rawCommand.substring(1).toLowerCase();
       const handler = commandRegistry.get(commandName);
       if (handler) {
-        // TODO: Check if user is operator for operator-only commands
+        if (handler.requiresOperator && !operator.isOperator) {
+          // Check if user is operator for operator-only commands
+          channel.addSystemMessage(`You need to be an operator to run: "/${commandName}"`);
+          return;
+        }
+
         handler.execute({
           currentChannel: channel.currentChannelName,
           args,
@@ -100,6 +106,7 @@ const useChatStore = defineStore('chat', () => {
             channel,
             irc,
             operator,
+            profile,
             settings,
             userList,
           },

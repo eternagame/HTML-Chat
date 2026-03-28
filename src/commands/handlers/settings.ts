@@ -67,7 +67,7 @@ export const color: CommandHandler = {
     'Set username color. Supports hex, RGB, or a preset color name. Ignores unreadable colors.',
   usage: '/color <color>',
   examples: ['/color #ffffff', '/color 255 255 255', '/color orange'],
-  execute({ currentChannel, args, stores }) {
+  execute({ args, stores }) {
     if (args.length === 0) {
       stores.channel.addSystemMessage('"/color" requires a color input');
       return;
@@ -107,10 +107,7 @@ export const color: CommandHandler = {
       inputColor = namedColor;
     }
 
-    stores.settings.usernameColor = inputColor;
-    if (currentChannel.startsWith('#')) {
-      stores.irc.client?.tagmsg(currentChannel, { ['+color']: inputColor });
-    }
+    stores.profile.updateUsernameColor(inputColor);
   },
 };
 /**

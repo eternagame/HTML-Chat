@@ -2,13 +2,8 @@
   <div class="login-container">
     <div class="login">
       <BForm @submit.prevent="onSubmit">
-        <BFormGroup
-          label="Username"
-          class="mb-3"
-          :state="usernameError.length === 0"
-          :invalid-feedback="usernameError"
-        >
-          <BFormInput name="username" type="text" v-model.trim="form.username" />
+        <BFormGroup label="Username" class="mb-3">
+          <BFormInput name="username" type="text" v-model.trim="form.username" required />
         </BFormGroup>
 
         <BFormGroup
@@ -17,7 +12,7 @@
           :state="uidError.length === 0"
           :invalid-feedback="uidError"
         >
-          <BFormInput name="uid" type="text" inputmode="numeric" v-model.trim="form.uid" />
+          <BFormInput name="uid" type="text" inputmode="numeric" v-model.trim="form.uid" required />
         </BFormGroup>
 
         <BFormCheckbox name="remember" class="mb-3" reverse v-model="form.remember"
@@ -46,12 +41,6 @@
     remember: false,
   });
 
-  const usernameError = computed(() => {
-    if (form.username.length === 0) {
-      return 'Must provide a Username';
-    }
-    return '';
-  });
   const uidError = computed(() => {
     if (form.uid.length === 0) {
       return 'Must provide a User ID';

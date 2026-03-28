@@ -35,7 +35,7 @@ export const away: CommandHandler = {
   usage: '/away [reason]',
   examples: ['/away', '/away Lunch'],
   execute({ fullText, stores }) {
-    stores.irc.client?.raw(`AWAY :${fullText.trim() || 'User is currently away'}`);
+    stores.profile.setAway(fullText);
   },
 };
 
@@ -45,6 +45,6 @@ export const unaway: CommandHandler = {
   description: 'Set self as unaway/back.',
   usage: '/unaway',
   execute({ stores }) {
-    stores.irc.client?.raw('AWAY');
+    stores.profile.setUnaway();
   },
 };

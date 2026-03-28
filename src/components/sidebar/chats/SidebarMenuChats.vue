@@ -1,6 +1,8 @@
 <template>
   <div class="chats-container d-flex flex-column h-100">
-    <h4>Channels</h4>
+    <header>
+      <h4>Channels</h4>
+    </header>
 
     <ul class="channel-list list-unstyled flex-grow-1">
       <li

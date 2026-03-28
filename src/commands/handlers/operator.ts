@@ -105,16 +105,39 @@ export const notice: CommandHandler = {
     });
   },
 };
-/**
- * Ban hostmask (form: `user!nick@host`).
- * `/banmask <channel> <mask>`
- */
-export const banmask: TODO = null;
-/**
- * Unban hostmask.
- * `/unbanmask <channel> <mask>`
- */
-export const unbanmask: TODO = null;
+
+export const banmask: CommandHandler = {
+  name: 'banmask',
+  description: 'Bans a host mask. Host masks are in the form of "nick!ident@host"',
+  usage: '/banmask <mask> <channel>',
+  examples: ['/banmask *!*@some.host.net #general', `/banmask *!*@ban.evader.net *`],
+  requiresOperator: true,
+  execute({ args, stores }) {
+    if (args.length < 2) {
+      stores.channel.addSystemMessage('"/banmask" requires a mask and target channel');
+    }
+
+    const [mask, targetChannel] = args;
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    stores.operator.addBanMask(mask, channels);
+  },
+};
+
+export const unbanmask: CommandHandler = {
+  name: 'unbanmask',
+  description: 'Removes a host mask mask. Host masks are in the form of "nick!ident@host"',
+  usage: '/unbanmask <mask> <channel>',
+  requiresOperator: true,
+  execute({ args, stores }) {
+    if (args.length < 2) {
+      stores.channel.addSystemMessage('"/unbanmask" requires a mask and target channel');
+    }
+
+    const [mask, targetChannel] = args;
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    stores.operator.removeBanMask(mask, channels);
+  },
+};
 
 export const user: CommandHandler = {
   name: 'user',
@@ -181,11 +204,17 @@ export const kick: CommandHandler = {
     }
   },
 };
-/**
- * Get list of bans
- * `/banlist`
- */
-export const banlist: TODO = null;
+
+export const banlist: CommandHandler = {
+  name: 'banlist',
+  description: 'Get list of bans',
+  usage: '/banlist',
+  requiresOperator: true,
+  execute({ stores }) {
+    stores.operator.getBanList();
+  },
+};
+
 /**
  * Change your nickname.
  * `/changenick <newNick>`

@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { readonly, ref, watch } from 'vue';
+import useChannelStore from './channel';
 import useIrcStore from './irc';
 import useUserListStore from './user-list';
-import useChannelStore from './channel';
 
 const useOperatorStore = defineStore('operator', () => {
   const channel = useChannelStore();
@@ -33,52 +33,103 @@ const useOperatorStore = defineStore('operator', () => {
     }
   }
 
+  function addBanMask(mask: string, targetChannels: string[]) {
+    if (!irc.client || !isOperator.value || mask.length === 0 || targetChannels.length === 0) {
+      if (!isOperator.value) {
+        channel.addSystemMessage('You currently are not an operator.');
+      } else if (mask.length === 0) {
+        channel.addSystemMessage('You need to provide a ban mask.');
+      } else if (targetChannels.length === 0) {
+        channel.addSystemMessage('You need to provide channels to apply the ban mask.');
+      }
+      return;
+    }
+
+    for (const targetChannel of targetChannels) {
+      irc.client.ban(targetChannel, mask);
+    }
+  }
+
+  function removeBanMask(mask: string, targetChannels: string[]) {
+    if (!irc.client || !isOperator.value || mask.length === 0 || targetChannels.length === 0) {
+      if (!isOperator.value) {
+        channel.addSystemMessage('You currently are not an operator.');
+      } else if (mask.length === 0) {
+        channel.addSystemMessage('You need to provide a ban mask to remove.');
+      } else if (targetChannels.length === 0) {
+        channel.addSystemMessage('You need to provide channels to remove the ban mask.');
+      }
+      return;
+    }
+
+    for (const targetChannel of targetChannels) {
+      irc.client.unban(targetChannel, mask);
+    }
+  }
+
   function ban(username: string, targetChannels: string[]) {
-    if (!irc.client || !isOperator.value || username === '*' || targetChannels.length === 0) {
+    if (username === '*') {
+      channel.addSystemMessage(
+        `**Careful!** Passing (*) in the username parameter will ban everyone.`,
+      );
       return;
     }
 
     const user = userList.getUserByUsername(username);
-    for (const targetChannel of targetChannels) {
-      // Ban by username mask
-      irc.client.ban(targetChannel, `${user?.username ?? username}^*!*@*`);
-    }
+    // Ban by username mask
+    addBanMask(`${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
   function unban(username: string, targetChannels: string[]) {
-    if (!irc.client || !isOperator.value || username === '*' || targetChannels.length === 0) {
+    if (username === '*') {
+      channel.addSystemMessage(`Passing (*) in the username parameter will unban everyone.`);
       return;
     }
+
     const user = userList.getUserByUsername(username);
-    for (const targetChannel of targetChannels) {
-      // Unban by username mask
-      irc.client.unban(targetChannel, `${user?.username ?? username}^*!*@*`);
-    }
+    // Unban by username mask
+    removeBanMask(`${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
   function mute(username: string, targetChannels: string[]) {
-    if (!irc.client || !isOperator.value || username === '*' || targetChannels.length === 0) {
+    if (username === '*') {
+      channel.addSystemMessage(
+        `**Careful!** Passing (*) in the username parameter will mute everyone.`,
+      );
       return;
     }
 
     const user = userList.getUserByUsername(username);
-    for (const targetChannel of targetChannels) {
-      // Mute by username mask
-      // See https://github.com/ergochat/ergo/blob/master/docs/MANUAL.md#extended-bans
-      irc.client.ban(targetChannel, `m:${user?.username ?? username}^*!*@*`);
-    }
+    // Mute by username mask
+    // See https://github.com/ergochat/ergo/blob/master/docs/MANUAL.md#extended-bans
+    addBanMask(`m:${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
   function unmute(username: string, targetChannels: string[]) {
-    if (!irc.client || !isOperator.value || username === '*' || targetChannels.length === 0) {
+    if (username === '*') {
+      channel.addSystemMessage(`Passing (*) in the username parameter will unmute everyone.`);
       return;
     }
 
     const user = userList.getUserByUsername(username);
-    for (const targetChannel of targetChannels) {
-      // Unmute by username mask
-      // See https://github.com/ergochat/ergo/blob/master/docs/MANUAL.md#extended-bans
-      irc.client.unban(targetChannel, `m:${user?.username ?? username}^*!*@*`);
+    // Unmute by username mask
+    // See https://github.com/ergochat/ergo/blob/master/docs/MANUAL.md#extended-bans
+    removeBanMask(`m:${user?.username ?? username}^*!*@*`, targetChannels);
+  }
+
+  function getBanList() {
+    if (!irc.client) {
+      return;
+    } else if (!isOperator.value) {
+      channel.addSystemMessage('You currently are not an operator.');
+      return;
+    }
+
+    for (const channelName of channel.channelNameList) {
+      if (!channelName.startsWith('#')) {
+        continue;
+      }
+      irc.client.banlist(channelName);
     }
   }
 
@@ -90,26 +141,43 @@ const useOperatorStore = defineStore('operator', () => {
       }
 
       isOperator.value = false;
-      client.on('mode', (event) => {
-        if (event.target !== irc.currentNick) {
-          return;
-        }
-
-        // Checking if user is a server operator
-        for (const mode of event.modes) {
-          switch (mode.mode) {
-            case '+o':
-              isOperator.value = true;
-              return;
-            case '-o':
-              isOperator.value = false;
-              return;
+      client
+        .on('mode', (event) => {
+          if (event.target !== irc.currentNick) {
+            return;
           }
-        }
-      });
+
+          // Checking if user is a server operator
+          for (const mode of event.modes) {
+            switch (mode.mode) {
+              case '+o':
+                isOperator.value = true;
+                return;
+              case '-o':
+                isOperator.value = false;
+                return;
+            }
+          }
+        })
+        .on('banlist', (event) => {
+          if (!isOperator.value) {
+            return;
+          }
+          if (event.bans.length === 0) {
+            channel.addSystemMessage(`No bans in ${event.channel}`);
+          } else {
+            channel.addSystemMessage(
+              `Users banned from ${event.channel}: ${event.bans.map((b) => b.banned.replaceAll('*', '\\*'))}`,
+            );
+          }
+        });
     },
   );
-
+  watch(isOperator, () => {
+    if (isOperator.value) {
+      channel.addSystemMessage('You are now an operator.');
+    }
+  });
   watch([() => channel.channelNameList, isOperator], ([channelList]) => {
     if (!isOperator.value) {
       return;
@@ -123,13 +191,15 @@ const useOperatorStore = defineStore('operator', () => {
       });
   });
 
-  // TODO: saving credentials
-  // TODO: banlist, change nick, ban/unban mask (directly, rather than by username)
+  // TODO: change nick
 
   return {
     isOperator: readonly(isOperator),
     signIn,
     kick,
+    getBanList,
+    addBanMask,
+    removeBanMask,
     ban,
     unban,
     mute,
