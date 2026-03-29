@@ -198,11 +198,13 @@
 
   .header {
     flex-shrink: 0;
-    cursor: grab;
     background-color: #043468;
     color: #ffffff;
     user-select: none;
     padding: 0.25em 0.5em;
+  }
+  .draggable-window:not(.draggable-window--fullscreen) .header {
+    cursor: grab;
     &:active {
       cursor: grabbing;
     }
@@ -217,6 +219,7 @@
 
   .footer {
     flex-shrink: 0;
+    padding: 0 0.25em 0.25em;
   }
 
   .handle {

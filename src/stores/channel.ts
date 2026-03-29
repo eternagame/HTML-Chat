@@ -1,4 +1,4 @@
-import { AUTO_JOIN_CHANNELS } from '#constants';
+import { AUTO_JOIN_CHANNELS, OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
 import type { Channel, Message, MessageType } from '#models';
 import {
   isCaseInsensitiveMatch,
@@ -309,6 +309,19 @@ const useChannelStore = defineStore('channel', () => {
           }
         })
         .on('message', (event) => {
+          if (event.type === 'notice' && event.nick === '') {
+            addSystemMessage(event.message);
+            return;
+          }
+          if (
+            isCaseInsensitiveMatch(event.target, OPERATOR_NOTIFICATION_CHANNEL) &&
+            !irc.isOperator
+          ) {
+            // Ignore echoed messages to the operator notification channel
+            // If user is not an operator
+            return;
+          }
+
           const user = userList.getUserByNick(event.nick);
           const username = user?.username ?? parseNick(event.nick).toLocaleLowerCase();
           const channel = getTargetChannel(event.nick, event.target);
@@ -333,15 +346,19 @@ const useChannelStore = defineStore('channel', () => {
 
           if (isMe) {
             // Check if incoming message from self is the one sent recently
-            const pendingMessage = channel.messages.findLast(
+            const sentMessage = channel.messages.findLast(
               (m) =>
-                m.status === 'pending' &&
+                typeof m.status === 'string' &&
                 (m.pendingId === event.tags.label || m.message === event.message),
             );
 
-            if (pendingMessage) {
-              // Mark incoming message as successful sent if it was pending
-              Object.assign(pendingMessage, newMessage, { status: 'sent' });
+            if (sentMessage) {
+              if (sentMessage.status === 'pending') {
+                // Mark incoming message as successful sent if it was pending
+                Object.assign(sentMessage, newMessage, { status: 'sent' });
+              }
+              // Prevents duplicate sent message from being added if `status === 'sent'`
+              // Only occurs when private messaging a user with 2+ clients open
               return;
             }
           }
@@ -388,7 +405,9 @@ const useChannelStore = defineStore('channel', () => {
         .on('irc error', (event) => {
           log.debug('[IRC Error]', event);
 
-          if (event.error === 'banned_from_channel') {
+          if (event.error === 'invite_only_channel') {
+            leaveChannel(event.channel);
+          } else if (event.error === 'banned_from_channel') {
             addSystemMessage(`You have been banned.`, event.target);
             addSystemMessage(
               `Please read our [code of conduct](https://eternagame.org/about/conduct)`,

@@ -1,6 +1,6 @@
 <template>
   <SettingsGroup title="Operator">
-    <template v-if="operator.isOperator">
+    <template v-if="irc.isOperator">
       <p>You are an operator</p>
     </template>
     <template v-else>
@@ -33,11 +33,12 @@
   </SettingsGroup>
 </template>
 <script setup lang="ts">
-  import { useOperatorStore } from '#stores';
+  import { useIrcStore, useOperatorStore } from '#stores';
   import { BButton, BForm, BFormGroup, BFormInput } from 'bootstrap-vue-next';
   import { computed, reactive } from 'vue';
   import SettingsGroup from './ui/SettingsGroup.vue';
 
+  const irc = useIrcStore();
   const operator = useOperatorStore();
   const form = reactive({
     username: '',

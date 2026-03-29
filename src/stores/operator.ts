@@ -1,5 +1,6 @@
+import { OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
 import { defineStore } from 'pinia';
-import { readonly, ref, watch } from 'vue';
+import { watch } from 'vue';
 import useChannelStore from './channel';
 import useIrcStore from './irc';
 import useUserListStore from './user-list';
@@ -8,18 +9,16 @@ const useOperatorStore = defineStore('operator', () => {
   const channel = useChannelStore();
   const irc = useIrcStore();
   const userList = useUserListStore();
-  /** Is a server-wide operator */
-  const isOperator = ref(false);
 
   function signIn(username: string, password: string) {
-    if (!irc.client || isOperator.value) {
+    if (!irc.client || irc.isOperator) {
       return;
     }
     irc.client.raw(`OPER ${username} ${password}`);
   }
 
   function kick(username: string, targetChannels: string[]) {
-    if (!irc.client || !isOperator.value || targetChannels.length === 0) {
+    if (!irc.client || !irc.isOperator || targetChannels.length === 0) {
       return;
     }
     const user = userList.getUserByUsername(username);
@@ -34,14 +33,16 @@ const useOperatorStore = defineStore('operator', () => {
   }
 
   function addBanMask(mask: string, targetChannels: string[]) {
-    if (!irc.client || !isOperator.value || mask.length === 0 || targetChannels.length === 0) {
-      if (!isOperator.value) {
-        channel.addSystemMessage('You currently are not an operator.');
-      } else if (mask.length === 0) {
-        channel.addSystemMessage('You need to provide a ban mask.');
-      } else if (targetChannels.length === 0) {
-        channel.addSystemMessage('You need to provide channels to apply the ban mask.');
-      }
+    if (!irc.client) {
+      return;
+    } else if (!irc.isOperator) {
+      channel.addSystemMessage('You currently are not an operator.');
+      return;
+    } else if (mask.length === 0) {
+      channel.addSystemMessage('You need to provide a ban mask.');
+      return;
+    } else if (targetChannels.length === 0) {
+      channel.addSystemMessage('You need to provide channels to apply the ban mask.');
       return;
     }
 
@@ -51,14 +52,16 @@ const useOperatorStore = defineStore('operator', () => {
   }
 
   function removeBanMask(mask: string, targetChannels: string[]) {
-    if (!irc.client || !isOperator.value || mask.length === 0 || targetChannels.length === 0) {
-      if (!isOperator.value) {
-        channel.addSystemMessage('You currently are not an operator.');
-      } else if (mask.length === 0) {
-        channel.addSystemMessage('You need to provide a ban mask to remove.');
-      } else if (targetChannels.length === 0) {
-        channel.addSystemMessage('You need to provide channels to remove the ban mask.');
-      }
+    if (!irc.client) {
+      return;
+    } else if (!irc.isOperator) {
+      channel.addSystemMessage('You currently are not an operator.');
+      return;
+    } else if (mask.length === 0) {
+      channel.addSystemMessage('You need to provide a ban mask to remove.');
+      return;
+    } else if (targetChannels.length === 0) {
+      channel.addSystemMessage('You need to provide channels to remove the ban mask.');
       return;
     }
 
@@ -120,7 +123,7 @@ const useOperatorStore = defineStore('operator', () => {
   function getBanList() {
     if (!irc.client) {
       return;
-    } else if (!isOperator.value) {
+    } else if (!irc.isOperator) {
       channel.addSystemMessage('You currently are not an operator.');
       return;
     }
@@ -140,46 +143,42 @@ const useOperatorStore = defineStore('operator', () => {
         return;
       }
 
-      isOperator.value = false;
-      client
-        .on('mode', (event) => {
-          if (event.target !== irc.currentNick) {
-            return;
-          }
-
-          // Checking if user is a server operator
-          for (const mode of event.modes) {
-            switch (mode.mode) {
-              case '+o':
-                isOperator.value = true;
-                return;
-              case '-o':
-                isOperator.value = false;
-                return;
-            }
-          }
-        })
-        .on('banlist', (event) => {
-          if (!isOperator.value) {
-            return;
-          }
-          if (event.bans.length === 0) {
-            channel.addSystemMessage(`No bans in ${event.channel}`);
-          } else {
-            channel.addSystemMessage(
-              `Users banned from ${event.channel}: ${event.bans.map((b) => b.banned.replaceAll('*', '\\*'))}`,
-            );
-          }
-        });
+      client.on('banlist', (event) => {
+        if (!irc.isOperator) {
+          return;
+        }
+        if (event.bans.length === 0) {
+          channel.addSystemMessage(`No bans in ${event.channel}`);
+        } else {
+          channel.addSystemMessage(
+            `Users banned from ${event.channel}: ${event.bans.map((b) => b.banned.replaceAll('*', '\\*'))}`,
+          );
+        }
+      });
     },
   );
-  watch(isOperator, () => {
-    if (isOperator.value) {
-      channel.addSystemMessage('You are now an operator.');
-    }
-  });
-  watch([() => channel.channelNameList, isOperator], ([channelList]) => {
-    if (!isOperator.value) {
+  watch(
+    () => irc.isOperator,
+    (isOperator, wasOperator) => {
+      if (isOperator) {
+        channel.addSystemMessage('You are now an operator.');
+
+        // Allow operator to join the channel
+        irc.client?.raw(`SAJOIN ${OPERATOR_NOTIFICATION_CHANNEL}`);
+        channel.joinChannel(OPERATOR_NOTIFICATION_CHANNEL, { force: true, skipNavigation: true });
+      } else {
+        channel.leaveChannel(OPERATOR_NOTIFICATION_CHANNEL);
+
+        if (wasOperator) {
+          // Occurs when reconnecting
+          channel.addSystemMessage('You are no longer an operator.');
+        }
+      }
+    },
+    { immediate: true },
+  );
+  watch([() => channel.channelNameList, () => irc.isOperator], ([channelList, isOperator]) => {
+    if (!isOperator) {
       return;
     }
 
@@ -194,7 +193,6 @@ const useOperatorStore = defineStore('operator', () => {
   // TODO: change nick
 
   return {
-    isOperator: readonly(isOperator),
     signIn,
     kick,
     getBanList,

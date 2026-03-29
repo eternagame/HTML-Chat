@@ -91,7 +91,7 @@ const useChatStore = defineStore('chat', () => {
       const commandName = rawCommand.substring(1).toLowerCase();
       const handler = commandRegistry.get(commandName);
       if (handler) {
-        if (handler.requiresOperator && !operator.isOperator) {
+        if (handler.requiresOperator && !irc.isOperator) {
           // Check if user is operator for operator-only commands
           channel.addSystemMessage(`You need to be an operator to run: "/${commandName}"`);
           return;

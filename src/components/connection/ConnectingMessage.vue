@@ -1,36 +1,44 @@
 <template>
-  <div v-if="isAttemptingConnection">
-    <BAlert v-if="irc.connectionStatus === 'connecting'" :model-value="true">
+  <template v-if="isAttemptingConnection">
+    <BAlert class="m-0" v-if="irc.connectionStatus === 'connecting'" :model-value="true">
       <img
         src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
         class="loading-icon mr-auto ml-auto align-middle mb-1"
         alt=""
       />
-      Connecting...
-    </BAlert>
-    <BAlert v-else-if="irc.reconnectionStatus.isReconnecting" :model-value="true" variant="warning">
-      <p>Connection failed. Retrying in {{ irc.reconnectionCountdown }} seconds...</p>
-      <BProgress
-        variant="warning"
-        :value="irc.reconnectionCountdown"
-        :max="irc.reconnectionStatus.retryDelay / 1_000"
-        height="4px"
-      ></BProgress>
+      <template v-if="irc.reconnectionStatus.isReconnecting">
+        <span
+          >(Attempt {{ irc.reconnectionStatus.retryCount }} of
+          {{ irc.reconnectionStatus.maxRetryCount }})</span
+        >
+        Reconnecting...
+        <BProgress
+          variant="warning"
+          :value="irc.reconnectionStatus.retryDelay / 1_000 - irc.reconnectionCountdown"
+          :max="irc.reconnectionStatus.retryDelay / 1_000"
+          height="4px"
+        ></BProgress>
+      </template>
+      <template v-else> Connecting... </template>
     </BAlert>
     <BAlert
+      class="m-0"
       v-else-if="irc.connectionStatus === 'reconnect failed'"
       :model-value="true"
       variant="danger"
     >
       Failed to reconnect.
     </BAlert>
-  </div>
+  </template>
+
+  <ConnectButton v-if="irc.connectionStatus !== 'connected'" class="connect-button" />
 </template>
 
 <script setup lang="ts">
   import { useIrcStore } from '#stores';
   import { BAlert, BProgress } from 'bootstrap-vue-next';
   import { computed } from 'vue';
+  import ConnectButton from './ConnectButton.vue';
 
   const irc = useIrcStore();
 
@@ -46,5 +54,9 @@
   .loading-icon {
     width: 20px;
     height: 20px;
+  }
+
+  .connect-button {
+    margin: 0.75em 0;
   }
 </style>

@@ -14,3 +14,5 @@ export const CHANNEL_DESCRIPTIONS: Record<string, string> = {
   '#help': 'Help requests',
   '#labs': 'Discussion related to labs',
 };
+
+export const OPERATOR_NOTIFICATION_CHANNEL = '#ops-notifications';

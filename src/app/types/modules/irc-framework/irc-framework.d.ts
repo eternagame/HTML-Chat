@@ -179,7 +179,7 @@ declare module 'irc-framework' {
     on(eventType: 'wallops', cb: (event: unknown) => void): this;
 
     // Users
-    on(eventType: 'nick', cb: (event: unknown) => void): this;
+    on(eventType: 'nick', cb: (event: NickEvent) => void): this;
     on(eventType: 'account', cb: (event: unknown) => void): this;
     on(eventType: 'user info', cb: (event: unknown) => void): this;
     on(eventType: 'away', cb: (event: AwayEvent) => void): this;
@@ -187,8 +187,8 @@ declare module 'irc-framework' {
     on(eventType: 'monitorList', cb: (event: MonitorListEventArgs) => void): this;
     on(eventType: 'nick in use', cb: (event: NickInUseEventArgs) => void): this;
     on(eventType: 'nick invalid', cb: (event: NickInvalidEventArgs) => void): this;
-    on(eventType: 'users online', cb: (event: unknown) => void): this;
-    on(eventType: 'users offline', cb: (event: unknown) => void): this;
+    on(eventType: 'users online', cb: (event: UsersOnlineOfflineEvent) => void): this;
+    on(eventType: 'users offline', cb: (event: UsersOnlineOfflineEvent) => void): this;
     on(eventType: 'whois', cb: (event: WhoIsEventArgs) => void): this;
     on(eventType: 'whowas', cb: (event: WhoWasEventArgs) => void): this;
     on(eventType: 'user updated', cb: (event: unknown) => void): this;
@@ -307,6 +307,13 @@ declare module 'irc-framework' {
     'from_server' | 'nick' | 'ident' | 'hostname' | 'target' | 'tags' | 'time' | 'account' | 'batch'
   >;
 
+  export interface NickEvent extends Pick<
+    MessageEvent,
+    'batch' | 'tags' | 'hostname' | 'ident' | 'nick' | 'time'
+  > {
+    new_nick: string;
+  }
+
   export interface JoinEvent extends Pick<
     MessageEvent,
     'nick' | 'ident' | 'hostname' | 'message' | 'time' | 'tags' | 'account' | 'batch'
@@ -332,6 +339,9 @@ declare module 'irc-framework' {
     line: string;
   }
   export interface MonitorListEventArgs {
+    nicks: string[];
+  }
+  export interface UsersOnlineOfflineEvent extends Pick<MessageEvent, 'tags'> {
     nicks: string[];
   }
   export interface WhoIsEventArgs {
@@ -368,9 +378,7 @@ declare module 'irc-framework' {
     error: string;
     whowas: Array<{ nick: string; ident: string; hostname: string; real_name: string }>[];
   }
-  export interface RegisteredEvent {
-    nick: string;
-  }
+  export type RegisteredEvent = Pick<MessageEvent, 'nick' | 'tags'>;
   export interface PartEvent extends Pick<
     MessageEvent,
     'nick' | 'ident' | 'hostname' | 'message' | 'time'
@@ -500,12 +508,11 @@ declare module 'irc-framework' {
     channel: string;
     bans: BanInfo[];
   }
-  export interface BanInfo {
+  export interface BanInfo extends Pick<MessageEvent, 'tags'> {
     banned: string;
     banned_at: string;
     banned_by: string;
     channel: string;
-    tags: Tags;
   }
   export interface TopicEventArgs {
     channel: string;
@@ -538,6 +545,7 @@ declare module 'irc-framework' {
     ping_timeout?: number;
     transport?: typeof BaseTransport;
     ssl?: boolean;
+    account?: Record<'account' | 'password', string>;
     webirc?: {
       password?: string;
       username?: string;

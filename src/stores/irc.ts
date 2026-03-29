@@ -18,6 +18,8 @@ const useIrcStore = defineStore('irc', () => {
    * Keeps the chat view visible until client manually signs out.
    */
   const isInitialized = ref(false);
+  /** Is a server-wide operator */
+  const isOperator = ref(false);
   const client = shallowRef<Client | null>(null);
   const savedUser = useLocalStorage<Record<'username' | 'uid', string>>('chat_user', {
     username: '',
@@ -60,6 +62,7 @@ const useIrcStore = defineStore('irc', () => {
     currentUser.username = username.toLocaleLowerCase();
     currentUser.displayName = username;
     currentUser.uid = uid;
+    isOperator.value = false;
 
     const ircClient = new Client({
       host: import.meta.env.VITE_APP_SERVER_URL!,
@@ -71,7 +74,7 @@ const useIrcStore = defineStore('irc', () => {
       transport: Connection,
       enable_echomessage: true,
       auto_reconnect_max_retries: 10,
-      auto_reconnect_max_wait: 300_000,
+      auto_reconnect_max_wait: 30_000,
     })
       .on('nick in use', (event) => {
         // Remove used nick
@@ -85,10 +88,13 @@ const useIrcStore = defineStore('irc', () => {
       .on('connecting', () => {
         connectionStatus.value = 'connecting';
       })
-      .on('registered', () => {
+      .on('registered', (event) => {
+        currentNick.value = event.nick;
+        currentUser.nicks.add(event.nick);
         isRegistered.value = true;
       })
       .on('connected', () => {
+        isOperator.value = false;
         connectionStatus.value = 'connected';
         reconnectionStatus.isReconnecting = false;
         reconnectionCountdown.stop();
@@ -101,8 +107,34 @@ const useIrcStore = defineStore('irc', () => {
         reconnectionCountdown.start(event.wait / 1_000);
       })
       .on('close', () => {
+        isOperator.value = false;
         connectionStatus.value = 'reconnect failed';
         reconnectionStatus.isReconnecting = false;
+      })
+      .on('mode', (event) => {
+        if (event.target !== currentNick.value) {
+          return;
+        }
+        // Checking if user is a server operator
+        for (const mode of event.modes) {
+          switch (mode.mode) {
+            case '+o':
+              isOperator.value = true;
+              return;
+            case '-o':
+              isOperator.value = false;
+              return;
+          }
+        }
+      })
+      .on('nick', (event) => {
+        if (event.nick !== currentNick.value) {
+          return;
+        }
+
+        currentNick.value = event.new_nick;
+        currentUser.nicks.add(event.new_nick);
+        currentUser.nicks.delete(event.nick);
       })
       .on('raw', (event) => {
         if (event.from_server) {
@@ -146,12 +178,7 @@ const useIrcStore = defineStore('irc', () => {
    * Client must first be initialized by {@link autoSignIn} or {@link signIn}
    */
   function reconnect() {
-    if (
-      !isInitialized.value ||
-      !client.value ||
-      connectionStatus.value === 'connecting' ||
-      connectionStatus.value === 'connected'
-    ) {
+    if (!isInitialized.value || !client.value || connectionStatus.value === 'connected') {
       return;
     }
     client.value.connect();
@@ -181,6 +208,7 @@ const useIrcStore = defineStore('irc', () => {
     reconnectionCountdown: readonly(reconnectionCountdown.remaining),
     currentUser: readonly(currentUser),
     currentNick: readonly(currentNick),
+    isOperator: readonly(isOperator),
     quit,
     signIn,
     autoSignIn,

@@ -1,16 +1,14 @@
 <template>
   <button class="section-button border-0" type="button" :aria-current="active">
-    <img class="icon" :src="displayedImage" :alt="label" />
+    <img v-show="active" class="icon" :src="iconActive" :alt="label" />
+    <img v-show="!active" class="icon" :src="icon" :alt="label" />
   </button>
 </template>
 <script setup lang="ts">
-  import { computed } from 'vue';
-
-  const props = withDefaults(
+  withDefaults(
     defineProps<{ icon: string; iconActive: string; active?: boolean; label: string }>(),
     { active: false },
   );
-  const displayedImage = computed(() => (props.active ? props.iconActive : props.icon));
 </script>
 <style scoped>
   .section-button {

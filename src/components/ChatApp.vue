@@ -26,6 +26,7 @@
         </div>
       </template>
       <template v-slot:footer>
+        <ConnectingMessage />
         <ChatInput />
       </template>
     </DraggableWindow>
@@ -35,12 +36,13 @@
 <script setup lang="ts">
   import { useChannelStore, useLayoutStore, useSettingsStore } from '#stores';
   import ChannelMessages from './channel/ChannelMessages.vue';
-  import DraggableWindow from './layout/DraggableWindow.vue';
   import ChatInput from './chat/ChatInput.vue';
-  import MinimizationTriangle from './ui/MinimizationTriangle.vue';
+  import ConnectingMessage from './connection/ConnectingMessage.vue';
+  import DraggableWindow from './layout/DraggableWindow.vue';
   import OpenWindowButton from './layout/header/OpenWindowButton.vue';
-  import SidebarMenuButton from './sidebar/SidebarMenuButton.vue';
   import SidebarMenu from './sidebar/SidebarMenu.vue';
+  import SidebarMenuButton from './sidebar/SidebarMenuButton.vue';
+  import MinimizationTriangle from './ui/MinimizationTriangle.vue';
 
   const channel = useChannelStore();
   const layout = useLayoutStore();
