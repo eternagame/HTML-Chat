@@ -347,9 +347,7 @@ const useChannelStore = defineStore('channel', () => {
           if (isMe) {
             // Check if incoming message from self is the one sent recently
             const sentMessage = channel.messages.findLast(
-              (m) =>
-                typeof m.status === 'string' &&
-                (m.pendingId === event.tags.label || m.message === event.message),
+              (m) => typeof m.status === 'string' && m.pendingId === event.tags.label,
             );
 
             if (sentMessage) {

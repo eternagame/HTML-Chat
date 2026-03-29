@@ -6,7 +6,9 @@ export const me: CommandHandler = {
   usage: '/me <message>',
   examples: ['/me laughs'],
   execute({ currentChannel, fullText, sendMessage }) {
-    sendMessage(currentChannel, fullText, 'action');
+    if (fullText.length > 0) {
+      sendMessage(currentChannel, fullText, 'action');
+    }
   },
 };
 /**
