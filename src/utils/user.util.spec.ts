@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseNick, parseUid } from './user';
+import { parseNick, parseUid } from './user.util';
 
 describe('user', () => {
   it('parses username from nick', () => {

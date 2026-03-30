@@ -1,5 +1,5 @@
 import { CHANNEL_DESCRIPTIONS, DEFAULT_CHANNELS } from '#constants';
-import { findOriginalString } from './text';
+import { findOriginalString } from './text.util';
 
 const CHANNELS_WITH_DESCRIPTIONS = Object.keys(CHANNEL_DESCRIPTIONS);
 

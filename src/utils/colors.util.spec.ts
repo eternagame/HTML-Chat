@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isAccessibleHexColor, NAMED_COLORS } from './colors';
+import { isAccessibleHexColor, NAMED_COLORS } from './colors.util';
 
 describe('colors', () => {
   it('ensures all named colors are accessible', () => {

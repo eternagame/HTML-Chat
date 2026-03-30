@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isEmoji } from './emoji.ts';
+import { isEmoji } from './emoji.util.ts';
 
 describe('emoji', () => {
   it('detects emojis', () => {
