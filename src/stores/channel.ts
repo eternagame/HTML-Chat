@@ -406,10 +406,10 @@ const useChannelStore = defineStore('channel', () => {
           if (event.error === 'invite_only_channel') {
             leaveChannel(event.channel);
           } else if (event.error === 'banned_from_channel') {
-            addSystemMessage(`You have been banned.`, event.target);
+            addSystemMessage(`You have been banned.`, event.channel);
             addSystemMessage(
               `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
-              event.target,
+              event.channel,
             );
             createOrGetChannel(event.channel).banStatus = 'banned';
           }

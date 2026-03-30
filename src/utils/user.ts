@@ -47,8 +47,7 @@ export function parseUid(nick: string, uid: string): string {
 export function isMaskMatch(nick: string, mask: string): boolean {
   const nickMask = mask.replace(/!.+/, '');
   // Match against ban or mute mask
-  const maskRegex = new RegExp(
-    `^${nickMask.replace(/^m:/, '(m:)?').replaceAll('*', '.+').replaceAll('^', '\\^')}$`,
-  );
+  const adjustedMask = `^${nickMask.replace(/^m:/, '(m:)?').replaceAll('*', '.+').replaceAll('^', '\\^')}$`;
+  const maskRegex = new RegExp(adjustedMask, 'i');
   return maskRegex.test(nick);
 }
