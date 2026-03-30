@@ -1,5 +1,5 @@
-import type { BanStatus } from './ban-status';
-import type { Message } from './message';
+import type { BanStatus } from './ban-status.model';
+import type { Message } from './message.model';
 
 export interface Channel {
   /**

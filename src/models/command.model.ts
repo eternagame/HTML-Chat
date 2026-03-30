@@ -6,7 +6,7 @@ import type {
   useSettingsStore,
   useUserListStore,
 } from '#stores';
-import type { MessageType } from './message';
+import type { MessageType } from './message.model';
 
 export interface CommandContext {
   currentChannel: string;
