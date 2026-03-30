@@ -1,9 +1,9 @@
 import { OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
 import { defineStore } from 'pinia';
 import { watch } from 'vue';
-import useChannelStore from './channel';
-import useIrcStore from './irc';
-import useUserListStore from './user-list';
+import useChannelStore from './channel.store';
+import useIrcStore from './irc.store';
+import useUserListStore from './user-list.store';
 
 const useOperatorStore = defineStore('operator', () => {
   const channel = useChannelStore();

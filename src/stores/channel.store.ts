@@ -11,9 +11,9 @@ import { useLocalStorage, useWindowFocus } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, watch } from 'vue';
-import useIrcStore from './irc';
-import useNotificationsStore from './notifications';
-import useUserListStore from './user-list';
+import useIrcStore from './irc.store';
+import useNotificationsStore from './notifications.store';
+import useUserListStore from './user-list.store';
 
 const MAX_MESSAGES_PER_CHANNEL = 500;
 

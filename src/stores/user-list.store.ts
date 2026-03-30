@@ -5,7 +5,7 @@ import { isAccessibleHexColor, parseNick, parseUid } from '#utils';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, watch } from 'vue';
-import useIrcStore from './irc';
+import useIrcStore from './irc.store';
 
 const useUserListStore = defineStore('userList', () => {
   const irc = useIrcStore();

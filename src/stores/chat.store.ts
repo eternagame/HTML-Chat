@@ -2,12 +2,12 @@ import { createCommandRegistry } from '#commands';
 import type { MessageType } from '#models';
 import type { Tags } from 'irc-framework';
 import { defineStore } from 'pinia';
-import useChannelStore from './channel';
-import useIrcStore from './irc';
-import useOperatorStore from './operator';
-import useProfileStore from './profile';
-import useSettingsStore from './settings';
-import useUserListStore from './user-list';
+import useChannelStore from './channel.store';
+import useIrcStore from './irc.store';
+import useOperatorStore from './operator.store';
+import useProfileStore from './profile.store';
+import useSettingsStore from './settings.store';
+import useUserListStore from './user-list.store';
 
 const useChatStore = defineStore('chat', () => {
   const channel = useChannelStore();
