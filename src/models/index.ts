@@ -1,5 +1,4 @@
 export * from './ban-status.model';
-export * from './ban.model';
 export * from './channel.model';
 export * from './command.model';
 export * from './connection-status.model';
