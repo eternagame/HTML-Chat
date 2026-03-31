@@ -3,7 +3,7 @@ import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed } from 'vue';
 
-const useNotificationsStore = defineStore('notifications', () => {
+export const useNotificationsStore = defineStore('notifications', () => {
   const indicatorText = useLocalStorage('chat_indicatorText', '(!)');
   const notificationKeywords = useLocalStorage<string[]>('chat_notificationKeywords', []);
   const notificationsEnabled = useLocalStorage('chat_notificationsEnabled', false);
@@ -64,5 +64,3 @@ const useNotificationsStore = defineStore('notifications', () => {
     sendNotification,
   };
 });
-
-export default useNotificationsStore;

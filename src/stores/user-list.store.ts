@@ -5,9 +5,9 @@ import { isAccessibleHexColor, parseNick, parseUid } from '#utils';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, watch } from 'vue';
-import useIrcStore from './irc.store';
+import { useIrcStore } from './irc.store';
 
-const useUserListStore = defineStore('userList', () => {
+export const useUserListStore = defineStore('userList', () => {
   const irc = useIrcStore();
   /** {Username, User} */
   const knownUsers = reactive(new Map<string, User>());
@@ -181,5 +181,3 @@ const useUserListStore = defineStore('userList', () => {
     loadProfile,
   };
 });
-
-export default useUserListStore;

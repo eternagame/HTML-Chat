@@ -2,9 +2,9 @@ import { WINDOW_MIN_HEIGHT, WINDOW_MIN_WIDTH } from '#constants';
 import type { WindowRect, WindowState } from '#models';
 import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import { readonly, ref, watch, useId } from 'vue';
+import { readonly, ref, useId, watch } from 'vue';
 
-const useLayoutStore = defineStore('layout', () => {
+export const useLayoutStore = defineStore('layout', () => {
   const sidebarId = useId();
   const isSidebarOpen = ref(false);
   const windowState = useLocalStorage<WindowState>('chat_windowState', 'normal');
@@ -53,5 +53,3 @@ const useLayoutStore = defineStore('layout', () => {
     saveWindowRect,
   };
 });
-
-export default useLayoutStore;

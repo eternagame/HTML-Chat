@@ -2,14 +2,14 @@ import { createCommandRegistry } from '#commands';
 import type { MessageType } from '#models';
 import type { Tags } from 'irc-framework';
 import { defineStore } from 'pinia';
-import useChannelStore from './channel.store';
-import useIrcStore from './irc.store';
-import useOperatorStore from './operator.store';
-import useProfileStore from './profile.store';
-import useSettingsStore from './settings.store';
-import useUserListStore from './user-list.store';
+import { useChannelStore } from './channel.store';
+import { useIrcStore } from './irc.store';
+import { useOperatorStore } from './operator.store';
+import { useProfileStore } from './profile.store';
+import { useSettingsStore } from './settings.store';
+import { useUserListStore } from './user-list.store';
 
-const useChatStore = defineStore('chat', () => {
+export const useChatStore = defineStore('chat', () => {
   const channel = useChannelStore();
   const irc = useIrcStore();
   const operator = useOperatorStore();
@@ -121,5 +121,3 @@ const useChatStore = defineStore('chat', () => {
 
   return { handleUserInput };
 });
-
-export default useChatStore;

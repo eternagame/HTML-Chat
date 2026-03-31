@@ -11,13 +11,13 @@ import { useLocalStorage, useWindowFocus } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, watch } from 'vue';
-import useIrcStore from './irc.store';
-import useNotificationsStore from './notifications.store';
-import useUserListStore from './user-list.store';
+import { useIrcStore } from './irc.store';
+import { useNotificationsStore } from './notifications.store';
+import { useUserListStore } from './user-list.store';
 
 const MAX_MESSAGES_PER_CHANNEL = 500;
 
-const useChannelStore = defineStore('channel', () => {
+export const useChannelStore = defineStore('channel', () => {
   const irc = useIrcStore();
   const notifications = useNotificationsStore();
   const userList = useUserListStore();
@@ -229,7 +229,6 @@ const useChannelStore = defineStore('channel', () => {
 
       // The rest of these fields are irrelevant for rendering system messages
       // Only defining them for satisfying Message model type
-      starred: false,
       target: channelOrUsername,
       nick: 'System',
       username: 'System',
@@ -258,7 +257,6 @@ const useChannelStore = defineStore('channel', () => {
       pendingId,
 
       // Irrelevant for rendering pending messages
-      starred: false,
       target: channelOrUsername,
     });
     markAsRead(channelOrUsername);
@@ -332,7 +330,6 @@ const useChannelStore = defineStore('channel', () => {
           const newMessage: Message = {
             id: event.tags.msgid ?? `message-${crypto.randomUUID()}`,
             time: event.time ?? Date.now(),
-            starred: false,
             message: highlightedMessage,
             target: event.target,
             nick: event.nick,
@@ -516,5 +513,3 @@ const useChannelStore = defineStore('channel', () => {
     leaveChannel,
   };
 });
-
-export default useChannelStore;

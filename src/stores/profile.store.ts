@@ -3,10 +3,10 @@ import { isAccessibleHexColor, random } from '#utils';
 import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { readonly } from 'vue';
-import useChannelStore from './channel.store';
-import useIrcStore from './irc.store';
+import { useChannelStore } from './channel.store';
+import { useIrcStore } from './irc.store';
 
-const useProfileStore = defineStore('profile', () => {
+export const useProfileStore = defineStore('profile', () => {
   const irc = useIrcStore();
   const channel = useChannelStore();
 
@@ -46,5 +46,3 @@ const useProfileStore = defineStore('profile', () => {
     displayTypingStatus,
   };
 });
-
-export default useProfileStore;

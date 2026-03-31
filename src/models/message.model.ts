@@ -6,7 +6,6 @@ export type MessageStatus = 'pending' | 'sent' | 'error';
 export interface Message {
   id: string;
   time: number;
-  starred: boolean;
   message: string;
   /** Either channel or nick */
   target: string;

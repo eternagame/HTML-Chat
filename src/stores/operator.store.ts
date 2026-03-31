@@ -1,11 +1,11 @@
 import { OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
 import { defineStore } from 'pinia';
 import { watch } from 'vue';
-import useChannelStore from './channel.store';
-import useIrcStore from './irc.store';
-import useUserListStore from './user-list.store';
+import { useChannelStore } from './channel.store';
+import { useIrcStore } from './irc.store';
+import { useUserListStore } from './user-list.store';
 
-const useOperatorStore = defineStore('operator', () => {
+export const useOperatorStore = defineStore('operator', () => {
   const channel = useChannelStore();
   const irc = useIrcStore();
   const userList = useUserListStore();
@@ -204,5 +204,3 @@ const useOperatorStore = defineStore('operator', () => {
     unmute,
   };
 });
-
-export default useOperatorStore;

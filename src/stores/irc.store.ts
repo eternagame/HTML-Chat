@@ -12,7 +12,7 @@ export interface InitClientConfig {
   uid: string;
 }
 
-const useIrcStore = defineStore('irc', () => {
+export const useIrcStore = defineStore('irc', () => {
   /**
    * Tracking if the client has started the connection.
    * Keeps the chat view visible until client manually signs out.
@@ -216,5 +216,3 @@ const useIrcStore = defineStore('irc', () => {
     signOut,
   };
 });
-
-export default useIrcStore;

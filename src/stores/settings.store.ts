@@ -6,7 +6,7 @@ import { computed } from 'vue';
 const FONT_SIZE_MIN = 10;
 const FONT_SIZE_MAX = 18;
 
-const useSettingsStore = defineStore('settings', () => {
+export const useSettingsStore = defineStore('settings', () => {
   const fontSize = useLocalStorage('chat_fontSize', 14);
   function setFontSize(size: number) {
     fontSize.value = clamp(size, FONT_SIZE_MIN, FONT_SIZE_MAX);
@@ -34,5 +34,3 @@ const useSettingsStore = defineStore('settings', () => {
     setCustomEmoji,
   };
 });
-
-export default useSettingsStore;
