@@ -8,7 +8,8 @@
     type="button"
     :style="{ backgroundImage: `url(${arrowImage})` }"
     :aria-label="label"
-    :aria-pressed="open"
+    :aria-expanded="open"
+    :aria-controls="controls"
     @click="emit('toggle', !open)"
   />
 </template>
@@ -17,9 +18,12 @@
   import arrowImage from '#assets/minimization-triangle.png';
   import { computed } from 'vue';
 
-  const props = withDefaults(defineProps<{ open: boolean; counterclockwise?: boolean }>(), {
-    counterclockwise: false,
-  });
+  const props = withDefaults(
+    defineProps<{ open: boolean; controls: string; counterclockwise?: boolean }>(),
+    {
+      counterclockwise: false,
+    },
+  );
   const emit = defineEmits<{
     (event: 'toggle', value: boolean): void;
   }>();

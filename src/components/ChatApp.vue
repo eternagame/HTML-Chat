@@ -15,19 +15,22 @@
           <MinimizationTriangle
             class="flex-shrink-0"
             :open="layout.windowState !== 'minimized'"
+            :controls="`${mainId} ${footerId}`"
             @toggle="layout.setWindowState($event ? 'normal' : 'minimized')"
           />
         </div>
       </template>
       <template v-slot:main>
-        <div class="channel d-flex flex-column">
+        <div :id="mainId" class="channel d-flex flex-column">
           <SidebarMenu />
           <ChannelMessages class="flex-grow-1" />
         </div>
       </template>
       <template v-slot:footer>
-        <ConnectingMessage />
-        <ChatInput />
+        <div :class="footerId" class="footer">
+          <ConnectingMessage />
+          <ChatInput />
+        </div>
       </template>
     </DraggableWindow>
   </div>
@@ -35,6 +38,7 @@
 
 <script setup lang="ts">
   import { useChannelStore, useLayoutStore, useSettingsStore } from '#stores';
+  import { useId } from 'vue';
   import ChannelMessages from './channel/ChannelMessages.vue';
   import ChatInput from './chat/ChatInput.vue';
   import ConnectingMessage from './connection/ConnectingMessage.vue';
@@ -47,6 +51,9 @@
   const channel = useChannelStore();
   const layout = useLayoutStore();
   const settings = useSettingsStore();
+
+  const mainId = useId();
+  const footerId = useId();
 </script>
 
 <style scoped>
