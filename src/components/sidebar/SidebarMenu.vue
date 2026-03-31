@@ -52,8 +52,8 @@
   import userIconActive from '#assets/user-icon-green.png';
   import userIcon from '#assets/user-icon-white.png';
   import { useLayoutStore } from '#stores';
-  import { onClickOutside } from '@vueuse/core';
-  import { computed, ref, type Component } from 'vue';
+  import { onClickOutside, onKeyDown } from '@vueuse/core';
+  import { computed, onUnmounted, ref, type Component } from 'vue';
   import SidebarSectionButton from './SidebarSectionButton.vue';
   import SidebarMenuChats from './chats/SidebarMenuChats.vue';
   import SidebarMenuSettings from './settings/SidebarMenuSettings.vue';
@@ -62,13 +62,20 @@
   const layout = useLayoutStore();
 
   const sidebarRef = ref<HTMLElement>();
-  onClickOutside(
+  const removeClickListener = onClickOutside(
     sidebarRef,
     () => {
       layout.toggleSidebar(false);
     },
     { ignore: [`button[aria-controls=${layout.sidebarId}]`] },
   );
+  const removeKeyListener = onKeyDown('Escape', () => {
+    layout.toggleSidebar(false);
+  });
+  onUnmounted(() => {
+    removeClickListener();
+    removeKeyListener();
+  });
 
   type TabId = 'chat' | 'user' | 'setting';
   const activeTab = ref<TabId>('chat');
@@ -87,7 +94,7 @@
     top: 0;
     left: 0;
     min-width: fit-content;
-    width: 70%;
+    width: 100%;
     max-width: 350px;
     height: 100%;
     background-color: #000000;

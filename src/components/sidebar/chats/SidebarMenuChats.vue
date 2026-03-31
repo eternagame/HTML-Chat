@@ -116,6 +116,14 @@
   .channel-button--has-mention {
     border-left-color: #ffa500;
   }
+
+  .channel-button-name,
+  .channel-button-description {
+    text-align: start;
+    text-wrap: balance;
+    word-break: break-word;
+  }
+
   .channel-button-name {
     font-size: 1.5em;
   }
