@@ -44,7 +44,7 @@ export const away: CommandHandler = {
 export const unaway: CommandHandler = {
   name: 'unaway',
   aliases: ['back'],
-  description: 'Set self as unaway/back.',
+  description: 'Set your status as online.',
   usage: '/unaway',
   execute({ stores }) {
     stores.profile.setUnaway();
