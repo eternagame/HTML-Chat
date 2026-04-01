@@ -80,6 +80,7 @@
     display: flex;
     flex-direction: column;
     gap: 1em;
+    border: 1px solid #2f94d1e6;
   }
 
   .app-modal-body {

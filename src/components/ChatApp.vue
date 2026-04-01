@@ -20,14 +20,15 @@
           />
         </div>
       </template>
-      <template v-slot:main>
-        <div :id="mainId" class="channel d-flex flex-column">
-          <SidebarMenu />
-          <ChannelMessages class="flex-grow-1" />
-        </div>
-      </template>
+
+      <div :id="mainId" class="channel d-flex flex-column">
+        <SidebarMenu />
+        <ReportModal />
+        <ChannelMessages class="flex-grow-1" />
+      </div>
+
       <template v-slot:footer>
-        <div :class="footerId" class="footer">
+        <div :id="footerId" class="footer">
           <ConnectingMessage />
           <ChatInput />
         </div>
@@ -44,6 +45,7 @@
   import ConnectingMessage from './connection/ConnectingMessage.vue';
   import DraggableWindow from './layout/DraggableWindow.vue';
   import OpenWindowButton from './layout/header/OpenWindowButton.vue';
+  import ReportModal from './modals/ReportModal.vue';
   import SidebarMenu from './sidebar/SidebarMenu.vue';
   import SidebarMenuButton from './sidebar/SidebarMenuButton.vue';
   import MinimizationTriangle from './ui/MinimizationTriangle.vue';
@@ -51,7 +53,6 @@
   const channel = useChannelStore();
   const layout = useLayoutStore();
   const settings = useSettingsStore();
-
   const mainId = useId();
   const footerId = useId();
 </script>

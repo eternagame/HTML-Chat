@@ -1,4 +1,4 @@
-import type { Report } from '#models';
+import type { Message, Report, User } from '#models';
 import { defineStore } from 'pinia';
 import { readonly, ref } from 'vue';
 import { useIrcStore } from './irc.store';
@@ -9,22 +9,23 @@ export const useReportStore = defineStore('report', () => {
   const isModalVisible = ref(false);
   const isSendingReport = ref(false);
   const reportConfirmationId = ref<string | null>(null);
+  const currentTarget = ref<Pick<Report, 'targetUser' | 'targetMessage'> | null>(null);
 
-  function openModal() {
+  function startReport(targetUser: User, targetMessage?: Message) {
     isModalVisible.value = true;
     reportConfirmationId.value = crypto.randomUUID();
+    currentTarget.value = { targetUser, targetMessage };
   }
 
-  function submitReport(report: Omit<Report, 'reporter'>) {
-    if (!irc.client) {
+  function submitReport(reportComments: string) {
+    if (!irc.client || !currentTarget.value) {
       return;
     }
-
+    const { targetUser, targetMessage } = currentTarget.value;
     irc.client.on('privmsg', function reportConfirmed(event) {
       if (event.tags.label !== reportConfirmationId.value) {
         return;
       }
-
       irc.client?.removeListener('privmsg', reportConfirmed);
       closeModal();
     });
@@ -32,17 +33,15 @@ export const useReportStore = defineStore('report', () => {
     isSendingReport.value = true;
     irc.client.say(
       OPERATOR_NOTIFICATION_CHANNEL,
-      `[REPORT] Reporting ${report.targetUser.username} (${report.targetUser.uid}) by ${irc.currentUser.username} (${irc.currentUser.uid})`,
+      `[REPORT] Reporting ${targetUser.username} (${targetUser.uid}) by ${irc.currentUser.username} (${irc.currentUser.uid})`,
       { label: reportConfirmationId.value! },
     );
-    if (report.targetMessage) {
-      irc.client.say(
-        OPERATOR_NOTIFICATION_CHANNEL,
-        `[REPORTED MESSAGE] ${report.targetMessage.message}`,
-        { label: reportConfirmationId.value! },
-      );
+    if (targetMessage) {
+      irc.client.say(OPERATOR_NOTIFICATION_CHANNEL, `[REPORTED MESSAGE] ${targetMessage.message}`, {
+        label: reportConfirmationId.value!,
+      });
     }
-    irc.client.say(OPERATOR_NOTIFICATION_CHANNEL, `[REPORT REASON] ${report.reportComments}`, {
+    irc.client.say(OPERATOR_NOTIFICATION_CHANNEL, `[REPORT REASON] ${reportComments}`, {
       label: reportConfirmationId.value!,
     });
   }
@@ -51,12 +50,14 @@ export const useReportStore = defineStore('report', () => {
     isModalVisible.value = false;
     isSendingReport.value = false;
     reportConfirmationId.value = null;
+    currentTarget.value = null;
   }
 
   return {
     isModalVisible: readonly(isModalVisible),
     isSendingReport: readonly(isSendingReport),
-    openModal,
+    currentTarget: readonly(currentTarget),
+    startReport,
     submitReport,
     closeModal,
   };
