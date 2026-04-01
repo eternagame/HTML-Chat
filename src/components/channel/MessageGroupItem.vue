@@ -1,11 +1,8 @@
 <template>
-  <div
-    v-if="message.type === 'system'"
-    class="message-container d-flex flex-row flex-nowrap justify-content-center"
-  >
-    <p class="message-content m-0 message-type--system" v-html="formattedMessage" />
+  <div v-if="message.type === 'system'" class="message-container justify-content-center">
+    <div class="message-content message-type--system" v-html="formattedMessage" />
   </div>
-  <div v-else class="message-container d-flex flex-row flex-nowrap">
+  <div v-else class="message-container">
     <div
       class="message-content flex-grow-1"
       :class="{
@@ -19,27 +16,42 @@
       v-html="formattedMessage"
     />
 
-    <BPopover :delay="{ show: 250, hide: 100 }">
-      <template #target>
-        <time v-if="message.type !== 'notice'" class="message-timestamp flex-shrink-0"
-          >[{{ formatTime(message.time) }}]</time
-        >
-      </template>
+    <div class="message-extras">
+      <BPopover :delay="{ show: 250, hide: 100 }">
+        <template #target>
+          <time v-if="message.type !== 'notice'" class="message-timestamp flex-shrink-0"
+            >[{{ formatTime(message.time) }}]</time
+          >
+        </template>
 
-      {{ formateDateTime(message.time) }}
-    </BPopover>
+        {{ formateDateTime(message.time) }}
+      </BPopover>
+
+      <BDropdown class="message-options" variant="link" no-caret>
+        <template #button-content>&#8942;</template>
+        <BDropdownItem @click="onReport">🚩 Report</BDropdownItem>
+      </BDropdown>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
   import type { Message } from '#models';
+  import { useReportStore, useUserListStore } from '#stores';
   import { formateDateTime, formatTime, md } from '#utils';
-  import { BPopover } from 'bootstrap-vue-next';
+  import { BDropdown, BPopover, BDropdownItem } from 'bootstrap-vue-next';
   import { computed } from 'vue';
 
+  const report = useReportStore();
+  const userList = useUserListStore();
   const props = defineProps<{ message: Message }>();
   // TODO: Add event handlers via event delegation
   const formattedMessage = computed(() => md.renderInline(props.message.message));
+
+  function onReport() {
+    const user = userList.getUserByUsername(props.message.username);
+    report.startReport(user ?? { username: props.message.username, uid: 'n/a' }, props.message);
+  }
 </script>
 
 <style scoped lang="scss">
@@ -47,6 +59,9 @@
 
   .message-container {
     gap: 1em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
 
   .message-status--pending {
@@ -108,7 +123,39 @@
     }
   }
 
+  .message-extras {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.25em;
+    flex: 0 0 auto;
+    align-items: baseline;
+  }
+
   .message-timestamp {
     font-size: 0.8em;
+  }
+
+  .message-options {
+    flex-grow: 0;
+    flex-shrink: 0;
+    opacity: 0;
+
+    :deep(.btn-link) {
+      padding: 0 0.25em;
+      text-decoration: none;
+      font-size: inherit;
+      line-height: inherit;
+    }
+  }
+  .message-container:hover,
+  .message-container:focus-within {
+    .message-options {
+      opacity: 1;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: opacity 250ms ease-in;
+      }
+    }
   }
 </style>

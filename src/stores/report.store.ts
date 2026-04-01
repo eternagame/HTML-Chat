@@ -1,8 +1,8 @@
-import type { Message, Report, User } from '#models';
+import { OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
+import type { Report } from '#models';
 import { defineStore } from 'pinia';
 import { readonly, ref } from 'vue';
 import { useIrcStore } from './irc.store';
-import { OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
 
 export const useReportStore = defineStore('report', () => {
   const irc = useIrcStore();
@@ -11,7 +11,7 @@ export const useReportStore = defineStore('report', () => {
   const reportConfirmationId = ref<string | null>(null);
   const currentTarget = ref<Pick<Report, 'targetUser' | 'targetMessage'> | null>(null);
 
-  function startReport(targetUser: User, targetMessage?: Message) {
+  function startReport(targetUser: Report['targetUser'], targetMessage?: Report['targetMessage']) {
     isModalVisible.value = true;
     reportConfirmationId.value = crypto.randomUUID();
     currentTarget.value = { targetUser, targetMessage };
@@ -31,19 +31,30 @@ export const useReportStore = defineStore('report', () => {
     });
 
     isSendingReport.value = true;
+    irc.client.say(OPERATOR_NOTIFICATION_CHANNEL, '---');
     irc.client.say(
       OPERATOR_NOTIFICATION_CHANNEL,
       `[REPORT] Reporting ${targetUser.username} (${targetUser.uid}) by ${irc.currentUser.username} (${irc.currentUser.uid})`,
       { label: reportConfirmationId.value! },
     );
     if (targetMessage) {
-      irc.client.say(OPERATOR_NOTIFICATION_CHANNEL, `[REPORTED MESSAGE] ${targetMessage.message}`, {
-        label: reportConfirmationId.value!,
-      });
+      irc.client.say(
+        OPERATOR_NOTIFICATION_CHANNEL,
+        `[REPORTED MESSAGE] "${targetMessage.message}"`,
+        {
+          label: reportConfirmationId.value!,
+        },
+      );
+      irc.client.say(
+        OPERATOR_NOTIFICATION_CHANNEL,
+        `[CHANNEL] ${targetMessage.target} / [TIME] \`${new Date(targetMessage.time).toUTCString()}\``,
+        { label: reportConfirmationId.value! },
+      );
     }
     irc.client.say(OPERATOR_NOTIFICATION_CHANNEL, `[REPORT REASON] ${reportComments}`, {
       label: reportConfirmationId.value!,
     });
+    irc.client.say(OPERATOR_NOTIFICATION_CHANNEL, '---');
   }
 
   function closeModal() {

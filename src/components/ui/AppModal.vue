@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useTemplateRef, watch } from 'vue';
+  import { nextTick, useTemplateRef, watch } from 'vue';
   import { onKeyDown } from '@vueuse/core';
   import { useFocusTrap } from '@vueuse/integrations/useFocusTrap';
 
@@ -50,7 +50,7 @@
     () => props.modelValue,
     (isOpen) => {
       if (isOpen) {
-        activate();
+        nextTick(() => activate());
       } else {
         deactivate();
       }
