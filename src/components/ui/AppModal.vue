@@ -85,6 +85,7 @@
 
   .app-modal-body {
     overflow-y: auto;
+    word-break: break-word;
   }
 
   .app-modal-footer {

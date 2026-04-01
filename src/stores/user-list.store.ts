@@ -140,6 +140,10 @@ export const useUserListStore = defineStore('userList', () => {
         .on('quit', (event) => {
           removeUserNick(event.nick);
         })
+        .on('nick', (event) => {
+          removeUserNick(event.nick);
+          addUserNick(event.new_nick, event.ident);
+        })
         .on('away', (event) => {
           if (event.self) {
             return;
