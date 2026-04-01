@@ -101,6 +101,7 @@
     color: white;
     box-shadow: 4px 0 1em rgba(0, 0, 0, 0.5);
     z-index: 10;
+    isolation: isolate;
   }
 
   .sidebar-content {

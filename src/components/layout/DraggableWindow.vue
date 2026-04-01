@@ -17,7 +17,7 @@
     </div>
 
     <div v-show="layout.windowState !== 'minimized'" class="body">
-      <slot name="main"></slot>
+      <slot />
     </div>
     <div v-if="$slots.footer" v-show="layout.windowState !== 'minimized'" class="footer">
       <slot name="footer"></slot>

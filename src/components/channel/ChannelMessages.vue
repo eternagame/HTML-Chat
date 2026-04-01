@@ -43,5 +43,6 @@
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+    isolation: isolate;
   }
 </style>

@@ -4,7 +4,6 @@
       <BInputGroup size="lg">
         <BFormInput
           v-model="inputBuffer"
-          autofocus
           autocomplete="off"
           :placeholder="placeholder"
           aria-label="Chat message"
