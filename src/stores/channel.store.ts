@@ -1,4 +1,4 @@
-import { AUTO_JOIN_CHANNELS, OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
+import { DEFAULT_CHANNELS, OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
 import type { Channel, Message, MessageType } from '#models';
 import {
   isCaseInsensitiveMatch,
@@ -25,10 +25,10 @@ export const useChannelStore = defineStore('channel', () => {
   const channelMap = reactive(new Map<string, Channel>());
   const channelNameList = computed(() => Array.from(channelMap.keys()));
   const channelList = computed(() => Array.from(channelMap.values()));
-  const joinedChannels = useLocalStorage<Set<string>>('chat_joinedChannels', AUTO_JOIN_CHANNELS);
+  const joinedChannels = useLocalStorage<Set<string>>('chat_joinedChannels', DEFAULT_CHANNELS);
   const currentChannelName = useLocalStorage<string>(
     'chat_currentChannelName',
-    Array.from(AUTO_JOIN_CHANNELS)[0],
+    Array.from(DEFAULT_CHANNELS)[0],
   );
   const currentChannel = computed(() => {
     const channel = channelMap.get(currentChannelName.value);

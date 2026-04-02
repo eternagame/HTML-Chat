@@ -1,4 +1,4 @@
-import type { CommandHandler, TODO } from '#models';
+import type { CommandHandler } from '#models';
 
 export const ban: CommandHandler = {
   name: 'ban',
@@ -214,12 +214,6 @@ export const banlist: CommandHandler = {
     stores.operator.getBanList();
   },
 };
-
-/**
- * Change your nickname.
- * `/changenick <newNick>`
- */
-export const changenick: TODO = null;
 
 export const execute: CommandHandler = {
   name: 'execute',

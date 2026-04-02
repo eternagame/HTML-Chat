@@ -190,8 +190,6 @@ export const useOperatorStore = defineStore('operator', () => {
       });
   });
 
-  // TODO: change nick
-
   return {
     signIn,
     kick,

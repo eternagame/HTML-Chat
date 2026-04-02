@@ -22,11 +22,7 @@ export const emoticonList: TODO = null;
  * `/indicator <indicator>`
  */
 export const indicator: TODO = null;
-/**
- * Update font size.
- * `/size <newFontSize>`
- * Aliases: `/textsize`, `/fontsize`
- */
+
 export const size: CommandHandler = {
   name: 'size',
   aliases: ['textsize', 'fontsize'],

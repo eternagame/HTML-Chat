@@ -18,12 +18,7 @@
   import arrowImage from '#assets/minimization-triangle.png';
   import { computed } from 'vue';
 
-  const props = withDefaults(
-    defineProps<{ open: boolean; controls: string; counterclockwise?: boolean }>(),
-    {
-      counterclockwise: false,
-    },
-  );
+  const props = defineProps<{ open: boolean; controls: string }>();
   const emit = defineEmits<{
     (event: 'toggle', value: boolean): void;
   }>();

@@ -9,7 +9,7 @@ export const useReportStore = defineStore('report', () => {
   const isModalVisible = ref(false);
   const isSendingReport = ref(false);
   const reportConfirmationId = ref<string | null>(null);
-  const currentTarget = ref<Pick<Report, 'targetUser' | 'targetMessage'> | null>(null);
+  const currentTarget = ref<Report | null>(null);
 
   function startReport(targetUser: Report['targetUser'], targetMessage?: Report['targetMessage']) {
     isModalVisible.value = true;
