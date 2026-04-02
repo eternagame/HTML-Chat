@@ -67,7 +67,7 @@ md.renderer.rules.text = (tokens, idx) => {
   [...content.matchAll(/(^|\s)(#[a-z\d_-]+)/gi)].forEach(e => {
     content = content.replace(e[0].trim(), `<mark class="channel-link">${e[2].trim()}</mark>`);
   });
-  [...content.matchAll(/(^|\s)(@[a-z\d_-]+)/g)].forEach(e => {
+  [...content.matchAll(/(^|\s)(@[a-z\d_-]+)/gi)].forEach(e => {
     content = content.replace(e[0].trim(), `<mark class="user-link">${e[2].trim()}</mark>`);
   });
   [...content.matchAll(/(https?:\/\/)?eterna(game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png/g)].forEach(e => {
