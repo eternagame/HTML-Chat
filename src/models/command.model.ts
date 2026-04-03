@@ -1,6 +1,7 @@
 import type {
   useChannelStore,
   useIrcStore,
+  useNotificationsStore,
   useOperatorStore,
   useProfileStore,
   useSettingsStore,
@@ -16,6 +17,7 @@ export interface CommandContext {
   stores: {
     channel: ReturnType<typeof useChannelStore>;
     irc: ReturnType<typeof useIrcStore>;
+    notifications: ReturnType<typeof useNotificationsStore>;
     operator: ReturnType<typeof useOperatorStore>;
     profile: ReturnType<typeof useProfileStore>;
     settings: ReturnType<typeof useSettingsStore>;

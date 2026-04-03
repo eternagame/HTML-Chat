@@ -1,38 +1,46 @@
 import { useLocalStorage, useWebNotification, type WebNotificationOptions } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
-import { computed } from 'vue';
+import { readonly } from 'vue';
 
 export const useNotificationsStore = defineStore('notifications', () => {
   const indicatorText = useLocalStorage('chat_indicatorText', '(!)');
-  const notificationKeywords = useLocalStorage<string[]>('chat_notificationKeywords', []);
-  const notificationsEnabled = useLocalStorage('chat_notificationsEnabled', false);
+  const keywords = useLocalStorage<Set<string>>('chat_notificationKeywords', new Set<string>());
+  const deviceEnabled = useLocalStorage('chat_deviceNotificationsEnabled', false);
   const { isSupported, ensurePermissions, permissionGranted, show } = useWebNotification({
     requestPermissions: false,
   });
 
+  function addKeyword(keyword: string) {
+    keywords.value.add(keyword);
+  }
+
+  function removeKeyword(keyword: string) {
+    keywords.value.delete(keyword);
+  }
+
   async function toggleNotifications(targetValue: boolean) {
     if (!targetValue) {
-      notificationsEnabled.value = false;
+      deviceEnabled.value = false;
       return;
     }
 
     if (!isSupported) {
-      notificationsEnabled.value = false;
+      deviceEnabled.value = false;
       log.warn('Notifications Unsupported');
       return;
     }
 
     if (permissionGranted.value) {
-      notificationsEnabled.value = true;
+      deviceEnabled.value = true;
       return;
     }
 
     const granted = await ensurePermissions();
     if (granted) {
-      notificationsEnabled.value = true;
+      deviceEnabled.value = true;
     } else {
-      notificationsEnabled.value = false;
+      deviceEnabled.value = false;
       log.warn('Notification permission denied');
     }
   }
@@ -42,7 +50,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     { title, body, tag }: WebNotificationOptions,
     onClick?: () => void,
   ) {
-    if (!notificationsEnabled.value) {
+    if (!deviceEnabled.value) {
       return;
     }
 
@@ -58,8 +66,11 @@ export const useNotificationsStore = defineStore('notifications', () => {
 
   return {
     indicatorText,
-    notificationKeywords,
-    notificationsEnabled: computed(() => notificationsEnabled.value),
+    keywords: readonly(keywords),
+    addKeyword,
+    removeKeyword,
+    deviceSupported: isSupported,
+    deviceEnabled: readonly(deviceEnabled),
     toggleNotifications,
     sendNotification,
   };

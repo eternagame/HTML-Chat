@@ -1,4 +1,4 @@
-import type { CommandHandler, TODO } from '#models';
+import type { CommandHandler } from '#models';
 import {
   getNamedColor,
   isAccessibleColor,
@@ -7,21 +7,18 @@ import {
   rgbToHex,
 } from '#utils';
 
-/**
- * Change custom emoticon slot.
- * `/emoticon <slot#> <emoticon>`
- */
-export const emoticon: TODO = null;
-/**
- * Get list of custom emoticons.
- * `/emoticon-list`
- */
-export const emoticonList: TODO = null;
-/**
- * Change notification indicator that appears in page title.
- * `/indicator <indicator>`
- */
-export const indicator: TODO = null;
+export const indicator: CommandHandler = {
+  name: 'indicator',
+  description: 'Change notification indicator that appears in page title',
+  usage: '/indicator <indicator>',
+  execute({ fullText, stores }) {
+    if (fullText.length === 0) {
+      stores.channel.addSystemMessage('"/indicator" requires the indicator text parameter');
+      return;
+    }
+    stores.notifications.indicatorText = fullText;
+  },
+};
 
 export const size: CommandHandler = {
   name: 'size',
@@ -43,19 +40,35 @@ export const size: CommandHandler = {
     stores.settings.setFontSize(value);
   },
 };
-/**
- * View/update notification keywords.
- * - `/keywords`
- * - `/keywords add <keywords>`
- * - `/keywords remove <keywords>`
- */
-export const keywords: TODO = null;
-/**
- * - `/notifications`
- * - `/notifications enable <channel>`
- * - `/notifications disable <channel>`
- */
-export const notifications: TODO = null;
+
+export const keywords: CommandHandler = {
+  name: 'keywords',
+  aliases: ['keyword'],
+  description: 'View/update notification keywords',
+  usage: '/keywords [<add/remove> <keywords>]',
+  examples: ['/keywords', '/keywords add something', '/keywords remove something'],
+  execute({ args, stores }) {
+    if (args.length === 0) {
+      stores.channel.addSystemMessage(
+        stores.notifications.keywords.size === 0
+          ? 'No keywords set.'
+          : `Current keywords: ${Array.from(stores.notifications.keywords).join(', ')}`,
+      );
+    } else if (args.length > 1) {
+      const [action, ...textParts] = args;
+      const keyword = textParts.join(' ');
+
+      switch (action.toLocaleLowerCase()) {
+        case 'add':
+          stores.notifications.addKeyword(keyword);
+          break;
+        case 'remove':
+          stores.notifications.removeKeyword(keyword);
+          break;
+      }
+    }
+  },
+};
 
 export const color: CommandHandler = {
   name: 'color',
@@ -106,9 +119,3 @@ export const color: CommandHandler = {
     stores.profile.updateUsernameColor(inputColor);
   },
 };
-/**
- * Toggle chat feature.
- * `/toolbar enable <chatFeature>`
- * `/toolbar disable <chatFeature>`
- */
-export const toolbar: TODO = null;

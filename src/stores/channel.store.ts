@@ -30,6 +30,7 @@ export const useChannelStore = defineStore('channel', () => {
     'chat_currentChannelName',
     Array.from(DEFAULT_CHANNELS)[0],
   );
+  const silencedChannels = useLocalStorage<Set<string>>('chat_silencedChannels', new Set<string>());
   const currentChannel = computed(() => {
     const channel = channelMap.get(currentChannelName.value);
     return channel ? readonly(channel) : null;
@@ -55,12 +56,28 @@ export const useChannelStore = defineStore('channel', () => {
         banStatus: 'normal',
         messages: [],
         usersTyping: new Set(),
-        notificationsEnabled: true,
+        notificationsEnabled: !silencedChannels.value.has(channelName),
         hasMention: false,
         hasNotification: false,
       });
     }
     return channelMap.get(channelName)!;
+  }
+
+  function toggleChannelNotifications(channelOrUsername: string, force?: boolean) {
+    const channel = channelMap.get(channelOrUsername.toLocaleLowerCase());
+    if (!channel) {
+      return;
+    }
+
+    if (force || !channel.notificationsEnabled) {
+      channel.notificationsEnabled = true;
+      silencedChannels.value.delete(channel.name);
+    } else if (force === false || channel.notificationsEnabled) {
+      channel.notificationsEnabled = false;
+      silencedChannels.value.add(channel.name);
+      markAsRead(channel.name);
+    }
   }
 
   function goToChannel(channelOrUsername: string) {
@@ -264,12 +281,12 @@ export const useChannelStore = defineStore('channel', () => {
   }
 
   function highlightKeywords(message: string): string {
-    if (notifications.notificationKeywords.length === 0) {
+    if (notifications.keywords.size === 0) {
       return message;
     }
 
     let highlighted = message;
-    for (const keyword of notifications.notificationKeywords) {
+    for (const keyword of notifications.keywords) {
       highlighted = highlighted.replace(` ${keyword}`, ` |${keyword}|`);
     }
     return highlighted;
@@ -384,7 +401,7 @@ export const useChannelStore = defineStore('channel', () => {
                 channel.hasMention = true;
               }
             } else if (
-              notifications.notificationKeywords.some((keyword) =>
+              Array.from(notifications.keywords).some((keyword) =>
                 highlightedMessage.includes(keyword),
               )
             ) {
@@ -506,6 +523,7 @@ export const useChannelStore = defineStore('channel', () => {
       const channel = channelMap.get(channelOrUsername.toLocaleLowerCase());
       return channel ? readonly(channel) : null;
     },
+    toggleChannelNotifications,
     goToChannel,
     addSystemMessage,
     addPendingMessage,

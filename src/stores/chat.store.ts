@@ -4,6 +4,7 @@ import type { Tags } from 'irc-framework';
 import { defineStore } from 'pinia';
 import { useChannelStore } from './channel.store';
 import { useIrcStore } from './irc.store';
+import { useNotificationsStore } from './notifications.store';
 import { useOperatorStore } from './operator.store';
 import { useProfileStore } from './profile.store';
 import { useSettingsStore } from './settings.store';
@@ -12,6 +13,7 @@ import { useUserListStore } from './user-list.store';
 export const useChatStore = defineStore('chat', () => {
   const channel = useChannelStore();
   const irc = useIrcStore();
+  const notifications = useNotificationsStore();
   const operator = useOperatorStore();
   const profile = useProfileStore();
   const settings = useSettingsStore();
@@ -105,6 +107,7 @@ export const useChatStore = defineStore('chat', () => {
           stores: {
             channel,
             irc,
+            notifications,
             operator,
             profile,
             settings,
