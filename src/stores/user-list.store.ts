@@ -30,7 +30,7 @@ export const useUserListStore = defineStore('userList', () => {
       // This user existed before and has a new nick
       const user = knownUsers.get(username)!;
       user.status = 'online';
-      user.nicks.add(nick);
+      user.nicks.add(nick.toLocaleLowerCase());
       return;
     }
 
@@ -46,7 +46,7 @@ export const useUserListStore = defineStore('userList', () => {
       username,
       displayName,
       uid,
-      nicks: new Set([nick]),
+      nicks: new Set([nick.toLocaleLowerCase()]),
       status: 'online',
       awayReason: '',
       color,
@@ -66,7 +66,7 @@ export const useUserListStore = defineStore('userList', () => {
       log.warn(`Tried to remove user "${nick}" but they weren't in the user list.`);
       return;
     }
-    user.nicks.delete(nick);
+    user.nicks.delete(nick.toLocaleLowerCase());
     if (user.nicks.size === 0) {
       user.status = 'offline';
     }
