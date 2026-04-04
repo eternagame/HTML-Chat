@@ -5,6 +5,7 @@ export * from './emoji.util';
 export * from './list.util';
 export { default as md } from './markdown.util';
 export * from './math.util';
+export * from './message.util';
 export { default as getStyles } from './styles.util';
 export * from './text.util';
 export * from './user.util';

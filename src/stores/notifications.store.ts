@@ -12,7 +12,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   });
 
   function addKeyword(keyword: string) {
-    keywords.value.add(keyword);
+    keywords.value.add(keyword.toLocaleLowerCase());
   }
 
   function removeKeyword(keyword: string) {

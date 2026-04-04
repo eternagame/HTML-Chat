@@ -1,6 +1,8 @@
 import { DEFAULT_CHANNELS, OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
 import type { Channel, Message, MessageType } from '#models';
 import {
+  containsWords,
+  highlightWords,
   isCaseInsensitiveMatch,
   isDefaultChannel,
   isMaskMatch,
@@ -280,18 +282,6 @@ export const useChannelStore = defineStore('channel', () => {
     return pendingId;
   }
 
-  function highlightKeywords(message: string): string {
-    if (notifications.keywords.size === 0) {
-      return message;
-    }
-
-    let highlighted = message;
-    for (const keyword of notifications.keywords) {
-      highlighted = highlighted.replace(` ${keyword}`, ` |${keyword}|`);
-    }
-    return highlighted;
-  }
-
   // Track typing users
   watch(
     () => irc.client,
@@ -343,7 +333,7 @@ export const useChannelStore = defineStore('channel', () => {
           // Remove typing status if user sent something
           channel.usersTyping.delete(username);
 
-          const highlightedMessage = highlightKeywords(event.message);
+          const highlightedMessage = highlightWords(event.message, notifications.keywords);
           const newMessage: Message = {
             id: event.tags.msgid ?? `message-${crypto.randomUUID()}`,
             time: event.time ?? Date.now(),
@@ -394,17 +384,13 @@ export const useChannelStore = defineStore('channel', () => {
               sendMessageNotification(channel.name, newMessage);
 
               if (
-                highlightedMessage
+                newMessage.message
                   .toLocaleLowerCase()
                   .includes(irc.currentUser.username.toLocaleLowerCase())
               ) {
                 channel.hasMention = true;
               }
-            } else if (
-              Array.from(notifications.keywords).some((keyword) =>
-                highlightedMessage.includes(keyword),
-              )
-            ) {
+            } else if (containsWords(newMessage.message, notifications.keywords)) {
               sendMessageNotification(channel.name, newMessage);
             }
           }
