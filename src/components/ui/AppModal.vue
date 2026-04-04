@@ -1,8 +1,8 @@
 <template>
   <div v-if="modelValue" class="app-modal-overlay" role="presentation" @click.self="onClose">
-    <div ref="modal" class="app-modal" role="dialog" aria-modal>
+    <div ref="modal" class="app-modal" role="dialog" aria-modal :aria-labelledby="modalHeadingId">
       <header class="app-modal-header">
-        <h3 class="m-0">{{ title }}</h3>
+        <h3 :id="modalHeadingId" class="m-0">{{ title }}</h3>
       </header>
 
       <div class="app-modal-body">
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-  import { nextTick, useTemplateRef, watch } from 'vue';
+  import { nextTick, useId, useTemplateRef, watch } from 'vue';
   import { onKeyDown } from '@vueuse/core';
   import { useFocusTrap } from '@vueuse/integrations/useFocusTrap';
 
@@ -26,6 +26,7 @@
     (event: 'update:modelValue', value: boolean): void;
   }>();
 
+  const modalHeadingId = useId();
   const modalRef = useTemplateRef('modal');
 
   function onClose() {
