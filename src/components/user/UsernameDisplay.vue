@@ -1,7 +1,7 @@
 <template>
   <BPopover click @show="onShow">
     <template #target>
-      <div class="username" :style="{ color: usernameColor }">
+      <button type="button" class="username" :style="{ color: usernameColor }">
         <span
           v-if="user.status !== 'online'"
           class="indicator"
@@ -12,7 +12,7 @@
           >●</span
         >
         {{ user.displayName }}
-      </div>
+      </button>
     </template>
 
     <template v-if="user.isFetchingProfile || !user.profile">Fetching player profile...</template>
@@ -75,6 +75,11 @@
 <style scoped>
   .username {
     display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    font-family: inherit;
+    outline-color: currentColor;
+    border: 0;
   }
   .indicator--away {
     color: yellow;
