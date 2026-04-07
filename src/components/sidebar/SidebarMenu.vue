@@ -93,7 +93,6 @@
     flex-direction: column;
     top: 0;
     left: 0;
-    min-width: fit-content;
     width: 100%;
     max-width: 350px;
     height: 100%;

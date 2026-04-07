@@ -30,7 +30,7 @@ export const useProfileStore = defineStore('profile', () => {
   }
 
   function setAway(inputMessage?: string, manual = true) {
-    let message = 'User is currently away';
+    let message = 'Away';
     if (typeof inputMessage === 'string' && inputMessage.trim().length > 0) {
       message = inputMessage.trim();
     }
@@ -52,7 +52,7 @@ export const useProfileStore = defineStore('profile', () => {
     }
 
     if (isIdle) {
-      setAway('User is currently away', false);
+      setAway('Away', false);
     } else {
       setUnaway();
     }

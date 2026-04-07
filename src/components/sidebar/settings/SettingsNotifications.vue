@@ -14,7 +14,7 @@
         label="Indicator"
         description="Appears in the page title if you have notifications"
       >
-        <BFormInput v-model="notifications.indicatorText" />
+        <BFormInput v-model="notifications.indicatorText" size="sm" />
       </BFormGroup>
     </BForm>
 
@@ -36,15 +36,16 @@
       </li>
     </ul>
 
-    <h6>Keywords</h6>
     <div class="keywords">
       <BForm @submit.prevent="addKeyword">
-        <BInputGroup size="sm" label="Keywords">
-          <BFormInput v-model.trim="keywordBuffer" autocomplete="off" name="new-keyword" />
-          <BButton type="submit" variant="primary" class="px-3" :disabled="!keywordBuffer.trim()"
-            >Add</BButton
-          >
-        </BInputGroup>
+        <BFormGroup label="Keywords" description="Receive notifications on added keywords.">
+          <BInputGroup size="sm">
+            <BFormInput v-model.trim="keywordBuffer" autocomplete="off" name="new-keyword" />
+            <BButton type="submit" variant="primary" class="px-3" :disabled="!keywordBuffer.trim()"
+              >Add</BButton
+            >
+          </BInputGroup>
+        </BFormGroup>
       </BForm>
 
       <div class="keywords-list">
