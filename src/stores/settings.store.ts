@@ -1,10 +1,8 @@
+import { FONT_SIZE_MAX, FONT_SIZE_MIN } from '#constants';
 import { clamp } from '#utils';
 import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed } from 'vue';
-
-const FONT_SIZE_MIN = 10;
-const FONT_SIZE_MAX = 18;
 
 export const useSettingsStore = defineStore('settings', () => {
   const fontSize = useLocalStorage('chat_fontSize', 14);
