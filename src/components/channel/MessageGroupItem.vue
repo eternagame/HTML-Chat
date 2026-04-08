@@ -85,16 +85,29 @@
   :deep(.message-content) {
     word-break: break-word;
 
+    .link {
+      &:empty {
+        display: none;
+      }
+
+      &.link--image {
+        display: inline-block;
+      }
+      &.link--external {
+        &::after {
+          font-size: 0.8em;
+          position: relative;
+          top: -0.25em;
+          content: ' ↗';
+          text-decoration: none;
+        }
+      }
+    }
+
     .screenshot {
       object-fit: contain;
       max-width: 500px;
       width: 100%;
-    }
-    .cursive {
-      font-family: cursive;
-    }
-    .serif {
-      font-family: serif;
     }
     .highlight {
       background-color: yellow;
@@ -105,21 +118,26 @@
       border-left: 5px solid gray;
       padding-left: 0.125em;
       quotes: '“' '”' '‘' '’';
+      &::before {
+        margin-left: 2px;
+        content: open-quote;
+      }
+      &::after {
+        content: close-quote;
+      }
     }
-    blockquote:before {
-      margin-left: 2px;
-      content: open-quote;
-    }
-    blockquote:after {
-      content: close-quote;
-    }
-    mark {
+
+    .tag {
       background-color: darken($dark-blue, 5%) !important;
-      color: #c0dce7;
-    }
-    mark:hover {
-      color: white;
-      cursor: pointer;
+      border: none;
+      font: inherit;
+      outline-color: currentColor;
+      color: inherit;
+      padding: 0;
+      &:hover,
+      &:focus {
+        color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+      }
     }
   }
 
