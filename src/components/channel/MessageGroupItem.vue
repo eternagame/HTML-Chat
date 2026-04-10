@@ -3,18 +3,27 @@
     <div class="message-content message-type--system" v-html="formattedMessage" />
   </div>
   <div v-else class="message-container">
-    <div
-      class="message-content flex-grow-1"
-      :class="{
-        'message-status--error': message.status === 'error',
-        'message-status--pending': message.status === 'pending',
-        'message-status--sent': message.status === 'sent',
-        'message-type--action': message.type === 'action',
-        'message-type--notice': message.type === 'notice',
-        'message-type--privmsg': message.type === 'privmsg',
-      }"
-      v-html="formattedMessage"
-    />
+    <div class="flex-grow-1">
+      <div
+        class="message-content"
+        :class="{
+          'message-status--error': message.status === 'error',
+          'message-status--pending': message.status === 'pending',
+          'message-status--sent': message.status === 'sent',
+          'message-type--action': message.type === 'action',
+          'message-type--notice': message.type === 'notice',
+          'message-type--privmsg': message.type === 'privmsg',
+        }"
+        v-html="formattedMessage"
+        @pointerover="onInteraction"
+        @pointerout="onInteraction"
+        @focusin="onInteraction"
+        @focusout="onInteraction"
+      />
+      <BPopover :model-value="isTooltipVisible" :target="tooltipTarget">
+        <div v-if="currentPuzzleId">Loading {{ currentPuzzleId }}...</div>
+      </BPopover>
+    </div>
 
     <div class="message-extras">
       <BPopover :delay="{ show: 250, hide: 100 }">
@@ -38,19 +47,43 @@
 <script setup lang="ts">
   import type { Message } from '#models';
   import { useReportStore, useUserListStore } from '#stores';
-  import { formateDateTime, formatTime, md } from '#utils';
+  import { formateDateTime, formatTime, md, PUZZLE_LINK_REGEX } from '#utils';
   import { BDropdown, BPopover, BDropdownItem } from 'bootstrap-vue-next';
-  import { computed } from 'vue';
+  import { computed, ref, shallowRef } from 'vue';
 
   const report = useReportStore();
   const userList = useUserListStore();
   const props = defineProps<{ message: Message }>();
-  // TODO: Add event handlers via event delegation
+
   const formattedMessage = computed(() => md.renderInline(props.message.message));
+  // TODO: Add event handlers via event delegation
+  const tooltipTarget = shallowRef<HTMLElement | null>();
+  const isTooltipVisible = ref(false);
+  const currentPuzzleId = ref<string | null>(null);
 
   function onReport() {
     const user = userList.getUserByUsername(props.message.username);
     report.startReport(user ?? { username: props.message.username, uid: 'n/a' }, props.message);
+  }
+
+  function onInteraction(event: PointerEvent | FocusEvent) {
+    if (event.type === 'pointerout' || event.type === 'focusout') {
+      isTooltipVisible.value = false;
+      return;
+    }
+
+    const target = (event.target as HTMLElement).closest<HTMLAnchorElement>('.link--puzzle');
+    if (!target) {
+      return;
+    }
+
+    const match = target.href.match(PUZZLE_LINK_REGEX);
+    if (match) {
+      const puzzleId = match[1];
+      currentPuzzleId.value = puzzleId;
+      tooltipTarget.value = target;
+      isTooltipVisible.value = true;
+    }
   }
 </script>
 
@@ -114,10 +147,15 @@
       color: black;
     }
     blockquote {
-      display: inline;
+      display: inline-block;
+      margin: 0;
       border-left: 5px solid gray;
       padding-left: 0.125em;
       quotes: '“' '”' '‘' '’';
+      &::before,
+      &::after {
+        display: inline-block;
+      }
       &::before {
         margin-left: 2px;
         content: open-quote;

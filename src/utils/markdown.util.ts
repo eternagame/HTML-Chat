@@ -4,13 +4,17 @@ import markdownItRegex from 'markdown-it-regex';
 
 const SCREENSHOT_REGEX =
   /((?:https?:\/\/)?eterna(?:game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png)/i;
-const PUZZLE_REGEX = /((?:https?:\/\/)?eternagame\.org\/(?:game\/)?puzzles?\/\d+\/?)/i;
 const TAG_USER_REGEX = /(?<!\w)@([\w-]+)/i;
 const TAG_CHANNEL_REGEX = /(?<!\w)(#[\w-]+)/i;
 const BLOCKQUOTE_REGEX = /^>\s+(.*)/;
 const HIGHLIGHT_REGEX = /\|([^|]+)\|/;
 
-const md = new MarkdownIt({
+/**
+ * Pattern for puzzle links. Single capture group for the puzzle ID.
+ */
+export const PUZZLE_LINK_REGEX = /(?:https?:\/\/)?eternagame\.org\/(?:game\/)?puzzles?\/(\d+)\/?/i;
+
+export const md = new MarkdownIt({
   html: false,
   linkify: true,
   typographer: true,
@@ -61,7 +65,7 @@ const md = new MarkdownIt({
     {
       attrs: { class: 'link link--puzzle', 'data-link-type': 'internal', target: '_blank' },
       matcher(href: string): boolean {
-        return PUZZLE_REGEX.test(href);
+        return PUZZLE_LINK_REGEX.test(href);
       },
     },
     {
@@ -75,5 +79,3 @@ const md = new MarkdownIt({
   ]);
 
 md.linkify.set({ fuzzyEmail: false });
-
-export default md;

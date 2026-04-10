@@ -5,6 +5,7 @@ export * from './layout.store';
 export * from './notifications.store';
 export * from './operator.store';
 export * from './profile.store';
+export * from './puzzle.store';
 export * from './report.store';
 export * from './settings.store';
 export * from './user-list.store';
