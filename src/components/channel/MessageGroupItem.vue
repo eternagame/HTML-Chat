@@ -20,8 +20,38 @@
         @focusin="onInteraction"
         @focusout="onInteraction"
       />
-      <BPopover :model-value="isTooltipVisible" :target="tooltipTarget">
-        <div v-if="currentPuzzleId">Loading {{ currentPuzzleId }}...</div>
+      <BPopover @show="onPuzzleTooltipShow" :model-value="isTooltipVisible" :target="tooltipTarget">
+        <template v-if="currentPuzzleId">
+          <template v-if="isLoadingPuzzle"><div>Loading...</div></template>
+          <template v-else>
+            <article v-if="!currentPuzzle" class="puzzle puzzle--not-found">
+              <span>Could not find puzzle {{ currentPuzzleId }}</span>
+            </article>
+            <article v-else class="puzzle">
+              <div class="align-self-center">{{ currentPuzzle.title }}</div>
+              <div class="align-self-center">
+                <a :href="`https://eternagame.org/players/${currentPuzzle.uid}`" target="_blank">{{
+                  currentPuzzle.username
+                }}</a>
+              </div>
+
+              <dl>
+                <dt>Solvers</dt>
+                <dd>{{ currentPuzzle['num-cleared'] }}</dd>
+
+                <dt>Reward</dt>
+                <dd>{{ currentPuzzle.reward }}</dd>
+              </dl>
+
+              <section
+                v-if="currentPuzzle.body"
+                v-html="currentPuzzle.body"
+                class="puzzle-description"
+              />
+              <p v-else>Puzzle has no description.</p>
+            </article>
+          </template>
+        </template>
       </BPopover>
     </div>
 
@@ -46,11 +76,12 @@
 
 <script setup lang="ts">
   import type { Message } from '#models';
-  import { useReportStore, useUserListStore } from '#stores';
+  import { usePuzzleStore, useReportStore, useUserListStore } from '#stores';
   import { formateDateTime, formatTime, md, PUZZLE_LINK_REGEX } from '#utils';
   import { BDropdown, BPopover, BDropdownItem } from 'bootstrap-vue-next';
   import { computed, ref, shallowRef } from 'vue';
 
+  const puzzle = usePuzzleStore();
   const report = useReportStore();
   const userList = useUserListStore();
   const props = defineProps<{ message: Message }>();
@@ -60,6 +91,17 @@
   const tooltipTarget = shallowRef<HTMLElement | null>();
   const isTooltipVisible = ref(false);
   const currentPuzzleId = ref<string | null>(null);
+  const isLoadingPuzzle = computed(
+    () => currentPuzzleId.value !== null && puzzle.isLoadingPuzzle(currentPuzzleId.value),
+  );
+  const currentPuzzle = computed(() => {
+    const puzzleId = currentPuzzleId.value;
+    if (puzzleId) {
+      return puzzle.getPuzzle(puzzleId);
+    } else {
+      return null;
+    }
+  });
 
   function onReport() {
     const user = userList.getUserByUsername(props.message.username);
@@ -83,6 +125,12 @@
       currentPuzzleId.value = puzzleId;
       tooltipTarget.value = target;
       isTooltipVisible.value = true;
+    }
+  }
+
+  function onPuzzleTooltipShow() {
+    if (currentPuzzleId.value) {
+      puzzle.loadPuzzle(currentPuzzleId.value);
     }
   }
 </script>
@@ -212,6 +260,18 @@
       @media (prefers-reduced-motion: no-preference) {
         transition: opacity 250ms ease-in;
       }
+    }
+  }
+
+  .puzzle {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+
+    .puzzle-description {
+      max-height: 4.5em;
+      overflow-y: hidden;
+      text-overflow: ellipsis;
     }
   }
 </style>
