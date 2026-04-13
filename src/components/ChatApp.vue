@@ -24,6 +24,7 @@
       <div :id="mainId" class="channel d-flex flex-column">
         <SidebarMenu />
         <ReportModal />
+        <ConfirmationModal />
         <ChannelMessages class="flex-grow-1" />
       </div>
 
@@ -44,17 +45,18 @@
     useNotificationsStore,
     useSettingsStore,
   } from '#stores';
+  import { useTitle } from '@vueuse/core';
   import { useId, watch } from 'vue';
   import ChannelMessages from './channel/ChannelMessages.vue';
   import ChatInput from './chat/ChatInput.vue';
   import ConnectingMessage from './connection/ConnectingMessage.vue';
   import DraggableWindow from './layout/DraggableWindow.vue';
   import OpenWindowButton from './layout/header/OpenWindowButton.vue';
+  import ConfirmationModal from './modals/ConfirmationModal.vue';
   import ReportModal from './modals/ReportModal.vue';
   import SidebarMenu from './sidebar/SidebarMenu.vue';
   import SidebarMenuButton from './sidebar/SidebarMenuButton.vue';
   import MinimizationTriangle from './ui/MinimizationTriangle.vue';
-  import { useTitle } from '@vueuse/core';
 
   const channel = useChannelStore();
   const layout = useLayoutStore();

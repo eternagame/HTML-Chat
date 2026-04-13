@@ -4,6 +4,7 @@ export * from './command.model';
 export * from './connection-status.model';
 export * from './layout.model';
 export * from './message.model';
+export * from './modal.model';
 export * from './puzzle.model';
 export * from './report.model';
 export * from './todo.model';

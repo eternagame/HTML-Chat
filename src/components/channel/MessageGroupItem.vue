@@ -19,8 +19,10 @@
         @pointerout="onInteraction"
         @focusin="onInteraction"
         @focusout="onInteraction"
+        @click="onExternalLink"
+        @auxclick="onExternalLink"
       />
-      <BPopover @show="onPuzzleTooltipShow" :model-value="isTooltipVisible" :target="tooltipTarget">
+      <BPopover @show="onPuzzleTooltipShow" :target="tooltipTarget">
         <template v-if="currentPuzzleId">
           <template v-if="isLoadingPuzzle"><div>Loading...</div></template>
           <template v-else>
@@ -76,11 +78,12 @@
 
 <script setup lang="ts">
   import type { Message } from '#models';
-  import { usePuzzleStore, useReportStore, useUserListStore } from '#stores';
+  import { useConfirmationStore, usePuzzleStore, useReportStore, useUserListStore } from '#stores';
   import { formateDateTime, formatTime, md, PUZZLE_LINK_REGEX } from '#utils';
   import { BDropdown, BPopover, BDropdownItem } from 'bootstrap-vue-next';
   import { computed, ref, shallowRef } from 'vue';
 
+  const confirmation = useConfirmationStore();
   const puzzle = usePuzzleStore();
   const report = useReportStore();
   const userList = useUserListStore();
@@ -89,7 +92,6 @@
   const formattedMessage = computed(() => md.renderInline(props.message.message));
   // TODO: Add event handlers via event delegation
   const tooltipTarget = shallowRef<HTMLElement | null>();
-  const isTooltipVisible = ref(false);
   const currentPuzzleId = ref<string | null>(null);
   const isLoadingPuzzle = computed(
     () => currentPuzzleId.value !== null && puzzle.isLoadingPuzzle(currentPuzzleId.value),
@@ -110,7 +112,6 @@
 
   function onInteraction(event: PointerEvent | FocusEvent) {
     if (event.type === 'pointerout' || event.type === 'focusout') {
-      isTooltipVisible.value = false;
       return;
     }
 
@@ -124,7 +125,6 @@
       const puzzleId = match[1];
       currentPuzzleId.value = puzzleId;
       tooltipTarget.value = target;
-      isTooltipVisible.value = true;
     }
   }
 
@@ -132,6 +132,24 @@
     if (currentPuzzleId.value) {
       puzzle.loadPuzzle(currentPuzzleId.value);
     }
+  }
+
+  function onExternalLink(event: PointerEvent) {
+    const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('.link--external');
+    if (!link) {
+      return;
+    }
+
+    event.preventDefault();
+    confirmation.prompt(
+      {
+        title: 'External Link Warning',
+        message: `"${link.href}" is an external site. Do you wish to proceed?`,
+      },
+      () => {
+        globalThis.open(link.href, '_blank', 'noopener,noreferrer');
+      },
+    );
   }
 </script>
 

@@ -49,6 +49,7 @@
     "markdown-it-regex": "^0.2.2",
     "pinia": "^3.0.4",
     "stream-browserify": "^3.0.0",
+    "type-fest": "^5.5.0",
     "vue": "^3.5.30"
   },
   "devDependencies": {
