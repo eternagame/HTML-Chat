@@ -1,3 +1,4 @@
+import { useChannelStore, useUserListStore } from '#stores';
 import MarkdownIt from 'markdown-it';
 import linkAttributes from 'markdown-it-link-attributes';
 import markdownItRegex from 'markdown-it-regex';
@@ -35,14 +36,32 @@ export const md = new MarkdownIt({
     name: 'tag-user',
     regex: TAG_USER_REGEX,
     replace(taggedUser: string) {
-      return `<button type="button" class="tag tag--user">${taggedUser}</button>`;
+      const userList = useUserListStore();
+      const isKnownUser = userList.users.some((u) => u.username === taggedUser.toLocaleLowerCase());
+      if (isKnownUser) {
+        return `<span data-user="${taggedUser.toLocaleLowerCase()}">@${taggedUser}</span>`;
+      } else {
+        return `<span>@${taggedUser}</span>`;
+      }
     },
   })
   .use(markdownItRegex, {
     name: 'tag-channel',
     regex: TAG_CHANNEL_REGEX,
     replace(taggedChannel: string) {
-      return `<button type="button" class="tag tag--channel">${taggedChannel}</button>`;
+      const channel = useChannelStore();
+      const isKnownChannel = channel.channelNameList.includes(taggedChannel.toLocaleLowerCase());
+      if (isKnownChannel) {
+        return `<button
+          type="button"
+          class="tag tag--channel"
+          data-channel="${taggedChannel.toLocaleLowerCase()}"
+        >
+          ${taggedChannel}
+        </button>`;
+      } else {
+        return `<span>${taggedChannel}</span>`;
+      }
     },
   })
   .use(markdownItRegex, {
