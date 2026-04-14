@@ -22,39 +22,7 @@
         @click="onClick"
         @auxclick="onClick"
       />
-      <BPopover @show="onPuzzleTooltipShow" :target="tooltipTarget">
-        <template v-if="currentPuzzleId">
-          <template v-if="isLoadingPuzzle"><div>Loading...</div></template>
-          <template v-else>
-            <article v-if="!currentPuzzle" class="puzzle puzzle--not-found">
-              <span>Could not find puzzle {{ currentPuzzleId }}</span>
-            </article>
-            <article v-else class="puzzle">
-              <div class="align-self-center">{{ currentPuzzle.title }}</div>
-              <div class="align-self-center">
-                <a :href="`https://eternagame.org/players/${currentPuzzle.uid}`" target="_blank">{{
-                  currentPuzzle.username
-                }}</a>
-              </div>
-
-              <dl>
-                <dt>Solvers</dt>
-                <dd>{{ currentPuzzle['num-cleared'] }}</dd>
-
-                <dt>Reward</dt>
-                <dd>{{ currentPuzzle.reward }}</dd>
-              </dl>
-
-              <section
-                v-if="currentPuzzle.body"
-                v-html="currentPuzzle.body"
-                class="puzzle-description"
-              />
-              <p v-else>Puzzle has no description.</p>
-            </article>
-          </template>
-        </template>
-      </BPopover>
+      <PuzzleTooltip :puzzle-id="currentPuzzleId" :target="tooltipTarget" />
     </div>
 
     <div class="message-extras">
@@ -77,21 +45,15 @@
 </template>
 
 <script setup lang="ts">
+  import PuzzleTooltip from '#components/tooltips/PuzzleTooltip.vue';
   import type { Message } from '#models';
-  import {
-    useChannelStore,
-    useConfirmationStore,
-    usePuzzleStore,
-    useReportStore,
-    useUserListStore,
-  } from '#stores';
+  import { useChannelStore, useConfirmationStore, useReportStore, useUserListStore } from '#stores';
   import { formateDateTime, formatTime, md, PUZZLE_LINK_REGEX } from '#utils';
   import { BDropdown, BPopover, BDropdownItem } from 'bootstrap-vue-next';
   import { computed, ref, shallowRef } from 'vue';
 
   const channel = useChannelStore();
   const confirmation = useConfirmationStore();
-  const puzzle = usePuzzleStore();
   const report = useReportStore();
   const userList = useUserListStore();
   const props = defineProps<{ message: Message }>();
@@ -99,27 +61,10 @@
   const formattedMessage = computed(() => md.renderInline(props.message.message));
   const tooltipTarget = shallowRef<HTMLElement | null>();
   const currentPuzzleId = ref<string | null>(null);
-  const isLoadingPuzzle = computed(
-    () => currentPuzzleId.value !== null && puzzle.isLoadingPuzzle(currentPuzzleId.value),
-  );
-  const currentPuzzle = computed(() => {
-    const puzzleId = currentPuzzleId.value;
-    if (puzzleId) {
-      return puzzle.getPuzzle(puzzleId);
-    } else {
-      return null;
-    }
-  });
 
   function onReport() {
     const user = userList.getUserByUsername(props.message.username);
     report.startReport(user ?? { username: props.message.username, uid: 'n/a' }, props.message);
-  }
-
-  function onPuzzleTooltipShow() {
-    if (currentPuzzleId.value) {
-      puzzle.loadPuzzle(currentPuzzleId.value);
-    }
   }
 
   function onHoverFocus(event: PointerEvent | FocusEvent) {
@@ -290,18 +235,6 @@
       @media (prefers-reduced-motion: no-preference) {
         transition: opacity 250ms ease-in;
       }
-    }
-  }
-
-  .puzzle {
-    display: flex;
-    flex-direction: column;
-    width: 250px;
-
-    .puzzle-description {
-      max-height: 4.5em;
-      overflow-y: hidden;
-      text-overflow: ellipsis;
     }
   }
 </style>
