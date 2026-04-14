@@ -1,31 +1,20 @@
 <template>
-  <div v-if="message.type === 'system'" class="message-container justify-content-center">
-    <div class="message-content message-type--system" v-html="formattedMessage" />
-  </div>
-  <div v-else class="message-container">
-    <div class="flex-grow-1">
-      <div
-        class="message-content"
-        :class="{
-          'message-status--error': message.status === 'error',
-          'message-status--pending': message.status === 'pending',
-          'message-status--sent': message.status === 'sent',
-          'message-type--action': message.type === 'action',
-          'message-type--notice': message.type === 'notice',
-          'message-type--privmsg': message.type === 'privmsg',
-        }"
-        v-html="formattedMessage"
-        @pointerover="onHoverFocus"
-        @pointerout="onHoverFocus"
-        @focusin="onHoverFocus"
-        @focusout="onHoverFocus"
-        @click="onClick"
-        @auxclick="onClick"
-      />
-      <PuzzleTooltip :puzzle-id="currentPuzzleId" :target="tooltipTarget" />
-    </div>
+  <div class="message-group-item-container">
+    <MessageContent
+      class="flex-grow-1"
+      :class="{
+        'message-status--error': message.status === 'error',
+        'message-status--pending': message.status === 'pending',
+        'message-status--sent': message.status === 'sent',
+        'message-type--action': message.type === 'action',
+        'message-type--notice': message.type === 'notice',
+        'message-type--privmsg': message.type === 'privmsg',
+        'message-type--system': message.type === 'system',
+      }"
+      :content="message.message"
+    />
 
-    <div class="message-extras">
+    <div v-if="message.type !== 'system'" class="message-extras">
       <BPopover :delay="{ show: 250, hide: 100 }">
         <template #target>
           <time v-if="message.type !== 'notice'" class="message-timestamp flex-shrink-0"
@@ -45,75 +34,24 @@
 </template>
 
 <script setup lang="ts">
-  import PuzzleTooltip from '#components/tooltips/PuzzleTooltip.vue';
+  import MessageContent from '#components/message/MessageContent.vue';
   import type { Message } from '#models';
-  import { useChannelStore, useConfirmationStore, useReportStore, useUserListStore } from '#stores';
-  import { formateDateTime, formatTime, md, PUZZLE_LINK_REGEX } from '#utils';
-  import { BDropdown, BPopover, BDropdownItem } from 'bootstrap-vue-next';
-  import { computed, ref, shallowRef } from 'vue';
+  import { useReportStore, useUserListStore } from '#stores';
+  import { formateDateTime, formatTime } from '#utils';
+  import { BDropdown, BDropdownItem, BPopover } from 'bootstrap-vue-next';
 
-  const channel = useChannelStore();
-  const confirmation = useConfirmationStore();
   const report = useReportStore();
   const userList = useUserListStore();
   const props = defineProps<{ message: Message }>();
-
-  const formattedMessage = computed(() => md.renderInline(props.message.message));
-  const tooltipTarget = shallowRef<HTMLElement | null>();
-  const currentPuzzleId = ref<string | null>(null);
 
   function onReport() {
     const user = userList.getUserByUsername(props.message.username);
     report.startReport(user ?? { username: props.message.username, uid: 'n/a' }, props.message);
   }
-
-  function onHoverFocus(event: PointerEvent | FocusEvent) {
-    if (event.type === 'pointerout' || event.type === 'focusout') {
-      return;
-    }
-
-    const target = (event.target as HTMLElement).closest<HTMLAnchorElement>('.link--puzzle');
-    if (!target) {
-      return;
-    }
-
-    const match = target.href.match(PUZZLE_LINK_REGEX);
-    if (match) {
-      const puzzleId = match[1];
-      currentPuzzleId.value = puzzleId;
-      tooltipTarget.value = target;
-    }
-  }
-
-  function onClick(event: PointerEvent) {
-    const target = event.target as HTMLElement;
-    const link = target.closest<HTMLAnchorElement>('.link--external');
-    if (link) {
-      event.preventDefault();
-      confirmation.prompt(
-        {
-          title: 'External Link Warning',
-          message: `"${link.href}" is an external site. Do you wish to proceed?`,
-        },
-        () => {
-          globalThis.open(link.href, '_blank', 'noopener,noreferrer');
-        },
-      );
-      return;
-    }
-
-    const channelButton = target.closest<HTMLButtonElement>('.tag--channel');
-    if (channelButton && channelButton.hasAttribute('data-channel')) {
-      const channelName = channelButton.getAttribute('data-channel')!;
-      channel.goToChannel(channelName);
-    }
-  }
 </script>
 
-<style scoped lang="scss">
-  @import '#styles/_variables.scss';
-
-  .message-container {
+<style scoped>
+  .message-group-item-container {
     gap: 1em;
     display: flex;
     flex-direction: row;
@@ -129,76 +67,12 @@
   .message-type--notice,
   .message-type--system {
     font-style: italic;
+    text-align: center;
   }
   .message-type--notice {
-    text-align: center;
     &::before,
     &::after {
       content: ' * ';
-    }
-  }
-
-  :deep(.message-content) {
-    word-break: break-word;
-
-    .link {
-      &:empty {
-        display: none;
-      }
-
-      &.link--image {
-        display: inline-block;
-      }
-      &.link--external {
-        &::after {
-          font-size: 0.8em;
-          position: relative;
-          top: -0.25em;
-          content: ' ↗';
-          text-decoration: none;
-        }
-      }
-    }
-
-    .screenshot {
-      object-fit: contain;
-      max-width: 500px;
-      width: 100%;
-    }
-    .highlight {
-      background-color: yellow;
-      color: black;
-    }
-    blockquote {
-      display: inline-block;
-      margin: 0;
-      border-left: 5px solid gray;
-      padding-left: 0.125em;
-      quotes: '“' '”' '‘' '’';
-      &::before,
-      &::after {
-        display: inline-block;
-      }
-      &::before {
-        margin-left: 2px;
-        content: open-quote;
-      }
-      &::after {
-        content: close-quote;
-      }
-    }
-
-    .tag {
-      background-color: darken($dark-blue, 5%) !important;
-      border: none;
-      font: inherit;
-      outline-color: currentColor;
-      color: inherit;
-      padding: 0;
-      &:hover,
-      &:focus {
-        color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
-      }
     }
   }
 
@@ -227,8 +101,8 @@
       line-height: inherit;
     }
   }
-  .message-container:hover,
-  .message-container:focus-within {
+  .message-group-item-container:hover,
+  .message-group-item-container:focus-within {
     .message-options {
       opacity: 1;
 
