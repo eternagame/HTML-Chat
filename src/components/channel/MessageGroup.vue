@@ -4,7 +4,7 @@
       v-if="messageGroup.type !== 'system' && messageGroup.type !== 'notice'"
       :username="messageGroup.username"
     />
-    <div class="message-group d-flex flex-column">
+    <div class="message-group">
       <MessageGroupItem
         v-for="message in messageGroup.messages"
         :key="message.id"
@@ -21,4 +21,9 @@
   defineProps<{ messageGroup: MessageGroup }>();
 </script>
 
-<style scoped></style>
+<style scoped>
+  .message-group {
+    display: flex;
+    flex-direction: column;
+  }
+</style>

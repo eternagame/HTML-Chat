@@ -1,5 +1,12 @@
 <template>
   <div class="chat-input-container">
+    <div class="chat-input-features">
+      <MessageContent
+        v-if="inputBuffer.trim().length > 0 && !inputBuffer.startsWith('/')"
+        :content="inputBuffer"
+      />
+    </div>
+
     <BForm @submit.prevent="onSubmit">
       <BInputGroup size="lg">
         <BFormInput
@@ -8,18 +15,16 @@
           :placeholder="placeholder"
           aria-label="Chat message"
         />
-        <BButton
-          type="submit"
-          variant="primary"
-          class="px-4"
-          :disabled="!inputBuffer.trim()"
-        ></BButton>
+        <BButton type="submit" variant="primary" class="px-4" :disabled="!inputBuffer.trim()"
+          >Send</BButton
+        >
       </BInputGroup>
     </BForm>
   </div>
 </template>
 
 <script setup lang="ts">
+  import MessageContent from '#components/message/MessageContent.vue';
   import { useChannelStore, useChatStore } from '#stores';
   import { BButton, BForm, BFormInput, BInputGroup } from 'bootstrap-vue-next';
   import { computed, ref } from 'vue';
@@ -39,4 +44,9 @@
   }
 </script>
 
-<style scoped></style>
+<style scoped>
+  .chat-input-features:not(:empty) {
+    border-top: 1px dashed currentColor;
+    padding: 0.25em 1em;
+  }
+</style>
