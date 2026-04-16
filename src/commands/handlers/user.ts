@@ -25,11 +25,6 @@ export const ignoreList: TODO = null;
  * Show messages from user.
  */
 export const unignore: TODO = null;
-/**
- * Disconnect from chat.
- * `/disconnect`
- */
-export const disconnect: TODO = null;
 
 export const away: CommandHandler = {
   name: 'away',
