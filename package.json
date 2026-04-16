@@ -47,6 +47,7 @@
     "markdown-it": "^14.1.1",
     "markdown-it-link-attributes": "^4.0.1",
     "markdown-it-regex": "^0.2.2",
+    "markdown-it-underline": "^1.0.1",
     "pinia": "^3.0.4",
     "stream-browserify": "^3.0.0",
     "type-fest": "^5.5.0",

@@ -2,6 +2,7 @@ import { useChannelStore, useUserListStore } from '#stores';
 import MarkdownIt from 'markdown-it';
 import linkAttributes from 'markdown-it-link-attributes';
 import markdownItRegex from 'markdown-it-regex';
+import markdownItUnderline from 'markdown-it-underline';
 
 const SCREENSHOT_REGEX =
   /((?:https?:\/\/)?eterna(?:game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png)/i;
@@ -21,6 +22,7 @@ export const md = new MarkdownIt({
   typographer: true,
 })
   .disable('image')
+  .use(markdownItUnderline)
   .use(markdownItRegex, {
     name: 'screenshot',
     regex: SCREENSHOT_REGEX,
