@@ -6,6 +6,7 @@
     </div>
 
     <BForm @submit.prevent="onSubmit">
+      <ChatToolbar :aria-controls="inputId" />
       <BFormGroup label="Chat message" label-visually-hidden>
         <BInputGroup size="lg">
           <BFormInput
@@ -28,6 +29,7 @@
   import { useChannelStore, useChatStore } from '#stores';
   import { BButton, BForm, BFormGroup, BFormInput, BInputGroup } from 'bootstrap-vue-next';
   import { computed, ref, useId } from 'vue';
+  import ChatToolbar from './ChatToolbar.vue';
 
   const channel = useChannelStore();
   const chat = useChatStore();
