@@ -24,7 +24,7 @@
   const channel = useChannelStore();
   const confirmation = useConfirmationStore();
 
-  const formattedMessage = computed(() => md.renderInline(props.content));
+  const formattedMessage = computed(() => md.render(props.content));
   const puzzleId = ref<string | null>(null);
   const puzzleTarget = shallowRef<HTMLElement | null>();
 
@@ -100,6 +100,16 @@
       background-color: yellow;
       color: black;
     }
+    p,
+    ol,
+    ul {
+      &:first-child {
+        margin-top: 0;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
     blockquote {
       display: inline-block;
       margin: 0;
@@ -116,6 +126,10 @@
       }
       &::after {
         content: close-quote;
+      }
+
+      p {
+        display: inline-block;
       }
     }
 

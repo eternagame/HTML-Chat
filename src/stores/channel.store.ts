@@ -1,4 +1,8 @@
-import { DEFAULT_CHANNELS, OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
+import {
+  CODE_OF_CONDUCT_MESSAGE,
+  DEFAULT_CHANNELS,
+  OPERATOR_NOTIFICATION_CHANNEL,
+} from '#constants';
 import type { Channel, Message, MessageType } from '#models';
 import {
   containsWords,
@@ -407,10 +411,7 @@ export const useChannelStore = defineStore('channel', () => {
             leaveChannel(event.channel);
           } else if (event.error === 'banned_from_channel') {
             addSystemMessage(`You have been banned.`, event.channel);
-            addSystemMessage(
-              `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
-              event.channel,
-            );
+            addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.channel);
             createOrGetChannel(event.channel).banStatus = 'banned';
           }
         })
@@ -420,10 +421,7 @@ export const useChannelStore = defineStore('channel', () => {
           }
 
           addSystemMessage(`You have been kicked from ${event.channel}`, event.channel);
-          addSystemMessage(
-            `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
-            event.channel,
-          );
+          addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.channel);
           createOrGetChannel(event.channel).banStatus = 'banned';
         })
         .on('mode', (event) => {
@@ -446,20 +444,14 @@ export const useChannelStore = defineStore('channel', () => {
                   // Muted
                   if (!event.batch) {
                     addSystemMessage(`You have been muted.`, event.target);
-                    addSystemMessage(
-                      `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
-                      event.target,
-                    );
+                    addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.target);
                   }
                   createOrGetChannel(event.target).banStatus = 'muted';
                 } else {
                   // Banned
                   if (!event.batch) {
                     addSystemMessage(`You have been banned.`, event.target);
-                    addSystemMessage(
-                      `Please read our [code of conduct](https://eternagame.org/about/conduct)`,
-                      event.target,
-                    );
+                    addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.target);
                   }
                   createOrGetChannel(event.target).banStatus = 'banned';
                 }

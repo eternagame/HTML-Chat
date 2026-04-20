@@ -1,4 +1,5 @@
 import { createCommandRegistry } from '#commands';
+import { CODE_OF_CONDUCT_MESSAGE } from '#constants';
 import type { MessageType } from '#models';
 import type { Tags } from 'irc-framework';
 import { defineStore } from 'pinia';
@@ -33,9 +34,7 @@ export const useChatStore = defineStore('chat', () => {
     const targetChannel = channel.getChannel(channelOrUsername);
     if (targetChannel && targetChannel.banStatus !== 'normal') {
       channel.addSystemMessage(`You cannot chat here. You have been ${targetChannel.banStatus}.`);
-      channel.addSystemMessage(
-        'Please read our [code of conduct](https://eternagame.org/about/conduct)',
-      );
+      channel.addSystemMessage(CODE_OF_CONDUCT_MESSAGE);
       return;
     }
 

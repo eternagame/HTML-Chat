@@ -6,9 +6,9 @@ import markdownItUnderline from 'markdown-it-underline';
 
 const SCREENSHOT_REGEX =
   /((?:https?:\/\/)?eterna(?:game|dev).org\/sites\/default\/files\/chat_screens\/\d+_\d+\.png)/i;
+const INTERNAL_LINK_REGEX = /^(?:https?:\/\/)?eterna(?:game|dev).org\/?/i;
 const TAG_USER_REGEX = /(?<!\w)@([\w-]+)/i;
 const TAG_CHANNEL_REGEX = /(?<!\w)(#[\w-]+)/i;
-const BLOCKQUOTE_REGEX = /^>\s+(.*)/;
 const HIGHLIGHT_REGEX = /\|([^|]+)\|/;
 
 /**
@@ -21,7 +21,7 @@ export const md = new MarkdownIt({
   linkify: true,
   typographer: true,
 })
-  .disable('image')
+  .disable(['heading', 'lheading', 'hr', 'image'])
   .use(markdownItUnderline)
   .use(markdownItRegex, {
     name: 'screenshot',
@@ -67,14 +67,6 @@ export const md = new MarkdownIt({
     },
   })
   .use(markdownItRegex, {
-    name: 'blockquote',
-    regex: BLOCKQUOTE_REGEX,
-    replace(content: string) {
-      const safeContent = md.renderInline(content);
-      return `<blockquote>${safeContent}</blockquote>`;
-    },
-  })
-  .use(markdownItRegex, {
     name: 'highlight',
     regex: HIGHLIGHT_REGEX,
     replace(content: string) {
@@ -87,6 +79,17 @@ export const md = new MarkdownIt({
       attrs: { class: 'link link--puzzle', 'data-link-type': 'internal', target: '_blank' },
       matcher(href: string): boolean {
         return PUZZLE_LINK_REGEX.test(href);
+      },
+    },
+    {
+      attrs: {
+        class: 'link link--internal',
+        'data-link-type': 'internal',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      },
+      matcher(href: string): boolean {
+        return INTERNAL_LINK_REGEX.test(href);
       },
     },
     {

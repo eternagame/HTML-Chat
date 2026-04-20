@@ -33,6 +33,8 @@
         @click="emit('format', 'Strikethrough')"
         ><span class="visually-hidden">Strikethrough</span><s aria-hidden="true">S</s></BButton
       >
+    </BButtonGroup>
+    <BButtonGroup size="sm">
       <BButton
         type="button"
         variant="outline-secondary"
