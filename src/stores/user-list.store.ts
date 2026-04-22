@@ -2,6 +2,7 @@ import { DEFAULT_COLORS } from '#constants';
 import type { User } from '#models';
 import { getUserProfile } from '#services';
 import { isAccessibleHexColor, parseNick, parseUid } from '#utils';
+import { useLocalStorage } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
 import { computed, reactive, readonly, watch } from 'vue';
@@ -22,6 +23,7 @@ export const useUserListStore = defineStore('userList', () => {
     return nickMap;
   });
   const users = computed(() => Array.from(knownUsers.values()));
+  const ignoredUsernames = useLocalStorage('chat_ignoredUsernames', new Set<string>());
 
   function addUserNick(nick: string, ident: string) {
     const displayName = parseNick(nick);
@@ -172,6 +174,18 @@ export const useUserListStore = defineStore('userList', () => {
     },
   );
 
+  function ignoreUser(username: string) {
+    ignoredUsernames.value.add(username.toLocaleLowerCase());
+  }
+
+  function unignoreUser(username: string) {
+    ignoredUsernames.value.delete(username.toLocaleLowerCase());
+  }
+
+  function unignoreAll() {
+    ignoredUsernames.value = new Set<string>();
+  }
+
   return {
     getUserByUsername(username: string) {
       const user = knownUsers.get(username.toLocaleLowerCase());
@@ -183,5 +197,9 @@ export const useUserListStore = defineStore('userList', () => {
     },
     users,
     loadProfile,
+    ignoredUsernames: readonly(ignoredUsernames),
+    ignoreUser,
+    unignoreUser,
+    unignoreAll,
   };
 });

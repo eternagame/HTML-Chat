@@ -19,8 +19,8 @@
           >Remember Me</BFormCheckbox
         >
 
-        <BButton class="w-100 mb-2" variant="success" type="submit">Continue</BButton>
-        <BButton class="w-100" variant="success" type="button" @click="anonLogin"
+        <BButton class="w-100 mb-2" variant="primary" type="submit">Continue</BButton>
+        <BButton class="w-100" variant="primary" type="button" @click="anonLogin"
           >Continue as anonymous</BButton
         >
       </BForm>

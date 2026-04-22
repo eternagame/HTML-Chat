@@ -24,7 +24,7 @@
               autocomplete="password"
             />
           </BFormGroup>
-          <BButton class="w-100" variant="success" type="submit" :disabled="!canSubmit"
+          <BButton class="w-100" variant="primary" type="submit" :disabled="!canSubmit"
             >Sign In</BButton
           >
         </BForm>
