@@ -1,14 +1,12 @@
 <template>
   <div class="message-group-container">
-    <UsernameDisplay
-      v-if="messageGroup.type !== 'system' && messageGroup.type !== 'notice'"
-      :username="messageGroup.username"
-    />
-    <div class="message-group">
+    <UsernameDisplay v-if="showUsername" :username="messageGroup.username" />
+    <div class="message-group" :class="{ 'message-group--ignored': isIgnored }">
       <MessageGroupItem
         v-for="message in messageGroup.messages"
         :key="message.id"
         :message="message"
+        :is-ignored="isIgnored"
       />
     </div>
   </div>
@@ -17,8 +15,20 @@
 <script setup lang="ts">
   import UsernameDisplay from '#components/user/UsernameDisplay.vue';
   import type { MessageGroup } from '#composables/useMessageGroups.ts';
+  import { useUserListStore } from '#stores';
+  import { computed } from 'vue';
   import MessageGroupItem from './MessageGroupItem.vue';
-  defineProps<{ messageGroup: MessageGroup }>();
+  const props = defineProps<{ messageGroup: MessageGroup }>();
+
+  const userList = useUserListStore();
+  const showUsername = computed(
+    () => props.messageGroup.type !== 'system' && props.messageGroup.type !== 'notice',
+  );
+  const isIgnored = computed(
+    () =>
+      props.messageGroup.type !== 'system' &&
+      userList.ignoredUsernames.has(props.messageGroup.username),
+  );
 </script>
 
 <style scoped>

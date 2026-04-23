@@ -1,6 +1,13 @@
 <template>
-  <div class="message-group-item-container">
+  <div
+    class="message-group-item-container"
+    :class="{ 'message-group-item-container--ignored': isIgnored }"
+  >
+    <div v-if="isIgnored" class="flex-grow-1 ignored-placeholder">
+      Message hidden from ignored user.
+    </div>
     <MessageContent
+      v-else
       class="flex-grow-1"
       :class="{
         'message-status--error': message.status === 'error',
@@ -27,7 +34,10 @@
 
       <BDropdown class="message-options" variant="link" no-caret>
         <template #button-content>&#8942;</template>
-        <BDropdownItem @click="onReport">🚩 Report</BDropdownItem>
+        <BDropdownItem @click="onReport"><span aria-hidden="true">🚩</span> Report</BDropdownItem>
+        <BDropdownItem @click="toggleIgnore"
+          ><span aria-hidden="true">🔇</span> Ignore/Unignore User</BDropdownItem
+        >
       </BDropdown>
     </div>
   </div>
@@ -42,11 +52,18 @@
 
   const report = useReportStore();
   const userList = useUserListStore();
-  const props = defineProps<{ message: Message }>();
+  const props = defineProps<{ message: Message; isIgnored?: boolean }>();
 
   function onReport() {
     const user = userList.getUserByUsername(props.message.username);
     report.startReport(user ?? { username: props.message.username, uid: 'n/a' }, props.message);
+  }
+  function toggleIgnore() {
+    if (userList.ignoredUsernames.has(props.message.username)) {
+      userList.unignoreUser(props.message.username);
+    } else {
+      userList.ignoreUser(props.message.username);
+    }
   }
 </script>
 
@@ -56,6 +73,18 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+  }
+  .message-group-item-container--ignored {
+    .ignored-placeholder {
+      color: var(--bs-secondary);
+      font-style: italic;
+      font-size: 0.9em;
+      user-select: none;
+    }
+
+    .message-timestamp {
+      opacity: 0.4;
+    }
   }
 
   .message-status--pending {

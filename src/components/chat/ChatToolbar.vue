@@ -69,30 +69,15 @@
         ><mark class="highlight" aria-hidden="true">H</mark></BButton
       >
     </BButtonGroup>
-
-    <BButtonGroup size="sm">
-      <BButton
-        type="button"
-        variant="outline-secondary"
-        v-for="(emoji, index) in settings.customEmojis"
-        :key="index"
-        @click="emit('emoticon', emoji)"
-        >{{ emoji }}</BButton
-      >
-    </BButtonGroup>
   </BButtonToolbar>
 </template>
 <script setup lang="ts">
   import type { MdFormat } from '#models';
-  import { useSettingsStore } from '#stores';
   import { BButton, BButtonGroup, BButtonToolbar } from 'bootstrap-vue-next';
 
   const emit = defineEmits<{
     (event: 'format', type: MdFormat): void;
-    (event: 'emoticon', value: string): void;
   }>();
-
-  const settings = useSettingsStore();
 </script>
 <style scoped>
   .highlight {
