@@ -1,12 +1,7 @@
 <template>
   <button
     class="minimization-triangle border-0"
-    :class="{
-      'minimization-triangle--open': open,
-      'minimization-triangle--closed': !open,
-    }"
     type="button"
-    :style="{ backgroundImage: `url(${arrowImage})` }"
     :aria-label="label"
     :aria-expanded="open"
     :aria-controls="controls"
@@ -23,11 +18,13 @@
     (event: 'toggle', value: boolean): void;
   }>();
   const label = computed(() => (props.open ? 'Close' : 'Open'));
+  const image = `url("${arrowImage}")`;
 </script>
 
 <style scoped>
   .minimization-triangle {
     /* Normal/open state: 🔽 */
+    background-image: v-bind(image);
     background-color: transparent;
     background-repeat: no-repeat;
     background-size: 60% 40%;
@@ -38,10 +35,10 @@
     @media (prefers-reduced-motion: no-preference) {
       transition: transform 200ms ease-in-out;
     }
-  }
 
-  /* Closed state: ◀ */
-  .minimization-triangle--closed {
-    transform: rotate(90deg);
+    /* Closed state: ◀ */
+    &[aria-expanded='false'] {
+      transform: rotate(90deg);
+    }
   }
 </style>
