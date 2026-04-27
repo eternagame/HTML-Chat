@@ -1,11 +1,7 @@
 <template>
   <template v-if="isAttemptingConnection">
     <BAlert class="m-0" v-if="irc.connectionStatus === 'connecting'" :model-value="true">
-      <img
-        src="https://s3.amazonaws.com/eterna/icon_img/loading.gif"
-        class="loading-icon mr-auto ml-auto align-middle mb-1"
-        alt=""
-      />
+      <BSpinner class="loading-icon mr-1" />
       <template v-if="irc.reconnectionStatus.isReconnecting">
         <span
           >(Attempt {{ irc.reconnectionStatus.retryCount }} of
@@ -36,7 +32,7 @@
 
 <script setup lang="ts">
   import { useIrcStore } from '#stores';
-  import { BAlert, BProgress } from 'bootstrap-vue-next';
+  import { BAlert, BProgress, BSpinner } from 'bootstrap-vue-next';
   import { computed } from 'vue';
   import ConnectButton from './ConnectButton.vue';
 
