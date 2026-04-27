@@ -28,19 +28,17 @@
   </div>
 </template>
 <script setup lang="ts">
+  import { useIrcStore } from '#stores';
   import { BForm, BFormInput, BFormGroup, BFormCheckbox, BButton } from 'bootstrap-vue-next';
   import { computed, reactive, toRaw } from 'vue';
 
-  const emit = defineEmits<{
-    (event: 'login', values: { username: string; uid: string; remember: boolean }): void;
-  }>();
+  const irc = useIrcStore();
 
   const form = reactive({
     username: '',
     uid: '',
     remember: false,
   });
-
   const uidError = computed(() => {
     if (form.uid.length === 0) {
       return 'Must provide a User ID';
@@ -51,11 +49,11 @@
   });
 
   function onSubmit() {
-    emit('login', toRaw(form));
+    irc.signIn(toRaw(form));
   }
 
   function anonLogin() {
-    emit('login', { username: 'Anonymous', uid: '0', remember: false });
+    irc.signIn({ username: 'Anonymous', uid: '0', remember: false });
   }
 </script>
 <style scoped>

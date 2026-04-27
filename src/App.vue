@@ -1,7 +1,7 @@
 <template>
   <BApp>
     <ChatApp v-if="irc.isInitialized" />
-    <LoginForm v-else @login="irc.signIn" />
+    <LoginForm v-else />
   </BApp>
 </template>
 
