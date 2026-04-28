@@ -1,25 +1,5 @@
 import type { CommandHandler } from '#models';
 
-export const join: CommandHandler = {
-  name: 'join',
-  description: 'Join and go to a channel.',
-  usage: '/join <channel>',
-  examples: ['/join #random'],
-  execute({ args, stores }) {
-    if (args.length === 0) {
-      stores.channel.addSystemMessage('Select a channel using /join <channel>');
-      return;
-    }
-
-    const inputChannel = args[0];
-    if (!inputChannel.startsWith('#')) {
-      stores.channel.addSystemMessage('Selected channel must start with a "#" sign.');
-      return;
-    }
-    stores.channel.joinChannel(inputChannel);
-  },
-};
-
 export const leave: CommandHandler = {
   name: 'leave',
   description: 'Leave a channel. Defaults to current channel.',

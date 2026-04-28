@@ -2,15 +2,11 @@
  * Channels joined by default.
  * Disables ability to leave listed channels.
  */
-export const DEFAULT_CHANNELS = new Set<string>([
-  '#general',
-  '#off-topic',
-  '#help',
-  '#labs',
-  '#test',
-]);
+export const DEFAULT_CHANNELS: ReadonlySet<string> = new Set<string>(
+  ['#general'].concat(import.meta.env.DEV ? ['#test'] : []),
+);
 
-export const CHANNEL_DESCRIPTIONS: Record<string, string> = {
+export const CHANNEL_DESCRIPTIONS: Readonly<Record<string, string>> = {
   '#general': 'General chat',
   '#off-topic': 'Off-topic chat',
   '#help': 'Help requests',

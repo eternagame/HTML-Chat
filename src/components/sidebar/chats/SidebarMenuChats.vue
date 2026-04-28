@@ -29,50 +29,22 @@
           v-if="!isDefaultChannel(c.name)"
           type="button"
           class="channel-button-leave"
-          :aria-label="`Leave ${c.displayName}`"
           @click="channel.leaveChannel(c.name)"
         >
-          x
+          <span aria-hidden="true">x</span>
+          <span class="visually-hidden">Leave {{ c.displayName }}</span>
         </button>
       </li>
     </ul>
-
-    <div class="channel-join flex-shrink-0">
-      <BForm @submit.prevent="onChannelJoin">
-        <BInputGroup size="sm" prepend="#">
-          <BFormInput
-            v-model="inputBuffer"
-            autocomplete="off"
-            placeholder="channel-name"
-            aria-label="Channel name"
-          />
-          <BButton type="submit" variant="primary" class="px-3" :disabled="!inputBuffer.trim()"
-            >Join</BButton
-          >
-        </BInputGroup>
-      </BForm>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
   import { useChannelStore } from '#stores';
   import { getChannelDescription, isDefaultChannel } from '#utils';
-  import { BButton, BForm, BFormInput, BInputGroup } from 'bootstrap-vue-next';
-  import { ref } from 'vue';
-
   const channel = useChannelStore();
-  const inputBuffer = ref('');
-
-  function onChannelJoin() {
-    const channelName = inputBuffer.value.trim().toLocaleLowerCase().replaceAll(/\s+/g, '-');
-
-    if (channelName.length > 0) {
-      channel.joinChannel(channelName.startsWith('#') ? channelName : `#${channelName}`);
-      inputBuffer.value = '';
-    }
-  }
 </script>
+
 <style scoped>
   .channel-list {
     overflow-y: auto;
@@ -129,11 +101,5 @@
   }
   .channel-button-description {
     font-size: 0.75em;
-  }
-
-  .channel-join {
-    :deep(.input-group-text) {
-      background-color: #000;
-    }
   }
 </style>
