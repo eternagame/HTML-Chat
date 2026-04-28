@@ -9,15 +9,6 @@
       >Enable Device Notifications</BFormCheckbox
     >
 
-    <BForm @submit.prevent class="mb-3">
-      <BFormGroup
-        label="Indicator"
-        description="Appears in the page title if you have notifications"
-      >
-        <BFormInput v-model="notifications.indicatorText" size="sm" />
-      </BFormGroup>
-    </BForm>
-
     <h6>Channel Notifications</h6>
     <BFormCheckbox
       :model-value="isAllEnabled"

@@ -39,14 +39,8 @@
 </template>
 
 <script setup lang="ts">
-  import {
-    useChannelStore,
-    useLayoutStore,
-    useNotificationsStore,
-    useSettingsStore,
-  } from '#stores';
-  import { useTitle } from '@vueuse/core';
-  import { useId, watch } from 'vue';
+  import { useChannelStore, useLayoutStore, useSettingsStore } from '#stores';
+  import { useId } from 'vue';
   import ChannelMessages from './channel/ChannelMessages.vue';
   import ChatInput from './chat/ChatInput.vue';
   import ConnectingMessage from './connection/ConnectingMessage.vue';
@@ -60,22 +54,9 @@
 
   const channel = useChannelStore();
   const layout = useLayoutStore();
-  const notifications = useNotificationsStore();
   const settings = useSettingsStore();
   const mainId = useId();
   const footerId = useId();
-  const title = useTitle();
-
-  watch(
-    [() => channel.hasNotification, () => notifications.indicatorText],
-    ([hasNotification, indicatorText]) => {
-      if (hasNotification && indicatorText.length > 0) {
-        title.value = `html-chat ${indicatorText}`;
-      } else {
-        title.value = 'html-chat';
-      }
-    },
-  );
 </script>
 
 <style scoped>

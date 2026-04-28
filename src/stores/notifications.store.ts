@@ -4,7 +4,6 @@ import { defineStore } from 'pinia';
 import { readonly } from 'vue';
 
 export const useNotificationsStore = defineStore('notifications', () => {
-  const indicatorText = useLocalStorage('chat_indicatorText', '(!)');
   const keywords = useLocalStorage<Set<string>>('chat_notificationKeywords', new Set<string>());
   const deviceEnabled = useLocalStorage('chat_deviceNotificationsEnabled', false);
   const { isSupported, ensurePermissions, permissionGranted, show } = useWebNotification({
@@ -65,7 +64,6 @@ export const useNotificationsStore = defineStore('notifications', () => {
   }
 
   return {
-    indicatorText,
     keywords: readonly(keywords),
     addKeyword,
     removeKeyword,

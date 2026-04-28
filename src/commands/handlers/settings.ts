@@ -1,18 +1,5 @@
 import type { CommandHandler } from '#models';
 
-export const indicator: CommandHandler = {
-  name: 'indicator',
-  description: 'Change notification indicator that appears in page title',
-  usage: '/indicator <indicator>',
-  execute({ fullText, stores }) {
-    if (fullText.length === 0) {
-      stores.channel.addSystemMessage('"/indicator" requires the indicator text parameter');
-      return;
-    }
-    stores.notifications.indicatorText = fullText;
-  },
-};
-
 export const size: CommandHandler = {
   name: 'size',
   aliases: ['textsize', 'fontsize'],
