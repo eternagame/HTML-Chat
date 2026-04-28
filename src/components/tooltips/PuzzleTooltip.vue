@@ -20,9 +20,6 @@
         </dl>
 
         <div v-if="currentPuzzle.body" class="puzzle-description" v-html="currentPuzzle.body"></div>
-        <div v-else class="puzzle-description puzzle-description--empty">
-          <p>No description provided.</p>
-        </div>
       </article>
 
       <article v-else class="puzzle puzzle--not-found">

@@ -1,11 +1,4 @@
 import type { CommandHandler } from '#models';
-import {
-  getNamedColor,
-  isAccessibleColor,
-  isAccessibleHexColor,
-  NAMED_COLORS,
-  rgbToHex,
-} from '#utils';
 
 export const indicator: CommandHandler = {
   name: 'indicator',
@@ -67,55 +60,5 @@ export const keywords: CommandHandler = {
           break;
       }
     }
-  },
-};
-
-export const color: CommandHandler = {
-  name: 'color',
-  description:
-    'Set username color. Supports hex, RGB, or a preset color name. Ignores unreadable colors.',
-  usage: '/color <color>',
-  examples: ['/color #ffffff', '/color 255 255 255', '/color orange'],
-  execute({ args, stores }) {
-    if (args.length === 0) {
-      stores.channel.addSystemMessage('"/color" requires a color input');
-      return;
-    }
-
-    let inputColor: string;
-
-    if (args.length >= 3) {
-      const r = Number.parseInt(args[0], 10);
-      const g = Number.parseInt(args[1], 10);
-      const b = Number.parseInt(args[2], 10);
-
-      if (!isAccessibleColor(r, g, b)) {
-        // RGB input
-        stores.channel.addSystemMessage(`${r}, ${g}, ${b} is not a readable color.`);
-        return;
-      }
-      inputColor = rgbToHex(r, g, b);
-    } else if (args[0].startsWith('#')) {
-      // HEX input
-      if (!isAccessibleHexColor(args[0])) {
-        stores.channel.addSystemMessage(`${args[0]} is not a readable color.`);
-        return;
-      }
-      inputColor = args[0];
-    } else {
-      // Named color input
-      const namedColor = getNamedColor(args[0]);
-      if (!namedColor) {
-        stores.channel.addSystemMessage(`${args[0]} is not a preset color.`);
-        stores.channel.addSystemMessage(
-          `Available colors: ${Object.keys(NAMED_COLORS).join(', ')}`,
-        );
-        return;
-      }
-
-      inputColor = namedColor;
-    }
-
-    stores.profile.updateUsernameColor(inputColor);
   },
 };

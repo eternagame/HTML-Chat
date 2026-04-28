@@ -1,7 +1,7 @@
 import { DEFAULT_COLORS } from '#constants';
 import type { User } from '#models';
 import { getUserProfile } from '#services';
-import { isAccessibleHexColor, parseNick, parseUid } from '#utils';
+import { parseNick, parseUid } from '#utils';
 import { useLocalStorage } from '@vueuse/core';
 import log from 'loglevel';
 import { defineStore } from 'pinia';
@@ -37,7 +37,7 @@ export const useUserListStore = defineStore('userList', () => {
     }
 
     // Create new user to track
-    const uid = parseUid(nick, ident);
+    const uid = parseUid(ident);
     const uidAsNumber = Number.parseInt(uid, 10);
     // Assigning default username color
     const color =
@@ -96,14 +96,6 @@ export const useUserListStore = defineStore('userList', () => {
     user.awayReason = '';
   }
 
-  function updateUserColor(nick: string, color?: string) {
-    const user = getUserByNickInternal(nick);
-    if (!user || typeof color !== 'string' || !isAccessibleHexColor(color)) {
-      return;
-    }
-    user.color = color;
-  }
-
   async function loadProfile(username: string) {
     const user = knownUsers.get(username.toLocaleLowerCase());
     if (!user || user.isFetchingProfile || user.profile !== null) {
@@ -157,14 +149,6 @@ export const useUserListStore = defineStore('userList', () => {
             return;
           }
           setUserBack(event.nick);
-        })
-        .on('tagmsg', (event) => {
-          // Using '+color' client-tag for updating username color
-          // See https://ircv3.net/specs/extensions/message-tags
-          updateUserColor(event.nick, event.tags['+color']);
-        })
-        .on('message', (event) => {
-          updateUserColor(event.nick, event.tags['+color']);
         })
         .on('irc error', (event) => {
           if (event.error === 'no_such_nick') {

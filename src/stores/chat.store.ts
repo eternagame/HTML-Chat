@@ -59,13 +59,10 @@ export const useChatStore = defineStore('chat', () => {
       targetUser.nicks.forEach((nick) => targets.push(nick));
     }
 
-    // Add necessary metadata for pending messages or username colors
+    // Add necessary metadata for pending messages
     const tags: Tags = {};
     const pendingId = channel.addPendingMessage(channelOrUsername, text, type);
     tags['label'] = pendingId;
-    if (profile.usernameColor) {
-      tags['+color'] = profile.usernameColor;
-    }
 
     for (const target of targets) {
       switch (type) {
@@ -73,7 +70,8 @@ export const useChatStore = defineStore('chat', () => {
           irc.client.notice(target, text, tags);
           break;
         case 'action':
-          // `client.action()` is missing the `tags` parameter
+          // Temporary until https://github.com/kiwiirc/irc-framework/pull/411 is merged
+          // ^ will be adding the `tags` param to `client.action()`
           irc.client.say(target, `\u0001ACTION ${text}\u0001`, tags);
           break;
         default:

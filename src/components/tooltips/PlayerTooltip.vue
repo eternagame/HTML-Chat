@@ -73,6 +73,6 @@
   .profile-actions {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: center;
   }
 </style>
