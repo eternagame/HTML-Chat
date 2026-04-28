@@ -125,7 +125,7 @@ export const banmask: CommandHandler = {
 
 export const unbanmask: CommandHandler = {
   name: 'unbanmask',
-  description: 'Removes a host mask mask. Host masks are in the form of "nick!ident@host"',
+  description: 'Removes a host ban mask. Host masks are in the form of "nick!ident@host"',
   usage: '/unbanmask <mask> <channel>',
   requiresOperator: true,
   execute({ args, stores }) {
@@ -136,6 +136,39 @@ export const unbanmask: CommandHandler = {
     const [mask, targetChannel] = args;
     const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
     stores.operator.removeBanMask(mask, channels);
+  },
+};
+
+export const mutemask: CommandHandler = {
+  name: 'mutemask',
+  description: 'Mutes a host mask. Host masks are in the form of "nick!ident@host"',
+  usage: '/mutemask <mask> <channel>',
+  examples: ['/mutemask *!*@some.host.net #general', `/mutemask *!*@ban.evader.net *`],
+  requiresOperator: true,
+  execute({ args, stores }) {
+    if (args.length < 2) {
+      stores.channel.addSystemMessage('"/mutemask" requires a mask and target channel');
+    }
+
+    const [mask, targetChannel] = args;
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    stores.operator.addMuteMask(mask, channels);
+  },
+};
+
+export const unmuteMask: CommandHandler = {
+  name: 'unmutemask',
+  description: 'Removes a host mute mask. Host masks are in the form of "nick!ident@host"',
+  usage: '/unmutemask <mask> <channel>',
+  requiresOperator: true,
+  execute({ args, stores }) {
+    if (args.length < 2) {
+      stores.channel.addSystemMessage('"/unmutemask" requires a mask and target channel');
+    }
+
+    const [mask, targetChannel] = args;
+    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    stores.operator.removeMuteMask(mask, channels);
   },
 };
 

@@ -94,6 +94,36 @@ export const useOperatorStore = defineStore('operator', () => {
     removeBanMask(`${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
+  function addMuteMask(mask: string, targetChannels: string[]) {
+    if (!irc.client) {
+      return;
+    } else if (!irc.isOperator) {
+      channel.addSystemMessage('You currently are not an operator.');
+      return;
+    } else if (mask.length === 0) {
+      channel.addSystemMessage('You need to provide a mute mask.');
+      return;
+    }
+
+    // See https://github.com/ergochat/ergo/blob/master/docs/MANUAL.md#extended-bans
+    addBanMask(`m:${mask}`, targetChannels);
+  }
+
+  function removeMuteMask(mask: string, targetChannels: string[]) {
+    if (!irc.client) {
+      return;
+    } else if (!irc.isOperator) {
+      channel.addSystemMessage('You currently are not an operator.');
+      return;
+    } else if (mask.length === 0) {
+      channel.addSystemMessage('You need to provide a mute mask to remove.');
+      return;
+    }
+
+    // See https://github.com/ergochat/ergo/blob/master/docs/MANUAL.md#extended-bans
+    removeBanMask(`m:${mask}`, targetChannels);
+  }
+
   function mute(username: string, targetChannels: string[]) {
     if (username === '*') {
       channel.addSystemMessage(
@@ -104,8 +134,7 @@ export const useOperatorStore = defineStore('operator', () => {
 
     const user = userList.getUserByUsername(username);
     // Mute by username mask
-    // See https://github.com/ergochat/ergo/blob/master/docs/MANUAL.md#extended-bans
-    addBanMask(`m:${user?.username ?? username}^*!*@*`, targetChannels);
+    addMuteMask(`${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
   function unmute(username: string, targetChannels: string[]) {
@@ -116,8 +145,7 @@ export const useOperatorStore = defineStore('operator', () => {
 
     const user = userList.getUserByUsername(username);
     // Unmute by username mask
-    // See https://github.com/ergochat/ergo/blob/master/docs/MANUAL.md#extended-bans
-    removeBanMask(`m:${user?.username ?? username}^*!*@*`, targetChannels);
+    removeMuteMask(`${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
   function getBanList() {
@@ -198,6 +226,8 @@ export const useOperatorStore = defineStore('operator', () => {
     removeBanMask,
     ban,
     unban,
+    addMuteMask,
+    removeMuteMask,
     mute,
     unmute,
   };

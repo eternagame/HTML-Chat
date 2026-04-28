@@ -31,7 +31,10 @@ export const useChannelStore = defineStore('channel', () => {
   const channelMap = reactive(new Map<string, Channel>());
   const channelNameList = computed(() => Array.from(channelMap.keys()));
   const channelList = computed(() => Array.from(channelMap.values()));
-  const joinedChannels = useLocalStorage<Set<string>>('chat_joinedChannels', DEFAULT_CHANNELS);
+  const joinedChannels = useLocalStorage<Set<string>>(
+    'chat_joinedChannels',
+    new Set(DEFAULT_CHANNELS),
+  );
   const currentChannelName = useLocalStorage<string>(
     'chat_currentChannelName',
     Array.from(DEFAULT_CHANNELS)[0],
