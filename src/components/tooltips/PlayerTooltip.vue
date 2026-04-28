@@ -29,13 +29,9 @@
         <dt>Rank</dt>
         <dd v-if="user.profile.rank">#{{ user.profile.rank }}</dd>
         <dd v-else>Unranked</dd>
-
-        <dt>Roles</dt>
-        <dd>{{ user.profile.roles.join(', ') }}</dd>
       </dl>
 
       <section v-if="user.profile.description" v-html="user.profile.description" />
-      <p v-else>User has not added a description to their profile.</p>
     </article>
   </BPopover>
 </template>

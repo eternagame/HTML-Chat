@@ -22,7 +22,7 @@
           <SidebarSectionButton
             @click="activeTab = 'user'"
             :active="activeTab === 'user'"
-            label="User"
+            label="Online Users"
             :icon="userIcon"
             :icon-active="userIconActive"
           />
