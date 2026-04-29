@@ -36,13 +36,63 @@
         </button>
       </li>
     </ul>
+
+    <div v-if="additionalChannels.length > 0" class="channel-join flex-shrink-0">
+      <BForm @submit.prevent="onChannelJoin">
+        <BFormGroup label="Join channel" label-visually-hidden>
+          <BInputGroup>
+            <BFormSelect v-model="selectedChannel" :options="channelOptions" />
+            <BButton
+              type="submit"
+              variant="primary"
+              class="px-3"
+              :disabled="selectedChannel === null"
+              >Join</BButton
+            >
+          </BInputGroup>
+        </BFormGroup>
+      </BForm>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { useChannelStore } from '#stores';
+  import { AVAILABLE_CHANNELS, OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
+  import { useChannelStore, useIrcStore } from '#stores';
   import { getChannelDescription, isDefaultChannel } from '#utils';
+  import { BButton, BForm, BFormGroup, BFormSelect, BInputGroup } from 'bootstrap-vue-next';
+  import { computed, ref } from 'vue';
+
   const channel = useChannelStore();
+  const irc = useIrcStore();
+
+  /** Channels available, but not joined. */
+  const additionalChannels = computed(() => {
+    return AVAILABLE_CHANNELS.concat(irc.isOperator ? [OPERATOR_NOTIFICATION_CHANNEL] : []).filter(
+      (c) => !channel.channelNameList.includes(c),
+    );
+  });
+  const channelOptions = computed(() => {
+    return (
+      [{ value: null, text: 'Select a channel to join' }] as Array<{
+        value: string | null;
+        text: string;
+      }>
+    ).concat(
+      additionalChannels.value.map((c) => ({
+        value: c,
+        text: c,
+      })),
+    );
+  });
+  const selectedChannel = ref<string | null>(null);
+
+  function onChannelJoin() {
+    if (selectedChannel.value) {
+      channel.joinChannel(selectedChannel.value);
+      selectedChannel.value = null;
+    }
+  }
 </script>
 
 <style scoped>
@@ -101,5 +151,11 @@
   }
   .channel-button-description {
     font-size: 0.75em;
+  }
+
+  .channel-join {
+    :deep(.input-group-text) {
+      background-color: #000;
+    }
   }
 </style>

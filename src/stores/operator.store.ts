@@ -32,7 +32,7 @@ export const useOperatorStore = defineStore('operator', () => {
     }
   }
 
-  function addBanMask(mask: string, targetChannels: string[]) {
+  function addBanMask(mask: string, targetChannels: readonly string[]) {
     if (!irc.client) {
       return;
     } else if (!irc.isOperator) {
@@ -47,11 +47,12 @@ export const useOperatorStore = defineStore('operator', () => {
     }
 
     for (const targetChannel of targetChannels) {
-      irc.client.ban(targetChannel, mask);
+      // Using SAMODE to allow bans without joining target channel
+      irc.client.raw('SAMODE', targetChannel, '+b', mask);
     }
   }
 
-  function removeBanMask(mask: string, targetChannels: string[]) {
+  function removeBanMask(mask: string, targetChannels: readonly string[]) {
     if (!irc.client) {
       return;
     } else if (!irc.isOperator) {
@@ -66,11 +67,12 @@ export const useOperatorStore = defineStore('operator', () => {
     }
 
     for (const targetChannel of targetChannels) {
-      irc.client.unban(targetChannel, mask);
+      // Using SAMODE to remove bans without joining target channel
+      irc.client.raw('SAMODE', targetChannel, '-b', mask);
     }
   }
 
-  function ban(username: string, targetChannels: string[]) {
+  function ban(username: string, targetChannels: readonly string[]) {
     if (username === '*') {
       channel.addSystemMessage(
         `**Careful!** Passing (*) in the username parameter will ban everyone.`,
@@ -83,7 +85,7 @@ export const useOperatorStore = defineStore('operator', () => {
     addBanMask(`${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
-  function unban(username: string, targetChannels: string[]) {
+  function unban(username: string, targetChannels: readonly string[]) {
     if (username === '*') {
       channel.addSystemMessage(`Passing (*) in the username parameter will unban everyone.`);
       return;
@@ -94,7 +96,7 @@ export const useOperatorStore = defineStore('operator', () => {
     removeBanMask(`${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
-  function addMuteMask(mask: string, targetChannels: string[]) {
+  function addMuteMask(mask: string, targetChannels: readonly string[]) {
     if (!irc.client) {
       return;
     } else if (!irc.isOperator) {
@@ -109,7 +111,7 @@ export const useOperatorStore = defineStore('operator', () => {
     addBanMask(`m:${mask}`, targetChannels);
   }
 
-  function removeMuteMask(mask: string, targetChannels: string[]) {
+  function removeMuteMask(mask: string, targetChannels: readonly string[]) {
     if (!irc.client) {
       return;
     } else if (!irc.isOperator) {
@@ -124,7 +126,7 @@ export const useOperatorStore = defineStore('operator', () => {
     removeBanMask(`m:${mask}`, targetChannels);
   }
 
-  function mute(username: string, targetChannels: string[]) {
+  function mute(username: string, targetChannels: readonly string[]) {
     if (username === '*') {
       channel.addSystemMessage(
         `**Careful!** Passing (*) in the username parameter will mute everyone.`,
@@ -137,7 +139,7 @@ export const useOperatorStore = defineStore('operator', () => {
     addMuteMask(`${user?.username ?? username}^*!*@*`, targetChannels);
   }
 
-  function unmute(username: string, targetChannels: string[]) {
+  function unmute(username: string, targetChannels: readonly string[]) {
     if (username === '*') {
       channel.addSystemMessage(`Passing (*) in the username parameter will unmute everyone.`);
       return;

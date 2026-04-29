@@ -1,8 +1,18 @@
 /**
+ * Channels available to join.
+ */
+export const AVAILABLE_CHANNELS: ReadonlyArray<string> = [
+  '#general',
+  '#off-topic',
+  '#help',
+  '#labs',
+].concat(import.meta.env.DEV ? ['#test'] : []);
+
+/**
  * Channels joined by default.
  * Disables ability to leave listed channels.
  */
-export const DEFAULT_CHANNELS: ReadonlySet<string> = new Set<string>(
+export const DEFAULT_CHANNELS: ReadonlySet<string> = new Set(
   ['#general'].concat(import.meta.env.DEV ? ['#test'] : []),
 );
 

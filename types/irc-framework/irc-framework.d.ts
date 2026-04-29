@@ -51,7 +51,8 @@ declare module 'irc-framework' {
 
     startPeriodicPing(): void;
 
-    raw(input: string | IrcMessage): void;
+    raw(input: IrcMessage): void;
+    raw(...input: string[]): void;
 
     rawString(...parameters: Array<string>): string;
     rawString(parameters: Array<string>): string;

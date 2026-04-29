@@ -1,3 +1,4 @@
+import { AVAILABLE_CHANNELS } from '#constants';
 import type { CommandHandler } from '#models';
 
 export const ban: CommandHandler = {
@@ -13,7 +14,7 @@ export const ban: CommandHandler = {
     }
 
     const [username, targetChannel, ...reasonParts] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.ban(username, channels);
 
     if (reasonParts.length > 0) {
@@ -35,7 +36,7 @@ export const unban: CommandHandler = {
     }
 
     const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.unban(username, channels);
   },
 };
@@ -54,7 +55,7 @@ export const mute: CommandHandler = {
     }
 
     const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.mute(username, channels);
   },
 };
@@ -73,7 +74,7 @@ export const unmute: CommandHandler = {
     }
 
     const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.unmute(username, channels);
   },
 };
@@ -118,7 +119,7 @@ export const banmask: CommandHandler = {
     }
 
     const [mask, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.addBanMask(mask, channels);
   },
 };
@@ -134,7 +135,7 @@ export const unbanmask: CommandHandler = {
     }
 
     const [mask, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.removeBanMask(mask, channels);
   },
 };
@@ -151,7 +152,7 @@ export const mutemask: CommandHandler = {
     }
 
     const [mask, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.addMuteMask(mask, channels);
   },
 };
@@ -167,7 +168,7 @@ export const unmuteMask: CommandHandler = {
     }
 
     const [mask, targetChannel] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
+    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.removeMuteMask(mask, channels);
   },
 };
