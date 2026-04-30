@@ -4,22 +4,18 @@ import type { CommandHandler } from '#models';
 export const ban: CommandHandler = {
   name: 'ban',
   description: 'Ban a user from the channel(s).',
-  usage: '/ban <username> <channel> [reason]',
+  usage: '/ban <username> <channel>',
   examples: ['/ban bad_user #general', '/ban really_bad_user *'],
   requiresOperator: true,
-  execute({ args, sendMessage, stores }) {
+  execute({ args, stores }) {
     if (args.length < 2) {
       stores.channel.addSystemMessage('"/ban" requires a username and target channel');
       return;
     }
 
-    const [username, targetChannel, ...reasonParts] = args;
+    const [username, targetChannel] = args;
     const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
     stores.operator.ban(username, channels);
-
-    if (reasonParts.length > 0) {
-      sendMessage(username, reasonParts.join(' '), 'privmsg');
-    }
   },
 };
 
@@ -69,7 +65,7 @@ export const unmute: CommandHandler = {
   requiresOperator: true,
   execute({ args, stores }) {
     if (args.length < 2) {
-      stores.channel.addSystemMessage('"/mute" requires a username and target channel.');
+      stores.channel.addSystemMessage('"/unmute" requires a username and target channel.');
       return;
     }
 
@@ -85,25 +81,15 @@ export const notice: CommandHandler = {
   usage: '/notice <channel> <message>',
   examples: ['/notice #general Hello, everyone', '/notice * Hello, everyone'],
   requiresOperator: true,
-  execute({ args, sendMessage, stores }) {
+  execute({ args, stores }) {
     if (args.length < 2) {
       stores.channel.addSystemMessage('Please provide a channel and the notice message');
       return;
     }
 
-    const text = args.slice(1).join(' ');
-    const targetChannels: string[] = [];
-    if (args[0] === '*') {
-      stores.channel.channelNameList.forEach((channel) => {
-        targetChannels.push(channel);
-      });
-    } else {
-      targetChannels.push(args[0]);
-    }
-
-    targetChannels.forEach((channel) => {
-      sendMessage(channel, text, 'notice');
-    });
+    const [targetChannel, ...messageParts] = args;
+    const text = messageParts.join(' ');
+    stores.operator.notice(targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel], text);
   },
 };
 
@@ -219,23 +205,22 @@ export const nicks: CommandHandler = {
 export const kick: CommandHandler = {
   name: 'kick',
   description:
-    'Kick user from channel(s). Setting "*" as the channel kicks user from all channels.',
+    'Kick user from channel. Targeting "*" as the channel kicks user disconnects the user from the server.',
   usage: '/kick <username> <channel> [reason]',
   examples: ['/kick bad_user #general', '/kick really_bad_user *'],
   requiresOperator: true,
-  execute({ args, sendMessage, stores }) {
+  execute({ args, stores }) {
     if (args.length < 2) {
       stores.channel.addSystemMessage('"/kick" requires a username and target channel');
       return;
     }
 
     const [username, targetChannel, ...reasonParts] = args;
-    const channels = targetChannel === '*' ? stores.channel.channelNameList : [targetChannel];
-    stores.operator.kick(username, channels);
-
-    if (reasonParts.length > 0) {
-      sendMessage(username, reasonParts.join(' '), 'privmsg');
-    }
+    stores.operator.kick(
+      username,
+      targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel],
+      reasonParts.join(' '),
+    );
   },
 };
 

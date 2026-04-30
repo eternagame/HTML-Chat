@@ -393,7 +393,10 @@ declare module 'irc-framework' {
     kicked: string;
     channel: string;
   }
-  export type QuitEvent = Pick<MessageEvent, 'nick' | 'ident' | 'hostname' | 'message' | 'time'>;
+  export type QuitEvent = Pick<
+    MessageEvent,
+    'nick' | 'ident' | 'hostname' | 'message' | 'time' | 'tags' | 'batch'
+  >;
 
   interface Mode {
     mode: string;

@@ -135,8 +135,10 @@ export const useIrcStore = defineStore('irc', () => {
         currentNick.value = event.new_nick;
         currentUser.nicks.add(event.new_nick);
         currentUser.nicks.delete(event.nick);
-      })
-      .on('raw', (event) => {
+      });
+
+    if (import.meta.env.DEV) {
+      ircClient.on('raw', (event) => {
         if (event.from_server) {
           log.debug(
             `%c↓%c ${event.line}`,
@@ -151,12 +153,16 @@ export const useIrcStore = defineStore('irc', () => {
           );
         }
       });
+    }
 
     ircClient.requestCap(['labeled-response', 'draft/chathistory', 'draft/event-playback']);
     ircClient.connect();
     client.value = markRaw(ircClient);
     isInitialized.value = true;
-    console.log('IRC Client:', ircClient);
+
+    if (import.meta.env.DEV) {
+      log.debug('IRC Client:', ircClient);
+    }
   }
 
   /** Sign in with saved login (if remembered) */

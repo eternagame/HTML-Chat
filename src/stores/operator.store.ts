@@ -1,4 +1,4 @@
-import { OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
+import { AVAILABLE_CHANNELS, OPERATOR_NOTIFICATION_CHANNEL } from '#constants';
 import { defineStore } from 'pinia';
 import { watch } from 'vue';
 import { useChannelStore } from './channel.store';
@@ -17,7 +17,25 @@ export const useOperatorStore = defineStore('operator', () => {
     irc.client.raw(`OPER ${username} ${password}`);
   }
 
-  function kick(username: string, targetChannels: string[]) {
+  function notice(targetChannels: readonly string[], message: string) {
+    if (!irc.client || !irc.isOperator) {
+      return;
+    }
+
+    for (const targetChannel of targetChannels) {
+      const isJoined = channel.channelNameList.includes(targetChannel.toLocaleLowerCase());
+      if (!isJoined) {
+        // Temporarily join a channel just to send the notice
+        irc.client.raw(`SAJOIN ${targetChannel}`);
+      }
+      irc.client.notice(targetChannel, message);
+      if (!isJoined) {
+        channel.leaveChannel(targetChannel);
+      }
+    }
+  }
+
+  function kick(username: string, targetChannels: readonly string[], reason: string = '') {
     if (!irc.client || !irc.isOperator || targetChannels.length === 0) {
       return;
     }
@@ -25,9 +43,18 @@ export const useOperatorStore = defineStore('operator', () => {
     if (!user) {
       return;
     }
-    for (const nick of user.nicks) {
-      for (const targetChannel of targetChannels) {
-        irc.client.raw(`KICK ${targetChannel} ${nick}`);
+
+    for (const targetChannel of targetChannels) {
+      for (const nick of user.nicks) {
+        const isJoined = channel.channelNameList.includes(targetChannel.toLocaleLowerCase());
+        if (!isJoined) {
+          // Temporarily join a channel to perform kick
+          irc.client.raw(`SAJOIN ${targetChannel}`);
+        }
+        irc.client.raw(`KICK ${targetChannel} ${nick}${reason ? ` :${reason}` : ''}`);
+        if (!isJoined) {
+          channel.leaveChannel(targetChannel);
+        }
       }
     }
   }
@@ -207,21 +234,23 @@ export const useOperatorStore = defineStore('operator', () => {
     },
     { immediate: true },
   );
-  watch([() => channel.channelNameList, () => irc.isOperator], ([channelList, isOperator]) => {
-    if (!isOperator) {
-      return;
-    }
+  watch(
+    () => irc.isOperator,
+    (isOperator) => {
+      if (!isOperator) {
+        return;
+      }
 
-    // Add channel operator permissions if a server-wide operator
-    channelList
-      .filter((c) => c.startsWith('#'))
-      .forEach((channel) => {
+      // Add channel operator permissions if a server-wide operator
+      AVAILABLE_CHANNELS.forEach((channel) => {
         irc.client?.raw(`SAMODE ${channel} +o ${irc.currentNick}`);
       });
-  });
+    },
+  );
 
   return {
     signIn,
+    notice,
     kick,
     getBanList,
     addBanMask,

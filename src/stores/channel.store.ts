@@ -425,10 +425,11 @@ export const useChannelStore = defineStore('channel', () => {
 
           addSystemMessage(`You have been kicked from ${event.channel}`, event.channel);
           addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.channel);
-          createOrGetChannel(event.channel).banStatus = 'banned';
+          createOrGetChannel(event.channel).banStatus = 'kicked';
         })
         .on('mode', (event) => {
-          if (!event.target.startsWith('#')) {
+          if (typeof event.tags.batch === 'string' || !event.target.startsWith('#')) {
+            // Ignore replayed events
             // Only caring about channel-related mode events
             return;
           }
@@ -445,17 +446,13 @@ export const useChannelStore = defineStore('channel', () => {
               case '+b': {
                 if (mode.param.startsWith('m:')) {
                   // Muted
-                  if (!event.batch) {
-                    addSystemMessage(`You have been muted.`, event.target);
-                    addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.target);
-                  }
+                  addSystemMessage(`You have been muted.`, event.target);
+                  addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.target);
                   createOrGetChannel(event.target).banStatus = 'muted';
                 } else {
                   // Banned
-                  if (!event.batch) {
-                    addSystemMessage(`You have been banned.`, event.target);
-                    addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.target);
-                  }
+                  addSystemMessage(`You have been banned.`, event.target);
+                  addSystemMessage(CODE_OF_CONDUCT_MESSAGE, event.target);
                   createOrGetChannel(event.target).banStatus = 'banned';
                 }
 
