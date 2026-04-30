@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="message-group-item-container"
-    :class="{ 'message-group-item-container--ignored': isIgnored }"
-  >
+  <div class="message-container" :class="{ 'message-container--ignored': isIgnored }">
     <div v-if="isIgnored" class="flex-grow-1 ignored-placeholder">
       Message hidden from ignored user.
     </div>
@@ -68,13 +65,13 @@
 </script>
 
 <style scoped>
-  .message-group-item-container {
+  .message-container {
     gap: 1em;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
   }
-  .message-group-item-container--ignored {
+  .message-container--ignored {
     .ignored-placeholder {
       color: var(--bs-secondary);
       font-style: italic;
@@ -130,8 +127,8 @@
       line-height: inherit;
     }
   }
-  .message-group-item-container:hover,
-  .message-group-item-container:focus-within {
+  .message-container:hover,
+  .message-container:focus-within {
     .message-options {
       opacity: 1;
 
