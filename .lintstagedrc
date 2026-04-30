@@ -1,4 +1,4 @@
 {
-  "*.{js,vue,ts}": ["oxlint --fix", "eslint --fix"],
-  "*.{css,scss,md}": "prettier --write"
+  "*.{js,vue,ts}": ["oxlint --fix", "oxfmt"],
+  "*.{css,scss,md}": "oxfmt"
 }
