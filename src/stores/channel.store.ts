@@ -19,14 +19,15 @@ import { defineStore } from 'pinia';
 import { computed, reactive, readonly, watch } from 'vue';
 import { useIrcStore } from './irc.store';
 import { useNotificationsStore } from './notifications.store';
+import { useSettingsStore } from './settings.store';
 import { useUserListStore } from './user-list.store';
-
-const MAX_MESSAGES_PER_CHANNEL = 500;
 
 export const useChannelStore = defineStore('channel', () => {
   const irc = useIrcStore();
   const notifications = useNotificationsStore();
   const userList = useUserListStore();
+  const settings = useSettingsStore();
+
   const isFocusedWindow = useWindowFocus();
   const channelMap = reactive(new Map<string, Channel>());
   const channelNameList = computed(() => Array.from(channelMap.keys()));
@@ -104,7 +105,7 @@ export const useChannelStore = defineStore('channel', () => {
       // Skip requests for user channels
       return;
     }
-    irc.client.raw(`CHATHISTORY LATEST ${channelOrUsername} * ${MAX_MESSAGES_PER_CHANNEL}`);
+    irc.client.raw(`CHATHISTORY LATEST ${channelOrUsername} * ${settings.maxMessagesPerChannel}`);
   }
 
   function joinChannel(
@@ -236,9 +237,9 @@ export const useChannelStore = defineStore('channel', () => {
       return;
     }
     sortedInsert(channel.messages, message, (a, b) => a.time - b.time);
-    if (channel.messages.length > MAX_MESSAGES_PER_CHANNEL) {
+    if (channel.messages.length > settings.maxMessagesPerChannel) {
       // Remove oldest messages when message count limit is reached
-      channel.messages.splice(0, channel.messages.length - MAX_MESSAGES_PER_CHANNEL);
+      channel.messages.splice(0, channel.messages.length - settings.maxMessagesPerChannel);
     }
   }
 
