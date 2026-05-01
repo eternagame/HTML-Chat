@@ -17,21 +17,32 @@ export const useOperatorStore = defineStore('operator', () => {
     irc.client.raw(`OPER ${username} ${password}`);
   }
 
+  /**
+   * Temporarily join a channel to perform a task, if needed.
+   */
+  function temporaryJoin(channelName: string, cb: () => void) {
+    const isJoined = channel.channelNameList.includes(channelName.toLocaleLowerCase());
+    if (!isJoined) {
+      irc.client?.raw(`SAJOIN ${channelName}`);
+    }
+    cb();
+    if (!isJoined) {
+      // Adding delay to account for action being echoed back to self
+      setTimeout(() => {
+        channel.leaveChannel(channelName);
+      }, 200);
+    }
+  }
+
   function notice(targetChannels: readonly string[], message: string) {
     if (!irc.client || !irc.isOperator) {
       return;
     }
 
     for (const targetChannel of targetChannels) {
-      const isJoined = channel.channelNameList.includes(targetChannel.toLocaleLowerCase());
-      if (!isJoined) {
-        // Temporarily join a channel just to send the notice
-        irc.client.raw(`SAJOIN ${targetChannel}`);
-      }
-      irc.client.notice(targetChannel, message);
-      if (!isJoined) {
-        channel.leaveChannel(targetChannel);
-      }
+      temporaryJoin(targetChannel, () => {
+        irc.client!.notice(targetChannel, message);
+      });
     }
   }
 
@@ -46,15 +57,9 @@ export const useOperatorStore = defineStore('operator', () => {
 
     for (const targetChannel of targetChannels) {
       for (const nick of user.nicks) {
-        const isJoined = channel.channelNameList.includes(targetChannel.toLocaleLowerCase());
-        if (!isJoined) {
-          // Temporarily join a channel to perform kick
-          irc.client.raw(`SAJOIN ${targetChannel}`);
-        }
-        irc.client.raw(`KICK ${targetChannel} ${nick}${reason ? ` :${reason}` : ''}`);
-        if (!isJoined) {
-          channel.leaveChannel(targetChannel);
-        }
+        temporaryJoin(targetChannel, () => {
+          irc.client!.raw(`KICK ${targetChannel} ${nick}${reason ? ` :${reason}` : ''}`);
+        });
       }
     }
   }
