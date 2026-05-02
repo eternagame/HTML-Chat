@@ -6,6 +6,7 @@ export * from './layout.model';
 export * from './md-format.model';
 export * from './message.model';
 export * from './modal.model';
+export * from './notifications.model';
 export * from './puzzle.model';
 export * from './report.model';
 export * from './todo.model';

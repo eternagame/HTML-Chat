@@ -196,7 +196,7 @@ export const useChannelStore = defineStore('channel', () => {
       {
         title: `New message in ${channel.name}`,
         body: `${message.username}: ${message.message}`,
-        tag: `new-message-${message.target}`,
+        tag: channel.name,
       },
       () => {
         // Open channel if notification is clicked
@@ -211,6 +211,7 @@ export const useChannelStore = defineStore('channel', () => {
     if (channel) {
       channel.hasMention = false;
       channel.hasNotification = false;
+      notifications.silenceNextNotification(channel.name);
     }
   }
 
