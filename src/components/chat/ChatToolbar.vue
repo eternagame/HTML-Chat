@@ -73,7 +73,7 @@
 </template>
 <script setup lang="ts">
   import type { MdFormat } from '#models';
-  import { BButton, BButtonGroup, BButtonToolbar } from 'bootstrap-vue-next';
+  import { BButton, BButtonGroup, BButtonToolbar, vBPopover } from 'bootstrap-vue-next';
 
   const emit = defineEmits<{
     (event: 'format', type: MdFormat): void;

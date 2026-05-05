@@ -179,6 +179,8 @@
     z-index: 9;
     isolation: isolate;
     border: 1px solid #2f94d1e6;
+    background-color: #05224b;
+    color: #fff;
 
     &:not(.draggable-window--resizing):not(.draggable-window--dragging) {
       @media (prefers-reduced-motion: no-preference) {

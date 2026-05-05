@@ -62,16 +62,17 @@
   const layout = useLayoutStore();
 
   const sidebarRef = ref<HTMLElement>();
-  const removeClickListener = onClickOutside(
-    sidebarRef,
-    () => {
-      layout.toggleSidebar(false);
-    },
-    { ignore: [`button[aria-controls=${layout.sidebarId}]`] },
-  );
-  const removeKeyListener = onKeyDown('Escape', () => {
-    layout.toggleSidebar(false);
-  });
+
+  function closeSidebar() {
+    if (layout.isSidebarOpen) {
+      // Avoids clashing with SidebarMenuButton toggle
+      setTimeout(() => {
+        layout.toggleSidebar(false);
+      });
+    }
+  }
+  const removeClickListener = onClickOutside(sidebarRef, closeSidebar);
+  const removeKeyListener = onKeyDown('Escape', closeSidebar);
   onUnmounted(() => {
     removeClickListener();
     removeKeyListener();

@@ -7,6 +7,7 @@
     "start": "npm run dev",
     "dev": "vite",
     "build": "vite build",
+    "build:wc": "vite build --mode wc",
     "test": "npm run test:unit",
     "test:unit": "vitest",
     "lint": "run-s lint:*",
@@ -53,17 +54,18 @@
     "vue": "^3.5.30"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.29.5",
     "@pinia/testing": "^1.0.3",
     "@types/lodash": "^4.17.24",
     "@types/markdown-it": "^14.1.2",
     "@types/markdown-it-link-attributes": "^3.0.5",
     "@types/node": "^22.19.15",
-    "@vitejs/plugin-legacy": "^8.0.1",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vitest/eslint-plugin": "^1.6.12",
     "@vue/eslint-config-typescript": "^14.7.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.9.0",
+    "core-js": "^3.49.0",
     "globals": "^17.4.0",
     "husky": "^9.1.7",
     "jiti": "^2.6.1",
@@ -77,6 +79,7 @@
     "terser": "^5.46.1",
     "typescript": "^5.9.3",
     "vite": "^8.0.8",
+    "vite-plugin-babel": "^1.6.0",
     "vite-plugin-node-polyfills": "^0.26.0",
     "vitest": "^4.1.4"
   }
