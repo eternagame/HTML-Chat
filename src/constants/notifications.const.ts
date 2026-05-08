@@ -1,0 +1,1 @@
+export const NOTIFICATION_THROTTLE_TIME = 15_000;

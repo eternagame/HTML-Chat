@@ -1,12 +1,12 @@
-import Vue from 'vue';
-import chatPlugin from './app/plugin/plugin';
-import App from './standalone/App.vue';
-import store from './standalone/store';
+import log from 'loglevel';
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
+import App from './App.vue';
+import './style.scss';
 
-Vue.config.productionTip = false;
-Vue.use(chatPlugin, { store });
+log.setLevel(import.meta.env.PROD ? 'info' : 'trace');
 
-new Vue({
-  render: h => h(App),
-  store,
-}).$mount('#app');
+const pinia = createPinia();
+const app = createApp(App);
+app.use(pinia);
+app.mount('#app');
