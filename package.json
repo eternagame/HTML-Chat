@@ -6,6 +6,9 @@
     "type": "git",
     "url": "git+https://github.com/eternagame/html-chat.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "npm run dev",
     "dev": "vite",
