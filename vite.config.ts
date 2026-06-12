@@ -1,7 +1,6 @@
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
-import babel from 'vite-plugin-babel';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig(({ mode }) => {
@@ -12,7 +11,6 @@ export default defineConfig(({ mode }) => {
       vue({ features: { customElement: isWebComponent } }),
       // Required for `irc-framework`
       nodePolyfills(),
-      babel(),
     ],
     resolve: {
       alias: {
@@ -29,7 +27,7 @@ export default defineConfig(({ mode }) => {
             formats: ['es'],
           },
           cssCodeSplit: false,
-          minify: 'terser',
+          sourcemap: true,
         }
       : { outDir: 'dist' },
   };
