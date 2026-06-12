@@ -26,6 +26,7 @@
             :placeholder="placeholder"
             @keydown="onKeydown"
             :formatter="(val) => val.replaceAll(/\s*\n\s*/g, ' ')"
+            :disabled="irc.currentUser.uid === ANONYMOUS_USER.uid"
             border-variant="transparent"
             rows="1"
             max-rows="6"
@@ -50,15 +51,17 @@
 
 <script setup lang="ts">
   import MessageContent from '#components/message/MessageContent.vue';
-  import { useChannelStore, useChatStore } from '#stores';
+  import { useChannelStore, useChatStore, useIrcStore } from '#stores';
   import { BButton, BForm, BFormGroup, BFormTextarea, BInputGroup } from 'bootstrap-vue-next';
   import { computed, nextTick, ref, useId, useTemplateRef } from 'vue';
   import ChatToolbar from './ChatToolbar.vue';
   import type { MdFormat } from '#models';
   import { toggleMDFormat } from '#utils/md-format.util.ts';
+  import { ANONYMOUS_USER } from '#constants';
 
   const channel = useChannelStore();
   const chat = useChatStore();
+  const irc = useIrcStore();
 
   const inputId = useId();
   const inputRef = useTemplateRef('chat-input');

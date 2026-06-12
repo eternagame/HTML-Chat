@@ -277,6 +277,10 @@ $web-font-path: 'https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   background-color: $dark-blue;
 }
 
+.form-control:disabled {
+  background-color: $blue;
+}
+
 // Navs ========================================================================
 
 .nav-tabs {
@@ -346,9 +350,7 @@ $web-font-path: 'https://fonts.googleapis.com/css?family=Open+Sans:400,700,400it
   @each $color, $value in $theme-colors {
     &-#{$color} {
       @if $enable-gradients {
-        background: $value
-          linear-gradient(180deg, mix($body-bg, $value, 15%), $value)
-          repeat-x;
+        background: $value linear-gradient(180deg, mix($body-bg, $value, 15%), $value) repeat-x;
       } @else {
         background-color: $value;
       }

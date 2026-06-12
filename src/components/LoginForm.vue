@@ -28,6 +28,7 @@
   </div>
 </template>
 <script setup lang="ts">
+  import { ANONYMOUS_USER } from '#constants';
   import { useIrcStore } from '#stores';
   import { BForm, BFormInput, BFormGroup, BFormCheckbox, BButton } from 'bootstrap-vue-next';
   import { computed, reactive, toRaw } from 'vue';
@@ -53,7 +54,7 @@
   }
 
   function anonLogin() {
-    irc.signIn({ username: 'Anonymous', uid: '0', remember: false });
+    irc.signIn({ username: ANONYMOUS_USER.displayName, uid: ANONYMOUS_USER.uid, remember: false });
   }
 </script>
 <style scoped>
