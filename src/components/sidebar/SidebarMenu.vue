@@ -95,7 +95,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    max-width: 350px;
+    max-width: 300px;
     height: 100%;
     background-color: #000000;
     color: white;

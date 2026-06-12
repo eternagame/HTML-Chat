@@ -1,23 +1,45 @@
 <template>
   <div class="chat-input-container">
-    <div v-if="inputBuffer.trim().length > 0 && !inputBuffer.startsWith('/')" class="chat-preview">
+    <div
+      v-if="inputBuffer.trim().length > 0 && !inputBuffer.startsWith('/') && previreActive"
+      class="chat-preview"
+    >
       <small class="text-muted d-block">Preview</small>
       <MessageContent class="chat-preview-content" :content="inputBuffer" inert />
     </div>
 
     <BForm @submit.prevent="onSubmit">
-      <ChatToolbar :aria-controls="inputId" @format="onFormat" />
+      <ChatToolbar
+        :aria-controls="inputId"
+        @format="onFormat"
+        v-model:preview-active="previreActive"
+        class="toolbar"
+        v-show="toolbarVisible"
+      />
       <BFormGroup label="Chat message" label-visually-hidden>
-        <BInputGroup size="lg">
-          <BFormInput
+        <BInputGroup>
+          <BFormTextarea
             :id="inputId"
             ref="chat-input"
             v-model="inputBuffer"
             autocomplete="off"
             :placeholder="placeholder"
             @keydown="onKeydown"
+            :formatter="(val) => val.replaceAll(/\s*\n\s*/g, ' ')"
+            border-variant="transparent"
+            rows="1"
+            max-rows="6"
           />
-          <BButton type="submit" variant="primary" class="px-4" :disabled="!inputBuffer.trim()"
+          <BButton
+            type="submit"
+            class="format-button"
+            v-b-popover.child
+            title="Format"
+            aria-label="Format"
+            @click="toolbarVisible = !toolbarVisible"
+            >A</BButton
+          >
+          <BButton type="submit" variant="primary" class="px-2" :disabled="!inputBuffer.trim()"
             >Send</BButton
           >
         </BInputGroup>
@@ -29,7 +51,7 @@
 <script setup lang="ts">
   import MessageContent from '#components/message/MessageContent.vue';
   import { useChannelStore, useChatStore } from '#stores';
-  import { BButton, BForm, BFormGroup, BFormInput, BInputGroup } from 'bootstrap-vue-next';
+  import { BButton, BForm, BFormGroup, BFormTextarea, BInputGroup } from 'bootstrap-vue-next';
   import { computed, nextTick, ref, useId, useTemplateRef } from 'vue';
   import ChatToolbar from './ChatToolbar.vue';
   import type { MdFormat } from '#models';
@@ -42,6 +64,8 @@
   const inputRef = useTemplateRef('chat-input');
   const inputBuffer = ref('');
   const placeholder = computed(() => `Message ${channel.currentChannel?.displayName ?? ''}`);
+  const toolbarVisible = ref(false);
+  const previreActive = ref(false);
 
   function onFormat(format: MdFormat) {
     if (!inputRef.value?.element) {
@@ -68,6 +92,12 @@
   }
 
   function onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      onSubmit();
+      return;
+    }
+
     if (!(event.ctrlKey || event.metaKey)) {
       return;
     }
@@ -104,9 +134,25 @@
 
 <style scoped>
   .chat-preview {
-    border-top: 1px dashed currentColor;
-    padding: 0.25em 1em;
+    padding-bottom: 0.75em;
     max-height: 10em;
     overflow-y: auto;
+  }
+
+  .toolbar {
+    margin-bottom: 6px;
+  }
+
+  .format-button {
+    text-decoration: underline;
+    background-color: var(--bs-body-bg);
+    border-inline: none;
+    border-block-color: var(--bs-border-color);
+  }
+
+  .format-button:hover,
+  .format-button.btn:active {
+    background-color: var(--bs-blue);
+    border-block-color: var(--bs-border-color);
   }
 </style>

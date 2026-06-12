@@ -1,72 +1,78 @@
 <template>
-  <BButtonToolbar key-nav aria-label="Formatting tools" role="toolbar">
+  <BButtonToolbar key-nav aria-label="Formatting tools" role="toolbar" class="toolbar">
     <BButtonGroup size="sm">
       <BButton
         type="button"
         variant="outline-secondary"
-        v-b-popover
+        v-b-popover.child
         title="Bold"
+        aria-label="Bold"
         @click="emit('format', 'Bold')"
-        ><span class="visually-hidden">Bold</span><strong aria-hidden="true">B</strong></BButton
+        ><strong aria-hidden="true">B</strong></BButton
       >
       <BButton
         type="button"
         variant="outline-secondary"
-        v-b-popover
+        v-b-popover.child
         title="Underline"
+        aria-label="Underline"
         @click="emit('format', 'Underline')"
-        ><span class="visually-hidden">Underline</span><u aria-hidden="true">U</u></BButton
+        ><u aria-hidden="true">U</u></BButton
       >
       <BButton
         type="button"
         variant="outline-secondary"
-        v-b-popover
+        v-b-popover.child
         title="Italics"
+        aria-label="Italics"
         @click="emit('format', 'Italics')"
-        ><span class="visually-hidden">Italic</span><i aria-hidden="true">I</i></BButton
+        ><i aria-hidden="true">I</i></BButton
       >
       <BButton
         type="button"
         variant="outline-secondary"
-        v-b-popover
+        v-b-popover.child
         title="Strikethrough"
+        aria-label="Strikethrough"
         @click="emit('format', 'Strikethrough')"
-        ><span class="visually-hidden">Strikethrough</span><s aria-hidden="true">S</s></BButton
+        ><s aria-hidden="true">S</s></BButton
       >
     </BButtonGroup>
     <BButtonGroup size="sm">
       <BButton
         type="button"
         variant="outline-secondary"
-        v-b-popover
+        v-b-popover.child
         title="Blockquote"
+        aria-label="Blockquote"
         @click="emit('format', 'Blockquote')"
-        ><span class="visually-hidden">Quote</span><span aria-hidden="true">""</span></BButton
+        ><span aria-hidden="true">""</span></BButton
       >
       <BButton
         type="button"
         variant="outline-secondary"
-        v-b-popover
+        v-b-popover.child
         title="Code"
+        aria-label="Code"
         @click="emit('format', 'Code')"
-        ><span class="visually-hidden">Code</span><span aria-hidden="true">&lt;/&gt;</span></BButton
+        ><span aria-hidden="true">&lt;/&gt;</span></BButton
       >
       <BButton
         type="button"
         variant="outline-secondary"
-        v-b-popover
+        v-b-popover.child
         title="Link"
         @click="emit('format', 'Link')"
         ><span class="visually-hidden">Link</span><span aria-hidden="true">🔗</span></BButton
       >
+    </BButtonGroup>
+    <BButtonGroup size="sm">
       <BButton
         type="button"
-        variant="outline-secondary"
-        v-b-popover
-        title="Highlight"
-        @click="emit('format', 'Highlight')"
-        ><span class="visually-hidden">Highlight</span
-        ><mark class="highlight" aria-hidden="true">H</mark></BButton
+        :variant="previewActive ? 'secondary' : 'outline-secondary'"
+        v-b-popover.child
+        @click="previewActive = !previewActive"
+        >Preview</BButton
       >
     </BButtonGroup>
   </BButtonToolbar>
@@ -75,11 +81,18 @@
   import type { MdFormat } from '#models';
   import { BButton, BButtonGroup, BButtonToolbar, vBPopover } from 'bootstrap-vue-next';
 
+  const previewActive = defineModel('previewActive');
+
   const emit = defineEmits<{
     (event: 'format', type: MdFormat): void;
   }>();
 </script>
 <style scoped>
+  .toolbar {
+    display: flex;
+    gap: 6px;
+  }
+
   .highlight {
     color: black;
     background-color: yellow;

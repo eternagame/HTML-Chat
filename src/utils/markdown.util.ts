@@ -9,7 +9,6 @@ const SCREENSHOT_REGEX =
 const INTERNAL_LINK_REGEX = /^(?:https?:\/\/)?eterna(?:game|dev).org\/?/i;
 const TAG_USER_REGEX = /(?<!\w)@([\w-]+)/i;
 const TAG_CHANNEL_REGEX = /(?<!\w)(#[\w-]+)/i;
-const HIGHLIGHT_REGEX = /\|([^|]+)\|/;
 
 /**
  * Pattern for puzzle links. Single capture group for the puzzle ID.
@@ -64,14 +63,6 @@ export const md = new MarkdownIt({
       } else {
         return `<span>${taggedChannel}</span>`;
       }
-    },
-  })
-  .use(markdownItRegex, {
-    name: 'highlight',
-    regex: HIGHLIGHT_REGEX,
-    replace(content: string) {
-      const safeContent = md.renderInline(content);
-      return `<mark class="highlight">${safeContent}</mark>`;
     },
   })
   .use(linkAttributes, [

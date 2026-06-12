@@ -75,7 +75,7 @@
         };
 
       case 'minimized':
-        return { left: `${x.value}px`, top: `${y.value}px`, width: `${draggableSize.width}px` };
+        return { left: `${x.value}px`, top: `${y.value}px`, width: `200px` };
 
       default:
         return {
@@ -178,15 +178,16 @@
     flex-direction: column;
     z-index: 9;
     isolation: isolate;
-    border: 1px solid #2f94d1e6;
-    background-color: #05224b;
+    background-color: #043468;
     color: #fff;
+    padding: 0.5em;
+    border-radius: 8px;
 
     &:not(.draggable-window--resizing):not(.draggable-window--dragging) {
       @media (prefers-reduced-motion: no-preference) {
         transition-property: top, left, width, height;
-        transition-duration: 150ms;
-        transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        transition-duration: 200ms;
+        transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.1);
       }
     }
   }
@@ -200,11 +201,12 @@
 
   .header {
     flex-shrink: 0;
-    background-color: #043468;
     color: #ffffff;
     user-select: none;
-    padding: 0.25em 0.5em;
+    padding-inline: 0.5em;
+    padding-top: 0.25em;
   }
+
   .draggable-window:not(.draggable-window--fullscreen) .header {
     cursor: grab;
     &:active {
@@ -217,6 +219,9 @@
     position: relative;
     min-height: 0;
     overflow: hidden;
+    background-color: #05224b;
+    border-radius: 8px;
+    margin-block: 0.75em;
   }
 
   .footer {

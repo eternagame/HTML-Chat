@@ -1,18 +1,27 @@
 <template>
   <div ref="channel-messages" class="channel-messages">
-    <div class="message-item" v-for="(message, index) in channel.currentMessages" :key="message.id">
-      <UsernameDisplay
+    <template v-for="(message, index) in channel.currentMessages" :key="message.id">
+      <div
+        class="message-group-meta"
         v-if="
           groupStartPositions.has(index) && message.type !== 'system' && message.type !== 'notice'
         "
-        :username="message.username"
-      />
+      >
+        <UsernameDisplay :username="message.username" />
 
+        <BPopover :delay="{ show: 250, hide: 100 }">
+          <template #target>
+            <time class="message-timestamp flex-shrink-0">{{ formatTime(message.time) }}</time>
+          </template>
+
+          {{ formateDateTime(message.time) }}
+        </BPopover>
+      </div>
       <ChannelMessage
         :message="message"
         :is-ignored="userList.ignoredUsernames.has(message.username)"
       />
-    </div>
+    </template>
   </div>
 </template>
 
@@ -20,9 +29,11 @@
   import UsernameDisplay from '#components/user/UsernameDisplay.vue';
   import { useMessageGroups } from '#composables/useMessageGroups.ts';
   import { useChannelStore, useUserListStore } from '#stores';
+  import { formateDateTime, formatTime } from '#utils';
   import { useScroll } from '@vueuse/core';
   import { nextTick, useTemplateRef, watch } from 'vue';
   import ChannelMessage from './ChannelMessage.vue';
+  import { BPopover } from 'bootstrap-vue-next';
 
   const channel = useChannelStore();
   const userList = useUserListStore();
@@ -55,5 +66,11 @@
     overflow-x: hidden;
     overflow-y: auto;
     isolation: isolate;
+  }
+
+  .message-group-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-block: 2px;
   }
 </style>

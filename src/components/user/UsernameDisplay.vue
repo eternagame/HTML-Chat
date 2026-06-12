@@ -1,9 +1,9 @@
 <template>
   <button ref="display-name" type="button" class="username" :style="{ color: usernameColor }">
-    <StatusIndicator v-if="user.status !== 'online'" :status="user.status" />
     {{ user.displayName }}
+    <StatusIndicator v-if="user.status !== 'online'" :status="user.status" class="status" />
   </button>
-  <PlayerTooltip :username="username" :target="tooltipTarget" />
+  &nbsp;<PlayerTooltip :username="username" :target="tooltipTarget" />
 </template>
 
 <script setup lang="ts">
@@ -28,5 +28,6 @@
     font-family: inherit;
     outline-color: currentColor;
     border: 0;
+    font-size: 15px;
   }
 </style>

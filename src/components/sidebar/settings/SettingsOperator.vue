@@ -15,7 +15,7 @@
               autocomplete="username"
             />
           </BFormGroup>
-          <BFormGroup label="Password">
+          <BFormGroup label="Password" class="mt-2">
             <BFormInput
               name="password"
               type="password"
@@ -24,7 +24,7 @@
               autocomplete="password"
             />
           </BFormGroup>
-          <BButton class="w-100" variant="primary" type="submit" :disabled="!canSubmit"
+          <BButton class="w-100 mt-2" variant="primary" type="submit" :disabled="!canSubmit"
             >Sign In</BButton
           >
         </BForm>

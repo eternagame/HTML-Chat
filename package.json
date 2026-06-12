@@ -12,7 +12,7 @@
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
     "lint:oxfmt": "oxfmt",
-    "prepare": "husky"
+    "prepare": "husky && patch-package"
   },
   "imports": {
     "#assets/*": "./src/assets/*",
@@ -73,6 +73,7 @@
     "npm-run-all2": "^8.0.4",
     "oxfmt": "^0.47.0",
     "oxlint": "^1.56.0",
+    "patch-package": "^8.0.1",
     "postcss-preset-env": "^11.2.0",
     "sass": "^1.98.0",
     "terser": "^5.46.1",
