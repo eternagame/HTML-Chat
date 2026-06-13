@@ -3,13 +3,19 @@ import type { WindowRect, WindowState } from '#models';
 import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { readonly, ref, useId, watch } from 'vue';
+import { useConfigurationStore } from './configuration.store';
 
 export const useLayoutStore = defineStore('layout', () => {
+  const configuration = useConfigurationStore();
+
   const sidebarId = useId();
   const isSidebarOpen = ref(false);
-  const windowState = useLocalStorage<WindowState>('chat_windowState', 'normal');
+  const windowState = useLocalStorage<WindowState>(
+    `chat_${configuration.appContext}_windowState`,
+    'normal',
+  );
   const windowRect = useLocalStorage<WindowRect>(
-    'chat_windowRect',
+    `chat_${configuration.appContext}_windowRect`,
     { x: 0, y: 0, width: WINDOW_MIN_WIDTH * 2, height: WINDOW_MIN_HEIGHT * 2 },
     { mergeDefaults: true },
   );

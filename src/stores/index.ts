@@ -1,5 +1,6 @@
 export * from './channel.store';
 export * from './chat.store';
+export * from './configuration.store';
 export * from './confirmation.store';
 export * from './irc.store';
 export * from './layout.store';
