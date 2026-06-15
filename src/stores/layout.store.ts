@@ -13,11 +13,32 @@ export const useLayoutStore = defineStore('layout', () => {
   const windowState = useLocalStorage<WindowState>(
     `chat_${configuration.appContext}_windowState`,
     'normal',
+    { listenToStorageChanges: false },
   );
+
+  // Private fields managed by setter in reactive
+  let windowWidth = WINDOW_MIN_WIDTH * 2;
+  let windowHeight = WINDOW_MIN_HEIGHT * 2;
+
   const windowRect = useLocalStorage<WindowRect>(
     `chat_${configuration.appContext}_windowRect`,
-    { x: 0, y: 0, width: WINDOW_MIN_WIDTH * 2, height: WINDOW_MIN_HEIGHT * 2 },
-    { mergeDefaults: true },
+    {
+      x: 0,
+      y: 0,
+      get width() {
+        return windowWidth;
+      },
+      set width(val) {
+        windowWidth = val < WINDOW_MIN_WIDTH ? WINDOW_MIN_WIDTH : val;
+      },
+      get height() {
+        return windowHeight;
+      },
+      set height(val) {
+        windowHeight = val < WINDOW_MIN_HEIGHT ? WINDOW_MIN_HEIGHT : val;
+      },
+    },
+    { mergeDefaults: true, listenToStorageChanges: false },
   );
 
   function toggleSidebar(force?: boolean) {
@@ -25,21 +46,6 @@ export const useLayoutStore = defineStore('layout', () => {
       isSidebarOpen.value = force;
     } else {
       isSidebarOpen.value = !isSidebarOpen.value;
-    }
-  }
-
-  function setWindowState(state: WindowState) {
-    windowState.value = state;
-  }
-
-  function saveWindowRect(rect: Partial<WindowRect>) {
-    Object.assign(windowRect.value, rect);
-
-    if (windowRect.value.width < WINDOW_MIN_WIDTH) {
-      windowRect.value.width = WINDOW_MIN_WIDTH;
-    }
-    if (windowRect.value.height < WINDOW_MIN_HEIGHT) {
-      windowRect.value.height = WINDOW_MIN_HEIGHT;
     }
   }
 
@@ -52,10 +58,8 @@ export const useLayoutStore = defineStore('layout', () => {
   return {
     sidebarId,
     isSidebarOpen: readonly(isSidebarOpen),
-    windowState: readonly(windowState),
-    windowRect: readonly(windowRect),
     toggleSidebar,
-    setWindowState,
-    saveWindowRect,
+    windowState,
+    windowRect,
   };
 });

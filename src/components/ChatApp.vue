@@ -10,13 +10,13 @@
           <OpenWindowButton
             class="flex-shrink-0"
             :active="layout.windowState === 'fullscreen'"
-            @toggle="layout.setWindowState($event ? 'fullscreen' : 'normal')"
+            @toggle="layout.windowState = $event ? 'fullscreen' : 'normal'"
           />
           <MinimizationTriangle
             class="flex-shrink-0"
             :open="layout.windowState !== 'minimized'"
             :controls="`${mainId} ${footerId}`"
-            @toggle="layout.setWindowState($event ? 'normal' : 'minimized')"
+            @toggle="layout.windowState = $event ? 'normal' : 'minimized'"
           />
         </div>
       </template>
