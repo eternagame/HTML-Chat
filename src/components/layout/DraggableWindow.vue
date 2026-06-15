@@ -33,11 +33,16 @@
 </template>
 
 <script setup lang="ts">
-  import { WINDOW_HANDLES, WINDOW_MIN_HEIGHT, WINDOW_MIN_WIDTH } from '#constants';
+  import {
+    MINIMIZED_WINDOW_WIDTH,
+    WINDOW_HANDLES,
+    WINDOW_MIN_HEIGHT,
+    WINDOW_MIN_WIDTH,
+  } from '#constants';
   import type { WindowHandle, WindowRect } from '#models';
   import { useLayoutStore } from '#stores';
   import { onClickOutside, useDraggable, useEventListener } from '@vueuse/core';
-  import { computed, type CSSProperties, ref } from 'vue';
+  import { computed, type CSSProperties, ref, watch } from 'vue';
 
   const layout = useLayoutStore();
 
@@ -46,7 +51,7 @@
   const isActive = ref(false);
   const isResizing = ref(false);
 
-  const { x, y, isDragging } = useDraggable(containerRef, {
+  const { x, y, position, isDragging } = useDraggable(containerRef, {
     // Get initial position from store
     initialValue: () => layout.windowRect,
     handle: headerRef,
@@ -56,6 +61,13 @@
       layout.windowRect.x = endPosition.x;
       layout.windowRect.y = endPosition.y;
     },
+  });
+
+  watch(layout.windowRect, () => {
+    position.value = {
+      x: layout.windowRect.x,
+      y: layout.windowRect.y,
+    };
   });
 
   const containerStyle = computed<CSSProperties>(() => {
@@ -69,7 +81,7 @@
         };
 
       case 'minimized':
-        return { left: `${x.value}px`, top: `${y.value}px`, width: `200px` };
+        return { left: `${x.value}px`, top: `${y.value}px`, width: `${MINIMIZED_WINDOW_WIDTH}px` };
 
       default:
         return {
@@ -132,11 +144,11 @@
       // Changing width AND x position
       const newWidth = startState.width - deltaX;
       if (newWidth >= WINDOW_MIN_WIDTH) {
+        layout.windowRect.x = startState.x + deltaX;
         layout.windowRect.width = newWidth;
-        x.value = startState.x + deltaX;
       } else {
+        layout.windowRect.x = startState.x + (startState.width - WINDOW_MIN_WIDTH);
         layout.windowRect.width = WINDOW_MIN_WIDTH;
-        x.value = startState.x + (startState.width - WINDOW_MIN_WIDTH);
       }
     }
 
@@ -147,11 +159,11 @@
       // Changing height AND y position
       const newHeight = startState.height - deltaY;
       if (newHeight >= WINDOW_MIN_HEIGHT) {
+        layout.windowRect.y = startState.y + deltaY;
         layout.windowRect.height = newHeight;
-        y.value = startState.y + deltaY;
       } else {
+        layout.windowRect.y = startState.y + (startState.height - WINDOW_MIN_HEIGHT);
         layout.windowRect.height = WINDOW_MIN_HEIGHT;
-        y.value = startState.y + (startState.height - WINDOW_MIN_HEIGHT);
       }
     }
   }
