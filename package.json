@@ -1,6 +1,6 @@
 {
   "name": "@eternagame/chat",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "type": "module",
   "repository": {
     "type": "git",
@@ -24,8 +24,8 @@
     "dist"
   ],
   "exports": {
-    "module": "./dist/main.wc.js",
-    "types": "./dist/main.wc.d.ts"
+    "types": "./dist/main.wc.d.ts",
+    "default": "./dist/main.wc.js"
   },
   "imports": {
     "#assets/*": "./src/assets/*",
