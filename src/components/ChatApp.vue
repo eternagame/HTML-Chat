@@ -1,6 +1,6 @@
 <template>
   <div class="chat-app" :style="{ fontSize: `${settings.fontSize}px` }">
-    <DraggableWindow>
+    <DraggableWindow part="chat-window">
       <template v-slot:header>
         <div class="header d-flex flex-row flex-nowrap align-items-center">
           <SidebarMenuButton class="flex-shrink-0" />
