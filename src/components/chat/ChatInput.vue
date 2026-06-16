@@ -52,7 +52,14 @@
 <script setup lang="ts">
   import MessageContent from '#components/message/MessageContent.vue';
   import { useChannelStore, useChatStore, useIrcStore } from '#stores';
-  import { BButton, BForm, BFormGroup, BFormTextarea, BInputGroup } from 'bootstrap-vue-next';
+  import {
+    BButton,
+    BForm,
+    BFormGroup,
+    BFormTextarea,
+    BInputGroup,
+    vBPopover,
+  } from 'bootstrap-vue-next';
   import { computed, nextTick, ref, useId, useTemplateRef } from 'vue';
   import ChatToolbar from './ChatToolbar.vue';
   import type { MdFormat } from '#models';
