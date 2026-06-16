@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, parse, resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import dts from 'unplugin-dts/vite';
 
 function readPackageLock(): Record<string, unknown> {
   let checkDir = process.cwd();
@@ -42,6 +43,10 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       vue({ features: { customElement: isWebComponent } }),
+      dts({
+        tsconfigPath: 'tsconfig.app.json',
+        exclude: isWebComponent ? ['src/main.ts'] : ['src/main.wc.ts'],
+      }),
       // Required for `irc-framework`
       nodePolyfills(),
     ],

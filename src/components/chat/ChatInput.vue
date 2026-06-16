@@ -25,7 +25,7 @@
             autocomplete="off"
             :placeholder="placeholder"
             @keydown="onKeydown"
-            :formatter="(val) => val.replaceAll(/\s*\n\s*/g, ' ')"
+            :formatter="(val: string) => val.replaceAll(/\s*\n\s*/g, ' ')"
             :disabled="irc.currentUser.uid === ANONYMOUS_USER.uid"
             border-variant="transparent"
             rows="1"
