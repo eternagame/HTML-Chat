@@ -1,4 +1,4 @@
-# html-chat
+# eterna-chat
 
 Web-based chat client for Eterna
 
