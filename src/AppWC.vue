@@ -9,10 +9,22 @@
   import { BApp } from 'bootstrap-vue-next';
   import { onMounted } from 'vue';
 
-  const props = defineProps<{ username: string; uid: string; appContext?: string }>();
+  const props = defineProps<{
+    username: string;
+    uid: string;
+    appContext?: string;
+    defaultX?: number;
+    defaultY?: number;
+    defaultWidth?: number;
+    defaultHeight?: number;
+  }>();
 
   const configuration = useConfigurationStore();
   if (props.appContext) configuration.appContext = props.appContext;
+  if (props.defaultX) configuration.defaultX = props.defaultX;
+  if (props.defaultY) configuration.defaultY = props.defaultY;
+  if (props.defaultWidth) configuration.defaultWidth = props.defaultWidth;
+  if (props.defaultHeight) configuration.defaultHeight = props.defaultHeight;
 
   const irc = useIrcStore();
   onMounted(() => {
