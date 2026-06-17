@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { defineCustomElement } from 'vue';
 import EternaChatApp from './AppWC.vue';
 import styles from './style.scss?inline';
+import { useChatStore } from '#stores';
 
 log.setLevel(import.meta.env.PROD ? 'info' : 'trace');
 
@@ -16,4 +17,7 @@ function register() {
   customElements.define('eterna-chat', EternaChat);
 }
 
-export { EternaChat, register };
+const chat = useChatStore();
+const sendMessage = (message: string) => chat.handleUserInput(message, true);
+
+export { EternaChat, register, sendMessage };

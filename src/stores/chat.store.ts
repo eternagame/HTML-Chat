@@ -81,10 +81,10 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  function handleUserInput(rawInput: string) {
+  function handleUserInput(rawInput: string, messageOnly = false) {
     const isCommand = rawInput.startsWith('/');
 
-    if (isCommand) {
+    if (isCommand && !messageOnly) {
       const [rawCommand, ...args] = rawInput.split(/\s+/g).filter((text) => text.length > 0);
       // Remove `/` for matching against registry
       const commandName = rawCommand.substring(1).toLowerCase();
