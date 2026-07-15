@@ -187,6 +187,7 @@
     color: #fff;
     padding: 0.5em;
     border-radius: 8px;
+    touch-action: none;
 
     &:not(.draggable-window--resizing):not(.draggable-window--dragging) {
       @media (prefers-reduced-motion: no-preference) {
