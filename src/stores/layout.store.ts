@@ -16,6 +16,8 @@ import {
 export const useLayoutStore = defineStore('layout', () => {
   const configuration = useConfigurationStore();
 
+  const windowSize = useWindowSize();
+
   const sidebarId = useId();
   const isSidebarOpen = ref(false);
   const windowState = useLocalStorage<WindowState>(
@@ -27,8 +29,16 @@ export const useLayoutStore = defineStore('layout', () => {
   const storedWindowRect = useLocalStorage(
     `chat_${configuration.appContext}_windowRect`,
     {
-      hViewportOffset: xToViewportOffset(configuration.defaultX, configuration.defaultWidth),
-      vViewportOffset: yToViewportOffset(configuration.defaultY, configuration.defaultHeight),
+      hViewportOffset: xToViewportOffset(
+        configuration.defaultX,
+        configuration.defaultWidth,
+        windowSize,
+      ),
+      vViewportOffset: yToViewportOffset(
+        configuration.defaultY,
+        configuration.defaultHeight,
+        windowSize,
+      ),
       width: configuration.defaultWidth,
       height: configuration.defaultHeight,
     },
@@ -47,10 +57,18 @@ export const useLayoutStore = defineStore('layout', () => {
       const proxy = {
         get(): number {
           track();
-          return viewportOffsetToX(storedWindowRect.value.hViewportOffset, currWidth.value);
+          return viewportOffsetToX(
+            storedWindowRect.value.hViewportOffset,
+            currWidth.value,
+            windowSize,
+          );
         },
         set(value: number) {
-          storedWindowRect.value.hViewportOffset = xToViewportOffset(value, currWidth.value);
+          storedWindowRect.value.hViewportOffset = xToViewportOffset(
+            value,
+            currWidth.value,
+            windowSize,
+          );
           trigger();
         },
       };
@@ -73,10 +91,18 @@ export const useLayoutStore = defineStore('layout', () => {
       const proxy = {
         get(): number {
           track();
-          return viewportOffsetToY(storedWindowRect.value.vViewportOffset, currHeight.value);
+          return viewportOffsetToY(
+            storedWindowRect.value.vViewportOffset,
+            currHeight.value,
+            windowSize,
+          );
         },
         set(value: number) {
-          storedWindowRect.value.vViewportOffset = yToViewportOffset(value, currHeight.value);
+          storedWindowRect.value.vViewportOffset = yToViewportOffset(
+            value,
+            currHeight.value,
+            windowSize,
+          );
           trigger();
         },
       };
@@ -101,11 +127,11 @@ export const useLayoutStore = defineStore('layout', () => {
       return {
         get(): number {
           track();
-          return clampWidth(storedWindowRect.value.width);
+          return clampWidth(storedWindowRect.value.width, windowSize);
         },
         set(value) {
           const oldX = windowRect.x;
-          storedWindowRect.value.width = clampWidth(value);
+          storedWindowRect.value.width = clampWidth(value, windowSize);
           // Changing the width only implies expanding from the right. This could change our x
           // offset if we're positioned relative to the right, so we ensure our x position remains
           // unchanged
@@ -120,11 +146,11 @@ export const useLayoutStore = defineStore('layout', () => {
       return {
         get(): number {
           track();
-          return clampHeight(storedWindowRect.value.height);
+          return clampHeight(storedWindowRect.value.height, windowSize);
         },
         set(value) {
           const oldY = windowRect.y;
-          storedWindowRect.value.height = clampHeight(value);
+          storedWindowRect.value.height = clampHeight(value, windowSize);
           // Changing the height only implies expanding from the bottom. This could change our y
           // offset if we're positioned relative to the bottom, so we ensure our y position remains
           // unchanged
