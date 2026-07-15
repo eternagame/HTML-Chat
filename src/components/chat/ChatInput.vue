@@ -28,8 +28,8 @@
             :formatter="(val: string) => val.replaceAll(/\s*\n\s*/g, ' ')"
             :disabled="irc.currentUser.uid === ANONYMOUS_USER.uid"
             border-variant="transparent"
-            rows="1"
-            max-rows="6"
+            no-resize
+            class="input"
           />
           <BButton
             type="submit"
@@ -65,6 +65,7 @@
   import type { MdFormat } from '#models';
   import { toggleMDFormat } from '#utils/md-format.util.ts';
   import { ANONYMOUS_USER } from '#constants';
+  import { useTextareaAutosize } from '@vueuse/core';
 
   const channel = useChannelStore();
   const chat = useChatStore();
@@ -72,10 +73,17 @@
 
   const inputId = useId();
   const inputRef = useTemplateRef('chat-input');
+  const textareaRef = computed(() => inputRef.value?.element);
   const inputBuffer = ref('');
   const placeholder = computed(() => `Message ${channel.currentChannel?.displayName ?? ''}`);
   const toolbarVisible = ref(false);
   const previreActive = ref(false);
+
+  useTextareaAutosize({
+    element: textareaRef,
+    input: inputBuffer,
+    maxHeight: 160,
+  });
 
   function onFormat(format: MdFormat) {
     if (!inputRef.value?.element) {
@@ -164,5 +172,9 @@
   .format-button.btn:active {
     background-color: var(--bs-blue);
     border-block-color: var(--bs-border-color);
+  }
+
+  .input {
+    scrollbar-width: none;
   }
 </style>
