@@ -61,7 +61,7 @@
   .channel-messages {
     display: flex;
     flex-direction: column;
-    padding: 0.5em 1em;
+    padding-block: 0.5em;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
@@ -72,5 +72,10 @@
     display: flex;
     justify-content: space-between;
     margin-block: 2px;
+  }
+
+  .message-group-meta,
+  .message-container {
+    padding-inline: 1em;
   }
 </style>

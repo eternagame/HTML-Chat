@@ -19,7 +19,7 @@
     />
 
     <div v-if="message.type !== 'system'" class="message-extras">
-      <BDropdown class="message-options" variant="link" no-caret>
+      <BDropdown class="message-options" variant="outline-info" size="sm" no-caret>
         <template #button-content>&#8942;</template>
         <BDropdownItem @click="onReport"><span aria-hidden="true">🚩</span> Report</BDropdownItem>
         <BDropdownItem @click="toggleIgnore"
@@ -59,6 +59,9 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+  }
+  .message-container:hover {
+    background: #061f44;
   }
   .message-container--ignored {
     .ignored-placeholder {
@@ -105,10 +108,12 @@
   }
 
   .message-options {
+    position: absolute;
+    right: 0;
     flex-grow: 0;
     flex-shrink: 0;
     opacity: 0;
-    margin-right: -12px;
+    margin-right: 6px;
 
     :deep(.btn-link) {
       padding: 0;
