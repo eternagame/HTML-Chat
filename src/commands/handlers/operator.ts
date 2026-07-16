@@ -4,36 +4,34 @@ import type { CommandHandler } from '#models';
 export const ban: CommandHandler = {
   name: 'ban',
   description: 'Ban a user from the channel(s).',
-  usage: '/ban <username> <channel>',
-  examples: ['/ban bad_user #general', '/ban really_bad_user *'],
+  usage: '/ban <username>',
+  examples: ['/ban bad_user'],
   requiresOperator: true,
   execute({ args, stores }) {
-    if (args.length < 2) {
-      stores.channel.addSystemMessage('"/ban" requires a username and target channel');
+    if (args.length < 1) {
+      stores.channel.addSystemMessage('"/ban" requires a username');
       return;
     }
 
-    const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
-    stores.operator.ban(username, channels);
+    const [username] = args;
+    stores.operator.ban(username, AVAILABLE_CHANNELS);
   },
 };
 
 export const unban: CommandHandler = {
   name: 'unban',
   description: 'Unban user from channel(s).',
-  usage: '/unban <username> <channel>',
-  examples: ['/unban not_bad_user #general', '/unban redeemed_user *'],
+  usage: '/unban <username>',
+  examples: ['/unban not_bad_user'],
   requiresOperator: true,
   execute({ args, stores }) {
-    if (args.length < 2) {
-      stores.channel.addSystemMessage('"/unban" requires a username and target channel.');
+    if (args.length < 1) {
+      stores.channel.addSystemMessage('"/unban" requires a username');
       return;
     }
 
-    const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
-    stores.operator.unban(username, channels);
+    const [username] = args;
+    stores.operator.unban(username, AVAILABLE_CHANNELS);
   },
 };
 
@@ -41,18 +39,17 @@ export const mute: CommandHandler = {
   name: 'mute',
   aliases: ['quiet'],
   description: 'Mute a user in channel(s).',
-  usage: '/mute <username> <channel>',
-  examples: ['/mute noisy-user #general', `/mute spammer *`],
+  usage: '/mute <username>)',
+  examples: ['/mute noisy-user'],
   requiresOperator: true,
   execute({ args, stores }) {
-    if (args.length < 2) {
-      stores.channel.addSystemMessage('"/mute" requires a username and target channel.');
+    if (args.length < 1) {
+      stores.channel.addSystemMessage('"/mute" requires a username.');
       return;
     }
 
-    const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
-    stores.operator.mute(username, channels);
+    const [username] = args;
+    stores.operator.mute(username, AVAILABLE_CHANNELS);
   },
 };
 
@@ -60,18 +57,17 @@ export const unmute: CommandHandler = {
   name: 'unmute',
   aliases: ['unquiet'],
   description: 'Unmute a user in channel(s).',
-  usage: '/unmute <username> <channel>',
-  examples: ['/unmute calm_user #general', `/unmute redeemed_user *`],
+  usage: '/unmute <username>',
+  examples: ['/unmute calm_user'],
   requiresOperator: true,
   execute({ args, stores }) {
-    if (args.length < 2) {
-      stores.channel.addSystemMessage('"/unmute" requires a username and target channel.');
+    if (args.length < 1) {
+      stores.channel.addSystemMessage('"/unmute" requires a username.');
       return;
     }
 
-    const [username, targetChannel] = args;
-    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
-    stores.operator.unmute(username, channels);
+    const [username] = args;
+    stores.operator.unmute(username, AVAILABLE_CHANNELS);
   },
 };
 
@@ -96,66 +92,62 @@ export const notice: CommandHandler = {
 export const banmask: CommandHandler = {
   name: 'banmask',
   description: 'Bans a host mask. Host masks are in the form of "nick!ident@host"',
-  usage: '/banmask <mask> <channel>',
-  examples: ['/banmask *!*@some.host.net #general', `/banmask *!*@ban.evader.net *`],
+  usage: '/banmask <mask>',
+  examples: ['/banmask *!*@some.host.net'],
   requiresOperator: true,
   execute({ args, stores }) {
-    if (args.length < 2) {
-      stores.channel.addSystemMessage('"/banmask" requires a mask and target channel');
+    if (args.length < 1) {
+      stores.channel.addSystemMessage('"/banmask" requires a mask');
     }
 
-    const [mask, targetChannel] = args;
-    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
-    stores.operator.addBanMask(mask, channels);
+    const [mask] = args;
+    stores.operator.addBanMask(mask, AVAILABLE_CHANNELS);
   },
 };
 
 export const unbanmask: CommandHandler = {
   name: 'unbanmask',
   description: 'Removes a host ban mask. Host masks are in the form of "nick!ident@host"',
-  usage: '/unbanmask <mask> <channel>',
+  usage: '/unbanmask <mask>',
   requiresOperator: true,
   execute({ args, stores }) {
-    if (args.length < 2) {
-      stores.channel.addSystemMessage('"/unbanmask" requires a mask and target channel');
+    if (args.length < 1) {
+      stores.channel.addSystemMessage('"/unbanmask" requires a mask');
     }
 
-    const [mask, targetChannel] = args;
-    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
-    stores.operator.removeBanMask(mask, channels);
+    const [mask] = args;
+    stores.operator.removeBanMask(mask, AVAILABLE_CHANNELS);
   },
 };
 
 export const mutemask: CommandHandler = {
   name: 'mutemask',
   description: 'Mutes a host mask. Host masks are in the form of "nick!ident@host"',
-  usage: '/mutemask <mask> <channel>',
-  examples: ['/mutemask *!*@some.host.net #general', `/mutemask *!*@ban.evader.net *`],
+  usage: '/mutemask <mask>',
+  examples: ['/mutemask *!*@some.host.net'],
   requiresOperator: true,
   execute({ args, stores }) {
-    if (args.length < 2) {
-      stores.channel.addSystemMessage('"/mutemask" requires a mask and target channel');
+    if (args.length < 1) {
+      stores.channel.addSystemMessage('"/mutemask" requires a mask');
     }
 
-    const [mask, targetChannel] = args;
-    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
-    stores.operator.addMuteMask(mask, channels);
+    const [mask] = args;
+    stores.operator.addMuteMask(mask, AVAILABLE_CHANNELS);
   },
 };
 
 export const unmuteMask: CommandHandler = {
   name: 'unmutemask',
   description: 'Removes a host mute mask. Host masks are in the form of "nick!ident@host"',
-  usage: '/unmutemask <mask> <channel>',
+  usage: '/unmutemask <mask>',
   requiresOperator: true,
   execute({ args, stores }) {
     if (args.length < 2) {
-      stores.channel.addSystemMessage('"/unmutemask" requires a mask and target channel');
+      stores.channel.addSystemMessage('"/unmutemask" requires a mask');
     }
 
-    const [mask, targetChannel] = args;
-    const channels = targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel];
-    stores.operator.removeMuteMask(mask, channels);
+    const [mask] = args;
+    stores.operator.removeMuteMask(mask, AVAILABLE_CHANNELS);
   },
 };
 
@@ -204,23 +196,18 @@ export const nicks: CommandHandler = {
 
 export const kick: CommandHandler = {
   name: 'kick',
-  description:
-    'Kick user from channel. Targeting "*" as the channel kicks user disconnects the user from the server.',
-  usage: '/kick <username> <channel> [reason]',
-  examples: ['/kick bad_user #general', '/kick really_bad_user *'],
+  description: 'Kick user from channel',
+  usage: '/kick <username> [reason]',
+  examples: ['/kick bad_user', '/kick really_bad_user'],
   requiresOperator: true,
   execute({ args, stores }) {
-    if (args.length < 2) {
-      stores.channel.addSystemMessage('"/kick" requires a username and target channel');
+    if (args.length < 1) {
+      stores.channel.addSystemMessage('"/kick" requires a username');
       return;
     }
 
-    const [username, targetChannel, ...reasonParts] = args;
-    stores.operator.kick(
-      username,
-      targetChannel === '*' ? AVAILABLE_CHANNELS : [targetChannel],
-      reasonParts.join(' '),
-    );
+    const [username, ...reasonParts] = args;
+    stores.operator.kick(username, AVAILABLE_CHANNELS, reasonParts.join(' '));
   },
 };
 
