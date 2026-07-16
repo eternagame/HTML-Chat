@@ -25,6 +25,12 @@
         <BDropdownItem @click="toggleIgnore"
           ><span aria-hidden="true">🔇</span> Ignore/Unignore User</BDropdownItem
         >
+        <BDropdownItem @click="onMute" v-if="irc.isOperator"
+          ><span aria-hidden="true">😶</span> Mute</BDropdownItem
+        >
+        <BDropdownItem @click="onBan" v-if="irc.isOperator"
+          ><span aria-hidden="true">🚪</span> Ban</BDropdownItem
+        >
       </BDropdown>
     </div>
   </div>
@@ -32,12 +38,15 @@
 
 <script setup lang="ts">
   import MessageContent from '#components/message/MessageContent.vue';
+  import { AVAILABLE_CHANNELS } from '#constants';
   import type { Message } from '#models';
-  import { useReportStore, useUserListStore } from '#stores';
+  import { useIrcStore, useOperatorStore, useReportStore, useUserListStore } from '#stores';
   import { BDropdown, BDropdownItem } from 'bootstrap-vue-next';
 
   const report = useReportStore();
   const userList = useUserListStore();
+  const operator = useOperatorStore();
+  const irc = useIrcStore();
   const props = defineProps<{ message: Message; isIgnored?: boolean }>();
 
   function onReport() {
@@ -50,6 +59,12 @@
     } else {
       userList.ignoreUser(props.message.username);
     }
+  }
+  function onMute() {
+    operator.mute(props.message.username, AVAILABLE_CHANNELS);
+  }
+  function onBan() {
+    operator.ban(props.message.username, AVAILABLE_CHANNELS);
   }
 </script>
 
