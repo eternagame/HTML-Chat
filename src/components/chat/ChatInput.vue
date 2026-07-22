@@ -16,7 +16,11 @@
         class="toolbar"
         v-show="toolbarVisible"
       />
-      <BFormGroup label="Chat message" label-visually-hidden>
+      <BFormGroup
+        label="Chat message"
+        label-visually-hidden
+        v-if="irc.currentUser.uid !== ANONYMOUS_USER.uid"
+      >
         <BInputGroup>
           <BFormTextarea
             :id="inputId"
@@ -26,7 +30,6 @@
             :placeholder="placeholder"
             @keydown="onKeydown"
             :formatter="(val: string) => val.replaceAll(/\s*\n\s*/g, ' ')"
-            :disabled="irc.currentUser.uid === ANONYMOUS_USER.uid"
             border-variant="transparent"
             no-resize
             class="input"
@@ -45,6 +48,9 @@
           >
         </BInputGroup>
       </BFormGroup>
+      <BAlert variant="info" :model-value="true" v-else style="margin-bottom: 0; padding: 0.7rem"
+        >Please log in to chat</BAlert
+      >
     </BForm>
   </div>
 </template>
@@ -59,6 +65,7 @@
     BFormTextarea,
     BInputGroup,
     vBPopover,
+    BAlert,
   } from 'bootstrap-vue-next';
   import { computed, nextTick, ref, useId, useTemplateRef } from 'vue';
   import ChatToolbar from './ChatToolbar.vue';
