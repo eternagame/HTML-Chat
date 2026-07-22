@@ -53,7 +53,8 @@ export const useIrcStore = defineStore('irc', () => {
    */
   function initClient(username: string, uid: string) {
     if (client.value) {
-      return;
+      client.value.quit();
+      client.value = null;
     }
 
     const nick = createNick(username);
