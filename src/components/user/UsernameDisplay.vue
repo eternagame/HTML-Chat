@@ -3,7 +3,7 @@
     {{ user.displayName }}
     <StatusIndicator v-if="user.status !== 'online'" :status="user.status" class="status" />
   </button>
-  &nbsp;<PlayerTooltip :username="username" :target="tooltipTarget" />
+  &nbsp;<PlayerTooltip :username="username" :target="tooltipTarget" v-if="visible" />
 </template>
 
 <script setup lang="ts">
@@ -11,6 +11,7 @@
   import StatusIndicator from '#components/ui/StatusIndicator.vue';
   import { ANONYMOUS_USER } from '#constants';
   import { useUserListStore } from '#stores';
+  import { useElementVisibility } from '@vueuse/core';
   import { computed, useTemplateRef } from 'vue';
 
   const props = defineProps<{ username: string }>();
@@ -18,6 +19,7 @@
   const user = computed(() => userList.getUserByUsername(props.username) ?? ANONYMOUS_USER);
   const usernameColor = computed(() => user.value.color);
   const tooltipTarget = useTemplateRef('display-name');
+  const visible = useElementVisibility(tooltipTarget);
 </script>
 
 <style scoped>

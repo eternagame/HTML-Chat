@@ -8,13 +8,14 @@
       @click="onClick"
       @auxclick="onClick"
     />
-    <PuzzleTooltip :puzzle-id="puzzleId" :target="puzzleTarget" />
+    <PuzzleTooltip :puzzle-id="puzzleId" :target="puzzleTarget" v-if="puzzleTooltipVisible" />
   </div>
 </template>
 <script setup lang="ts">
   import PuzzleTooltip from '#components/tooltips/PuzzleTooltip.vue';
   import { useChannelStore, useConfirmationStore } from '#stores';
   import { md, PUZZLE_LINK_REGEX } from '#utils';
+  import { useElementVisibility } from '@vueuse/core';
   import { computed, ref, shallowRef } from 'vue';
 
   const props = defineProps<{
@@ -27,6 +28,7 @@
   const formattedMessage = computed(() => md.render(props.content));
   const puzzleId = ref<string | null>(null);
   const puzzleTarget = shallowRef<HTMLElement | null>();
+  const puzzleTooltipVisible = useElementVisibility(puzzleTarget);
 
   function onHoverFocus(event: PointerEvent | FocusEvent) {
     const target = (event.target as HTMLElement).closest<HTMLAnchorElement>('.link--puzzle');
