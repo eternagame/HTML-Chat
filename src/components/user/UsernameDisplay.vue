@@ -14,7 +14,7 @@
   import { useElementVisibility } from '@vueuse/core';
   import { computed, useTemplateRef } from 'vue';
 
-  const props = defineProps<{ username: string; nick: string }>();
+  const props = defineProps<{ username: string; nick?: string }>();
   const userList = useUserListStore();
   const user = computed(
     () => userList.getUserByUsername(props.username, props.nick) ?? LOADING_USER,

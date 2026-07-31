@@ -11,13 +11,14 @@
 </template>
 <script setup lang="ts">
   import UsernameDisplay from '#components/user/UsernameDisplay.vue';
+  import { ANONYMOUS_USER } from '#constants';
   import { useUserListStore } from '#stores';
   import { computed } from 'vue';
 
   const userList = useUserListStore();
   const connectedUsers = computed(() =>
     userList.users
-      .filter((user) => user.status !== 'offline')
+      .filter((user) => user.status !== 'offline' && user.uid !== ANONYMOUS_USER.uid)
       .sort((a, b) => a.username.localeCompare(b.username)),
   );
 </script>
