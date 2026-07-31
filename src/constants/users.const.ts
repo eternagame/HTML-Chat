@@ -18,6 +18,24 @@ export const ANONYMOUS_USER: User = {
   isFetchingProfile: false,
 };
 
+export const LOADING_USER: User = {
+  username: '(loading)',
+  displayName: '(loading)',
+  uid: '0',
+  nicks: new Set([]),
+  status: 'offline',
+  awayReason: '',
+  color: '#359c67',
+  profile: {
+    avatar: null,
+    rank: null,
+    description: null,
+    roles: ['Player'],
+    link: null,
+  },
+  isFetchingProfile: false,
+};
+
 /**
  * These are currently taken from the Discord/Slack roles
  * Eventually, this will be replaced with an API call

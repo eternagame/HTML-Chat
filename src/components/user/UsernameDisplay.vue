@@ -9,14 +9,16 @@
 <script setup lang="ts">
   import PlayerTooltip from '#components/tooltips/PlayerTooltip.vue';
   import StatusIndicator from '#components/ui/StatusIndicator.vue';
-  import { ANONYMOUS_USER } from '#constants';
+  import { LOADING_USER } from '#constants';
   import { useUserListStore } from '#stores';
   import { useElementVisibility } from '@vueuse/core';
   import { computed, useTemplateRef } from 'vue';
 
-  const props = defineProps<{ username: string }>();
+  const props = defineProps<{ username: string; nick: string }>();
   const userList = useUserListStore();
-  const user = computed(() => userList.getUserByUsername(props.username) ?? ANONYMOUS_USER);
+  const user = computed(
+    () => userList.getUserByUsername(props.username, props.nick) ?? LOADING_USER,
+  );
   const usernameColor = computed(() => user.value.color);
   const tooltipTarget = useTemplateRef('display-name');
   const visible = useElementVisibility(tooltipTarget);

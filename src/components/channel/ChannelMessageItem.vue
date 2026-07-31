@@ -4,7 +4,7 @@
     v-if="groupStartPositions.has(index) && message.type !== 'system' && message.type !== 'notice'"
     ref="root"
   >
-    <UsernameDisplay :username="message.username" />
+    <UsernameDisplay :username="message.username" :nick="message.nick" />
 
     <BPopover :delay="{ show: 250, hide: 100 }" v-if="visible">
       <template #target>

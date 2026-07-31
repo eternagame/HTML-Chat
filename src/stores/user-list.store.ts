@@ -171,9 +171,17 @@ export const useUserListStore = defineStore('userList', () => {
   }
 
   return {
-    getUserByUsername(username: string) {
+    getUserByUsername(username: string, nick?: string) {
       const user = knownUsers.get(username.toLocaleLowerCase());
-      return user ? readonly(user) : null;
+      if (user) {
+        return readonly(user);
+      } else {
+        if (nick)
+          irc.client?.whowas(nick, (event) => {
+            addUserNick(event.nick, event.ident);
+          });
+        return null;
+      }
     },
     getUserByNick(nick: string) {
       const user = getUserByNickInternal(nick);
