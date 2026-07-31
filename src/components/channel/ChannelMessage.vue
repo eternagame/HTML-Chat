@@ -116,6 +116,7 @@
     gap: 0.25em;
     flex: 0 0 auto;
     align-items: baseline;
+    position: relative;
   }
 
   .message-timestamp {
@@ -128,7 +129,6 @@
     flex-grow: 0;
     flex-shrink: 0;
     opacity: 0;
-    margin-right: 6px;
 
     :deep(.btn-link) {
       padding: 0;
