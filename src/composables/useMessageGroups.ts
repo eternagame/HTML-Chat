@@ -15,6 +15,7 @@ export function useMessageGroups(messages: MaybeRefOrGetter<Message[] | DeepRead
       const message = allMessages[index];
       if (message.username !== lastSender || message.time - lastTime > 5 * 60 * 1000) {
         lastSender = message.username;
+        lastTime = message.time;
         positions.add(index);
       }
     }
