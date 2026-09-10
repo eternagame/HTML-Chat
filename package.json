@@ -89,7 +89,7 @@
     "unplugin-dts": "^1.0.3",
     "vite": "^8.1.5",
     "vite-plugin-node-polyfills": "^0.28.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "unplugin-dts": {
